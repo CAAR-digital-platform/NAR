@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CAAR — Auto Insurance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange:       #E8761E;
+      --orange-dark:  #C9601A;
+      --orange-light: #FFF3E8;
+      --dark:         #1C1C1C;
+      --gray:         #666;
+      --border:       #e0e0e0;
+      --white:        #fff;
+      --font-serif:   'Lora', serif;
+      --font-sans:    'Source Sans 3', sans-serif;
+    }
+    body { font-family: var(--font-sans); color: var(--dark); background: var(--white); }
+    a    { text-decoration: none; color: inherit; }
+
+    /* ════════════ NAVBAR ════════════ */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--white); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 60px;
+    }
+    .nav-left { display: flex; align-items: center; gap: 28px; }
+    .nav-logo {
+      width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-serif); font-size: 0.6rem; font-weight: 700;
+      color: var(--orange); text-align: center; line-height: 1.15; flex-shrink: 0;
+    }
+    .nav-dropdown {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--dark);
+    }
+    .nav-dropdown svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+    .nav-center { display: flex; align-items: center; gap: 22px; }
+    .nav-center a { font-size: 0.78rem; color: var(--gray); font-weight: 500; transition: color 0.2s; }
+    .nav-center a:hover, .nav-center a.active { color: var(--orange); }
+    .nav-center a.active { font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-search { background: none; border: none; cursor: pointer; padding: 5px; color: var(--gray); display: flex; }
+    .nav-search svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+    .btn-nav {
+      padding: 8px 18px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; font-family: var(--font-sans); border: 1.5px solid var(--orange); transition: all 0.2s;
+    }
+    .btn-ghost { background: var(--white); color: var(--orange); }
+    .btn-ghost:hover { background: var(--orange); color: var(--white); }
+    .btn-fill  { background: var(--orange); color: var(--white); }
+    .btn-fill:hover  { background: var(--orange-dark); }
+
+    /* ════════════ BREADCRUMB ════════════ */
+    .breadcrumb {
+      padding: 9px 64px; background: var(--white); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--gray);
+    }
+    .breadcrumb a { color: var(--gray); transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--orange); }
+    .breadcrumb .sep { color: #bbb; }
+    .breadcrumb .current { color: var(--orange); font-weight: 600; }
+
+    /* ════════════ HERO ════════════ */
+    .page-hero {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      padding: 40px 64px 0; gap: 24px; overflow: hidden; background: var(--white);
+    }
+    .hero-text { max-width: 420px; padding-bottom: 28px; }
+    .hero-text h1 {
+      font-family: var(--font-serif); font-size: 1.75rem; font-weight: 700;
+      color: var(--dark); margin-bottom: 10px; line-height: 1.25;
+    }
+    .hero-text p { font-size: 0.88rem; color: var(--gray); line-height: 1.65; }
+    .hero-img { flex-shrink: 0; }
+    .hero-img img { height: 210px; width: auto; object-fit: contain; display: block; }
+
+    /* ════════════ LAYOUT ════════════ */
+    .layout {
+      display: grid; grid-template-columns: 290px 1fr;
+      border-top: 1px solid var(--border); min-height: 420px;
+    }
+
+    /* ════════════ SIDEBAR ════════════ */
+    .sidebar {
+      border-right: 1px solid var(--border);
+      padding: 24px 16px; display: flex; flex-direction: column; gap: 10px;
+      background: var(--white);
+    }
+    .prod-btn {
+      display: block; width: 100%; text-align: left;
+      border: 2px solid transparent; border-radius: 10px;
+      padding: 15px 16px; cursor: pointer; font-family: var(--font-sans);
+      background: var(--orange); color: var(--white); transition: all 0.22s;
+    }
+    .prod-btn .t { font-size: 0.83rem; font-weight: 700; display: block; margin-bottom: 3px; }
+    .prod-btn .s { font-size: 0.74rem; opacity: 0.9; display: block; line-height: 1.4; }
+    .prod-btn:hover:not(.active) { background: var(--orange-dark); }
+    .prod-btn.active {
+      background: var(--white); color: var(--dark);
+      border-color: var(--orange); box-shadow: 0 2px 14px rgba(232,118,30,0.14);
+    }
+    .prod-btn.active .t { color: var(--dark); }
+    .prod-btn.active .s { color: var(--gray); opacity: 1; }
+
+    /* ════════════ CONTENT PANEL ════════════ */
+    .panel { padding: 36px 48px; }
+    .detail { display: none; animation: fadeUp 0.22s ease; }
+    .detail.on { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0);   }
+    }
+    .detail h2 {
+      font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700;
+      color: var(--dark); margin-bottom: 6px;
+    }
+    .abbr-tag {
+      display: inline-block; background: var(--orange-light); color: var(--orange);
+      font-size: 0.74rem; font-weight: 700; padding: 3px 12px;
+      border-radius: 20px; margin-bottom: 14px;
+    }
+    .detail-desc {
+      font-size: 0.875rem; color: var(--gray); line-height: 1.68;
+      margin-bottom: 22px; max-width: 580px;
+    }
+    .section-lbl {
+      font-size: 0.73rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--orange); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-lbl::after { content: ''; flex: 1; height: 1px; background: #f0e4d8; }
+    .covers {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6px 28px; margin-bottom: 22px;
+    }
+    .cover-row {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 0.82rem; color: var(--dark); line-height: 1.45; padding: 3px 0;
+    }
+    .cover-row::before {
+      content: "•"; color: var(--orange); font-weight: 800;
+      font-size: 1.1rem; flex-shrink: 0; margin-top: -2px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff8f2; border: 1px solid #f5ddc8;
+      border-radius: 8px; padding: 11px 16px;
+      font-size: 0.8rem; color: var(--dark); margin-top: 4px;
+    }
+    .badge svg { width: 15px; height: 15px; stroke: var(--orange); fill: none; stroke-width: 2; flex-shrink: 0; }
+    .badge strong { color: var(--orange); }
+
+    /* ════════════ FOOTER ════════════ */
+    .footer { background: #1a1a1a; color: rgba(255,255,255,0.7); padding: 44px 64px 24px; }
+    .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 36px; margin-bottom: 32px; }
+    .f-brand { font-family: var(--font-serif); font-size: 1.15rem; color: #fff; margin-bottom: 10px; }
+    .footer-grid p, .footer-grid a { font-size: 0.74rem; line-height: 1.7; }
+    .footer-grid ul { list-style: none; }
+    .footer-grid ul li { margin-bottom: 8px; }
+    .footer-grid ul li a { transition: color 0.2s; }
+    .footer-grid ul li a:hover { color: var(--orange); }
+    .footer-grid h5 {
+      font-size: 0.72rem; font-weight: 700; color: #fff;
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+    }
+    .social-row { display: flex; gap: 8px; margin-top: 4px; }
+    .s-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s;
+    }
+    .s-icon:hover { border-color: var(--orange); color: var(--orange); }
+    hr.fdiv { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 18px; }
+    .footer-bottom { display: flex; justify-content: space-between; font-size: 0.7rem; color: rgba(255,255,255,0.35); }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar">
+  <div class="nav-left">
+    <a href="/index.html"><div class="nav-logo">CAAR</div></a>
+    <div class="nav-dropdown">
+      INDIVIDUALS
+      <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+    </div>
+  </div>
+  <div class="nav-center">
+    <a href="/index.html">Inbox</a>
+    <a href="#" class="active">Insurance</a>
+    <a href="#">Company</a>
+    <a href="#">Research</a>
+    <a href="#">News</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <span style="font-size:0.75rem;color:var(--gray)">EN</span>
+    <button class="btn-nav btn-ghost" onclick="window.location.href='/login.html'">Find Agency</button>
+    <button class="btn-nav btn-fill"  onclick="window.location.href='/login.html'">Contact Us</button>
+  </div>
+</nav>
+
+<!-- ══ BREADCRUMB ══ -->
+<div class="breadcrumb">
+  <a href="/index.html">Home</a><span class="sep">›</span>
+  <a href="/products.html">Insurance</a><span class="sep">›</span>
+  <a href="/products.html">Auto Insurance</a><span class="sep">›</span>
+  <span class="current" id="bc">Motor Insurance</span>
+</div>
+
+<!-- ══ HERO ══ -->
+<section class="page-hero">
+  <div class="hero-text">
+    <h1>Auto Insurance</h1>
+    <p>
+      This section presents insurance solutions for vehicles, including mandatory
+      coverage and optional guarantees to protect drivers, passengers, and
+      third parties against damages.
+    </p>
+  </div>
+  <div class="hero-img">
+    <img src="/resources/img/photo2.jpg" alt="Auto Insurance"/>
+  </div>
+</section>
+
+<!-- ══ LAYOUT: SIDEBAR + PANEL ══ -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <button class="prod-btn active" id="btn-motor" onclick="show('motor')">
+      <span class="t">Motor Insurance</span>
+      <span class="s">Mandatory coverage for all vehicles on Algerian roads.</span>
+    </button>
+
+    <button class="prod-btn" id="btn-roadside" onclick="show('roadside')">
+      <span class="t">Roadside Assistance</span>
+      <span class="s">24/7 assistance in case of breakdown or accident.</span>
+    </button>
+
+    <button class="prod-btn" id="btn-glass" onclick="show('glass')">
+      <span class="t">Windshield / Glass Breakage Assistance</span>
+      <span class="s">Coverage for vehicle glass damage and replacement.</span>
+    </button>
+
+  </aside>
+
+  <!-- CONTENT PANEL -->
+  <div class="panel">
+
+    <!-- ── Motor Insurance ── -->
+    <div class="detail on" id="d-motor">
+      <h2>Motor Insurance</h2>
+      <span class="abbr-tag">RC Auto</span>
+      <p class="detail-desc">
+        Mandatory for all vehicles registered in Algeria. Covers civil liability
+        towards third parties in the event of a traffic accident, including bodily
+        injury and property damage caused to others.
+      </p>
+      <div class="section-lbl">Covered Risks</div>
+      <div class="covers">
+        <div class="cover-row">Bodily injury to third parties</div>
+        <div class="cover-row">Material damage to third parties</div>
+        <div class="cover-row">Passenger liability coverage</div>
+        <div class="cover-row">Hit-and-run accident coverage</div>
+        <div class="cover-row">Legal defense and recourse</div>
+        <div class="cover-row">Uninsured driver protection</div>
+      </div>
+      <div class="badge">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span><strong>Mandatory</strong> for all vehicles circulating on public roads in Algeria.</span>
+      </div>
+    </div>
+
+    <!-- ── Roadside Assistance ── -->
+    <div class="detail" id="d-roadside">
+      <h2>Roadside Assistance</h2>
+      <span class="abbr-tag">Assistance</span>
+      <p class="detail-desc">
+        Available 24 hours a day, 7 days a week, throughout the national territory.
+        An essential complement to your auto insurance that ensures you are never
+        stranded in case of breakdown or accident.
+      </p>
+      <div class="section-lbl">Services Included</div>
+      <div class="covers">
+        <div class="cover-row">Vehicle towing to nearest garage</div>
+        <div class="cover-row">On-site mechanical assistance</div>
+        <div class="cover-row">Replacement vehicle provision</div>
+        <div class="cover-row">Hotel accommodation if stranded</div>
+        <div class="cover-row">Repatriation of vehicle and passengers</div>
+        <div class="cover-row">24/7 telephone support</div>
+      </div>
+      <div class="badge">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span><strong>Optional</strong> guarantee — highly recommended for all vehicle owners.</span>
+      </div>
+    </div>
+
+    <!-- ── Glass Breakage ── -->
+    <div class="detail" id="d-glass">
+      <h2>Glass Breakage Assistance</h2>
+      <span class="abbr-tag">Bris de Glace</span>
+      <p class="detail-desc">
+        For vehicle owners seeking to cover glass-related damages to avoid
+        glass-related damage. Covers repair or replacement of all glass
+        elements of your vehicle.
+      </p>
+      <div class="section-lbl">Covered Elements</div>
+      <div class="covers">
+        <div class="cover-row">Windshield damage</div>
+        <div class="cover-row">Side and rear windows</div>
+        <div class="cover-row">Sunroof glass panel</div>
+        <div class="cover-row">Rear-view mirror glass</div>
+        <div class="cover-row">Headlight and indicator lenses</div>
+        <div class="cover-row">Emergency replacement service</div>
+      </div>
+      <div class="badge">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span><strong>Optional</strong> guarantee — available as an add-on to any auto policy.</span>
+      </div>
+    </div>
+
+  </div><!-- /panel -->
+</div><!-- /layout -->
+
+<!-- ══ FOOTER ══ -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="f-brand">CAAR</div>
+      <p>Compagnie Algérienne d'Assurance<br>et de Réassurance<br><br>Siège social : Alger, Algérie<br>contact@caar.dz</p>
+    </div>
+    <div>
+      <h5>Company</h5>
+      <ul>
+        <li><a href="#">À propos</a></li>
+        <li><a href="#">Carrières</a></li>
+        <li><a href="#">Actualités</a></li>
+        <li><a href="#">Partenaires</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Insurance</h5>
+      <ul>
+        <li><a href="/auto-insurance.html">Auto</a></li>
+        <li><a href="/individual-risks.html">Habitation</a></li>
+        <li><a href="#">Transport</a></li>
+        <li><a href="#">Agriculture</a></li>
+        <li><a href="#">Industrie</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Follow Us</h5>
+      <div class="social-row">
+        <span class="s-icon">f</span>
+        <span class="s-icon">in</span>
+        <span class="s-icon">▶</span>
+      </div>
+    </div>
+  </div>
+  <hr class="fdiv"/>
+  <div class="footer-bottom">
+    <span>© 2026 CAAR. Tous droits réservés.</span>
+    <span>Mentions légales · Politique de confidentialité</span>
+  </div>
+</footer>
+
+<script>
+  const map = {
+    motor:    { btn: 'btn-motor',    detail: 'd-motor',    bc: 'Motor Insurance'                        },
+    roadside: { btn: 'btn-roadside', detail: 'd-roadside', bc: 'Roadside Assistance'                    },
+    glass:    { btn: 'btn-glass',    detail: 'd-glass',    bc: 'Windshield / Glass Breakage Assistance' }
+  };
+
+  function show(key) {
+    Object.values(map).forEach(({ btn, detail }) => {
+      document.getElementById(btn).classList.remove('active');
+      document.getElementById(detail).classList.remove('on');
+    });
+    document.getElementById(map[key].btn).classList.add('active');
+    document.getElementById(map[key].detail).classList.add('on');
+    document.getElementById('bc').textContent = map[key].bc;
+  }
+</script>
+
+</body>
+</html>

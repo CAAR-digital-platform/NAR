@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CAAR &mdash; Agency Network</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--or:#E8761E;--ord:#C9601A;--orl:#FFF3E8;--orbg:#FDF0E2;--dark:#1C1C1C;--gray:#666;--bd:#e0e0e0;--wh:#fff;}
+    body{font-family:'Source Sans 3',sans-serif;color:var(--dark);background:var(--wh);}
+    a{text-decoration:none;color:inherit;}
+    /* NAVBAR */
+    .navbar{position:sticky;top:0;z-index:200;background:var(--wh);border-bottom:1px solid var(--bd);}
+    .nav-top{display:flex;align-items:center;justify-content:space-between;padding:8px 40px;border-bottom:1px solid var(--bd);height:64px;}
+    .nav-tl{display:flex;align-items:center;}
+    .logo-wrap{display:flex;flex-direction:column;align-items:center;margin-right:22px;flex-shrink:0;}
+    .logo-img{width:52px;height:52px;border-radius:50%;border:2px solid var(--or);overflow:hidden;}
+    .logo-img img{width:100%;height:100%;object-fit:cover;display:block;}
+    .logo-sub{font-size:0.43rem;color:var(--or);text-align:center;line-height:1.25;margin-top:2px;max-width:90px;font-weight:500;}
+    .ndiv{width:1px;height:40px;background:var(--bd);margin:0 20px;}
+    .nind{font-size:0.82rem;font-weight:700;color:var(--dark);cursor:pointer;}
+    .nav-tr{display:flex;align-items:center;gap:10px;}
+    .npill{padding:8px 22px;border-radius:22px;font-size:0.8rem;font-weight:600;border:1.5px solid var(--or);display:inline-block;transition:all 0.2s;font-family:'Source Sans 3',sans-serif;}
+    .npill-ghost{background:var(--wh);color:var(--or);} .npill-ghost:hover{background:var(--orl);}
+    .npill-fill{background:var(--or);color:var(--wh);} .npill-fill:hover{background:var(--ord);}
+    .nav-bot{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:40px;}
+    .nbrand{font-size:0.55rem;color:var(--or);font-weight:600;white-space:nowrap;}
+    .nlinks{display:flex;align-items:center;gap:2px;}
+    .nlinks a{font-size:0.8rem;font-weight:500;color:var(--dark);padding:3px 10px;border-radius:4px;transition:color 0.2s;white-space:nowrap;}
+    .nlinks a:hover,.nlinks a.on{color:var(--or);font-weight:700;}
+    .nbr{display:flex;align-items:center;gap:10px;}
+    .nsrch{background:none;border:none;cursor:pointer;padding:4px;color:var(--gray);display:flex;}
+    .nsrch svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;}
+    .nlang{font-size:0.75rem;font-weight:700;color:var(--dark);border:1px solid var(--bd);border-radius:12px;padding:2px 8px;cursor:pointer;}
+    /* PAGE */
+    .page{display:grid;grid-template-columns:310px 1fr;min-height:calc(100vh - 104px);}
+    /* LEFT PANEL */
+    .left-panel{border-right:1px solid var(--bd);display:flex;flex-direction:column;}
+    .find-hero{background:var(--orbg);border-bottom:1px solid #f0d8c0;padding:16px 18px;position:relative;overflow:hidden;}
+    .find-hero h2{font-family:'Lora',serif;font-size:0.95rem;font-weight:700;margin-bottom:4px;}
+    .find-hero p{font-size:0.72rem;color:var(--gray);line-height:1.5;margin-bottom:11px;max-width:180px;}
+    .find-hero-map{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:100px;height:80px;background:#e8e8e8;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--gray);text-align:center;padding:6px;border:1px solid var(--bd);}
+    .search-wrap{position:relative;}
+    .search-input{width:100%;padding:8px 32px 8px 11px;border:1.5px solid var(--bd);border-radius:7px;font-size:0.75rem;font-family:'Source Sans 3',sans-serif;background:var(--wh);outline:none;transition:border-color 0.2s;}
+    .search-input:focus{border-color:var(--or);}
+    .search-input::placeholder{color:#bbb;}
+    .search-ico{position:absolute;right:9px;top:50%;transform:translateY(-50%);}
+    .search-ico svg{width:13px;height:13px;stroke:#bbb;fill:none;stroke-width:2;stroke-linecap:round;}
+    /* FILTER BAR */
+    .filter-bar{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px;border-bottom:1px solid var(--bd);position:relative;z-index:100;}
+    .fchip{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:14px;font-size:0.69rem;font-weight:600;border:1.5px solid var(--bd);background:var(--wh);color:var(--dark);cursor:pointer;transition:all 0.15s;position:relative;font-family:'Source Sans 3',sans-serif;}
+    .fchip.on{background:var(--dark);color:var(--wh);border-color:var(--dark);}
+    .fchip svg{width:8px;height:8px;stroke:currentColor;fill:none;stroke-width:2.5;}
+    .fchip-reset{padding:5px 10px;border-radius:14px;font-size:0.69rem;font-weight:600;border:1.5px solid var(--or);background:var(--wh);color:var(--or);cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:background 0.15s;}
+    .fchip-reset:hover{background:var(--orl);}
+    /* DROPDOWN */
+    .drop{position:absolute;top:calc(100% + 4px);left:0;z-index:999;background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:180px;display:none;}
+    .drop.open{display:block;}
+    .drop-item{padding:9px 14px;font-size:0.76rem;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f5f5f5;transition:background 0.12s;}
+    .drop-item:last-child{border-bottom:none;}
+    .drop-item:hover{background:var(--orl);}
+    .drop-item.sel{color:var(--or);font-weight:700;}
+    .drop-item input[type="checkbox"]{accent-color:var(--or);flex-shrink:0;cursor:pointer;}
+    /* AGENCY LIST */
+    .agency-list{flex:1;overflow-y:auto;}
+    .agency-card{padding:12px 15px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background 0.14s;}
+    .agency-card:hover,.agency-card.active{background:var(--orl);}
+    .ag-name{font-size:0.8rem;font-weight:700;margin-bottom:2px;}
+    .ag-addr{font-size:0.69rem;color:var(--gray);margin-bottom:6px;}
+    .ag-rows{display:flex;flex-direction:column;gap:2px;margin-bottom:7px;}
+    .ag-row{display:flex;align-items:center;gap:5px;font-size:0.67rem;color:var(--gray);}
+    .ag-row svg{width:10px;height:10px;stroke:var(--or);fill:none;stroke-width:2;flex-shrink:0;}
+    .ag-btns{display:flex;gap:6px;}
+    .ag-btn{padding:4px 11px;border-radius:5px;font-size:0.67rem;font-weight:600;cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:all 0.14s;border:1.5px solid;}
+    .ag-btn-map{background:var(--wh);color:var(--dark);border-color:var(--bd);} .ag-btn-map:hover{border-color:var(--or);color:var(--or);}
+    .ag-btn-call{background:var(--or);color:var(--wh);border-color:var(--or);} .ag-btn-call:hover{background:var(--ord);}
+    .no-agencies{display:none;padding:20px;text-align:center;color:var(--gray);font-size:0.78rem;}
+    .map-note{padding:10px 14px;background:#f5f5f5;border-top:1px solid var(--bd);font-size:0.67rem;color:var(--gray);text-align:center;font-style:italic;}
+    /* PDF */
+    .pdf-section{padding:13px 15px;border-top:1px solid var(--bd);background:#fafafa;}
+    .pdf-heading{font-size:0.74rem;font-weight:700;margin-bottom:2px;}
+    .pdf-sub{font-size:0.65rem;color:var(--gray);margin-bottom:9px;}
+    .pdf-btns{display:flex;flex-wrap:wrap;gap:6px;}
+    .pdf-btn{padding:6px 10px;background:var(--wh);border:1.5px solid var(--bd);border-radius:7px;font-size:0.64rem;font-weight:600;color:var(--dark);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.14s;font-family:'Source Sans 3',sans-serif;}
+    .pdf-btn:hover{border-color:var(--or);color:var(--or);}
+    .pdf-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;}
+    /* RIGHT MAP */
+    .map-panel{background:#e9e9e9;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;}
+    .map-panel p{font-size:0.82rem;color:var(--gray);font-style:italic;margin-top:8px;}
+    .map-panel small{font-size:0.68rem;color:#aaa;}
+    /* FOOTER */
+    footer{background:#1a1a1a;color:rgba(255,255,255,0.7);padding:38px 60px 18px;}
+    .fg{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;margin-bottom:26px;}
+    .fb{font-family:'Lora',serif;font-size:1.05rem;color:#fff;margin-bottom:9px;}
+    .fg p,.fg a{font-size:0.73rem;line-height:1.7;color:rgba(255,255,255,0.7);}
+    .fg ul{list-style:none;} .fg li{margin-bottom:7px;}
+    .fg a:hover{color:var(--or);}
+    .fg h5{font-size:0.68rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+    .soc{display:flex;gap:7px;margin-top:4px;}
+    .si{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.22);display:inline-flex;align-items:center;justify-content:center;font-size:0.66rem;cursor:pointer;}
+    .si:hover{border-color:var(--or);color:var(--or);}
+    hr.fdiv{border:none;border-top:1px solid rgba(255,255,255,0.1);margin-bottom:15px;}
+    .fbot{display:flex;justify-content:space-between;font-size:0.69rem;color:rgba(255,255,255,0.3);}
+
+    /* Company nav dropdown */
+    .nav-dropdown{position:relative;display:inline-block;}
+    .nav-dropdown-btn{font-size:0.8rem;font-weight:500;color:var(--dark);padding:3px 10px;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:color 0.2s;white-space:nowrap;background:none;border:none;font-family:'Source Sans 3',sans-serif;}
+    .nav-dropdown-btn:hover,.nav-dropdown-btn.on{color:var(--or);font-weight:700;}
+    .nav-dropdown-btn svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.5;transition:transform 0.2s;}
+    .nav-dropdown-btn.open svg{transform:rotate(180deg);}
+    .nav-drop-menu{position:absolute;top:calc(100%+6px);left:0;background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:155px;display:none;z-index:500;overflow:hidden;}
+    .nav-drop-menu.open{display:block;animation:fdrop 0.15s ease;}
+    @keyframes fdrop{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+    .nav-drop-item{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:0.78rem;color:var(--dark);cursor:pointer;transition:background 0.12s;border-bottom:1px solid #f5f5f5;text-decoration:none;}
+    .nav-drop-item:last-child{border-bottom:none;}
+    .nav-drop-item:hover{background:var(--orl);color:var(--or);}
+    .nav-drop-item svg{width:13px;height:13px;stroke:var(--or);fill:none;stroke-width:2;flex-shrink:0;}
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-top">
+    <div class="nav-tl">
+      <a href="/index.html" class="logo-wrap">
+        <div class="logo-img"><img src="/resources/img/photo6.jpg" alt="CAAR"/></div>
+        <span class="logo-sub">&#1575;&#1604;&#1588;&#1585;&#1603;&#1577; &#1575;&#1604;&#1580;&#1586;&#1575;&#1574;&#1585;&#1610;&#1577;<br>COMPAGNIE ALGERIENNE</span>
+      </a>
+      <div class="ndiv"></div>
+      <span class="nind">INDIVIDUALS &#9660;</span>
+    </div>
+    <div class="nav-tr">
+      <a href="/network.html" class="npill npill-ghost">Find Agency</a>
+      <a href="/contact.html" class="npill npill-fill">Contact Us</a>
+    </div>
+  </div>
+  <div class="nav-bot">
+    <span class="nbrand">COMPAGNIE ALGERIENNE D'ASSURANCES ET DE REASSURANCES</span>
+    <div class="nlinks">
+      <a href="/index.html">Home</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-btn" id="companyBtn" onclick="toggleCompanyDrop()">
+          Company <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+        </button>
+        <div class="nav-drop-menu" id="companyMenu">
+          <a href="/company.html" class="nav-drop-item">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            About Us
+          </a>
+          <a href="/company-careers.html" class="nav-drop-item">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Careers
+          </a>
+        </div>
+      </div>
+      <a href="/network.html" class="on">Network</a>
+      <a href="/news.html">News</a>
+      <a href="/contact.html">Contact</a>
+    </div>
+    <div class="nbr">
+      <button class="nsrch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+      <span class="nlang">FR</span>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="left-panel">
+    <div class="find-hero">
+      <h2>Find a CAAR Agency Near You</h2>
+      <p>Access our nationwide network of agencies and get assistance wherever you are.</p>
+      <div class="search-wrap">
+        <input class="search-input" id="agSearch" type="text" placeholder="Enter a city, wilaya, or postcode" oninput="applyFilters()"/>
+        <span class="search-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      </div>
+      <div class="find-hero-map">Interactive map showing CAAR agencies</div>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+      <!-- Wilaya -->
+      <div class="fchip" id="chip-wilaya" onclick="toggleDrop(event,'drop-wilaya','chip-wilaya')">
+        Wilaya <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+        <div class="drop" id="drop-wilaya" onclick="event.stopPropagation()">
+          <div class="drop-item" onclick="selFilter('wilaya','Alger',this)"><input type="checkbox" id="w1"/><label for="w1">Alger</label></div>
+          <div class="drop-item" onclick="selFilter('wilaya','Oran',this)"><input type="checkbox" id="w2"/><label for="w2">Oran</label></div>
+          <div class="drop-item" onclick="selFilter('wilaya','Annaba',this)"><input type="checkbox" id="w3"/><label for="w3">Annaba</label></div>
+          <div class="drop-item" onclick="selFilter('wilaya','B&eacute;ja&iuml;a',this)"><input type="checkbox" id="w4"/><label for="w4">B&eacute;ja&iuml;a</label></div>
+          <div class="drop-item" onclick="selFilter('wilaya','S&eacute;tif',this)"><input type="checkbox" id="w5"/><label for="w5">S&eacute;tif</label></div>
+          <div class="drop-item" onclick="selFilter('wilaya','Constantine',this)"><input type="checkbox" id="w6"/><label for="w6">Constantine</label></div>
+          <div class="drop-item" onclick="selFilter('wilaya','Tlemcen',this)"><input type="checkbox" id="w7"/><label for="w7">Tlemcen</label></div>
+          <div class="drop-item" onclick="selFilter('wilaya','Boumerd&egrave;s',this)"><input type="checkbox" id="w8"/><label for="w8">Boumerd&egrave;s</label></div>
+        </div>
+      </div>
+      <!-- City -->
+      <div class="fchip" id="chip-city" onclick="toggleDrop(event,'drop-city','chip-city')">
+        CITY <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+        <div class="drop" id="drop-city" onclick="event.stopPropagation()">
+          <div class="drop-item" onclick="selFilter('city','Kouba',this)"><input type="checkbox" id="c1"/><label for="c1">Kouba</label></div>
+          <div class="drop-item" onclick="selFilter('city','Bouzareah',this)"><input type="checkbox" id="c2"/><label for="c2">Bouzareah</label></div>
+          <div class="drop-item" onclick="selFilter('city','Ch&eacute;raga',this)"><input type="checkbox" id="c3"/><label for="c3">Ch&eacute;raga</label></div>
+          <div class="drop-item" onclick="selFilter('city','B&eacute;ja&iuml;a',this)"><input type="checkbox" id="c4"/><label for="c4">B&eacute;ja&iuml;a</label></div>
+          <div class="drop-item" onclick="selFilter('city','Annaba',this)"><input type="checkbox" id="c5"/><label for="c5">Annaba</label></div>
+          <div class="drop-item" onclick="selFilter('city','Oran',this)"><input type="checkbox" id="c6"/><label for="c6">Oran</label></div>
+        </div>
+      </div>
+      <!-- Agency Type -->
+      <div class="fchip" id="chip-type" onclick="toggleDrop(event,'drop-type','chip-type')">
+        Agency Type <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+        <div class="drop" id="drop-type" onclick="event.stopPropagation()">
+          <div class="drop-item" onclick="selFilter('type','Main Agency',this)"><input type="checkbox" id="t1"/><label for="t1">Main Agency</label></div>
+          <div class="drop-item" onclick="selFilter('type','Sub Agency',this)"><input type="checkbox" id="t2"/><label for="t2">Sub Agency</label></div>
+          <div class="drop-item" onclick="selFilter('type','Regional Office',this)"><input type="checkbox" id="t3"/><label for="t3">Regional Office</label></div>
+        </div>
+      </div>
+      <!-- Services -->
+      <div class="fchip" id="chip-services" onclick="toggleDrop(event,'drop-services','chip-services')">
+        Services <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+        <div class="drop" id="drop-services" onclick="event.stopPropagation()">
+          <div class="drop-item" onclick="selFilter('service','Auto',this)"><input type="checkbox" id="s1"/><label for="s1">Auto Insurance</label></div>
+          <div class="drop-item" onclick="selFilter('service','Habitation',this)"><input type="checkbox" id="s2"/><label for="s2">Habitation</label></div>
+          <div class="drop-item" onclick="selFilter('service','Agriculture',this)"><input type="checkbox" id="s3"/><label for="s3">Agriculture</label></div>
+          <div class="drop-item" onclick="selFilter('service','Transport',this)"><input type="checkbox" id="s4"/><label for="s4">Transport</label></div>
+          <div class="drop-item" onclick="selFilter('service','Industrial',this)"><input type="checkbox" id="s5"/><label for="s5">Industrial</label></div>
+          <div class="drop-item" onclick="selFilter('service','Claims',this)"><input type="checkbox" id="s6"/><label for="s6">Claims</label></div>
+        </div>
+      </div>
+      <div class="fchip-reset" onclick="resetFilters()">Reset</div>
+    </div>
+
+    <div class="agency-list" id="agencyList">
+      <div class="agency-card active" data-wilaya="Alger" data-city="Kouba" data-type="Main Agency">
+        <div class="ag-name">CAAR &ndash; Kouba Agency</div>
+        <div class="ag-addr">Kouba, Alger</div>
+        <div class="ag-rows">
+          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>023 70 01 58</div>
+          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:30 &ndash; 16:00</div>
+        </div>
+        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Kouba+Alger+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21323700158'">Call</button></div>
+      </div>
+      <div class="agency-card" data-wilaya="Alger" data-city="Bouzareah" data-type="Sub Agency">
+        <div class="ag-name">CAAR &ndash; Didouche Mourad Agency</div>
+        <div class="ag-addr">Bouzareah, Alger</div>
+        <div class="ag-rows">
+          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>023 70 01 58</div>
+          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:30 &ndash; 16:00</div>
+        </div>
+        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Bouzareah+Alger+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21323700158'">Call</button></div>
+      </div>
+      <div class="agency-card" data-wilaya="Alger" data-city="Ch&eacute;raga" data-type="Main Agency">
+        <div class="ag-name">CAAR &ndash; Cheraga Agency</div>
+        <div class="ag-addr">Ch&eacute;raga, Alger</div>
+        <div class="ag-rows">
+          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>023 76 03 12</div>
+          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:30 &ndash; 16:00</div>
+        </div>
+        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Cheraga+Alger+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21323760312'">Call</button></div>
+      </div>
+      <div class="agency-card" data-wilaya="B&eacute;ja&iuml;a" data-city="B&eacute;ja&iuml;a" data-type="Regional Office">
+        <div class="ag-name">CAAR &ndash; Bejaia Agency</div>
+        <div class="ag-addr">B&eacute;ja&iuml;a, B&eacute;ja&iuml;a</div>
+        <div class="ag-rows">
+          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>034 21 45 78</div>
+          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:30 &ndash; 16:00</div>
+        </div>
+        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Bejaia+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21334214578'">Call</button></div>
+      </div>
+      <div class="agency-card" data-wilaya="Annaba" data-city="Annaba" data-type="Main Agency">
+        <div class="ag-name">CAAR &ndash; Annaba Agency</div>
+        <div class="ag-addr">Annaba, Annaba</div>
+        <div class="ag-rows">
+          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>038 86 20 30</div>
+          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:00 &ndash; 16:00</div>
+        </div>
+        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Annaba+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21338862030'">Call</button></div>
+      </div>
+      <div class="agency-card" data-wilaya="Oran" data-city="Oran" data-type="Regional Office">
+        <div class="ag-name">CAAR &ndash; Oran Agency</div>
+        <div class="ag-addr">Oran, Oran</div>
+        <div class="ag-rows">
+          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>041 40 22 63</div>
+          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:30 &ndash; 16:00</div>
+        </div>
+        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Oran+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21341402263'">Call</button></div>
+      </div>
+      <div class="no-agencies" id="noAgencies">No agencies found for this selection.</div>
+    </div>
+
+    <div class="map-note">Map updates based on filters and selected agencies</div>
+
+    <div class="pdf-section">
+      <div class="pdf-heading">Official Agency Lists</div>
+      <div class="pdf-sub">For administrative and legal reference</div>
+      <div class="pdf-btns">
+        <button class="pdf-btn"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Download Algers agency list (pdf)</button>
+        <button class="pdf-btn"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Download Annaba agency list (pdf)</button>
+        <button class="pdf-btn"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Download Annaba Bejaia list (pdf)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="map-panel">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <p>Interactive map showing CAAR agencies</p>
+    <small>Select filters or search to highlight agencies on map</small>
+  </div>
+</div>
+
+<footer>
+  <div class="fg">
+    <div><div class="fb">CAAR</div><p>Compagnie Alg&eacute;rienne d'Assurance<br>et de R&eacute;assurance<br><br>Si&egrave;ge social : Alger, Alg&eacute;rie<br>T&eacute;l : +213 (0)21 63 20 72<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98fbf7f6ecf9fbecd8fbf9f9eab6fce2">[email&#160;protected]</a></p></div>
+    <div><h5>Company</h5><ul><li><a href="/company.html">&Agrave; propos</a></li><li><a href="#">Carri&egrave;res</a></li><li><a href="/news.html">Actualit&eacute;s</a></li><li><a href="#">Partenaires</a></li></ul></div>
+    <div><h5>Insurance</h5><ul><li><a href="/auto-insurance.html">Auto</a></li><li><a href="/individual-risks.html">Habitation</a></li><li><a href="/transport-insurance.html">Transport</a></li><li><a href="/technical-risks.html">Agriculture</a></li><li><a href="/industrial-risks.html">Industrie</a></li></ul></div>
+    <div><h5>Follow Us</h5><div class="soc"><span class="si">f</span><span class="si">in</span><span class="si">&#9654;</span></div></div>
+  </div>
+  <hr class="fdiv"/>
+  <div class="fbot"><span>&copy; 2026 CAAR. Tous droits r&eacute;serv&eacute;s.</span><span>Mentions l&eacute;gales &middot; Politique de confidentialit&eacute;</span></div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+
+<script>
+/* Company dropdown */
+function toggleCompanyDrop(){
+  var btn=document.getElementById('companyBtn');
+  var menu=document.getElementById('companyMenu');
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.nav-dropdown')){
+    var b=document.getElementById('companyBtn');
+    var m=document.getElementById('companyMenu');
+    if(b)b.classList.remove('open');
+    if(m)m.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>

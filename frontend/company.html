@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CAAR &mdash; About Us</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--or:#E8761E;--ord:#C9601A;--orl:#FFF3E8;--orbg:#FDF0E2;--dark:#1C1C1C;--gray:#666;--bd:#e0e0e0;--wh:#fff;}
+    body{font-family:'Source Sans 3',sans-serif;color:var(--dark);background:var(--wh);}
+    a{text-decoration:none;color:inherit;}
+    /* NAVBAR */
+    .navbar{position:sticky;top:0;z-index:200;background:var(--wh);border-bottom:1px solid var(--bd);}
+    .nav-top{display:flex;align-items:center;justify-content:space-between;padding:8px 40px;border-bottom:1px solid var(--bd);height:64px;}
+    .nav-tl{display:flex;align-items:center;}
+    .logo-wrap{display:flex;flex-direction:column;align-items:center;margin-right:22px;flex-shrink:0;}
+    .logo-img{width:52px;height:52px;border-radius:50%;border:2px solid var(--or);overflow:hidden;}
+    .logo-img img{width:100%;height:100%;object-fit:cover;display:block;}
+    .logo-sub{font-size:0.43rem;color:var(--or);text-align:center;line-height:1.25;margin-top:2px;max-width:90px;font-weight:500;}
+    .ndiv{width:1px;height:40px;background:var(--bd);margin:0 20px;}
+    .nind{font-size:0.82rem;font-weight:700;color:var(--dark);cursor:pointer;}
+    .nav-tr{display:flex;align-items:center;gap:10px;}
+    .npill{padding:8px 22px;border-radius:22px;font-size:0.8rem;font-weight:600;border:1.5px solid var(--or);display:inline-block;transition:all 0.2s;font-family:'Source Sans 3',sans-serif;}
+    .npill-ghost{background:var(--wh);color:var(--or);} .npill-ghost:hover{background:var(--orl);}
+    .npill-fill{background:var(--or);color:var(--wh);} .npill-fill:hover{background:var(--ord);}
+    .nav-bot{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:40px;}
+    .nbrand{font-size:0.55rem;color:var(--or);font-weight:600;white-space:nowrap;}
+    .nlinks{display:flex;align-items:center;gap:2px;}
+    .nlinks a{font-size:0.8rem;font-weight:500;color:var(--dark);padding:3px 10px;border-radius:4px;transition:color 0.2s;white-space:nowrap;}
+    .nlinks a:hover,.nlinks a.on{color:var(--or);font-weight:700;}
+    .nav-dropdown{position:relative;display:inline-block;}
+    .nav-dropdown-btn{font-size:0.8rem;font-weight:500;color:var(--dark);padding:3px 10px;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:color 0.2s;white-space:nowrap;background:none;border:none;font-family:'Source Sans 3',sans-serif;}
+    .nav-dropdown-btn:hover,.nav-dropdown-btn.on{color:var(--or);font-weight:700;}
+    .nav-dropdown-btn svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.5;transition:transform 0.2s;}
+    .nav-dropdown-btn.open svg{transform:rotate(180deg);}
+    .nav-drop-menu{position:absolute;top:calc(100% + 6px);left:0;background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:155px;display:none;z-index:500;overflow:hidden;}
+    .nav-drop-menu.open{display:block;animation:fdrop 0.15s ease;}
+    @keyframes fdrop{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+    .nav-drop-item{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:0.78rem;color:var(--dark);transition:background 0.12s;border-bottom:1px solid #f5f5f5;text-decoration:none;}
+    .nav-drop-item:last-child{border-bottom:none;}
+    .nav-drop-item:hover{background:var(--orl);color:var(--or);}
+    .nav-drop-item svg{width:13px;height:13px;stroke:var(--or);fill:none;stroke-width:2;flex-shrink:0;}
+    .nbr{display:flex;align-items:center;gap:10px;}
+    .nsrch{background:none;border:none;cursor:pointer;padding:4px;color:var(--gray);display:flex;}
+    .nsrch svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;}
+    .nlang{font-size:0.75rem;font-weight:700;color:var(--dark);border:1px solid var(--bd);border-radius:12px;padding:2px 8px;cursor:pointer;}
+    /* HERO */
+    .hero{position:relative;min-height:148px;display:flex;align-items:center;padding:30px 60px;overflow:hidden;}
+    .hero-bg{position:absolute;inset:0;background:url('/resources/img/photo6.jpg') center/cover no-repeat;}
+    .hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(255,255,255,0.96) 50%,rgba(255,255,255,0.10));}
+    .hero-txt{position:relative;z-index:1;}
+    .hero-txt h1{font-family:'Lora',serif;font-size:1.8rem;font-weight:700;margin-bottom:6px;line-height:1.2;}
+    .hero-txt p{font-size:0.86rem;color:var(--gray);line-height:1.6;max-width:460px;}
+    /* LAYOUT */
+    .layout{display:grid;grid-template-columns:185px 1fr;border-top:1px solid var(--bd);min-height:480px;}
+    .sidebar{border-right:1px solid var(--bd);padding:14px 10px;display:flex;flex-direction:column;gap:7px;}
+    .tb{display:block;width:100%;text-align:center;border:none;border-radius:6px;padding:12px 10px;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:0.82rem;font-weight:600;background:var(--dark);color:var(--wh);transition:background 0.18s;}
+    .tb:hover:not(.on){background:#2d2d2d;}
+    .tb.on{background:var(--or);}
+    .cpanel{padding:26px 34px;}
+    .ocard{background:var(--orbg);border:1px solid #f0d8c0;border-radius:16px;padding:22px 26px;position:relative;overflow:hidden;min-height:300px;}
+    .ocard::before{content:'';position:absolute;right:-20px;top:50%;transform:translateY(-50%);width:220px;height:220px;border-radius:50%;background:url('/resources/img/photo6.jpg') center/cover;opacity:0.08;pointer-events:none;}
+    .pane{display:none;animation:fu 0.25s ease;}
+    .pane.on{display:block;}
+    @keyframes fu{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+    .ctitle{font-family:'Lora',serif;font-size:0.98rem;font-weight:700;margin-bottom:14px;position:relative;z-index:1;}
+    .hdivider{height:1px;background:rgba(232,118,30,0.22);margin:9px 0;}
+    .m-wrap{position:relative;z-index:1;}
+    .msec{margin-bottom:10px;}
+    .msec h4{font-size:0.76rem;font-weight:700;color:var(--or);margin-bottom:3px;}
+    .msec p{font-size:0.8rem;line-height:1.58;}
+    .mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;}
+    .mstat{background:rgba(255,255,255,0.75);border-radius:7px;padding:9px 7px;text-align:center;border:1px solid rgba(232,118,30,0.18);}
+    .mstat .v{display:block;font-size:0.68rem;font-weight:700;color:var(--or);line-height:1.35;}
+    .mstat .l{display:block;font-size:0.62rem;color:var(--gray);margin-top:2px;}
+    .act-wrap{position:relative;z-index:1;}
+    .alist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .alist li{font-size:0.81rem;line-height:1.5;display:flex;align-items:flex-start;gap:7px;}
+    .alist li::before{content:"›";color:var(--or);font-weight:700;font-size:1rem;flex-shrink:0;margin-top:-1px;}
+    .ceo-wrap{position:relative;z-index:1;}
+    .ceo-card{background:var(--wh);border-radius:12px;border:1px solid rgba(232,118,30,0.22);overflow:hidden;max-width:440px;}
+    .ceo-head{display:flex;align-items:center;gap:14px;padding:16px 18px 12px;}
+    .ceo-av{width:50px;height:50px;border-radius:50%;background:#d0d0d0;flex-shrink:0;border:2px solid rgba(232,118,30,0.4);overflow:hidden;}
+    .ceo-av img{width:100%;height:100%;object-fit:cover;display:block;}
+    .ceo-name{font-family:'Lora',serif;font-size:0.9rem;font-weight:700;}
+    .ceo-role{font-size:0.7rem;color:var(--gray);margin-top:3px;}
+    .ceo-body{margin:0 18px;min-height:100px;background:var(--wh);border:1px solid var(--bd);border-radius:7px;}
+    .ceo-more{text-align:right;padding:9px 18px 14px;font-size:0.74rem;font-weight:700;color:var(--or);cursor:pointer;}
+    .hist-wrap{position:relative;z-index:1;}
+    .tl{position:relative;padding-left:20px;}
+    .tl::before{content:'';position:absolute;left:4px;top:4px;bottom:4px;width:4px;background:var(--or);border-radius:3px;}
+    .tli{position:relative;padding:0 0 13px 12px;}
+    .tli:last-child{padding-bottom:0;}
+    .tli::before{content:'';position:absolute;left:-2px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--or);}
+    .tli .yr{font-size:0.68rem;font-weight:700;color:var(--or);display:block;margin-bottom:1px;}
+    .tli .txt{font-size:0.78rem;line-height:1.5;}
+    .tnote{font-size:0.76rem;color:var(--gray);line-height:1.55;margin-top:13px;padding:9px 12px;background:rgba(255,255,255,0.65);border-radius:7px;border-left:3px solid var(--or);}
+    #p-organisation{border-radius:16px;overflow:hidden;min-height:360px;padding:0;}
+    .org-photo{width:100%;height:360px;object-fit:cover;border-radius:16px;display:block;}
+    .kf-wrap{position:relative;z-index:1;}
+    .kf-title{font-family:'Lora',serif;font-size:0.98rem;font-weight:700;margin-bottom:12px;}
+    .kf-tabs{display:flex;align-items:center;gap:6px;margin-bottom:14px;}
+    .kft{padding:4px 13px;border-radius:16px;font-size:0.71rem;font-weight:600;cursor:pointer;border:1.5px solid var(--bd);background:var(--wh);color:var(--gray);transition:all 0.16s;white-space:nowrap;}
+    .kft.on,.kft:hover{background:var(--or);color:var(--wh);border-color:var(--or);}
+    .kf-spacer{flex:1;}
+    .kf-badge{font-size:0.67rem;color:var(--gray);background:rgba(255,255,255,0.75);border:1px solid var(--bd);border-radius:11px;padding:3px 10px;white-space:nowrap;}
+    .kf-chart{background:var(--wh);border-radius:9px;border:1px solid rgba(232,118,30,0.18);padding:14px 16px 10px;position:relative;overflow:hidden;max-width:400px;}
+    .kf-wm{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120px;height:120px;border-radius:50%;overflow:hidden;opacity:0.1;pointer-events:none;}
+    .kf-wm img{width:100%;height:100%;object-fit:cover;}
+    .bchart{display:flex;align-items:flex-end;gap:7px;height:76px;position:relative;z-index:1;}
+    .bg{display:flex;flex-direction:column;align-items:center;gap:3px;}
+    .bar{width:24px;border-radius:3px 3px 0 0;}
+    .bl{font-size:0.6rem;color:var(--gray);}
+    /* FOOTER */
+    footer{background:#1a1a1a;color:rgba(255,255,255,0.7);padding:38px 60px 18px;}
+    .fg{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;margin-bottom:26px;}
+    .fb{font-family:'Lora',serif;font-size:1.05rem;color:#fff;margin-bottom:9px;}
+    .fg p,.fg a{font-size:0.73rem;line-height:1.7;color:rgba(255,255,255,0.7);}
+    .fg ul{list-style:none;} .fg li{margin-bottom:7px;}
+    .fg a:hover{color:var(--or);}
+    .fg h5{font-size:0.68rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+    .soc{display:flex;gap:7px;margin-top:4px;}
+    .si{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.22);display:inline-flex;align-items:center;justify-content:center;font-size:0.66rem;cursor:pointer;}
+    .si:hover{border-color:var(--or);color:var(--or);}
+    hr.fdiv{border:none;border-top:1px solid rgba(255,255,255,0.1);margin-bottom:15px;}
+    .fbot{display:flex;justify-content:space-between;font-size:0.69rem;color:rgba(255,255,255,0.3);}
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-top">
+    <div class="nav-tl">
+      <a href="/index.html" class="logo-wrap">
+        <div class="logo-img"><img src="/resources/img/photo6.jpg" alt="CAAR"/></div>
+        <span class="logo-sub">&#1575;&#1604;&#1588;&#1585;&#1603;&#1577; &#1575;&#1604;&#1580;&#1586;&#1575;&#1574;&#1585;&#1610;&#1577;<br>COMPAGNIE ALGERIENNE</span>
+      </a>
+      <div class="ndiv"></div>
+      <span class="nind">INDIVIDUALS &#9660;</span>
+    </div>
+    <div class="nav-tr">
+      <a href="/network.html" class="npill npill-ghost">Find Agency</a>
+      <a href="/contact.html" class="npill npill-fill">Contact Us</a>
+    </div>
+  </div>
+  <div class="nav-bot">
+    <span class="nbrand">COMPAGNIE ALGERIENNE D'ASSURANCES ET DE REASSURANCES</span>
+    <div class="nlinks">
+      <a href="/index.html">Home</a>
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-btn on" id="companyBtn" onclick="toggleCompanyDrop()">
+          Company <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+        </button>
+        <div class="nav-drop-menu" id="companyMenu">
+          <a href="/company.html" class="nav-drop-item">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            About Us
+          </a>
+          <a href="/company-careers.html" class="nav-drop-item">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Careers
+          </a>
+        </div>
+      </div>
+      <a href="/network.html">Network</a>
+      <a href="/news.html">News</a>
+      <a href="/contact.html">Contact</a>
+    </div>
+    <div class="nbr">
+      <button class="nsrch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+      <span class="nlang">FR</span>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-txt">
+    <h1>About CAAR</h1>
+    <p>CAAR is a national insurance company covering individuals, professionals, and institutions.</p>
+  </div>
+</section>
+
+<div class="layout">
+  <aside class="sidebar">
+    <button class="tb on"  id="tb-mandate"      onclick="sw('mandate')">Mandate</button>
+    <button class="tb"     id="tb-activities"   onclick="sw('activities')">Activities</button>
+    <button class="tb"     id="tb-leadership"   onclick="sw('leadership')">Leadership</button>
+    <button class="tb"     id="tb-history"      onclick="sw('history')">History</button>
+    <button class="tb"     id="tb-organisation" onclick="sw('organisation')">Organisation</button>
+    <button class="tb"     id="tb-keyfigures"   onclick="sw('keyfigures')">Key Figures</button>
+  </aside>
+
+  <div class="cpanel">
+
+    <div class="pane on" id="p-mandate">
+      <div class="ocard">
+        <div class="ctitle">Our Mandate</div>
+        <div class="m-wrap">
+          <div class="msec"><h4>Mission</h4><p>Develop accessible insurance solutions distributed across CAAR's 298 agencies nationwide, combining state resources and market expertise.</p></div>
+          <div class="hdivider"></div>
+          <div class="msec"><h4>Participation</h4><p>Developing inclusiveness and opportunities for the widest possible national financial levels. Showing leadership at national levels in projects.</p></div>
+          <div class="hdivider"></div>
+          <div class="msec"><h4>Resource Investments</h4><p>Continuously invest in assets to better organise, promote and implement coverage to all citizens, and participate in promoting good communities.</p></div>
+          <div class="mstats">
+            <div class="mstat"><span class="v">National<br>Presence</span><span class="l">All 48 Wilayas</span></div>
+            <div class="mstat"><span class="v">Financial<br>Solidarity</span><span class="l">State-backed</span></div>
+            <div class="mstat"><span class="v">In service<br>of Risks</span><span class="l">All sectors</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane" id="p-activities">
+      <div class="ocard">
+        <div class="ctitle">Our Activities</div>
+        <div class="act-wrap">
+          <ul class="alist">
+            <li>Individual insurance solutions including home, auto and personal liability</li>
+            <li>Professional and commercial coverage for businesses of all sizes</li>
+            <li>Agricultural insurance covering crop protection and livestock</li>
+            <li>Industrial risk management for factories, plants and infrastructure</li>
+            <li>Transport insurance for goods by land, sea and air</li>
+            <li>Reinsurance services supporting national capacity</li>
+            <li>Online subscription and secure CIB digital payment services</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane" id="p-leadership">
+      <div class="ocard">
+        <div class="ctitle">Our CEO</div>
+        <div class="ceo-wrap">
+          <div class="ceo-card">
+            <div class="ceo-head">
+              <div class="ceo-av"><img src="/resources/img/photo6.jpg" alt="CEO"/></div>
+              <div><div class="ceo-name">Mr. CEO Name</div><div class="ceo-role">Chief Executive Officer</div></div>
+            </div>
+            <div class="ceo-body"></div>
+            <div class="ceo-more">Read full message &#8250;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane" id="p-history">
+      <div class="ocard">
+        <div class="ctitle">Company History</div>
+        <div class="hist-wrap">
+          <div class="tl">
+            <div class="tli"><span class="yr">1963</span><div class="txt">Foundation of CAAR as a joint-stock company</div></div>
+            <div class="tli"><span class="yr">1975</span><div class="txt">First regionalisation of branch networks across the 48 wilayas</div></div>
+            <div class="tli"><span class="yr">1989</span><div class="txt">Restructuring of insurance portfolio for individual and professional needs</div></div>
+            <div class="tli"><span class="yr">2000</span><div class="txt">Transformation and modernisation of CAAR insurance services</div></div>
+            <div class="tli"><span class="yr">2016</span><div class="txt">Launch of significant CAAR digital insurance functions</div></div>
+            <div class="tli"><span class="yr">2024</span><div class="txt">Full digital platform available to all clients nationwide</div></div>
+          </div>
+          <div class="tnote">2024 has been a significant year &mdash; digital services available to all clients since launch.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane" id="p-organisation">
+      <img class="org-photo" src="/resources/img/photo7.jpg" alt="Organisation CAAR"/>
+    </div>
+
+    <div class="pane" id="p-keyfigures">
+      <div class="ocard">
+        <div class="kf-wrap">
+          <div class="kf-title">Key Figures</div>
+          <div class="kf-tabs">
+            <div class="kft on" onclick="kft(this)">Key Infos</div>
+            <div class="kft"    onclick="kft(this)">Turnover</div>
+            <div class="kft"    onclick="kft(this)">Year</div>
+            <div class="kf-spacer"></div>
+            <div class="kf-badge">Premium Revenue</div>
+          </div>
+          <div class="kf-chart">
+            <div class="kf-wm"><img src="/resources/img/photo7.jpg" alt=""/></div>
+            <div class="bchart">
+              <div class="bg"><div class="bar" style="height:30px;background:var(--or)"></div><span class="bl">2020</span></div>
+              <div class="bg"><div class="bar" style="height:42px;background:var(--or)"></div><span class="bl">2021</span></div>
+              <div class="bg"><div class="bar" style="height:52px;background:var(--or)"></div><span class="bl">2022</span></div>
+              <div class="bg"><div class="bar" style="height:62px;background:var(--or)"></div><span class="bl">2023</span></div>
+              <div class="bg"><div class="bar" style="height:74px;background:var(--dark)"></div><span class="bl">2024</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="fg">
+    <div><div class="fb">CAAR</div><p>Compagnie Alg&eacute;rienne d'Assurance<br>et de R&eacute;assurance<br><br>Si&egrave;ge social : Alger, Alg&eacute;rie<br>T&eacute;l : +213 (0)21 63 20 72<br>contact@caar.dz</p></div>
+    <div><h5>Company</h5><ul><li><a href="/company.html">&Agrave; propos</a></li><li><a href="/company-careers.html">Carri&egrave;res</a></li><li><a href="/news.html">Actualit&eacute;s</a></li><li><a href="#">Partenaires</a></li></ul></div>
+    <div><h5>Insurance</h5><ul><li><a href="/auto-insurance.html">Auto</a></li><li><a href="/individual-risks.html">Habitation</a></li><li><a href="/transport-insurance.html">Transport</a></li><li><a href="/technical-risks.html">Agriculture</a></li><li><a href="/industrial-risks.html">Industrie</a></li></ul></div>
+    <div><h5>Follow Us</h5><div class="soc"><span class="si">f</span><span class="si">in</span><span class="si">&#9654;</span></div></div>
+  </div>
+  <hr class="fdiv"/>
+  <div class="fbot"><span>&copy; 2026 CAAR. Tous droits r&eacute;serv&eacute;s.</span><span>Mentions l&eacute;gales &middot; Politique de confidentialit&eacute;</span></div>
+</footer>
+
+<script>
+var TABS = ['mandate','activities','leadership','history','organisation','keyfigures'];
+
+function sw(key) {
+  TABS.forEach(function(k) {
+    document.getElementById('tb-' + k).classList.remove('on');
+    document.getElementById('p-' + k).classList.remove('on');
+  });
+  document.getElementById('tb-' + key).classList.add('on');
+  document.getElementById('p-' + key).classList.add('on');
+}
+
+function kft(el) {
+  document.querySelectorAll('.kft').forEach(function(b) { b.classList.remove('on'); });
+  el.classList.add('on');
+}
+
+function toggleCompanyDrop() {
+  var btn = document.getElementById('companyBtn');
+  var menu = document.getElementById('companyMenu');
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.nav-dropdown')) {
+    var b = document.getElementById('companyBtn');
+    var m = document.getElementById('companyMenu');
+    if (b) b.classList.remove('open');
+    if (m) m.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>
