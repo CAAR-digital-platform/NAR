@@ -1,29 +1,23 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth");
 const assuranceRoutes = require("./routes/assurance");
+
+// Connexion MySQL (importée ici pour être initialisée au démarrage)
+require("./db");
 
 const app = express();
 
 app.use(express.json());
 
-// 🔥 AJOUTE TA CONNEXION ICI
-mongoose.connect("mongodb+srv://nawal_dbuser:informatique03@nawal.unigkdj.mongodb.net/nawal?retryWrites=true&w=majority")
-.then(() => {
-    console.log("MongoDB connected");
-})
-.catch((err) => {
-    console.log("Erreur connexion MongoDB:", err);
-});
-
+// Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/assurances", assuranceRoutes); // ✅ DÉPLACÉ ici, avant app.listen()
 
 app.get("/", (req, res) => {
-    res.json({ message: "Backend running" });
+    res.json({ message: "Backend running ✅" });
 });
 
+// Démarrage du serveur
 app.listen(3000, () => {
-    console.log("Server running on port 3000");
+    console.log("🚀 Server running on port 3000");
 });
-
-app.use("/api/assurances", assuranceRoutes);
