@@ -8,58 +8,49 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════════
-   NAVBAR
-══════════════════════════════════ -->
 <nav class="navbar" id="navbar">
-
-  <!-- TOP ROW: stacked logo left, pills right -->
   <div class="nav-top">
     <div class="logo-wrap">
       <img src="resources/img/photo6.jpg" class="logo-img" alt="CAAR">
-      <img src="resources/img/logotext.png" class="logo-text-img" alt="Compagnie Algérienne d'Assurances">
+      <div class="logo-text-block">
+        <span class="logo-arabic">الشركة الجزائرية للتأمين و إعادة التأمين</span>
+        <span class="logo-french">Compagnie Algérienne d'Assurances et de Réassurances</span>
+      </div>
     </div>
     <div class="nav-pills">
       <a href="#" class="npill npill-ghost">Find Agency</a>
       <a href="#" class="npill npill-fill">Contact Us</a>
     </div>
   </div>
-
   <div class="nav-divider"></div>
-
-  <!-- BOTTOM ROW: links centered, right controls -->
   <div class="nav-bot">
     <div class="nlinks">
       <a href="#" class="active">Home</a>
-
       <div class="nav-dropdown">
         <button class="nav-dropdown-btn" id="prodBtn" onclick="toggleDrop('prodBtn','prodMenu')">
           Products <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
         </button>
         <div class="nav-drop-menu" id="prodMenu">
-  <a href="/individual-risks.html" class="nav-drop-item">Individual Risks</a>
-  <a href="/auto-insurance.html" class="nav-drop-item">Auto Insurance</a>
-  <a href="/transport-insurance.html" class="nav-drop-item">Transport Insurance</a>
-  <a href="/technical-risks.html" class="nav-drop-item">Technical Risks</a>
-  <a href="/industrial-risks.html" class="nav-drop-item">Industrial Risks</a>
-</div>
+          <a href="#" class="nav-drop-item">Individual Risks</a>
+          <a href="#" class="nav-drop-item">Auto Insurance</a>
+          <a href="#" class="nav-drop-item">Transport Insurance</a>
+          <a href="#" class="nav-drop-item">Technical Risks</a>
+          <a href="#" class="nav-drop-item">Industrial Risks</a>
+        </div>
       </div>
-
       <div class="nav-dropdown">
         <button class="nav-dropdown-btn" id="coBtn" onclick="toggleDrop('coBtn','coMenu')">
           Company <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
         </button>
         <div class="nav-drop-menu" id="coMenu">
-  <a href="/company.html" class="nav-drop-item">About Us</a>
-  <a href="/company-careers.html" class="nav-drop-item">Careers</a>
-</div>
+          <a href="#" class="nav-drop-item">About Us</a>
+          <a href="#" class="nav-drop-item">Careers</a>
+        </div>
       </div>
-
       <a href="#">Network</a>
       <a href="#">News</a>
       <a href="#">Contact</a>
     </div>
-
     <div class="nav-right">
       <button class="nsrch" aria-label="Search">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -70,12 +61,8 @@
       <span class="nlang">ANG</span>
     </div>
   </div>
-
 </nav>
 
-<!-- ══════════════════════════════════
-   HERO
-══════════════════════════════════ -->
 <section class="hero">
   <div class="hero-left">
     <h1>Your trusted insurance partner</h1>
@@ -90,51 +77,26 @@
   </div>
 </section>
 
-<!-- CIB Banner -->
 <div class="cib-banner-wrap">
-  <a href="#" class="cib-banner">
-    Online subscription and secure CIB payment available for selected products
-  </a>
+  <a href="#" class="cib-banner">Online subscription and secure CIB payment available for selected products</a>
 </div>
 
-<!-- ══════════════════════════════════
-   PRODUCTS
-══════════════════════════════════ -->
 <section class="products">
   <div class="products-title">Our Insurance Products</div>
   <div class="products-grid">
-    <a href="#" class="product-card">
-      <img src="resources/img/car.webp" alt="Auto Insurance">
-    </a>
-    <a href="#" class="product-card">
-      <img src="resources/img/travel.webp" alt="Transport Insurance">
-    </a>
-    <a href="#" class="product-card">
-      <img src="resources/img/home.webp" alt="Home Insurance">
-    </a>
-    <a href="#" class="product-card">
-      <img src="resources/img/risk.webp" alt="Risk Insurance">
-    </a>
-    <a href="#" class="product-card">
-      <img src="resources/img/industry.webp" alt="Industry Insurance">
-    </a>
-    <a href="#" class="product-card other-card">
-      Our Other<br>Solutions
-      <div class="arrow-circle">→</div>
-    </a>
+    <a href="#" class="product-card"><img src="resources/img/car.webp" alt="Auto Insurance"></a>
+    <a href="#" class="product-card"><img src="resources/img/travel.webp" alt="Transport Insurance"></a>
+    <a href="#" class="product-card"><img src="resources/img/home.webp" alt="Home Insurance"></a>
+    <a href="#" class="product-card"><img src="resources/img/risk.webp" alt="Risk Insurance"></a>
+    <a href="#" class="product-card"><img src="resources/img/industry.webp" alt="Industry Insurance"></a>
+    <a href="#" class="product-card other-card">Our Other<br>Solutions<div class="arrow-circle">→</div></a>
   </div>
 </section>
 
-<!-- ══════════════════════════════════
-   WHY CHOOSE CAAR
-══════════════════════════════════ -->
 <section class="why">
   <div class="why-header">
     <h2>Why Choose <span>CAAR</span></h2>
-    <p>
-      Trusted Protection Across Algeria<br>
-      60+ years experience | 296 agencies | Thousands of insured clients
-    </p>
+    <p>Trusted Protection Across Algeria<br>60+ years experience | 296 agencies | Thousands of insured clients</p>
   </div>
   <div class="why-grid">
     <div class="why-card">
@@ -161,7 +123,6 @@
         <li>Decades of national industrial protection</li>
       </ul>
     </div>
-    <!-- Exactly 3 circles: 60+ top-left, 296 top-right, National bottom-center -->
     <div class="why-circles">
       <div class="circle">60+<span>years of trust</span></div>
       <div class="circle">296<span>agencies</span></div>
@@ -170,34 +131,21 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════════
-   NETWORK + NEWS  — matches Image 4
-   Row 1: [pin + title inline]  [Find an Agency btn]  [illustration right]
-   Row 2: [paragraph]  [Latest News + 3 cards]  [illustration cont.]
-══════════════════════════════════ -->
 <section class="network-news">
   <div class="network-outer">
-
-    <!-- TOP: pin + title left, button right -->
     <div class="network-top-row">
       <div class="network-title-group">
         <svg class="network-pin" viewBox="0 0 50 62" fill="none">
-          <path d="M25 2C13.954 2 5 10.954 5 22C5 36.5 25 60 25 60C25 60 45 36.5 45 22C45 10.954 36.046 2 25 2Z"
-                fill="#E8761E" fill-opacity=".2" stroke="#E8761E" stroke-width="2.5"/>
+          <path d="M25 2C13.954 2 5 10.954 5 22C5 36.5 25 60 25 60C25 60 45 36.5 45 22C45 10.954 36.046 2 25 2Z" fill="#E8761E" fill-opacity=".2" stroke="#E8761E" stroke-width="2.5"/>
           <circle cx="25" cy="22" r="7" fill="#E8761E"/>
         </svg>
         <h2>A network that stays close to you.</h2>
       </div>
       <a href="#" class="network-btn">Find an Agency</a>
     </div>
-
-    <!-- MAIN: content left, illustration right -->
     <div class="network-main">
       <div class="network-content">
-        <!-- paragraph under title -->
         <p class="network-desc">Access our network of agencies across the country for personalized service.</p>
-
-        <!-- News -->
         <div class="news-block">
           <div class="news-header">
             <h3>Latest News &amp; Announcements</h3>
@@ -222,19 +170,13 @@
           </div>
         </div>
       </div>
-
-      <!-- Illustration anchored to bottom-right -->
       <div class="network-illustration">
         <img src="resources/img/hero.webp" alt="CAAR agent">
       </div>
     </div>
-
   </div>
 </section>
 
-<!-- ══════════════════════════════════
-   CTA
-══════════════════════════════════ -->
 <section class="cta">
   <div class="cta-inner">
     <h2>Need more information? Contact CAAR.</h2>
@@ -243,65 +185,69 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════════
-   FOOTER
-   Logo: uses caarfooter.jpg (orange CAAR circle on dark bg)
-   Columns top-aligned, consistent spacing
-══════════════════════════════════ -->
+<!-- FOOTER
+     Grid structure:
+     Row 1 → [logo]  [COMPANY h4]  [INSURANCE h4]  [FOLLOW US h4]
+     Row 2 → [contact items]  [links]  [links]  [social icon]
+     This guarantees logo and headings are always on the exact same line.
+-->
 <footer class="footer">
-  <div class="footer-grid">
+  <div class="footer-inner">
+    <div class="footer-grid">
 
-    <!-- Col 1: logo + contact -->
-    <div>
+      <!-- Row 1 col 1: logo -->
       <div class="footer-logo">
         <img src="resources/img/caarfooter.jpg" alt="CAAR">
       </div>
-      <div class="footer-item">
-        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span>48 Rue Didouche Mourad, Algiers, Ctr e 16000.</span>
-      </div>
-      <div class="footer-item">
-        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        <span>+213 21 34 10 16</span>
-      </div>
-      <div class="footer-item">
-        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3c5f5352485d5f487c5f5d5d4e125846">[email&#160;protected]</a></span>
-      </div>
-    </div>
 
-    <!-- Col 2: Company -->
-    <div class="footer-col">
-      <h4>Company</h4>
-      <a href="#">About Us</a>
-      <a href="#">Careers</a>
-    </div>
-
-    <!-- Col 3: Insurance -->
-    <div class="footer-col">
-      <h4>Insurance</h4>
-      <a href="#">Auto Insurance</a>
-      <a href="#">Entreprises Insurance</a>
-      <a href="#">Natural Catastrophe Insurance</a>
-      <a href="#">Multi-risk insurance for merchants and craftsmen</a>
-    </div>
-
-    <!-- Col 4: Follow Us -->
-    <div class="footer-col">
-      <h4>Follow Us</h4>
-      <div class="footer-social">
-        <a href="#" aria-label="Facebook">f</a>
+      <!-- Col 2: Company (h4 in row1, links in row2) -->
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About Us</a>
+        <a href="#">Careers</a>
       </div>
-    </div>
 
+      <!-- Col 3: Insurance -->
+      <div class="footer-col">
+        <h4>Insurance</h4>
+        <a href="#">Auto Insurance</a>
+        <a href="#">Entreprises Insurance</a>
+        <a href="#">Natural Catastrophe Insurance</a>
+        <a href="#">Multi-risk insurance for merchants and craftsmen</a>
+      </div>
+
+      <!-- Col 4: Follow Us -->
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook">f</a>
+        </div>
+      </div>
+
+      <!-- Row 2 col 1: contact items -->
+      <div class="footer-col-1">
+        <div class="footer-item">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>48 Rue Didouche Mourad, Algiers 16000</span>
+        </div>
+        <div class="footer-item">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>+213 21 34 10 16</span>
+        </div>
+        <div class="footer-item">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>contact@caar.dz</span>
+        </div>
+      </div>
+
+    </div>
   </div>
   <div class="footer-bottom">
     <p>© 2026 CAAR. All rights reserved.</p>
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// Dropdown toggle
+<script>
 function toggleDrop(btnId, menuId) {
   var allBtns  = ['prodBtn','coBtn'];
   var allMenus = ['prodMenu','coMenu'];
@@ -314,25 +260,16 @@ function toggleDrop(btnId, menuId) {
   document.getElementById(btnId).classList.toggle('open');
   document.getElementById(menuId).classList.toggle('open');
 }
-
-// Close on outside click
-document.addEventListener('click', function(e){
+document.addEventListener('click',function(e){
   if(!e.target.closest('.nav-dropdown')){
-    document.querySelectorAll('.nav-dropdown-btn').forEach(function(b){ b.classList.remove('open'); });
-    document.querySelectorAll('.nav-drop-menu').forEach(function(m){ m.classList.remove('open'); });
+    document.querySelectorAll('.nav-dropdown-btn').forEach(function(b){b.classList.remove('open');});
+    document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open');});
   }
 });
-
-// Navbar: collapse top row on scroll so it's compact
-window.addEventListener('scroll', function(){
-  var nb = document.getElementById('navbar');
-  if(window.scrollY > 50){
-    nb.classList.add('shrink');
-  } else {
-    nb.classList.remove('shrink');
-  }
+window.addEventListener('scroll',function(){
+  var nb=document.getElementById('navbar');
+  if(window.scrollY>50){nb.classList.add('shrink');}else{nb.classList.remove('shrink');}
 });
 </script>
-
 </body>
 </html>
