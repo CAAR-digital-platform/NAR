@@ -4,337 +4,948 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR &mdash; Agency Network</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--or:#E8761E;--ord:#C9601A;--orl:#FFF3E8;--orbg:#FDF0E2;--dark:#1C1C1C;--gray:#666;--bd:#e0e0e0;--wh:#fff;}
-    body{font-family:'Source Sans 3',sans-serif;color:var(--dark);background:var(--wh);}
-    a{text-decoration:none;color:inherit;}
-    /* NAVBAR */
-    .navbar{position:sticky;top:0;z-index:200;background:var(--wh);border-bottom:1px solid var(--bd);}
-    .nav-top{display:flex;align-items:center;justify-content:space-between;padding:8px 40px;border-bottom:1px solid var(--bd);height:64px;}
-    .nav-tl{display:flex;align-items:center;}
-    .logo-wrap{display:flex;flex-direction:column;align-items:center;margin-right:22px;flex-shrink:0;}
-    .logo-img{width:52px;height:52px;border-radius:50%;border:2px solid var(--or);overflow:hidden;}
-    .logo-img img{width:100%;height:100%;object-fit:cover;display:block;}
-    .logo-sub{font-size:0.43rem;color:var(--or);text-align:center;line-height:1.25;margin-top:2px;max-width:90px;font-weight:500;}
-    .ndiv{width:1px;height:40px;background:var(--bd);margin:0 20px;}
-    .nind{font-size:0.82rem;font-weight:700;color:var(--dark);cursor:pointer;}
-    .nav-tr{display:flex;align-items:center;gap:10px;}
-    .npill{padding:8px 22px;border-radius:22px;font-size:0.8rem;font-weight:600;border:1.5px solid var(--or);display:inline-block;transition:all 0.2s;font-family:'Source Sans 3',sans-serif;}
-    .npill-ghost{background:var(--wh);color:var(--or);} .npill-ghost:hover{background:var(--orl);}
-    .npill-fill{background:var(--or);color:var(--wh);} .npill-fill:hover{background:var(--ord);}
-    .nav-bot{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:40px;}
-    .nbrand{font-size:0.55rem;color:var(--or);font-weight:600;white-space:nowrap;}
-    .nlinks{display:flex;align-items:center;gap:2px;}
-    .nlinks a{font-size:0.8rem;font-weight:500;color:var(--dark);padding:3px 10px;border-radius:4px;transition:color 0.2s;white-space:nowrap;}
-    .nlinks a:hover,.nlinks a.on{color:var(--or);font-weight:700;}
-    .nbr{display:flex;align-items:center;gap:10px;}
-    .nsrch{background:none;border:none;cursor:pointer;padding:4px;color:var(--gray);display:flex;}
-    .nsrch svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;}
-    .nlang{font-size:0.75rem;font-weight:700;color:var(--dark);border:1px solid var(--bd);border-radius:12px;padding:2px 8px;cursor:pointer;}
-    /* PAGE */
-    .page{display:grid;grid-template-columns:310px 1fr;min-height:calc(100vh - 104px);}
-    /* LEFT PANEL */
-    .left-panel{border-right:1px solid var(--bd);display:flex;flex-direction:column;}
-    .find-hero{background:var(--orbg);border-bottom:1px solid #f0d8c0;padding:16px 18px;position:relative;overflow:hidden;}
-    .find-hero h2{font-family:'Lora',serif;font-size:0.95rem;font-weight:700;margin-bottom:4px;}
-    .find-hero p{font-size:0.72rem;color:var(--gray);line-height:1.5;margin-bottom:11px;max-width:180px;}
-    .find-hero-map{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:100px;height:80px;background:#e8e8e8;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--gray);text-align:center;padding:6px;border:1px solid var(--bd);}
-    .search-wrap{position:relative;}
-    .search-input{width:100%;padding:8px 32px 8px 11px;border:1.5px solid var(--bd);border-radius:7px;font-size:0.75rem;font-family:'Source Sans 3',sans-serif;background:var(--wh);outline:none;transition:border-color 0.2s;}
-    .search-input:focus{border-color:var(--or);}
-    .search-input::placeholder{color:#bbb;}
-    .search-ico{position:absolute;right:9px;top:50%;transform:translateY(-50%);}
-    .search-ico svg{width:13px;height:13px;stroke:#bbb;fill:none;stroke-width:2;stroke-linecap:round;}
-    /* FILTER BAR */
-    .filter-bar{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px;border-bottom:1px solid var(--bd);position:relative;z-index:100;}
-    .fchip{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:14px;font-size:0.69rem;font-weight:600;border:1.5px solid var(--bd);background:var(--wh);color:var(--dark);cursor:pointer;transition:all 0.15s;position:relative;font-family:'Source Sans 3',sans-serif;}
-    .fchip.on{background:var(--dark);color:var(--wh);border-color:var(--dark);}
-    .fchip svg{width:8px;height:8px;stroke:currentColor;fill:none;stroke-width:2.5;}
-    .fchip-reset{padding:5px 10px;border-radius:14px;font-size:0.69rem;font-weight:600;border:1.5px solid var(--or);background:var(--wh);color:var(--or);cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:background 0.15s;}
-    .fchip-reset:hover{background:var(--orl);}
-    /* DROPDOWN */
-    .drop{position:absolute;top:calc(100% + 4px);left:0;z-index:999;background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:180px;display:none;}
-    .drop.open{display:block;}
-    .drop-item{padding:9px 14px;font-size:0.76rem;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f5f5f5;transition:background 0.12s;}
-    .drop-item:last-child{border-bottom:none;}
-    .drop-item:hover{background:var(--orl);}
-    .drop-item.sel{color:var(--or);font-weight:700;}
-    .drop-item input[type="checkbox"]{accent-color:var(--or);flex-shrink:0;cursor:pointer;}
-    /* AGENCY LIST */
-    .agency-list{flex:1;overflow-y:auto;}
-    .agency-card{padding:12px 15px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background 0.14s;}
-    .agency-card:hover,.agency-card.active{background:var(--orl);}
-    .ag-name{font-size:0.8rem;font-weight:700;margin-bottom:2px;}
-    .ag-addr{font-size:0.69rem;color:var(--gray);margin-bottom:6px;}
-    .ag-rows{display:flex;flex-direction:column;gap:2px;margin-bottom:7px;}
-    .ag-row{display:flex;align-items:center;gap:5px;font-size:0.67rem;color:var(--gray);}
-    .ag-row svg{width:10px;height:10px;stroke:var(--or);fill:none;stroke-width:2;flex-shrink:0;}
-    .ag-btns{display:flex;gap:6px;}
-    .ag-btn{padding:4px 11px;border-radius:5px;font-size:0.67rem;font-weight:600;cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:all 0.14s;border:1.5px solid;}
-    .ag-btn-map{background:var(--wh);color:var(--dark);border-color:var(--bd);} .ag-btn-map:hover{border-color:var(--or);color:var(--or);}
-    .ag-btn-call{background:var(--or);color:var(--wh);border-color:var(--or);} .ag-btn-call:hover{background:var(--ord);}
-    .no-agencies{display:none;padding:20px;text-align:center;color:var(--gray);font-size:0.78rem;}
-    .map-note{padding:10px 14px;background:#f5f5f5;border-top:1px solid var(--bd);font-size:0.67rem;color:var(--gray);text-align:center;font-style:italic;}
-    /* PDF */
-    .pdf-section{padding:13px 15px;border-top:1px solid var(--bd);background:#fafafa;}
-    .pdf-heading{font-size:0.74rem;font-weight:700;margin-bottom:2px;}
-    .pdf-sub{font-size:0.65rem;color:var(--gray);margin-bottom:9px;}
-    .pdf-btns{display:flex;flex-wrap:wrap;gap:6px;}
-    .pdf-btn{padding:6px 10px;background:var(--wh);border:1.5px solid var(--bd);border-radius:7px;font-size:0.64rem;font-weight:600;color:var(--dark);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.14s;font-family:'Source Sans 3',sans-serif;}
-    .pdf-btn:hover{border-color:var(--or);color:var(--or);}
-    .pdf-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;}
-    /* RIGHT MAP */
-    .map-panel{background:#e9e9e9;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;}
-    .map-panel p{font-size:0.82rem;color:var(--gray);font-style:italic;margin-top:8px;}
-    .map-panel small{font-size:0.68rem;color:#aaa;}
-    /* FOOTER */
-    footer{background:#1a1a1a;color:rgba(255,255,255,0.7);padding:38px 60px 18px;}
-    .fg{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;margin-bottom:26px;}
-    .fb{font-family:'Lora',serif;font-size:1.05rem;color:#fff;margin-bottom:9px;}
-    .fg p,.fg a{font-size:0.73rem;line-height:1.7;color:rgba(255,255,255,0.7);}
-    .fg ul{list-style:none;} .fg li{margin-bottom:7px;}
-    .fg a:hover{color:var(--or);}
-    .fg h5{font-size:0.68rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
-    .soc{display:flex;gap:7px;margin-top:4px;}
-    .si{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.22);display:inline-flex;align-items:center;justify-content:center;font-size:0.66rem;cursor:pointer;}
-    .si:hover{border-color:var(--or);color:var(--or);}
-    hr.fdiv{border:none;border-top:1px solid rgba(255,255,255,0.1);margin-bottom:15px;}
-    .fbot{display:flex;justify-content:space-between;font-size:0.69rem;color:rgba(255,255,255,0.3);}
 
-    /* Company nav dropdown */
-    .nav-dropdown{position:relative;display:inline-block;}
-    .nav-dropdown-btn{font-size:0.8rem;font-weight:500;color:var(--dark);padding:3px 10px;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:color 0.2s;white-space:nowrap;background:none;border:none;font-family:'Source Sans 3',sans-serif;}
-    .nav-dropdown-btn:hover,.nav-dropdown-btn.on{color:var(--or);font-weight:700;}
-    .nav-dropdown-btn svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.5;transition:transform 0.2s;}
-    .nav-dropdown-btn.open svg{transform:rotate(180deg);}
-    .nav-drop-menu{position:absolute;top:calc(100%+6px);left:0;background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:155px;display:none;z-index:500;overflow:hidden;}
-    .nav-drop-menu.open{display:block;animation:fdrop 0.15s ease;}
-    @keyframes fdrop{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
-    .nav-drop-item{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:0.78rem;color:var(--dark);cursor:pointer;transition:background 0.12s;border-bottom:1px solid #f5f5f5;text-decoration:none;}
-    .nav-drop-item:last-child{border-bottom:none;}
-    .nav-drop-item:hover{background:var(--orl);color:var(--or);}
-    .nav-drop-item svg{width:13px;height:13px;stroke:var(--or);fill:none;stroke-width:2;flex-shrink:0;}
-  </style>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+
+  <!-- Leaflet map CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+
+  <!-- Page stylesheet -->
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="css/network.css"/>
 </head>
 <body>
 
-<nav class="navbar">
-  <div class="nav-top">
-    <div class="nav-tl">
-      <a href="/index.html" class="logo-wrap">
-        <div class="logo-img"><img src="/resources/img/photo6.jpg" alt="CAAR"/></div>
-        <span class="logo-sub">&#1575;&#1604;&#1588;&#1585;&#1603;&#1577; &#1575;&#1604;&#1580;&#1586;&#1575;&#1574;&#1585;&#1610;&#1577;<br>COMPAGNIE ALGERIENNE</span>
+<!-- ══════════════════════════════════════
+     HEADER  (same as index.html)
+══════════════════════════════════════ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-block">
+      <a href="index.html">
+        <img src="img/grand_logo.png" alt="CAAR" class="logo-img"/>
       </a>
-      <div class="ndiv"></div>
-      <span class="nind">INDIVIDUALS &#9660;</span>
     </div>
-    <div class="nav-tr">
-      <a href="/network.html" class="npill npill-ghost">Find Agency</a>
-      <a href="/contact.html" class="npill npill-fill">Contact Us</a>
-    </div>
-  </div>
-  <div class="nav-bot">
-    <span class="nbrand">COMPAGNIE ALGERIENNE D'ASSURANCES ET DE REASSURANCES</span>
-    <div class="nlinks">
-      <a href="/index.html">Home</a>
-      <div class="nav-dropdown">
-        <button class="nav-dropdown-btn" id="companyBtn" onclick="toggleCompanyDrop()">
-          Company <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
-        </button>
-        <div class="nav-drop-menu" id="companyMenu">
-          <a href="/company.html" class="nav-drop-item">
-            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            About Us
-          </a>
-          <a href="/company-careers.html" class="nav-drop-item">
-            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-            Careers
-          </a>
+    <div class="right-side">
+      <div class="top-row">
+        <a href="network.html" class="btn-top">Find Agency</a>
+        <a href="contact.html" class="btn-top">Contact Us</a>
+      </div>
+      <hr class="top-divider"/>
+      <div class="bottom-row">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li class="dropdown">
+            <a href="products.html" class="nav-link">Products <span class="arrow">▾</span></a>
+            <ul class="dropdown-menu">
+              <li><a href="individual-risks.html">Individual Risks</a></li>
+              <li><a href="auto-insurance.html">Auto Insurance</a></li>
+              <li><a href="transport-insurance.html">Transport Insurance</a></li>
+              <li><a href="technical-risks.html">Technical Risks</a></li>
+              <li><a href="industrial-risks.html">Industrial Risks</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="company.html" class="nav-link">Company <span class="arrow">▾</span></a>
+            <ul class="dropdown-menu">
+              <li><a href="company.html">About Us</a></li>
+              <li><a href="company-careers.html">Careers</a></li>
+            </ul>
+          </li>
+          <li><a href="network.html" class="nav-link active">Network</a></li>
+          <li><a href="news.html" class="nav-link">News</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="nav-icons">
+          <button class="icon-btn" id="searchBtn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+          <div class="lang-dropdown">
+            <button class="icon-btn">
+              <span class="lang-label" id="currentLang">EN</span>
+            </button>
+            <ul class="lang-menu">
+              <li><a href="#" data-lang="FR">Français (FR)</a></li>
+              <li><a href="#" data-lang="EN">English (EN)</a></li>
+              <li><a href="#" data-lang="AR">عربي (AR)</a></li>
+            </ul>
+          </div>
         </div>
       </div>
-      <a href="/network.html" class="on">Network</a>
-      <a href="/news.html">News</a>
-      <a href="/contact.html">Contact</a>
-    </div>
-    <div class="nbr">
-      <button class="nsrch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-      <span class="nlang">FR</span>
     </div>
   </div>
-</nav>
+  <div class="search-bar" id="searchBar">
+    <input type="text" placeholder="Search CAAR..." class="hdr-search-input"/>
+    <button class="search-close-hdr" id="searchCloseHdr">✕</button>
+  </div>
+</header>
 
-<div class="page">
-  <div class="left-panel">
-    <div class="find-hero">
+
+<!-- ══════════════════════════════════════
+     SECTION 1 — HERO  (orange box + search)
+     ↓ More sections will be added below this
+══════════════════════════════════════ -->
+<section class="network-hero">
+  <div class="network-hero-inner">
+
+    <!-- LEFT: title + search -->
+    <div class="network-hero-left">
       <h2>Find a CAAR Agency Near You</h2>
       <p>Access our nationwide network of agencies and get assistance wherever you are.</p>
+
       <div class="search-wrap">
-        <input class="search-input" id="agSearch" type="text" placeholder="Enter a city, wilaya, or postcode" oninput="applyFilters()"/>
-        <span class="search-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+        <span class="s-pin">📍</span>
+        <input
+          class="map-search-input"
+          id="mapSearch"
+          type="text"
+          placeholder="Enter a city, wilaya, or postcode"
+          autocomplete="off"
+          oninput="onSearchInput(this.value)"
+          onkeydown="onSearchKey(event)"
+        />
+        <button class="s-clear" id="sClear" onclick="clearSearch()">✕</button>
+        <div class="auto-list" id="autoList"></div>
       </div>
-      <div class="find-hero-map">Interactive map showing CAAR agencies</div>
     </div>
 
-    <div class="filter-bar" id="filterBar">
-      <!-- Wilaya -->
-      <div class="fchip" id="chip-wilaya" onclick="toggleDrop(event,'drop-wilaya','chip-wilaya')">
-        Wilaya <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
-        <div class="drop" id="drop-wilaya" onclick="event.stopPropagation()">
-          <div class="drop-item" onclick="selFilter('wilaya','Alger',this)"><input type="checkbox" id="w1"/><label for="w1">Alger</label></div>
-          <div class="drop-item" onclick="selFilter('wilaya','Oran',this)"><input type="checkbox" id="w2"/><label for="w2">Oran</label></div>
-          <div class="drop-item" onclick="selFilter('wilaya','Annaba',this)"><input type="checkbox" id="w3"/><label for="w3">Annaba</label></div>
-          <div class="drop-item" onclick="selFilter('wilaya','B&eacute;ja&iuml;a',this)"><input type="checkbox" id="w4"/><label for="w4">B&eacute;ja&iuml;a</label></div>
-          <div class="drop-item" onclick="selFilter('wilaya','S&eacute;tif',this)"><input type="checkbox" id="w5"/><label for="w5">S&eacute;tif</label></div>
-          <div class="drop-item" onclick="selFilter('wilaya','Constantine',this)"><input type="checkbox" id="w6"/><label for="w6">Constantine</label></div>
-          <div class="drop-item" onclick="selFilter('wilaya','Tlemcen',this)"><input type="checkbox" id="w7"/><label for="w7">Tlemcen</label></div>
-          <div class="drop-item" onclick="selFilter('wilaya','Boumerd&egrave;s',this)"><input type="checkbox" id="w8"/><label for="w8">Boumerd&egrave;s</label></div>
-        </div>
-      </div>
-      <!-- City -->
-      <div class="fchip" id="chip-city" onclick="toggleDrop(event,'drop-city','chip-city')">
-        CITY <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
-        <div class="drop" id="drop-city" onclick="event.stopPropagation()">
-          <div class="drop-item" onclick="selFilter('city','Kouba',this)"><input type="checkbox" id="c1"/><label for="c1">Kouba</label></div>
-          <div class="drop-item" onclick="selFilter('city','Bouzareah',this)"><input type="checkbox" id="c2"/><label for="c2">Bouzareah</label></div>
-          <div class="drop-item" onclick="selFilter('city','Ch&eacute;raga',this)"><input type="checkbox" id="c3"/><label for="c3">Ch&eacute;raga</label></div>
-          <div class="drop-item" onclick="selFilter('city','B&eacute;ja&iuml;a',this)"><input type="checkbox" id="c4"/><label for="c4">B&eacute;ja&iuml;a</label></div>
-          <div class="drop-item" onclick="selFilter('city','Annaba',this)"><input type="checkbox" id="c5"/><label for="c5">Annaba</label></div>
-          <div class="drop-item" onclick="selFilter('city','Oran',this)"><input type="checkbox" id="c6"/><label for="c6">Oran</label></div>
-        </div>
-      </div>
-      <!-- Agency Type -->
-      <div class="fchip" id="chip-type" onclick="toggleDrop(event,'drop-type','chip-type')">
-        Agency Type <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
-        <div class="drop" id="drop-type" onclick="event.stopPropagation()">
-          <div class="drop-item" onclick="selFilter('type','Main Agency',this)"><input type="checkbox" id="t1"/><label for="t1">Main Agency</label></div>
-          <div class="drop-item" onclick="selFilter('type','Sub Agency',this)"><input type="checkbox" id="t2"/><label for="t2">Sub Agency</label></div>
-          <div class="drop-item" onclick="selFilter('type','Regional Office',this)"><input type="checkbox" id="t3"/><label for="t3">Regional Office</label></div>
-        </div>
-      </div>
-      <!-- Services -->
-      <div class="fchip" id="chip-services" onclick="toggleDrop(event,'drop-services','chip-services')">
-        Services <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
-        <div class="drop" id="drop-services" onclick="event.stopPropagation()">
-          <div class="drop-item" onclick="selFilter('service','Auto',this)"><input type="checkbox" id="s1"/><label for="s1">Auto Insurance</label></div>
-          <div class="drop-item" onclick="selFilter('service','Habitation',this)"><input type="checkbox" id="s2"/><label for="s2">Habitation</label></div>
-          <div class="drop-item" onclick="selFilter('service','Agriculture',this)"><input type="checkbox" id="s3"/><label for="s3">Agriculture</label></div>
-          <div class="drop-item" onclick="selFilter('service','Transport',this)"><input type="checkbox" id="s4"/><label for="s4">Transport</label></div>
-          <div class="drop-item" onclick="selFilter('service','Industrial',this)"><input type="checkbox" id="s5"/><label for="s5">Industrial</label></div>
-          <div class="drop-item" onclick="selFilter('service','Claims',this)"><input type="checkbox" id="s6"/><label for="s6">Claims</label></div>
-        </div>
-      </div>
-      <div class="fchip-reset" onclick="resetFilters()">Reset</div>
+    <!-- RIGHT: mini interactive map -->
+    <div class="network-hero-map-slot" id="heroMapSlot">
+      <div id="heroMap"></div>
     </div>
 
-    <div class="agency-list" id="agencyList">
-      <div class="agency-card active" data-wilaya="Alger" data-city="Kouba" data-type="Main Agency">
-        <div class="ag-name">CAAR &ndash; Kouba Agency</div>
-        <div class="ag-addr">Kouba, Alger</div>
-        <div class="ag-rows">
-          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>023 70 01 58</div>
-          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:30 &ndash; 16:00</div>
-        </div>
-        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Kouba+Alger+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21323700158'">Call</button></div>
-      </div>
-      <div class="agency-card" data-wilaya="Alger" data-city="Bouzareah" data-type="Sub Agency">
-        <div class="ag-name">CAAR &ndash; Didouche Mourad Agency</div>
-        <div class="ag-addr">Bouzareah, Alger</div>
-        <div class="ag-rows">
-          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>023 70 01 58</div>
-          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:30 &ndash; 16:00</div>
-        </div>
-        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Bouzareah+Alger+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21323700158'">Call</button></div>
-      </div>
-      <div class="agency-card" data-wilaya="Alger" data-city="Ch&eacute;raga" data-type="Main Agency">
-        <div class="ag-name">CAAR &ndash; Cheraga Agency</div>
-        <div class="ag-addr">Ch&eacute;raga, Alger</div>
-        <div class="ag-rows">
-          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>023 76 03 12</div>
-          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:30 &ndash; 16:00</div>
-        </div>
-        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Cheraga+Alger+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21323760312'">Call</button></div>
-      </div>
-      <div class="agency-card" data-wilaya="B&eacute;ja&iuml;a" data-city="B&eacute;ja&iuml;a" data-type="Regional Office">
-        <div class="ag-name">CAAR &ndash; Bejaia Agency</div>
-        <div class="ag-addr">B&eacute;ja&iuml;a, B&eacute;ja&iuml;a</div>
-        <div class="ag-rows">
-          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>034 21 45 78</div>
-          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:30 &ndash; 16:00</div>
-        </div>
-        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Bejaia+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21334214578'">Call</button></div>
-      </div>
-      <div class="agency-card" data-wilaya="Annaba" data-city="Annaba" data-type="Main Agency">
-        <div class="ag-name">CAAR &ndash; Annaba Agency</div>
-        <div class="ag-addr">Annaba, Annaba</div>
-        <div class="ag-rows">
-          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>038 86 20 30</div>
-          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:00 &ndash; 16:00</div>
-        </div>
-        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Annaba+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21338862030'">Call</button></div>
-      </div>
-      <div class="agency-card" data-wilaya="Oran" data-city="Oran" data-type="Regional Office">
-        <div class="ag-name">CAAR &ndash; Oran Agency</div>
-        <div class="ag-addr">Oran, Oran</div>
-        <div class="ag-rows">
-          <div class="ag-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>041 40 22 63</div>
-          <div class="ag-row"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Sunday to Thursday, 08:30 &ndash; 16:00</div>
-        </div>
-        <div class="ag-btns"><button class="ag-btn ag-btn-map" onclick="window.open('https://maps.google.com/?q=Oran+Algeria','_blank')">View on map</button><button class="ag-btn ag-btn-call" onclick="window.location.href='tel:+21341402263'">Call</button></div>
-      </div>
-      <div class="no-agencies" id="noAgencies">No agencies found for this selection.</div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     SECTION 2 — FILTERS + AGENCY LIST + BIG MAP
+══════════════════════════════════════ -->
+<section class="filter-section">
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar-row">
+
+    <!-- Name search -->
+    <div class="fd-search-wrap">
+      <svg viewBox="0 0 24 24" class="fd-search-ico" stroke="#999" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="fd-search-input" id="fdSearchInput" type="text"
+        placeholder="Search agency name…" autocomplete="off"
+        oninput="setSearchFilter(this.value)"/>
+      <button class="fd-search-clear" id="fdSearchClear" onclick="clearNameSearch()">✕</button>
     </div>
 
-    <div class="map-note">Map updates based on filters and selected agencies</div>
+    <!-- Wilaya dropdown (populated by JS from all 58 wilayas) -->
+    <div class="filter-dropdown" id="fd-wilaya">
+      <button class="fd-btn" onclick="toggleDrop('fd-wilaya')">
+        <span id="fdlbl-wilaya">Wilaya</span>
+        <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+      </button>
+      <div class="fd-menu" id="fdm-wilaya"></div>
+    </div>
 
-    <div class="pdf-section">
-      <div class="pdf-heading">Official Agency Lists</div>
-      <div class="pdf-sub">For administrative and legal reference</div>
-      <div class="pdf-btns">
-        <button class="pdf-btn"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Download Algers agency list (pdf)</button>
-        <button class="pdf-btn"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Download Annaba agency list (pdf)</button>
-        <button class="pdf-btn"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Download Annaba Bejaia list (pdf)</button>
+    <!-- City dropdown (dynamic — updates when wilaya is selected) -->
+    <div class="filter-dropdown" id="fd-city">
+      <button class="fd-btn" onclick="toggleDrop('fd-city')">
+        <span id="fdlbl-city">City</span>
+        <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+      </button>
+      <div class="fd-menu" id="fdm-city"></div>
+    </div>
+
+    <!-- Agency type dropdown -->
+    <div class="filter-dropdown" id="fd-type">
+      <button class="fd-btn" onclick="toggleDrop('fd-type')">
+        <span id="fdlbl-type">Agency Type</span>
+        <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+      </button>
+      <div class="fd-menu" id="fdm-type">
+        <div class="fd-item fd-item-all active" onclick="setFilter('type','',this)">All Types</div>
+        <div class="fd-item" onclick="setFilter('type','Main Agency',this)">🏢 Main Agency</div>
+        <div class="fd-item" onclick="setFilter('type','Regional Office',this)">🏬 Regional Office</div>
+        <div class="fd-item" onclick="setFilter('type','Sub Agency',this)">🏪 Sub Agency</div>
+        <div class="fd-item" onclick="setFilter('type','Agency',this)">📍 Agency</div>
+        <div class="fd-item" onclick="setFilter('type','Claims Center',this)">🗂 Claims Center</div>
+        <div class="fd-item" onclick="setFilter('type','Headquarters',this)">⭐ Headquarters</div>
+      </div>
+    </div>
+
+    <!-- Services dropdown -->
+    <div class="filter-dropdown" id="fd-service">
+      <button class="fd-btn" onclick="toggleDrop('fd-service')">
+        <span id="fdlbl-service">Services</span>
+        <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+      </button>
+      <div class="fd-menu" id="fdm-service">
+        <div class="fd-item fd-item-all active" onclick="setFilter('service','',this)">All Services</div>
+        <div class="fd-item" onclick="setFilter('service','Auto',this)">🚗 Auto Insurance</div>
+        <div class="fd-item" onclick="setFilter('service','Habitation',this)">🏠 Habitation</div>
+        <div class="fd-item" onclick="setFilter('service','Business',this)">💼 Business Insurance</div>
+        <div class="fd-item" onclick="setFilter('service','Transport',this)">🚢 Transport</div>
+        <div class="fd-item" onclick="setFilter('service','Industrial',this)">🏭 Industrial</div>
+        <div class="fd-item" onclick="setFilter('service','Agricultural',this)">🌾 Agricultural</div>
+        <div class="fd-item" onclick="setFilter('service','Claims',this)">🗂 Claims Processing</div>
+      </div>
+    </div>
+
+    <!-- Reset -->
+    <button class="fd-reset" onclick="resetFilters()">↺ Reset Filters</button>
+
+  </div><!-- /filter-bar-row -->
+
+  <!-- Active filter tags -->
+  <div class="filter-tags-row" id="filterTagsRow"></div>
+
+  <!-- GRID: cards left + big map right -->
+  <div class="filter-grid">
+
+    <!-- LEFT: filtered agency cards -->
+    <div class="filter-left">
+      <div class="filter-count-bar">
+        Showing <strong id="filterCountNum">39</strong> agencies
+      </div>
+      <div class="filter-card-list" id="filterCardList"></div>
+      <div class="filter-no-results" id="filterNoResults">
+        😕 No agencies match your filters.<br>
+        <small>Try resetting or changing your selection.</small>
+      </div>
+    </div>
+
+    <!-- RIGHT: big Leaflet map -->
+    <div class="filter-map-wrap">
+      <div id="filterMap"></div>
+      <div class="filter-map-hint" id="filterMapHint">
+        Select filters or click an agency to highlight it on the map
+      </div>
+    </div>
+
+  </div><!-- /filter-grid -->
+
+</section>
+
+
+<!-- ══════════════════════════════════════
+     PDF DOWNLOADS SECTION
+══════════════════════════════════════ -->
+<section class="pdf-downloads-section">
+  <div class="pdf-downloads-inner">
+    <div class="pdf-downloads-left">
+      <div class="pdf-dl-label">Official Agency Lists</div>
+      <div class="pdf-dl-sub">For administrative and legal reference</div>
+    </div>
+    <div class="pdf-downloads-grid">
+      <a href="uploads/SUCCURSALE_DE_CHERAGA.pdf" download class="pdf-dl-card">
+        <div class="pdf-dl-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="12" x2="12" y2="18"/>
+            <polyline points="9 15 12 18 15 15"/>
+          </svg>
+        </div>
+        <div class="pdf-dl-info">
+          <span class="pdf-dl-title">Succursale de Chéraga</span>
+          <span class="pdf-dl-hint">Agency list (PDF)</span>
+        </div>
+      </a>
+      <a href="uploads/SUCCURSALE_DE_CONSTANTINE.pdf" download class="pdf-dl-card">
+        <div class="pdf-dl-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="12" x2="12" y2="18"/>
+            <polyline points="9 15 12 18 15 15"/>
+          </svg>
+        </div>
+        <div class="pdf-dl-info">
+          <span class="pdf-dl-title">Succursale de Constantine</span>
+          <span class="pdf-dl-hint">Agency list (PDF)</span>
+        </div>
+      </a>
+      <a href="uploads/Liste_des_agences_CAAR_dotées_des_Terminaux_de_Paiement.pdf" download class="pdf-dl-card">
+        <div class="pdf-dl-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="12" x2="12" y2="18"/>
+            <polyline points="9 15 12 18 15 15"/>
+          </svg>
+        </div>
+        <div class="pdf-dl-info">
+          <span class="pdf-dl-title">Agences avec Terminal TPE</span>
+          <span class="pdf-dl-hint">Payment terminals list (PDF)</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FOOTER  — identical to index.html
+══════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-logo">
+        <img src="img/caarfooter.jpg" alt="CAAR"/>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="company.html">About Us</a>
+        <a href="company-careers.html">Careers</a>
+        <a href="news.html">News</a>
+      </div>
+      <div class="footer-col">
+        <h4>Insurance</h4>
+        <a href="auto-insurance.html">Auto Insurance</a>
+        <a href="individual-risks.html">Entreprises Insurance</a>
+        <a href="#">Natural Catastrophe Insurance</a>
+        <a href="#">Multi-risk insurance for merchants</a>
+      </div>
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook">f</a>
+        </div>
+      </div>
+      <div class="footer-col-1">
+        <div class="footer-item">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>48 Rue Didouche Mourad, Algiers 16000</span>
+        </div>
+        <div class="footer-item">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>+213 21 34 10 16</span>
+        </div>
+        <div class="footer-item">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>contact@caar.dz</span>
+        </div>
       </div>
     </div>
   </div>
-
-  <div class="map-panel">
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-    <p>Interactive map showing CAAR agencies</p>
-    <small>Select filters or search to highlight agencies on map</small>
+  <div class="footer-bottom">
+    © 2026 CAAR — Compagnie Algérienne d&#8217;Assurances et de Réassurances. All rights reserved.
   </div>
-</div>
-
-<footer>
-  <div class="fg">
-    <div><div class="fb">CAAR</div><p>Compagnie Alg&eacute;rienne d'Assurance<br>et de R&eacute;assurance<br><br>Si&egrave;ge social : Alger, Alg&eacute;rie<br>T&eacute;l : +213 (0)21 63 20 72<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98fbf7f6ecf9fbecd8fbf9f9eab6fce2">[email&#160;protected]</a></p></div>
-    <div><h5>Company</h5><ul><li><a href="/company.html">&Agrave; propos</a></li><li><a href="#">Carri&egrave;res</a></li><li><a href="/news.html">Actualit&eacute;s</a></li><li><a href="#">Partenaires</a></li></ul></div>
-    <div><h5>Insurance</h5><ul><li><a href="/auto-insurance.html">Auto</a></li><li><a href="/individual-risks.html">Habitation</a></li><li><a href="/transport-insurance.html">Transport</a></li><li><a href="/technical-risks.html">Agriculture</a></li><li><a href="/industrial-risks.html">Industrie</a></li></ul></div>
-    <div><h5>Follow Us</h5><div class="soc"><span class="si">f</span><span class="si">in</span><span class="si">&#9654;</span></div></div>
-  </div>
-  <hr class="fdiv"/>
-  <div class="fbot"><span>&copy; 2026 CAAR. Tous droits r&eacute;serv&eacute;s.</span><span>Mentions l&eacute;gales &middot; Politique de confidentialit&eacute;</span></div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+
+<!-- Leaflet JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
-/* Company dropdown */
-function toggleCompanyDrop(){
-  var btn=document.getElementById('companyBtn');
-  var menu=document.getElementById('companyMenu');
-  btn.classList.toggle('open');
-  menu.classList.toggle('open');
+/* ============================================================
+   REAL AGENCY DATA — from CAAR KML file (39 agencies)
+============================================================ */
+const AGENCIES = [
+  {id:1,  name:'Kouba',                    city:'Kouba',                  wilaya:'Alger',      address:'Cité Serbat Bâtiment A9 Garidi, Kouba — Alger',                                     director:'Mr Lawachra',             type:'Main Agency',    services:['Auto','Habitation','Transport','Industrial'],  lat:36.730082, lng:3.061648},
+  {id:2,  name:'Baraki',                   city:'Baraki',                 wilaya:'Alger',      address:'Cité 2004 Logements, Bâtiment 43 A et B, Baraki — Alger',                            director:'Mr Mezine Aissa',         type:'Main Agency',    services:['Auto','Habitation','Agricultural'],             lat:36.665377, lng:3.100241},
+  {id:3,  name:'Hussein Dey',              city:'Hussein Dey',            wilaya:'Alger',      address:'Rue Bachir Aoun, Brossette, Hussein Dey — Alger',                                    director:'Mme Belaiadi Fouzia',     type:'Main Agency',    services:['Auto','Habitation','Claims'],                   lat:36.739471, lng:3.101946},
+  {id:4,  name:'Rouiba',                   city:'Rouiba',                 wilaya:'Alger',      address:'31, Avenue du 1er Novembre, Rouiba — Alger',                                         director:'Mr Ourdache Mohamed',     type:'Main Agency',    services:['Auto','Industrial','Transport'],                lat:36.736302, lng:3.280987},
+  {id:5,  name:'Cheraga',                  city:'Cheraga',                wilaya:'Alger',      address:'Centre Commercial El Qods, Cheraga — Alger',                                         director:'Meziane Mohamed',         type:'Main Agency',    services:['Auto','Habitation','Business'],                 lat:36.759842, lng:2.964191},
+  {id:6,  name:'Bab Ezzouar',              city:'Bab Ezzouar',            wilaya:'Alger',      address:'Cité 2068 Logements N39/C N°34, Bab Ezzouar — Alger',                               director:'Mr Sidi Said Abdelghani', type:'Main Agency',    services:['Auto','Habitation'],                            lat:36.719245, lng:3.182567},
+  {id:7,  name:'El Harrach',               city:'El Harrach',             wilaya:'Alger',      address:'2, Rue Frères Djelli, Boumati, El Harrach — Alger',                                  director:'Mr Mokrane Kamel',        type:'Main Agency',    services:['Auto','Habitation','Claims'],                   lat:36.718446, lng:3.139838},
+  {id:8,  name:'Ain Naadja',               city:'Ain Naadja',             wilaya:'Alger',      address:'Cité 1516 Logements Bâtiment D6, Ain Naadja — Alger',                               director:'Mr Laib Mohamed',         type:'Main Agency',    services:['Auto','Habitation'],                            lat:36.693697, lng:3.064214},
+  {id:9,  name:'Alger Centre Victor Hugo', city:'Alger Centre',           wilaya:'Alger',      address:'27, Boulevard Victor Hugo — Alger',                                                   director:'Mr Leslous Mansour',      type:'Main Agency',    services:['Auto','Habitation','Business','Transport'],     lat:36.766752, lng:3.053129},
+  {id:10, name:'Bab Ezzouar 2',            city:'Bab Ezzouar',            wilaya:'Alger',      address:'Cité 208 Logements Lot N°38, Bab Ezzouar — Alger',                                  director:'Mr Benarous Ali',         type:'Main Agency',    services:['Auto','Habitation'],                            lat:36.717250, lng:3.186716},
+  {id:11, name:'Mohammadia',               city:'Mohammadia',             wilaya:'Alger',      address:'Cité Mohammadia, Bâtiment N°26 Cage C — Alger',                                     director:'Mme Ababsa Leila',        type:'Main Agency',    services:['Auto','Habitation','Claims'],                   lat:36.732394, lng:3.143416},
+  {id:12, name:'Rouiba 2',                 city:'Rouiba',                 wilaya:'Alger',      address:'Cité du Lycée Abdelmoumene, Rouiba — Alger',                                        director:'Mr Djaadoune',            type:'Main Agency',    services:['Auto','Industrial'],                            lat:36.741057, lng:3.286559},
+  {id:13, name:'Alger Centre Menani',      city:'Alger Centre',           wilaya:'Alger',      address:'31, Rue du Capitaine Menani — Alger',                                                director:'Mr Morsli Seif El Islam', type:'Main Agency',    services:['Auto','Habitation','Business'],                 lat:36.763313, lng:3.049991},
+  {id:14, name:'Alger Centre Didouche',    city:'Alger Centre',           wilaya:'Alger',      address:'53, Rue Didouche Mourad — Alger',                                                    director:'Mr Belkadi Mahmoud',      type:'Main Agency',    services:['Auto','Habitation','Transport','Claims'],       lat:36.766754, lng:3.052979},
+  {id:15, name:'Bab Ezzouar 3',            city:'Bab Ezzouar',            wilaya:'Alger',      address:'Cité El Djorf Bat 57 CN°02, Bab Ezzouar — Alger',                                   director:'Mr Azroug Mohamed Amine', type:'Main Agency',    services:['Auto','Habitation'],                            lat:36.720311, lng:3.176529},
+  {id:16, name:'Hussein Dey 2',            city:'Hussein Dey',            wilaya:'Alger',      address:'71, Rue Djnane Bendanoune, Hussein Dey — Alger',                                     director:'Mme Cherif Hakima',       type:'Main Agency',    services:['Auto','Claims'],                                lat:36.733654, lng:3.099907},
+  {id:17, name:'Bab Ezzouar 4',            city:'Bab Ezzouar',            wilaya:'Alger',      address:'Cité 1577 Logements Bâtiment 15, Bab Ezzouar — Alger',                              director:'Mme Benferrah Meriem',    type:'Main Agency',    services:['Auto','Habitation'],                            lat:36.715662, lng:3.193213},
+  {id:18, name:'Reghaia',                  city:'Reghaia',                wilaya:'Alger',      address:'Cité Ahmed Faoussi, Reghaia — Alger',                                                director:'Melle Boussaid Malika',   type:'Main Agency',    services:['Auto','Habitation','Agricultural'],             lat:36.738071, lng:3.356188},
+  {id:19, name:'Belouizded',               city:'Belouizded',             wilaya:'Alger',      address:'23, Rue Mohamed Belouizded — Alger',                                                 director:'Mr Rouag El Moundir',     type:'Main Agency',    services:['Auto','Habitation','Business','Transport'],     lat:36.758606, lng:3.055839},
+  {id:20, name:'Quartier Seghir',          city:'Quartier Seghir',        wilaya:'Bejaia',     address:'Bâtiment D11 et D12, Bvd de la Revolution, Quartier Seghir — Bejaia',               director:'Mr Hassani Laid',         type:'Regional Office',services:['Auto','Habitation','Transport'],                lat:36.748530, lng:5.055731},
+  {id:21, name:'Krim Belkacem',            city:'Krim Belkacem',          wilaya:'Bejaia',     address:'Big Center Centre Affaires Krim Belkacem, Edimco — Bejaia',                         director:'Mr Zaidi Abd Salem',      type:'Regional Office',services:['Auto','Habitation','Business'],                 lat:36.744811, lng:5.048222},
+  {id:22, name:'Frere Bouaouina',          city:'Bejaia Centre',          wilaya:'Bejaia',     address:'12, Boulevard Frere Bouaouina — Bejaia',                                             director:'Mr Taleb Zahir',          type:'Regional Office',services:['Auto','Claims'],                                lat:36.756511, lng:5.085508},
+  {id:23, name:'Krim Belkacem 2',          city:'Krim Belkacem',          wilaya:'Bejaia',     address:'Cité Administrative Somacob, Bâtiment C2 1er étage — Bejaia',                       director:'Mme Kadri Safia',         type:'Regional Office',services:['Auto','Habitation'],                            lat:36.744627, lng:5.049176},
+  {id:24, name:'Akbou',                    city:'Akbou',                  wilaya:'Bejaia',     address:'Route Nationale N°26, Cité Bendjaoud Taharacht, Akbou — Bejaia',                    director:'Mr Mohou Abdenacer',      type:'Regional Office',services:['Auto','Habitation','Agricultural'],             lat:36.481959, lng:4.557145},
+  {id:25, name:'Lakhdaria',                city:'Lakhdaria',              wilaya:'Bouira',     address:'Cité des 39 Logements, Route Nationale N°05, Lakhdaria — Bouira',                   director:'Mr Mokrani Said',         type:'Sub Agency',     services:['Auto','Habitation'],                            lat:36.564176, lng:3.596628},
+  {id:26, name:'Axe Financier Bouira',     city:'Bouira',                 wilaya:'Bouira',     address:'Axe Financier à côté CNEP — Bouira',                                                director:'Mr Abdi Cherif',          type:'Sub Agency',     services:['Auto','Business'],                              lat:36.382931, lng:4.401990},
+  {id:27, name:'Oued Tatareg',             city:'Oued Tatareg',           wilaya:'Boumerdes',  address:'Centre Commercial Oued Tatareg, Locaux 2&3 — Boumerdes',                            director:'Mr Amara Aghiles',        type:'Claims Center',  services:['Auto','Claims','Habitation'],                   lat:36.765068, lng:3.460068},
+  {id:28, name:'Sidi Abbaz',               city:'Sidi Abbaz',             wilaya:'Ghardaia',   address:'BP 24, Sidi Abbaz — Ghardaia',                                                       director:'Mr Lakhoui Mohamed',      type:'Sub Agency',     services:['Auto','Habitation','Agricultural'],             lat:32.485676, lng:3.694851},
+  {id:29, name:'Ouargla Centre',           city:'Ouargla',                wilaya:'Ouargla',    address:"Cité 460 Logements, Rue Larbi Ben M'hidi — Ouargla",                                 director:'Mme Kadi Karima',         type:'Sub Agency',     services:['Auto','Industrial'],                            lat:31.947023, lng:5.318237},
+  {id:30, name:'Hassi Messaoud',           city:'Hassi Messaoud',         wilaya:'Ouargla',    address:'Cité El Haoues 1039, BP 257, Hassi Messaoud — Ouargla',                              director:'Mr Ouamer Mohand',        type:'Sub Agency',     services:['Auto','Industrial','Business'],                 lat:31.695729, lng:6.065720},
+  {id:31, name:'Hassi Messaoud 2',         city:'Hassi Messaoud',         wilaya:'Ouargla',    address:'Cité 100 Logements AADL BP 548, Hassi Messaoud — Ouargla',                          director:'Mr Rezgui Bachir Eddine', type:'Sub Agency',     services:['Auto','Industrial'],                            lat:31.958203, lng:5.346406},
+  {id:32, name:'Larbaa Nath Irathen',      city:'Larbaa Nath Irathen',    wilaya:'Tizi Ouzou', address:'Route du Lycée, Larbaa Nath Irathen — Tizi Ouzou',                                  director:'Mr Boulifa El Hachemi',   type:'Agency',         services:['Auto','Habitation','Agricultural'],             lat:36.642939, lng:4.201181},
+  {id:33, name:'Azzazga',                  city:'Azzazga',                wilaya:'Tizi Ouzou', address:'Cité 300 Logements AADL, Azzazga — Tizi Ouzou',                                      director:'Mr Akir Ali',             type:'Agency',         services:['Auto','Habitation'],                            lat:36.747213, lng:4.359308},
+  {id:34, name:'Nouvelle Ville',           city:'Tizi Ouzou',             wilaya:'Tizi Ouzou', address:'Cité 600 Logements Genie Sider Bat 5 Local 07, Nouvelle Ville — Tizi Ouzou',         director:'Mr Mihoubi Hamid',        type:'Agency',         services:['Auto','Habitation','Claims'],                   lat:36.700551, lng:4.050789},
+  {id:35, name:'Tours-Villas',             city:'Tizi Ouzou',             wilaya:'Tizi Ouzou', address:'Route des Tours-Villas — Tizi Ouzou',                                                director:'Mr Medjbour Idir',        type:'Agency',         services:['Auto','Habitation'],                            lat:36.717122, lng:4.041346},
+  {id:36, name:'Draa Ben Khedda',          city:'Draa Ben Khedda',        wilaya:'Tizi Ouzou', address:'06, Rue Kasseri Ahmed, Draa Ben Khedda — Tizi Ouzou',                               director:'Mme Boumrar Leila',       type:'Agency',         services:['Auto','Agricultural'],                          lat:36.732555, lng:3.966033},
+  {id:37, name:'Nouvelle Ville 2',         city:'Tizi Ouzou',             wilaya:'Tizi Ouzou', address:'Boulevard des Freres Belhadj, Nouvelle Ville — Tizi Ouzou',                         director:'Mr Berraoui Kamel',       type:'Agency',         services:['Auto','Habitation'],                            lat:36.702103, lng:4.050065},
+  {id:38, name:'Beni Douala',              city:'Beni Douala',            wilaya:'Tizi Ouzou', address:'Bâtiment N°06 Appartement N°04, Centre Beni Douala — Tizi Ouzou',                  director:'Mr Berraoui Kamel',       type:'Agency',         services:['Habitation','Agricultural'],                    lat:36.622719, lng:4.079689},
+  {id:39, name:'Siege Social CAAR',        city:'Alger Centre',           wilaya:'Alger',      address:'48, Rue Didouche Mourad, Alger 16000',                                               director:'Direction Generale',      type:'Headquarters',   services:['Auto','Habitation','Business','Transport','Industrial','Agricultural','Claims'], lat:36.767043, lng:3.052792},
+];
+
+/* ============================================================
+   ALL 58 WILAYAS
+============================================================ */
+const WILAYAS = [
+  {name:'Adrar',               lat:27.874, lng:0.294,   zoom:10},
+  {name:'Chlef',               lat:36.165, lng:1.330,   zoom:11},
+  {name:'Laghouat',            lat:33.800, lng:2.865,   zoom:11},
+  {name:'Oum El Bouaghi',      lat:35.875, lng:7.116,   zoom:11},
+  {name:'Batna',               lat:35.556, lng:6.174,   zoom:11},
+  {name:'Bejaia',              lat:36.752, lng:5.057,   zoom:12},
+  {name:'Biskra',              lat:34.850, lng:5.728,   zoom:11},
+  {name:'Bechar',              lat:31.617, lng:-2.217,  zoom:11},
+  {name:'Blida',               lat:36.470, lng:2.833,   zoom:12},
+  {name:'Bouira',              lat:36.370, lng:3.900,   zoom:11},
+  {name:'Tamanrasset',         lat:22.785, lng:5.523,   zoom:10},
+  {name:'Tebessa',             lat:35.404, lng:8.120,   zoom:11},
+  {name:'Tlemcen',             lat:34.880, lng:-1.320,  zoom:11},
+  {name:'Tiaret',              lat:35.370, lng:1.322,   zoom:11},
+  {name:'Tizi Ouzou',          lat:36.712, lng:4.045,   zoom:11},
+  {name:'Alger',               lat:36.752, lng:3.042,   zoom:12},
+  {name:'Djelfa',              lat:34.670, lng:3.263,   zoom:11},
+  {name:'Jijel',               lat:36.820, lng:5.766,   zoom:11},
+  {name:'Setif',               lat:36.190, lng:5.412,   zoom:11},
+  {name:'Saida',               lat:34.830, lng:0.150,   zoom:11},
+  {name:'Skikda',              lat:36.876, lng:6.906,   zoom:11},
+  {name:'Sidi Bel Abbes',      lat:35.190, lng:-0.630,  zoom:11},
+  {name:'Annaba',              lat:36.900, lng:7.755,   zoom:12},
+  {name:'Guelma',              lat:36.462, lng:7.431,   zoom:11},
+  {name:'Constantine',         lat:36.365, lng:6.615,   zoom:12},
+  {name:'Medea',               lat:36.264, lng:2.760,   zoom:11},
+  {name:'Mostaganem',          lat:35.937, lng:0.089,   zoom:11},
+  {name:'Msila',               lat:35.705, lng:4.543,   zoom:11},
+  {name:'Mascara',             lat:35.395, lng:0.140,   zoom:11},
+  {name:'Ouargla',             lat:31.947, lng:5.318,   zoom:11},
+  {name:'Oran',                lat:35.699, lng:-0.635,  zoom:12},
+  {name:'El Bayadh',           lat:33.683, lng:1.017,   zoom:11},
+  {name:'Illizi',              lat:26.507, lng:8.483,   zoom:10},
+  {name:'Bordj Bou Arreridj',  lat:36.074, lng:4.763,   zoom:11},
+  {name:'Boumerdes',           lat:36.765, lng:3.460,   zoom:11},
+  {name:'El Taref',            lat:36.767, lng:8.313,   zoom:11},
+  {name:'Tindouf',             lat:27.674, lng:-8.147,  zoom:10},
+  {name:'Tissemsilt',          lat:35.607, lng:1.812,   zoom:11},
+  {name:'El Oued',             lat:33.357, lng:6.854,   zoom:11},
+  {name:'Khenchela',           lat:35.426, lng:7.146,   zoom:11},
+  {name:'Souk Ahras',          lat:36.280, lng:7.951,   zoom:11},
+  {name:'Tipaza',              lat:36.589, lng:2.447,   zoom:11},
+  {name:'Mila',                lat:36.452, lng:6.265,   zoom:11},
+  {name:'Ain Defla',           lat:36.260, lng:1.970,   zoom:11},
+  {name:'Naama',               lat:33.267, lng:-0.317,  zoom:11},
+  {name:'Ain Temouchent',      lat:35.298, lng:-1.138,  zoom:11},
+  {name:'Ghardaia',            lat:32.490, lng:3.674,   zoom:11},
+  {name:'Relizane',            lat:35.739, lng:0.556,   zoom:11},
+  {name:'Timimoun',            lat:29.263, lng:0.230,   zoom:10},
+  {name:'Bordj Badji Mokhtar', lat:21.328, lng:0.942,   zoom:10},
+  {name:'Ouled Djellal',       lat:34.418, lng:5.068,   zoom:11},
+  {name:'Beni Abbes',          lat:30.128, lng:-2.168,  zoom:11},
+  {name:'In Salah',            lat:27.196, lng:2.463,   zoom:10},
+  {name:'In Guezzam',          lat:19.565, lng:5.769,   zoom:10},
+  {name:'Touggourt',           lat:33.100, lng:6.067,   zoom:11},
+  {name:'Djanet',              lat:24.554, lng:9.484,   zoom:10},
+  {name:'El Mghair',           lat:33.953, lng:5.923,   zoom:11},
+  {name:'El Menia',            lat:30.579, lng:2.881,   zoom:10},
+];
+
+/* ============================================================
+   FILTER STATE
+============================================================ */
+const activeFilters = { wilaya: '', city: '', type: '', service: '', search: '' };
+
+/* ============================================================
+   MAP VARIABLES — declared once here, used everywhere
+============================================================ */
+let heroMap;
+let filterMap;
+const heroMarkerMap   = {};
+const filterMarkerMap = {};
+
+/* ============================================================
+   HELPER — normalize strings for comparison
+============================================================ */
+function normalize(s) {
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/['']/g, '');
 }
-document.addEventListener('click',function(e){
-  if(!e.target.closest('.nav-dropdown')){
-    var b=document.getElementById('companyBtn');
-    var m=document.getElementById('companyMenu');
-    if(b)b.classList.remove('open');
-    if(m)m.classList.remove('open');
+
+/* ============================================================
+   ICON FACTORIES
+============================================================ */
+function makeHeroDotIcon() {
+  return L.divIcon({
+    className: '',
+    html: '<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4.5" fill="#E8761E" stroke="white" stroke-width="1"/></svg>',
+    iconSize: [10, 10],
+    iconAnchor: [5, 5],
+  });
+}
+
+function makeFilterIcon(active) {
+  var w = active ? 32 : 26;
+  var h = active ? 42 : 34;
+  var cx = w / 2;
+  var cy = w / 2;
+  var fill = active ? '#C9601A' : '#E8761E';
+  return L.divIcon({
+    className: '',
+    html: '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" fill="none">' +
+      '<path d="M' + cx + ' 0C' + (cx*0.455) + ' 0 0 ' + (cy*0.455) + ' 0 ' + cy + 'C0 ' + (cy*1.75) + ' ' + cx + ' ' + h + ' ' + cx + ' ' + h + 'S' + w + ' ' + (cy*1.75) + ' ' + w + ' ' + cy + 'C' + w + ' ' + (cy*0.455) + ' ' + (cx*1.545) + ' 0 ' + cx + ' 0Z" fill="' + fill + '"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + (w*0.32) + '" fill="white"/>' +
+      '<text x="' + cx + '" y="' + (cy + w*0.14) + '" text-anchor="middle" font-size="' + (w*0.3) + '" font-weight="800" fill="' + fill + '" font-family="DM Sans,sans-serif">C</text>' +
+      '</svg>',
+    iconSize: [w, h],
+    iconAnchor: [cx, h],
+    popupAnchor: [0, -h - 4],
+  });
+}
+
+/* ============================================================
+   POPUP FACTORY
+============================================================ */
+function makePopup(ag) {
+  var tel = ag.phone ? ('+213' + ag.phone.replace(/\s/g, '').substring(1)) : '';
+  var callBtn = tel ? ('<button class="popup-btn pbtn-call" onclick="window.location.href=\'tel:' + tel + '\'">&#128222; Call</button>') : '';
+  return '<div>' +
+    '<div class="popup-head">' +
+      '<div class="popup-head-code">' + ag.type + ' &bull; ' + ag.wilaya + '</div>' +
+      '<div class="popup-head-name">' + ag.name + '</div>' +
+    '</div>' +
+    '<div class="popup-body">' +
+      '<div class="popup-addr">' + ag.address + '</div>' +
+      (ag.phone ? '<div class="popup-ph">&#128222; ' + ag.phone + '</div>' : '') +
+      '<div class="popup-actions">' +
+        '<button class="popup-btn pbtn-dir" onclick="window.open(\'https://www.google.com/maps/dir/?api=1&destination=' + ag.lat + ',' + ag.lng + '\',\'_blank\')">&#128506; Directions</button>' +
+        callBtn +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ============================================================
+   HERO MINI MAP  — controlled ONLY by the search input above
+============================================================ */
+function initHeroMap() {
+  heroMap = L.map('heroMap', {
+    center: [28.5, 2.5],
+    zoom: 4,
+    zoomControl: true,
+    scrollWheelZoom: false,
+    attributionControl: false,
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+  }).addTo(heroMap);
+  setTimeout(function() { heroMap.invalidateSize(); }, 150);
+
+  var dotIcon = makeHeroDotIcon();
+  AGENCIES.forEach(function(ag) {
+    var m = L.marker([ag.lat, ag.lng], { icon: dotIcon }).addTo(heroMap);
+    m.bindPopup(
+      '<div style="font-family:DM Sans,sans-serif;padding:4px 2px">' +
+      '<strong style="font-size:0.75rem">' + ag.name + '</strong><br>' +
+      '<span style="font-size:0.65rem;color:#666">' + ag.wilaya + '</span>' +
+      '</div>',
+      { maxWidth: 140, minWidth: 120 }
+    );
+    heroMarkerMap[ag.id] = m;
+  });
+}
+
+/* ============================================================
+   FILTER MAP  — controlled ONLY by the filter dropdowns below
+============================================================ */
+function initFilterMap() {
+  filterMap = L.map('filterMap', {
+    center: [28.5, 2.5],
+    zoom: 5,
+    zoomControl: true,
+    scrollWheelZoom: true,
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19,
+  }).addTo(filterMap);
+  setTimeout(function() { filterMap.invalidateSize(); }, 150);
+
+  AGENCIES.forEach(function(ag) {
+    var m = L.marker([ag.lat, ag.lng], { icon: makeFilterIcon(false) }).addTo(filterMap);
+    m.bindPopup(makePopup(ag), { maxWidth: 260, minWidth: 250 });
+    m.on('click', function() {
+      resetFilterIcons();
+      m.setIcon(makeFilterIcon(true));
+      highlightFilterCard(ag.id);
+    });
+    filterMarkerMap[ag.id] = m;
+  });
+
+  renderFilterCards(AGENCIES);
+}
+
+function resetFilterIcons() {
+  Object.keys(filterMarkerMap).forEach(function(id) {
+    filterMarkerMap[id].setIcon(makeFilterIcon(false));
+  });
+}
+
+/* ============================================================
+   RENDER FILTER CARD LIST
+============================================================ */
+function renderFilterCards(list) {
+  var container = document.getElementById('filterCardList');
+  var noRes     = document.getElementById('filterNoResults');
+  var countEl   = document.getElementById('filterCountNum');
+
+  if (countEl) countEl.textContent = list.length;
+
+  if (!list.length) {
+    container.innerHTML = '';
+    noRes.classList.add('show');
+    return;
+  }
+  noRes.classList.remove('show');
+
+  container.innerHTML = list.map(function(ag) {
+    var typeIcon = ag.type === 'Headquarters' ? '&#11088;' :
+                  ag.type === 'Main Agency'    ? '&#127970;' :
+                  ag.type === 'Regional Office'? '&#127978;' :
+                  ag.type === 'Claims Center'  ? '&#128193;' : '&#128205;';
+    var svcs = (ag.services || []).map(function(s) {
+      return '<span class="fc-service-tag">' + s + '</span>';
+    }).join('');
+    return '<div class="filter-card" id="fcard-' + ag.id + '" onclick="flyToFilterAgency(' + ag.id + ')">' +
+      '<div class="fc-header">' +
+        '<div class="fc-name">CAAR &mdash; ' + ag.name + '</div>' +
+        '<div class="fc-code">' + typeIcon + '</div>' +
+      '</div>' +
+      '<div class="fc-wilaya">' + ag.city + ', ' + ag.wilaya + '</div>' +
+      (ag.director ? '<div class="fc-director">&#128100; ' + ag.director + '</div>' : '') +
+      (ag.phone    ? '<div class="fc-phone"><span class="fc-phone-icon">&#128222;</span> ' + ag.phone + '</div>' : '') +
+      '<div class="fc-hours">Sunday to Thursday, 08:30 &ndash; 16:00</div>' +
+      (svcs ? '<div class="fc-services">' + svcs + '</div>' : '') +
+      '<div class="fc-btns" onclick="event.stopPropagation()">' +
+        '<button class="fc-btn fc-btn-map" onclick="flyToFilterAgency(' + ag.id + ')">View on map</button>' +
+        '<button class="fc-btn fc-btn-dir" onclick="window.open(\'https://www.google.com/maps/dir/?api=1&destination=' + ag.lat + ',' + ag.lng + '\',\'_blank\')">Directions</button>' +
+        '<button class="fc-btn fc-btn-call" onclick="window.location.href=\'tel:+213216320072\'">&#128222; Call</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  // Show/hide markers
+  var filteredIds = {};
+  list.forEach(function(a) { filteredIds[a.id] = true; });
+  Object.keys(filterMarkerMap).forEach(function(id) {
+    var m = filterMarkerMap[id];
+    if (filteredIds[id]) {
+      if (!filterMap.hasLayer(m)) m.addTo(filterMap);
+    } else {
+      if (filterMap.hasLayer(m)) filterMap.removeLayer(m);
+    }
+  });
+
+  // Fit map to filtered markers
+  if (list.length > 0 && list.length < AGENCIES.length) {
+    var group = L.featureGroup(list.map(function(ag) { return filterMarkerMap[ag.id]; }));
+    filterMap.fitBounds(group.getBounds().pad(0.2));
+  } else {
+    filterMap.flyTo([28.5, 2.5], 5, { animate: true, duration: 1 });
+  }
+}
+
+function highlightFilterCard(id) {
+  document.querySelectorAll('.filter-card').forEach(function(c) { c.classList.remove('active'); });
+  var el = document.getElementById('fcard-' + id);
+  if (el) { el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+function flyToFilterAgency(id) {
+  var ag = AGENCIES.find(function(a) { return a.id === id; });
+  if (!ag) return;
+  filterMap.flyTo([ag.lat, ag.lng], 15, { animate: true, duration: 1.2 });
+  resetFilterIcons();
+  filterMarkerMap[id].setIcon(makeFilterIcon(true));
+  setTimeout(function() { filterMarkerMap[id].openPopup(); }, 1200);
+  highlightFilterCard(id);
+}
+
+/* ============================================================
+   HERO SEARCH  — autocomplete + fly hero mini-map only
+============================================================ */
+var autoItems = [];
+
+function onSearchInput(val) {
+  var clearBtn = document.getElementById('sClear');
+  if (clearBtn) clearBtn.classList.toggle('vis', val.length > 0);
+  var q = normalize(val);
+  if (q.length < 2) { closeAuto(); return; }
+
+  autoItems = [];
+  var seen = {};
+
+  // Wilaya matches
+  WILAYAS.forEach(function(w) {
+    var key = normalize(w.name);
+    if (key.indexOf(q) !== -1 && !seen['w:' + key]) {
+      seen['w:' + key] = true;
+      autoItems.push({ type: 'wilaya', label: w.name, sub: 'Wilaya', lat: w.lat, lng: w.lng, zoom: w.zoom });
+    }
+  });
+
+  // Agency matches
+  AGENCIES.forEach(function(ag) {
+    var hit = normalize(ag.name).indexOf(q) !== -1 ||
+              normalize(ag.city).indexOf(q) !== -1 ||
+              normalize(ag.address).indexOf(q) !== -1 ||
+              normalize(ag.wilaya).indexOf(q) !== -1;
+    if (hit && !seen['a:' + ag.id]) {
+      seen['a:' + ag.id] = true;
+      autoItems.push({ type: 'agency', id: ag.id, label: ag.name, sub: ag.address.substring(0, 46) + '...', lat: ag.lat, lng: ag.lng });
+    }
+  });
+
+  autoItems = autoItems.slice(0, 8);
+  renderAuto(autoItems);
+}
+
+function renderAuto(items) {
+  var list = document.getElementById('autoList');
+  if (!items.length) { list.classList.remove('open'); return; }
+  list.innerHTML = items.map(function(it, i) {
+    return '<div class="auto-item" onclick="selectAuto(' + i + ')">' +
+      '<span class="auto-ico">' + (it.type === 'wilaya' ? '&#128506;' : '&#128205;') + '</span>' +
+      '<div><div class="auto-name">' + it.label + '</div><div class="auto-sub">' + it.sub + '</div></div>' +
+    '</div>';
+  }).join('');
+  list.classList.add('open');
+}
+
+function selectAuto(i) {
+  var it = autoItems[i];
+  if (!it) return;
+  var input = document.getElementById('mapSearch');
+  if (input) input.value = it.label;
+  closeAuto();
+  heroMap.flyTo([it.lat, it.lng], it.zoom || 12, { animate: true, duration: 1.5 });
+}
+
+function onSearchKey(e) {
+  if (e.key === 'Enter') {
+    var q = normalize((document.getElementById('mapSearch') || {}).value || '');
+    var wMatch = WILAYAS.find(function(w) { return normalize(w.name).indexOf(q) !== -1; });
+    if (wMatch) { heroMap.flyTo([wMatch.lat, wMatch.lng], wMatch.zoom, { animate: true }); closeAuto(); return; }
+    var ag = AGENCIES.find(function(a) { return normalize(a.name).indexOf(q) !== -1 || normalize(a.city).indexOf(q) !== -1; });
+    if (ag) { heroMap.flyTo([ag.lat, ag.lng], 14, { animate: true }); closeAuto(); }
+  }
+  if (e.key === 'Escape') closeAuto();
+}
+
+function clearSearch() {
+  var input = document.getElementById('mapSearch');
+  if (input) input.value = '';
+  var clearBtn = document.getElementById('sClear');
+  if (clearBtn) clearBtn.classList.remove('vis');
+  closeAuto();
+  heroMap.flyTo([28.5, 2.5], 5, { animate: true, duration: 1.5 });
+}
+
+function closeAuto() {
+  var list = document.getElementById('autoList');
+  if (list) list.classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.search-wrap')) closeAuto();
+});
+
+/* ============================================================
+   FILTER DROPDOWNS  — controls filter map only
+============================================================ */
+function toggleDrop(id) {
+  ['fd-wilaya', 'fd-city', 'fd-type', 'fd-service'].forEach(function(d) {
+    if (d !== id) document.getElementById(d).classList.remove('open');
+  });
+  document.getElementById(id).classList.toggle('open');
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.filter-dropdown') && !e.target.closest('.fd-search-wrap')) {
+    ['fd-wilaya', 'fd-city', 'fd-type', 'fd-service'].forEach(function(d) {
+      document.getElementById(d).classList.remove('open');
+    });
   }
 });
+
+function buildWilayaDropdown() {
+  var menu = document.getElementById('fdm-wilaya');
+  var agencyWilayas = {};
+  AGENCIES.forEach(function(a) { agencyWilayas[a.wilaya] = true; });
+  var html = '<div class="fd-item fd-item-all active" onclick="setFilter(\'wilaya\',\'\',this)">&#127462;&#127465; All Wilayas</div>';
+  WILAYAS.forEach(function(w) {
+    var has = !!agencyWilayas[w.name];
+    html += '<div class="fd-item' + (has ? ' fd-has-agency' : '') + '" onclick="setFilter(\'wilaya\',\'' + w.name + '\',this)">' +
+      (has ? '&#128205;' : '&#9711;') + ' ' + w.name +
+    '</div>';
+  });
+  menu.innerHTML = html;
+}
+
+function buildCityDropdown(wilaya) {
+  var menu = document.getElementById('fdm-city');
+  var source = wilaya ? AGENCIES.filter(function(a) { return a.wilaya === wilaya; }) : AGENCIES;
+  var citySet = {};
+  source.forEach(function(a) { citySet[a.city] = true; });
+  var cities = Object.keys(citySet).sort();
+  var html = '<div class="fd-item fd-item-all active" onclick="setFilter(\'city\',\'\',this)">All Cities</div>';
+  cities.forEach(function(c) {
+    html += '<div class="fd-item" onclick="setFilter(\'city\',\'' + c + '\',this)">' + c + '</div>';
+  });
+  menu.innerHTML = html;
+}
+
+function setFilter(key, val, el) {
+  activeFilters[key] = val;
+  var labels = { wilaya: 'Wilaya', city: 'City', type: 'Agency Type', service: 'Services' };
+  var lbl = document.getElementById('fdlbl-' + key);
+  if (lbl) lbl.textContent = val || labels[key];
+  var menu = document.getElementById('fdm-' + key);
+  menu.querySelectorAll('.fd-item').forEach(function(i) { i.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('fd-' + key).classList.remove('open');
+
+  if (key === 'wilaya') {
+    activeFilters.city = '';
+    var cityLbl = document.getElementById('fdlbl-city');
+    if (cityLbl) cityLbl.textContent = 'City';
+    buildCityDropdown(val);
+    if (val) {
+      var wc = WILAYAS.find(function(w) { return w.name === val; });
+      if (wc) filterMap.flyTo([wc.lat, wc.lng], wc.zoom, { animate: true, duration: 1.2 });
+    }
+  }
+
+  applyFilters();
+  updateFilterTags();
+}
+
+function setSearchFilter(val) {
+  activeFilters.search = val.trim().toLowerCase();
+  var clr = document.getElementById('fdSearchClear');
+  if (clr) clr.style.display = val ? 'block' : 'none';
+  applyFilters();
+  updateFilterTags();
+}
+
+function clearNameSearch() {
+  var inp = document.getElementById('fdSearchInput');
+  if (inp) inp.value = '';
+  activeFilters.search = '';
+  var clr = document.getElementById('fdSearchClear');
+  if (clr) clr.style.display = 'none';
+  applyFilters();
+  updateFilterTags();
+}
+
+function applyFilters() {
+  var result = AGENCIES;
+  if (activeFilters.wilaya)  result = result.filter(function(ag) { return ag.wilaya === activeFilters.wilaya; });
+  if (activeFilters.city)    result = result.filter(function(ag) { return ag.city   === activeFilters.city; });
+  if (activeFilters.type)    result = result.filter(function(ag) { return ag.type   === activeFilters.type; });
+  if (activeFilters.service) result = result.filter(function(ag) { return ag.services && ag.services.indexOf(activeFilters.service) !== -1; });
+  if (activeFilters.search)  result = result.filter(function(ag) {
+    var q = activeFilters.search;
+    return normalize(ag.name).indexOf(q) !== -1 ||
+           normalize(ag.city).indexOf(q) !== -1 ||
+           normalize(ag.wilaya).indexOf(q) !== -1 ||
+           normalize(ag.address).indexOf(q) !== -1;
+  });
+  renderFilterCards(result);
+}
+
+function updateFilterTags() {
+  var row = document.getElementById('filterTagsRow');
+  if (!row) return;
+  var tags = [];
+  if (activeFilters.wilaya)  tags.push({ key: 'wilaya',  label: '&#128205; Wilaya: ' + activeFilters.wilaya });
+  if (activeFilters.city)    tags.push({ key: 'city',    label: '&#127961; City: '   + activeFilters.city   });
+  if (activeFilters.type)    tags.push({ key: 'type',    label: '&#127970; Type: '   + activeFilters.type   });
+  if (activeFilters.service) tags.push({ key: 'service', label: '&#9881;&#65039; '   + activeFilters.service });
+  if (activeFilters.search)  tags.push({ key: 'search',  label: '&#128269; "' + activeFilters.search + '"'  });
+  if (!tags.length) { row.innerHTML = ''; row.style.display = 'none'; return; }
+  row.style.display = 'flex';
+  row.innerHTML = tags.map(function(t) {
+    return '<span class="filter-tag" onclick="clearTag(\'' + t.key + '\')">' + t.label + ' <span class="filter-tag-x">&#10005;</span></span>';
+  }).join('');
+}
+
+function clearTag(key) {
+  activeFilters[key] = '';
+  var labels = { wilaya: 'Wilaya', city: 'City', type: 'Agency Type', service: 'Services' };
+  var lbl = document.getElementById('fdlbl-' + key);
+  if (lbl) lbl.textContent = labels[key] || key;
+  if (key === 'search') {
+    var inp = document.getElementById('fdSearchInput');
+    if (inp) inp.value = '';
+    var clr = document.getElementById('fdSearchClear');
+    if (clr) clr.style.display = 'none';
+  }
+  var menu = document.getElementById('fdm-' + key);
+  if (menu) {
+    menu.querySelectorAll('.fd-item').forEach(function(i) { i.classList.remove('active'); });
+    var all = menu.querySelector('.fd-item-all');
+    if (all) all.classList.add('active');
+  }
+  if (key === 'wilaya') {
+    activeFilters.city = '';
+    var cl = document.getElementById('fdlbl-city');
+    if (cl) cl.textContent = 'City';
+    buildCityDropdown('');
+  }
+  applyFilters();
+  updateFilterTags();
+}
+
+function resetFilters() {
+  Object.keys(activeFilters).forEach(function(k) { activeFilters[k] = ''; });
+  var inp = document.getElementById('fdSearchInput');
+  if (inp) inp.value = '';
+  var clr = document.getElementById('fdSearchClear');
+  if (clr) clr.style.display = 'none';
+  ['wilaya', 'city', 'type', 'service'].forEach(function(key) {
+    var labels = { wilaya: 'Wilaya', city: 'City', type: 'Agency Type', service: 'Services' };
+    var lbl = document.getElementById('fdlbl-' + key);
+    if (lbl) lbl.textContent = labels[key];
+    var menu = document.getElementById('fdm-' + key);
+    if (menu) {
+      menu.querySelectorAll('.fd-item').forEach(function(i) { i.classList.remove('active'); });
+      var all = menu.querySelector('.fd-item-all');
+      if (all) all.classList.add('active');
+    }
+  });
+  buildCityDropdown('');
+  updateFilterTags();
+  renderFilterCards(AGENCIES);
+  filterMap.flyTo([28.5, 2.5], 5, { animate: true, duration: 1 });
+}
+
+/* ============================================================
+   HEADER SEARCH BAR
+============================================================ */
+document.getElementById('searchBtn').addEventListener('click', function() {
+  document.getElementById('searchBar').classList.toggle('open');
+});
+document.getElementById('searchCloseHdr').addEventListener('click', function() {
+  document.getElementById('searchBar').classList.remove('open');
+});
+
+/* ============================================================
+   BOOT
+============================================================ */
+window.addEventListener('load', function() {
+  buildWilayaDropdown();
+  buildCityDropdown('');
+  initHeroMap();
+  initFilterMap();
+});
+
 </script>
 </body>
 </html>
