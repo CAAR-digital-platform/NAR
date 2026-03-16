@@ -8,20 +8,20 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --orange:       #E8761E;
-      --orange-dark:  #C9601A;
+      --orange: #E8761E;
+      --orange-dark: #C9601A;
       --orange-light: #FFF3E8;
-      --dark:         #1C1C1C;
-      --gray:         #666;
-      --border:       #e0e0e0;
-      --white:        #fff;
-      --font-serif:   'Lora', serif;
-      --font-sans:    'Source Sans 3', sans-serif;
+      --dark: #1C1C1C;
+      --gray: #666;
+      --border: #e0e0e0;
+      --white: #fff;
+      --font-serif: 'Lora', serif;
+      --font-sans: 'Source Sans 3', sans-serif;
     }
     body { font-family: var(--font-sans); color: var(--dark); background: var(--white); }
-    a    { text-decoration: none; color: inherit; }
+    a { text-decoration: none; color: inherit; }
 
-    /* ════════════ NAVBAR ════════════ */
+    /* ── NAVBAR ── */
     .navbar {
       position: sticky; top: 0; z-index: 100;
       background: var(--white); border-bottom: 1px solid var(--border);
@@ -30,46 +30,48 @@
     }
     .nav-left { display: flex; align-items: center; gap: 28px; }
     .nav-logo {
-      width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--orange);
+      width: 42px; height: 42px; border-radius: 50%;
+      border: 2px solid var(--orange);
       display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-serif); font-size: 0.6rem; font-weight: 700;
-      color: var(--orange); text-align: center; line-height: 1.15; flex-shrink: 0;
+      font-family: var(--font-serif); font-size: 0.58rem; font-weight: 700;
+      color: var(--orange); text-align: center; line-height: 1.1; flex-shrink: 0;
     }
-    .nav-dropdown {
-      display: flex; align-items: center; gap: 5px;
-      font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--dark);
+    .nav-ind {
+      font-size: 0.82rem; font-weight: 700; color: var(--dark);
+      display: flex; align-items: center; gap: 4px; cursor: pointer;
     }
-    .nav-dropdown svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+    .nav-ind svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; }
     .nav-center { display: flex; align-items: center; gap: 22px; }
     .nav-center a { font-size: 0.78rem; color: var(--gray); font-weight: 500; transition: color 0.2s; }
     .nav-center a:hover, .nav-center a.active { color: var(--orange); }
     .nav-center a.active { font-weight: 600; }
     .nav-right { display: flex; align-items: center; gap: 10px; }
-    .nav-search { background: none; border: none; cursor: pointer; padding: 5px; color: var(--gray); display: flex; }
-    .nav-search svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
-    .btn-nav {
+    .nav-btn {
       padding: 8px 18px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
-      cursor: pointer; font-family: var(--font-sans); border: 1.5px solid var(--orange); transition: all 0.2s;
+      cursor: pointer; font-family: var(--font-sans); border: 1.5px solid var(--orange);
+      transition: all 0.2s;
     }
-    .btn-ghost { background: var(--white); color: var(--orange); }
-    .btn-ghost:hover { background: var(--orange); color: var(--white); }
-    .btn-fill  { background: var(--orange); color: var(--white); }
-    .btn-fill:hover  { background: var(--orange-dark); }
+    .nav-btn-ghost { background: var(--white); color: var(--orange); }
+    .nav-btn-ghost:hover { background: var(--orange); color: var(--white); }
+    .nav-btn-fill { background: var(--orange); color: var(--white); }
+    .nav-btn-fill:hover { background: var(--orange-dark); }
 
-    /* ════════════ BREADCRUMB ════════════ */
+    /* ── BREADCRUMB ── */
     .breadcrumb {
-      padding: 9px 64px; background: var(--white); border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--gray);
+      padding: 9px 64px; background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; color: var(--gray);
     }
     .breadcrumb a { color: var(--gray); transition: color 0.2s; }
     .breadcrumb a:hover { color: var(--orange); }
     .breadcrumb .sep { color: #bbb; }
-    .breadcrumb .current { color: var(--orange); font-weight: 600; }
+    .breadcrumb .cur { color: var(--orange); font-weight: 600; }
 
-    /* ════════════ HERO ════════════ */
-    .page-hero {
+    /* ── HERO ── */
+    .hero {
       display: flex; align-items: flex-end; justify-content: space-between;
-      padding: 40px 64px 0; gap: 24px; overflow: hidden; background: var(--white);
+      padding: 36px 64px 0; gap: 24px; overflow: hidden; background: var(--white);
     }
     .hero-text { max-width: 420px; padding-bottom: 28px; }
     .hero-text h1 {
@@ -78,46 +80,47 @@
     }
     .hero-text p { font-size: 0.88rem; color: var(--gray); line-height: 1.65; }
     .hero-img { flex-shrink: 0; }
-    .hero-img img { height: 210px; width: auto; object-fit: contain; display: block; }
+    .hero-img img { height: 200px; width: auto; object-fit: contain; display: block; }
 
-    /* ════════════ LAYOUT ════════════ */
+    /* ── MAIN LAYOUT ── */
     .layout {
-      display: grid; grid-template-columns: 290px 1fr;
+      display: grid; grid-template-columns: 300px 1fr;
       border-top: 1px solid var(--border); min-height: 420px;
     }
 
-    /* ════════════ SIDEBAR ════════════ */
+    /* ── SIDEBAR ── */
     .sidebar {
       border-right: 1px solid var(--border);
-      padding: 24px 16px; display: flex; flex-direction: column; gap: 10px;
+      padding: 24px 16px; display: flex; flex-direction: column; gap: 12px;
       background: var(--white);
     }
     .prod-btn {
       display: block; width: 100%; text-align: left;
       border: 2px solid transparent; border-radius: 10px;
-      padding: 15px 16px; cursor: pointer; font-family: var(--font-sans);
+      padding: 16px 18px; cursor: pointer; font-family: var(--font-sans);
       background: var(--orange); color: var(--white); transition: all 0.22s;
     }
-    .prod-btn .t { font-size: 0.83rem; font-weight: 700; display: block; margin-bottom: 3px; }
-    .prod-btn .s { font-size: 0.74rem; opacity: 0.9; display: block; line-height: 1.4; }
+    .prod-btn-title { font-size: 0.86rem; font-weight: 700; display: block; margin-bottom: 4px; }
+    .prod-btn-sub { font-size: 0.74rem; opacity: 0.88; display: block; line-height: 1.4; }
     .prod-btn:hover:not(.active) { background: var(--orange-dark); }
     .prod-btn.active {
       background: var(--white); color: var(--dark);
-      border-color: var(--orange); box-shadow: 0 2px 14px rgba(232,118,30,0.14);
+      border-color: var(--orange); box-shadow: 0 2px 14px rgba(232,118,30,0.13);
     }
-    .prod-btn.active .t { color: var(--dark); }
-    .prod-btn.active .s { color: var(--gray); opacity: 1; }
+    .prod-btn.active .prod-btn-title { color: var(--dark); }
+    .prod-btn.active .prod-btn-sub { color: var(--gray); opacity: 1; }
 
-    /* ════════════ CONTENT PANEL ════════════ */
+    /* ── CONTENT PANEL ── */
     .panel { padding: 36px 48px; }
     .detail { display: none; animation: fadeUp 0.22s ease; }
     .detail.on { display: block; }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0);   }
+      to { opacity: 1; transform: translateY(0); }
     }
+
     .detail h2 {
-      font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700;
+      font-family: var(--font-serif); font-size: 1.35rem; font-weight: 700;
       color: var(--dark); margin-bottom: 6px;
     }
     .abbr-tag {
@@ -130,11 +133,13 @@
       margin-bottom: 22px; max-width: 580px;
     }
     .section-lbl {
-      font-size: 0.73rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.8px; color: var(--orange); margin-bottom: 12px;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.9px; color: var(--orange); margin-bottom: 14px;
       display: flex; align-items: center; gap: 8px;
     }
     .section-lbl::after { content: ''; flex: 1; height: 1px; background: #f0e4d8; }
+
+    /* Bullet point style matching individual-risks.html */
     .covers {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 6px 28px; margin-bottom: 22px;
@@ -147,79 +152,108 @@
       content: "•"; color: var(--orange); font-weight: 800;
       font-size: 1.1rem; flex-shrink: 0; margin-top: -2px;
     }
+
     .badge {
       display: inline-flex; align-items: center; gap: 8px;
       background: #fff8f2; border: 1px solid #f5ddc8;
       border-radius: 8px; padding: 11px 16px;
-      font-size: 0.8rem; color: var(--dark); margin-top: 4px;
+      font-size: 0.8rem; color: var(--dark); margin-top: 6px;
     }
     .badge svg { width: 15px; height: 15px; stroke: var(--orange); fill: none; stroke-width: 2; flex-shrink: 0; }
     .badge strong { color: var(--orange); }
 
-    /* ════════════ FOOTER ════════════ */
-    .footer { background: #1a1a1a; color: rgba(255,255,255,0.7); padding: 44px 64px 24px; }
-    .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 36px; margin-bottom: 32px; }
-    .f-brand { font-family: var(--font-serif); font-size: 1.15rem; color: #fff; margin-bottom: 10px; }
-    .footer-grid p, .footer-grid a { font-size: 0.74rem; line-height: 1.7; }
-    .footer-grid ul { list-style: none; }
-    .footer-grid ul li { margin-bottom: 8px; }
-    .footer-grid ul li a { transition: color 0.2s; }
-    .footer-grid ul li a:hover { color: var(--orange); }
-    .footer-grid h5 {
-      font-size: 0.72rem; font-weight: 700; color: #fff;
-      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+    /* ── FOOTER matching screenshot 2 ── */
+    footer {
+      background: #3a3a3a; color: rgba(255,255,255,0.72);
+      padding: 48px 64px 0; border-top: 4px solid var(--orange);
     }
+    .footer-grid {
+      display: grid; grid-template-columns: 1.6fr 1fr 1.4fr 1fr;
+      gap: 40px; margin-bottom: 40px;
+    }
+    .footer-logo-wrap {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+    }
+    .footer-logo-circle {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 2px solid var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-serif); font-size: 0.52rem; font-weight: 700;
+      color: var(--orange); text-align: center; line-height: 1.15;
+    }
+    .footer-contact { display: flex; flex-direction: column; gap: 10px; }
+    .footer-contact-row {
+      display: flex; align-items: flex-start; gap: 9px;
+      font-size: 0.8rem; color: rgba(255,255,255,0.72); line-height: 1.4;
+    }
+    .footer-contact-row svg {
+      width: 14px; height: 14px; stroke: var(--orange); fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .footer-col h5 {
+      font-size: 0.7rem; font-weight: 700; color: #fff;
+      text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a {
+      font-size: 0.8rem; color: rgba(255,255,255,0.72);
+      transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: var(--orange); }
     .social-row { display: flex; gap: 8px; margin-top: 4px; }
     .s-icon {
-      width: 28px; height: 28px; border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.25);
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 0.7rem; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s;
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1.5px solid var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 700; color: var(--orange);
+      cursor: pointer; transition: all 0.2s;
     }
-    .s-icon:hover { border-color: var(--orange); color: var(--orange); }
-    hr.fdiv { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 18px; }
-    .footer-bottom { display: flex; justify-content: space-between; font-size: 0.7rem; color: rgba(255,255,255,0.35); }
+    .s-icon:hover { background: var(--orange); color: #fff; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding: 18px 0; text-align: center;
+      font-size: 0.72rem; color: rgba(255,255,255,0.35);
+    }
   </style>
 </head>
 <body>
 
-<!-- ══ NAVBAR ══ -->
+<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-left">
-    <a href="/index.html"><div class="nav-logo">CAAR</div></a>
-    <div class="nav-dropdown">
+    <a href="/index.html">
+      <div class="nav-logo">CAAR</div>
+    </a>
+    <div class="nav-ind">
       INDIVIDUALS
       <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
     </div>
   </div>
   <div class="nav-center">
-    <a href="/index.html">Inbox</a>
+    <a href="/index.html">Home</a>
     <a href="#" class="active">Insurance</a>
-    <a href="#">Company</a>
-    <a href="#">Research</a>
-    <a href="#">News</a>
-    <a href="#">Contact</a>
+    <a href="/company.html">Company</a>
+    <a href="/network.html">Network</a>
+    <a href="/news.html">News</a>
+    <a href="/contact.html">Contact</a>
   </div>
   <div class="nav-right">
-    <button class="nav-search">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    </button>
-    <span style="font-size:0.75rem;color:var(--gray)">EN</span>
-    <button class="btn-nav btn-ghost" onclick="window.location.href='/login.html'">Find Agency</button>
-    <button class="btn-nav btn-fill"  onclick="window.location.href='/login.html'">Contact Us</button>
+    <button class="nav-btn nav-btn-ghost" onclick="window.location.href='/network.html'">Find Agency</button>
+    <button class="nav-btn nav-btn-fill" onclick="window.location.href='/contact.html'">Contact Us</button>
   </div>
 </nav>
 
-<!-- ══ BREADCRUMB ══ -->
+<!-- BREADCRUMB -->
 <div class="breadcrumb">
   <a href="/index.html">Home</a><span class="sep">›</span>
   <a href="/products.html">Insurance</a><span class="sep">›</span>
-  <a href="/products.html">Auto Insurance</a><span class="sep">›</span>
-  <span class="current" id="bc">Motor Insurance</span>
+  <span class="cur" id="bc">Auto Insurance</span>
 </div>
 
-<!-- ══ HERO ══ -->
-<section class="page-hero">
+<!-- HERO -->
+<section class="hero">
   <div class="hero-text">
     <h1>Auto Insurance</h1>
     <p>
@@ -229,37 +263,33 @@
     </p>
   </div>
   <div class="hero-img">
-    <img src="/resources/img/photo2.jpg" alt="Auto Insurance"/>
+    <img src="resources/img/photo2.jpg" alt="Auto Insurance"/>
   </div>
 </section>
 
-<!-- ══ LAYOUT: SIDEBAR + PANEL ══ -->
+<!-- LAYOUT -->
 <div class="layout">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-
     <button class="prod-btn active" id="btn-motor" onclick="show('motor')">
-      <span class="t">Motor Insurance</span>
-      <span class="s">Mandatory coverage for all vehicles on Algerian roads.</span>
+      <span class="prod-btn-title">Motor Insurance</span>
+      <span class="prod-btn-sub">Mandatory coverage for all vehicles on Algerian roads.</span>
     </button>
-
     <button class="prod-btn" id="btn-roadside" onclick="show('roadside')">
-      <span class="t">Roadside Assistance</span>
-      <span class="s">24/7 assistance in case of breakdown or accident.</span>
+      <span class="prod-btn-title">Roadside Assistance</span>
+      <span class="prod-btn-sub">24/7 assistance in case of breakdown or accident.</span>
     </button>
-
     <button class="prod-btn" id="btn-glass" onclick="show('glass')">
-      <span class="t">Windshield / Glass Breakage Assistance</span>
-      <span class="s">Coverage for vehicle glass damage and replacement.</span>
+      <span class="prod-btn-title">Windshield / Glass Breakage Assistance</span>
+      <span class="prod-btn-sub">Coverage for vehicle glass damage and replacement.</span>
     </button>
-
   </aside>
 
-  <!-- CONTENT PANEL -->
+  <!-- PANEL -->
   <div class="panel">
 
-    <!-- ── Motor Insurance ── -->
+    <!-- Motor Insurance -->
     <div class="detail on" id="d-motor">
       <h2>Motor Insurance</h2>
       <span class="abbr-tag">RC Auto</span>
@@ -283,7 +313,7 @@
       </div>
     </div>
 
-    <!-- ── Roadside Assistance ── -->
+    <!-- Roadside Assistance -->
     <div class="detail" id="d-roadside">
       <h2>Roadside Assistance</h2>
       <span class="abbr-tag">Assistance</span>
@@ -307,14 +337,13 @@
       </div>
     </div>
 
-    <!-- ── Glass Breakage ── -->
+    <!-- Glass Breakage -->
     <div class="detail" id="d-glass">
       <h2>Glass Breakage Assistance</h2>
       <span class="abbr-tag">Bris de Glace</span>
       <p class="detail-desc">
-        For vehicle owners seeking to cover glass-related damages to avoid
-        glass-related damage. Covers repair or replacement of all glass
-        elements of your vehicle.
+        For vehicle owners seeking to cover glass-related damages.
+        Covers repair or replacement of all glass elements of your vehicle.
       </p>
       <div class="section-lbl">Covered Elements</div>
       <div class="covers">
@@ -331,55 +360,69 @@
       </div>
     </div>
 
-  </div><!-- /panel -->
-</div><!-- /layout -->
+  </div>
+</div>
 
-<!-- ══ FOOTER ══ -->
-<footer class="footer">
+<!-- FOOTER matching screenshot 2 -->
+<footer>
   <div class="footer-grid">
+
+    <!-- Col 1: logo + contact -->
     <div>
-      <div class="f-brand">CAAR</div>
-      <p>Compagnie Algérienne d'Assurance<br>et de Réassurance<br><br>Siège social : Alger, Algérie<br>contact@caar.dz</p>
+      <div class="footer-logo-wrap">
+        <div class="footer-logo-circle">CAAR</div>
+      </div>
+      <div class="footer-contact">
+        <div class="footer-contact-row">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>48 Rue Didouche Mourad, Algiers 16000</span>
+        </div>
+        <div class="footer-contact-row">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>+213 21 34 10 16</span>
+        </div>
+        <div class="footer-contact-row">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>contact@caar.dz</span>
+        </div>
+      </div>
     </div>
-    <div>
+
+    <!-- Col 2: Company -->
+    <div class="footer-col">
       <h5>Company</h5>
       <ul>
-        <li><a href="#">À propos</a></li>
-        <li><a href="#">Carrières</a></li>
-        <li><a href="#">Actualités</a></li>
-        <li><a href="#">Partenaires</a></li>
+        <li><a href="/company.html">About Us</a></li>
+        <li><a href="/company-careers.html">Careers</a></li>
       </ul>
     </div>
-    <div>
+
+    <!-- Col 3: Insurance -->
+    <div class="footer-col">
       <h5>Insurance</h5>
       <ul>
-        <li><a href="/auto-insurance.html">Auto</a></li>
-        <li><a href="/individual-risks.html">Habitation</a></li>
-        <li><a href="#">Transport</a></li>
-        <li><a href="#">Agriculture</a></li>
-        <li><a href="#">Industrie</a></li>
+        <li><a href="/auto-insurance.html">Auto Insurance</a></li>
+        <li><a href="/individual-risks.html">Entreprises Insurance</a></li>
+        <li><a href="/individual-risks.html">Natural Catastrophe Insurance</a></li>
+        <li><a href="/individual-risks.html">Multi-risk insurance for merchants and craftsmen</a></li>
       </ul>
     </div>
-    <div>
+
+    <!-- Col 4: Follow us -->
+    <div class="footer-col">
       <h5>Follow Us</h5>
       <div class="social-row">
-        <span class="s-icon">f</span>
-        <span class="s-icon">in</span>
-        <span class="s-icon">▶</span>
+        <div class="s-icon">f</div>
       </div>
     </div>
   </div>
-  <hr class="fdiv"/>
-  <div class="footer-bottom">
-    <span>© 2026 CAAR. Tous droits réservés.</span>
-    <span>Mentions légales · Politique de confidentialité</span>
-  </div>
+  <div class="footer-bottom">© 2026 CAAR. All rights reserved.</div>
 </footer>
 
 <script>
   const map = {
-    motor:    { btn: 'btn-motor',    detail: 'd-motor',    bc: 'Motor Insurance'                        },
-    roadside: { btn: 'btn-roadside', detail: 'd-roadside', bc: 'Roadside Assistance'                    },
+    motor:    { btn: 'btn-motor',    detail: 'd-motor',    bc: 'Motor Insurance' },
+    roadside: { btn: 'btn-roadside', detail: 'd-roadside', bc: 'Roadside Assistance' },
     glass:    { btn: 'btn-glass',    detail: 'd-glass',    bc: 'Windshield / Glass Breakage Assistance' }
   };
 
