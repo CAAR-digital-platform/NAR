@@ -8,10 +8,87 @@
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="css/contact.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+
+  <!-- ════════════════════════════════════════════
+       INLINE VALIDATION STYLES (added on top of contact.css)
+       ════════════════════════════════════════════ -->
+  <style>
+    /* ── Field error state ── */
+    .cf-input.field-error,
+    .cf-select.field-error,
+    .cf-textarea.field-error {
+      border-color: #e53e3e !important;
+      box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.12) !important;
+    }
+
+    /* ── Inline error message under each field ── */
+    .cf-field-error {
+      display: none;
+      font-size: 0.72rem;
+      color: #e53e3e;
+      margin-top: 5px;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .cf-field-error.visible {
+      display: flex;
+    }
+    .cf-field-error::before {
+      content: "✕";
+      font-size: 0.68rem;
+      flex-shrink: 0;
+    }
+
+    /* ── Field success state ── */
+    .cf-input.field-ok,
+    .cf-select.field-ok,
+    .cf-textarea.field-ok {
+      border-color: #38a169 !important;
+    }
+
+    /* ── Character counter ── */
+    .cf-char-count {
+      font-size: 0.68rem;
+      color: #aaa;
+      text-align: right;
+      margin-top: 3px;
+    }
+    .cf-char-count.warn { color: var(--hdr-orange); }
+    .cf-char-count.over { color: #e53e3e; }
+
+    /* ── Robot checkbox error ── */
+    .cf-robot.robot-error {
+      border-color: #e53e3e !important;
+      background: #fff5f5;
+    }
+
+    /* ── Send button loading state ── */
+    .btn-send.loading {
+      opacity: 0.7;
+      cursor: wait;
+      position: relative;
+    }
+    .btn-send.loading::after {
+      content: '';
+      position: absolute;
+      right: 18px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+  </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ════════════════════════════════════════════
+     HEADER  (unchanged from your original)
+════════════════════════════════════════════ -->
 <header class="header">
   <div class="header-inner">
     <div class="logo-block">
@@ -77,7 +154,9 @@
 </header>
 
 
-<!-- HERO -->
+<!-- ════════════════════════════════════════════
+     HERO  (unchanged)
+════════════════════════════════════════════ -->
 <section class="contact-hero">
   <div class="contact-hero-inner">
     <div class="contact-hero-text">
@@ -111,7 +190,19 @@
 </section>
 
 
-<!-- CONTACT FORM (hidden by default, revealed on CTA click) -->
+<!-- ════════════════════════════════════════════
+     CONTACT FORM  — FULLY CORRECTED
+     Changes:
+       • Wrapped in <form> with HTML5 attributes (layer 1)
+       • Added name attributes to all inputs
+       • Added required, minlength, pattern attributes
+       • Added id attributes to all inputs for JS access
+       • Added inline error message spans under each field
+       • Added character counter for message textarea
+       • Real JS validation (layer 2) — see <script> below
+       • Real API call to POST /api/contact
+       • Success shown ONLY after server confirms
+════════════════════════════════════════════ -->
 <section class="contact-form-section" id="contactForm">
   <div class="contact-form-inner">
 
@@ -119,73 +210,145 @@
     <div class="contact-form-left">
       <div class="form-collapse-row">
         <div class="form-section-title">Send us a message</div>
-        <button class="btn-collapse" onclick="collapseForm()">
+        <button class="btn-collapse" type="button" onclick="collapseForm()">
           <svg viewBox="0 0 12 12" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2"><path d="M2 8l4-4 4 4"/></svg>
           Close
         </button>
       </div>
       <p class="form-intro">Please select the subject of your request so we can direct it to the appropriate department.</p>
 
-      <div id="formFields">
-        <div class="cf-group">
-          <label>Subject <span>*</span></label>
-          <select class="cf-select" id="cfSubject">
-            <option value="" disabled selected>Select the subject of your request</option>
-            <option>General Information</option>
-            <option>Claim Declaration</option>
-            <option>Policy Management</option>
-            <option>Auto Insurance</option>
-            <option>Habitation Insurance</option>
-            <option>Agriculture Insurance</option>
-            <option>Technical Support</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="cf-group">
-          <label>Full name <span>*</span></label>
-          <input class="cf-input" type="text" placeholder="Your full name"/>
-        </div>
-        <div class="cf-group">
-          <label>Email address <span>*</span></label>
-          <input class="cf-input" type="email" placeholder="yourname@email.com"/>
-        </div>
-        <div class="cf-group">
-          <label>Phone number</label>
-          <input class="cf-input" type="tel" placeholder="your phone number"/>
-          <div class="cf-hint">Optional &ndash; useful for faster follow-up.</div>
-        </div>
-        <div class="cf-group">
-          <label>Message <span>*</span></label>
-          <textarea class="cf-textarea" placeholder="Describe your request clearly (policy number, agency, date, or any useful detail)"></textarea>
-        </div>
-        <div class="cf-check-row">
-          <input type="checkbox" id="cfConsent"/>
-          <label for="cfConsent">I agree to the processing of my <a href="#">personal data</a> in accordance with applicable regulations.</label>
-        </div>
-        <div class="cf-robot">
-          <input type="checkbox" id="cfRobot"/>
-          <label for="cfRobot">I'm not a robot</label>
-        </div>
-        <button class="btn-send" id="sendBtn" onclick="submitForm()">send my request</button>
-        <p class="cf-confidential">Your request will be processed confidentially by CAAR</p>
-      </div>
+      <!-- ─── THE ACTUAL FORM ELEMENT ─── -->
+      <!-- novalidate prevents browser default popups — we handle all UI ourselves -->
+      <form id="caarContactForm" novalidate autocomplete="on">
 
-      <!-- Success state -->
-      <div class="cf-success-state" id="successState">
-        <div class="cf-success-icon">✓</div>
-        <div class="cf-success-title">Request sent successfully!</div>
-        <div class="cf-success-sub">
-          Our team will review your message and get back to you within<br>
-          <strong>24 working hours</strong>. Check your email for confirmation.
+        <div id="formFields">
+
+          <!-- Subject -->
+          <div class="cf-group">
+            <label for="cfSubject">Subject <span>*</span></label>
+            <select
+              class="cf-select"
+              id="cfSubject"
+              name="subject"
+              required
+            >
+              <option value="" disabled selected>Select the subject of your request</option>
+              <option value="General Information">General Information</option>
+              <option value="Claim Declaration">Claim Declaration</option>
+              <option value="Policy Management">Policy Management</option>
+              <option value="Auto Insurance">Auto Insurance</option>
+              <option value="Habitation Insurance">Habitation Insurance</option>
+              <option value="Agriculture Insurance">Agriculture Insurance</option>
+              <option value="Technical Support">Technical Support</option>
+              <option value="Other">Other</option>
+            </select>
+            <!-- Inline error for this field -->
+            <span class="cf-field-error" id="err-subject">Please select a subject.</span>
+          </div>
+
+          <!-- Full name -->
+          <div class="cf-group">
+            <label for="cfName">Full name <span>*</span></label>
+            <input
+              class="cf-input"
+              type="text"
+              id="cfName"
+              name="full_name"
+              placeholder="Your full name"
+              required
+              minlength="3"
+              maxlength="100"
+              autocomplete="name"
+            />
+            <span class="cf-field-error" id="err-name">Please enter your full name (at least 3 characters, letters only).</span>
+          </div>
+
+          <!-- Email -->
+          <div class="cf-group">
+            <label for="cfEmail">Email address <span>*</span></label>
+            <input
+              class="cf-input"
+              type="email"
+              id="cfEmail"
+              name="email"
+              placeholder="yourname@email.com"
+              required
+              autocomplete="email"
+            />
+            <span class="cf-field-error" id="err-email">Please enter a valid email address.</span>
+          </div>
+
+          <!-- Phone (optional) -->
+          <div class="cf-group">
+            <label for="cfPhone">Phone number</label>
+            <input
+              class="cf-input"
+              type="tel"
+              id="cfPhone"
+              name="phone"
+              placeholder="your phone number"
+              pattern="[0-9\s\+\-\(\)]{8,20}"
+              autocomplete="tel"
+            />
+            <div class="cf-hint">Optional &ndash; useful for faster follow-up.</div>
+            <span class="cf-field-error" id="err-phone">Please enter a valid phone number (8–15 digits).</span>
+          </div>
+
+          <!-- Message -->
+          <div class="cf-group">
+            <label for="cfMessage">Message <span>*</span></label>
+            <textarea
+              class="cf-textarea"
+              id="cfMessage"
+              name="message"
+              placeholder="Describe your request clearly (policy number, agency, date, or any useful detail)"
+              required
+              minlength="10"
+              maxlength="2000"
+              oninput="updateCharCount(this)"
+            ></textarea>
+            <div class="cf-char-count" id="cfCharCount">0 / 2000</div>
+            <span class="cf-field-error" id="err-message">Message must be at least 10 characters.</span>
+          </div>
+
+          <!-- Consent -->
+          <div class="cf-check-row">
+            <input type="checkbox" id="cfConsent" name="consent" required/>
+            <label for="cfConsent">I agree to the processing of my <a href="#">personal data</a> in accordance with applicable regulations.</label>
+          </div>
+          <span class="cf-field-error" id="err-consent" style="margin-bottom:10px;margin-top:-6px;">You must agree to data processing to continue.</span>
+
+          <!-- Robot check -->
+          <div class="cf-robot" id="cfRobotWrap">
+            <input type="checkbox" id="cfRobot" name="not_robot"/>
+            <label for="cfRobot">I'm not a robot</label>
+          </div>
+          <span class="cf-field-error" id="err-robot" style="margin-bottom:10px;">Please confirm you are not a robot.</span>
+
+          <!-- Submit -->
+          <button class="btn-send" id="sendBtn" type="submit">send my request</button>
+          <p class="cf-confidential">Your request will be processed confidentially by CAAR</p>
         </div>
-        <div class="cf-success-actions">
-          <a href="network.html" class="btn-success-primary">Find nearest agency</a>
-          <button class="btn-success-secondary" onclick="resetForm()">Send another request</button>
+
+        <!-- Success state (shown after real API success) -->
+        <div class="cf-success-state" id="successState">
+          <div class="cf-success-icon">✓</div>
+          <div class="cf-success-title">Request sent successfully!</div>
+          <div class="cf-success-sub">
+            Our team will review your message and get back to you within<br>
+            <strong>24 working hours</strong>. Check your email for confirmation.
+          </div>
+          <div class="cf-success-actions">
+            <a href="network.html" class="btn-success-primary">Find nearest agency</a>
+            <button class="btn-success-secondary" type="button" onclick="resetForm()">Send another request</button>
+          </div>
         </div>
-      </div>
+
+      </form>
+      <!-- ─── END FORM ─── -->
     </div>
 
-    <!-- RIGHT: other ways to contact -->
+    <!-- RIGHT: other ways to contact (unchanged) -->
     <div class="contact-other-ways">
       <h3>Other ways to contact us</h3>
 
@@ -228,7 +391,7 @@
 </section>
 
 
-<!-- MAP SECTION -->
+<!-- MAP SECTION (unchanged) -->
 <section class="contact-map-section">
   <div class="contact-map-header">
     <h2>CAAR Headquarters Location</h2>
@@ -259,7 +422,7 @@
 </section>
 
 
-<!-- FOOTER -->
+<!-- FOOTER (unchanged) -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
@@ -303,7 +466,7 @@
 </footer>
 
 
-<!-- MOBILE NAV DRAWER -->
+<!-- MOBILE NAV DRAWER (unchanged) -->
 <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
 <nav class="mobile-nav" id="mobileNav">
   <div class="mobile-nav-header">
@@ -323,11 +486,271 @@
 </nav>
 
 
-<!-- ALL SCRIPTS — inside body, before </body> -->
+<!-- ════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 
-/* ── Search bar ── */
+/* ══════════════════════════════════════════════════════════════
+   UTILITY: show / hide inline error for a field
+══════════════════════════════════════════════════════════════ */
+function showError(inputId, errorId) {
+  var input = document.getElementById(inputId);
+  var errEl = document.getElementById(errorId);
+  if (input)  { input.classList.add('field-error'); input.classList.remove('field-ok'); }
+  if (errEl)  { errEl.classList.add('visible'); }
+}
+
+function clearError(inputId, errorId) {
+  var input = document.getElementById(inputId);
+  var errEl = document.getElementById(errorId);
+  if (input)  { input.classList.remove('field-error'); input.classList.add('field-ok'); }
+  if (errEl)  { errEl.classList.remove('visible'); }
+}
+
+/* Clear error as soon as user starts fixing the field (real-time feedback) */
+function liveValidate(inputId, errorId, validatorFn) {
+  var el = document.getElementById(inputId);
+  if (!el) return;
+  el.addEventListener('input', function () {
+    if (validatorFn(el.value.trim())) {
+      clearError(inputId, errorId);
+    }
+  });
+  /* Also validate on blur (when user leaves the field) */
+  el.addEventListener('blur', function () {
+    if (el.value.trim() && !validatorFn(el.value.trim())) {
+      showError(inputId, errorId);
+    } else if (el.value.trim()) {
+      clearError(inputId, errorId);
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CHARACTER COUNTER for textarea
+══════════════════════════════════════════════════════════════ */
+function updateCharCount(textarea) {
+  var count   = textarea.value.length;
+  var max     = parseInt(textarea.getAttribute('maxlength')) || 2000;
+  var display = document.getElementById('cfCharCount');
+  if (!display) return;
+  display.textContent = count + ' / ' + max;
+  display.className   = 'cf-char-count';
+  if (count > max * 0.9)  display.classList.add('warn');
+  if (count >= max)       { display.classList.remove('warn'); display.classList.add('over'); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   VALIDATION RULES
+══════════════════════════════════════════════════════════════ */
+var RULES = {
+  subject:  function (v) { return v.length > 0; },
+  name:     function (v) { return /^[\p{L}\s'\-]{3,100}$/u.test(v); },
+  email:    function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); },
+  phone:    function (v) { return v === '' || /^[0-9\s\+\-\(\)]{8,20}$/.test(v); },
+  message:  function (v) { return v.length >= 10 && v.length <= 2000; },
+};
+
+/* ══════════════════════════════════════════════════════════════
+   ATTACH LIVE VALIDATION on page load
+══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function () {
+  liveValidate('cfSubject', 'err-subject', RULES.subject);
+  liveValidate('cfName',    'err-name',    RULES.name);
+  liveValidate('cfEmail',   'err-email',   RULES.email);
+  liveValidate('cfPhone',   'err-phone',   RULES.phone);
+  liveValidate('cfMessage', 'err-message', RULES.message);
+});
+
+/* ══════════════════════════════════════════════════════════════
+   MAIN FORM SUBMIT — LAYER 2 (full JS validation)
+   Called by the <form>'s submit event (not onclick)
+══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function () {
+  var form = document.getElementById('caarContactForm');
+  if (!form) return;
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();   /* stop browser default */
+    submitForm();
+  });
+});
+
+async function submitForm() {
+
+  /* ── Collect values ── */
+  var subject = document.getElementById('cfSubject').value;
+  var name    = document.getElementById('cfName').value.trim();
+  var email   = document.getElementById('cfEmail').value.trim();
+  var phone   = document.getElementById('cfPhone').value.trim();
+  var message = document.getElementById('cfMessage').value.trim();
+  var consent = document.getElementById('cfConsent').checked;
+  var robot   = document.getElementById('cfRobot').checked;
+
+  /* ── Run all validators, collect errors ── */
+  var hasError = false;
+
+  /* Subject */
+  if (!RULES.subject(subject)) {
+    showError('cfSubject', 'err-subject');
+    hasError = true;
+  } else {
+    clearError('cfSubject', 'err-subject');
+  }
+
+  /* Full name */
+  if (!RULES.name(name)) {
+    showError('cfName', 'err-name');
+    hasError = true;
+  } else {
+    clearError('cfName', 'err-name');
+  }
+
+  /* Email */
+  if (!RULES.email(email)) {
+    showError('cfEmail', 'err-email');
+    hasError = true;
+  } else {
+    clearError('cfEmail', 'err-email');
+  }
+
+  /* Phone (optional — only validate if filled) */
+  if (phone && !RULES.phone(phone)) {
+    showError('cfPhone', 'err-phone');
+    hasError = true;
+  } else {
+    clearError('cfPhone', 'err-phone');
+  }
+
+  /* Message */
+  if (!RULES.message(message)) {
+    showError('cfMessage', 'err-message');
+    hasError = true;
+  } else {
+    clearError('cfMessage', 'err-message');
+  }
+
+  /* Consent checkbox */
+  if (!consent) {
+    document.getElementById('err-consent').classList.add('visible');
+    hasError = true;
+  } else {
+    document.getElementById('err-consent').classList.remove('visible');
+  }
+
+  /* Robot checkbox */
+  if (!robot) {
+    document.getElementById('cfRobotWrap').classList.add('robot-error');
+    document.getElementById('err-robot').classList.add('visible');
+    hasError = true;
+  } else {
+    document.getElementById('cfRobotWrap').classList.remove('robot-error');
+    document.getElementById('err-robot').classList.remove('visible');
+  }
+
+  /* ── Stop here if any validation failed ── */
+  if (hasError) {
+    /* Scroll to first error */
+    var firstError = document.querySelector('.field-error, .cf-field-error.visible');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
+
+  /* ── All valid: send to API ── */
+  var btn = document.getElementById('sendBtn');
+  btn.textContent = 'Sending…';
+  btn.disabled    = true;
+  btn.classList.add('loading');
+
+  try {
+    var res = await fetch('/api/contact', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        subject:    subject,
+        full_name:  name,
+        email:      email,
+        phone:      phone || null,
+        message:    message
+      })
+    });
+
+    var data = await res.json();
+
+    if (!res.ok) {
+      /* Server returned a validation error */
+      alert(data.error || 'Something went wrong. Please try again.');
+      return;
+    }
+
+    /* ── SUCCESS — show success state ONLY after server confirms ── */
+    document.getElementById('formFields').style.display  = 'none';
+    document.getElementById('successState').classList.add('show');
+    document.getElementById('successState').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  } catch (err) {
+    /* Network / server unreachable */
+    alert('Server error. Please try again later or call us at +213 (0)21 63 20 72.');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = 'send my request';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESET FORM  (Send another request)
+══════════════════════════════════════════════════════════════ */
+function resetForm() {
+  var form = document.getElementById('caarContactForm');
+  form.reset();
+
+  /* Clear all visual error / ok states */
+  form.querySelectorAll('.cf-input, .cf-select, .cf-textarea').forEach(function (el) {
+    el.classList.remove('field-error', 'field-ok');
+  });
+  form.querySelectorAll('.cf-field-error').forEach(function (el) {
+    el.classList.remove('visible');
+  });
+  document.getElementById('cfRobotWrap').classList.remove('robot-error');
+  document.getElementById('cfCharCount').textContent = '0 / 2000';
+  document.getElementById('cfCharCount').className   = 'cf-char-count';
+
+  document.getElementById('formFields').style.display = '';
+  document.getElementById('successState').classList.remove('show');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CTA BUTTON — reveal form
+══════════════════════════════════════════════════════════════ */
+var formRevealed = false;
+document.getElementById('ctaBtn').addEventListener('click', function () {
+  var section = document.getElementById('contactForm');
+  if (!formRevealed) {
+    section.classList.add('show');
+    formRevealed = true;
+    requestAnimationFrame(function () { section.classList.add('highlight-flash'); });
+  }
+  setTimeout(function () { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+});
+
+/* ══════════════════════════════════════════════════════════════
+   COLLAPSE FORM
+══════════════════════════════════════════════════════════════ */
+function collapseForm() {
+  var form = document.getElementById('contactForm');
+  form.classList.remove('show', 'highlight-flash');
+  formRevealed = false;
+  document.querySelector('.contact-hero').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HEADER: Search + Mobile nav
+══════════════════════════════════════════════════════════════ */
 document.getElementById('searchBtn').addEventListener('click', function () {
   document.getElementById('searchBar').classList.toggle('open');
 });
@@ -335,7 +758,6 @@ document.getElementById('searchClose').addEventListener('click', function () {
   document.getElementById('searchBar').classList.remove('open');
 });
 
-/* ── Mobile nav ── */
 function toggleMobileMenu() {
   var nav     = document.getElementById('mobileNav');
   var overlay = document.getElementById('mobileNavOverlay');
@@ -345,55 +767,7 @@ function toggleMobileMenu() {
   document.body.style.overflow = isOpen ? '' : 'hidden';
 }
 
-/* ── CTA: reveal form + scroll ── */
-var formRevealed = false;
-document.getElementById('ctaBtn').addEventListener('click', function () {
-  var form = document.getElementById('contactForm');
-  if (!formRevealed) {
-    form.classList.add('show');
-    formRevealed = true;
-    requestAnimationFrame(function () { form.classList.add('highlight-flash'); });
-  }
-  setTimeout(function () { form.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
-});
-
-/* ── Collapse form ── */
-function collapseForm() {
-  var form = document.getElementById('contactForm');
-  form.classList.remove('show', 'highlight-flash');
-  formRevealed = false;
-  document.querySelector('.contact-hero').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-/* ── Submit ── */
-function submitForm() {
-  var subject = document.getElementById('cfSubject').value;
-  var consent = document.getElementById('cfConsent').checked;
-  if (!subject) { alert('Please select a subject.'); return; }
-  if (!consent) { alert('Please agree to the data processing terms.'); return; }
-  var btn = document.getElementById('sendBtn');
-  btn.textContent = 'Sending…';
-  btn.disabled = true;
-  setTimeout(function () {
-    document.getElementById('formFields').style.display = 'none';
-    document.getElementById('successState').classList.add('show');
-    document.getElementById('successState').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 800);
-}
-
-/* ── Reset form ── */
-function resetForm() {
-  document.getElementById('formFields').style.display = '';
-  document.getElementById('successState').classList.remove('show');
-  document.getElementById('cfSubject').value = '';
-  document.getElementById('cfConsent').checked = false;
-  document.getElementById('cfRobot').checked = false;
-  var btn = document.getElementById('sendBtn');
-  btn.textContent = 'send my request';
-  btn.disabled = false;
-}
-
-/* ── Language switcher ── */
+/* Language switcher */
 document.querySelectorAll('[data-lang]').forEach(function (link) {
   link.addEventListener('click', function (e) {
     e.preventDefault();
@@ -401,7 +775,7 @@ document.querySelectorAll('[data-lang]').forEach(function (link) {
   });
 });
 
-/* ── Escape key ── */
+/* Escape key */
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') {
     document.getElementById('searchBar').classList.remove('open');
@@ -410,18 +784,30 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
-/* ── HQ Leaflet Map ── */
+/* ══════════════════════════════════════════════════════════════
+   HQ LEAFLET MAP  (unchanged)
+══════════════════════════════════════════════════════════════ */
 var HQ = { lat: 36.767043, lng: 3.052792 };
-var hqMap = L.map('hqMap', { center: [HQ.lat, HQ.lng], zoom: 16, zoomControl: true, scrollWheelZoom: false, attributionControl: false });
+var hqMap = L.map('hqMap', {
+  center: [HQ.lat, HQ.lng], zoom: 16,
+  zoomControl: true, scrollWheelZoom: false, attributionControl: false
+});
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(hqMap);
+
 var hqIcon = L.divIcon({
   className: '',
   html: '<svg width="36" height="48" viewBox="0 0 36 48" fill="none"><path d="M18 0C8.06 0 0 8.06 0 18C0 31.5 18 48 18 48S36 31.5 36 18C36 8.06 27.94 0 18 0Z" fill="#F57C00"/><circle cx="18" cy="18" r="10" fill="white"/><text x="18" y="23" text-anchor="middle" font-size="12" font-weight="800" fill="#F57C00" font-family="DM Sans,sans-serif">&#9733;</text></svg>',
   iconSize: [36, 48], iconAnchor: [18, 48], popupAnchor: [0, -52],
 });
+
 var hqPopup = L.popup({ closeButton: false, maxWidth: 220, minWidth: 200 }).setContent(
-  '<div style="font-family:DM Sans,sans-serif;padding:2px 0;"><div style="font-weight:800;font-size:0.82rem;color:#1C1C1C;margin-bottom:3px;">&#11088; CAAR Headquarters</div><div style="font-size:0.72rem;color:#555;line-height:1.5;margin-bottom:8px;">48 Rue Didouche Mourad<br>Algiers 16000, Algeria</div><a href="https://maps.google.com/?q=48+Rue+Didouche+Mourad+Alger" target="_blank" style="display:inline-block;padding:5px 14px;background:#F57C00;color:#fff;border-radius:14px;font-size:0.7rem;font-weight:700;text-decoration:none;">Get directions &#8599;</a></div>'
+  '<div style="font-family:DM Sans,sans-serif;padding:2px 0;">' +
+  '<div style="font-weight:800;font-size:0.82rem;color:#1C1C1C;margin-bottom:3px;">&#11088; CAAR Headquarters</div>' +
+  '<div style="font-size:0.72rem;color:#555;line-height:1.5;margin-bottom:8px;">48 Rue Didouche Mourad<br>Algiers 16000, Algeria</div>' +
+  '<a href="https://maps.google.com/?q=48+Rue+Didouche+Mourad+Alger" target="_blank" style="display:inline-block;padding:5px 14px;background:#F57C00;color:#fff;border-radius:14px;font-size:0.7rem;font-weight:700;text-decoration:none;">Get directions &#8599;</a>' +
+  '</div>'
 );
+
 L.marker([HQ.lat, HQ.lng], { icon: hqIcon }).addTo(hqMap).bindPopup(hqPopup).openPopup();
 
 </script>
