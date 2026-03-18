@@ -5,21 +5,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR &mdash; Agency Network</title>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
-
-  <!-- Leaflet map CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-
-  <!-- Page stylesheet -->
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="css/network.css"/>
+
+  <style>
+    /* ── Cross-nav banner (Contact ↔ Network) ── */
+    .crossnav-banner {
+      background: var(--dark);
+      padding: 14px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .crossnav-banner-text {
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.8);
+    }
+    .crossnav-banner-text strong {
+      color: #fff;
+    }
+    .btn-crossnav-banner {
+      padding: 8px 20px;
+      background: var(--hdr-orange);
+      color: var(--white);
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      transition: background 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-crossnav-banner:hover { background: #e06d00; }
+
+    /* ── Focus banner (shown when ?focus=hq) ── */
+    .focus-banner {
+      display: none;
+      background: #fff3e0;
+      border-bottom: 1.5px solid #f0dcc8;
+      padding: 10px 60px;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: #555;
+    }
+    .focus-banner.show { display: flex; }
+    .focus-banner-pin {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .focus-banner strong { color: var(--hdr-orange); }
+    .focus-banner-dismiss {
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #aaa;
+      font-size: 0.78rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .focus-banner-dismiss:hover { color: #555; background: #f0dcc8; }
+
+    /* Highlighted marker animation */
+    @keyframes markerPulse {
+      0%   { transform: scale(1);    }
+      50%  { transform: scale(1.25); }
+      100% { transform: scale(1);    }
+    }
+    .marker-pulse {
+      animation: markerPulse 0.6s ease 3;
+    }
+  </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     HEADER  (same as index.html)
-══════════════════════════════════════ -->
+<!-- ══ HEADER ══ -->
 <header class="header">
   <div class="header-inner">
     <div class="logo-block">
@@ -58,7 +125,6 @@
           <li><a href="contact.html" class="nav-link">Contact</a></li>
         </ul>
         <div class="nav-icons">
-          <!-- Mobile hamburger -->
           <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menu">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -89,15 +155,24 @@
   </div>
 </header>
 
+<!-- ══ CROSS-NAV BANNER: Need help instead? ══ -->
+<div class="crossnav-banner">
+  <div class="crossnav-banner-text">
+    <strong>Prefer to send a message?</strong> &nbsp;Our team responds within 24 hours.
+  </div>
+  <a href="contact.html" class="btn-crossnav-banner">Send a Request →</a>
+</div>
 
-<!-- ══════════════════════════════════════
-     SECTION 1 — HERO  (orange box + search)
-     ↓ More sections will be added below this
-══════════════════════════════════════ -->
+<!-- ══ FOCUS BANNER (shown when coming from contact page) ══ -->
+<div class="focus-banner" id="focusBanner">
+  <span class="focus-banner-pin">📍</span>
+  <span>Showing <strong>CAAR Headquarters</strong> — 48 Rue Didouche Mourad, Algiers</span>
+  <button class="focus-banner-dismiss" onclick="dismissFocusBanner()">✕ Dismiss</button>
+</div>
+
+<!-- ══ HERO: search ══ -->
 <section class="network-hero">
   <div class="network-hero-inner">
-
-    <!-- LEFT: title + search -->
     <div class="network-hero-left">
       <h2>Find a CAAR Agency Near You</h2>
       <p>Access our nationwide network of agencies and get assistance wherever you are.</p>
@@ -116,26 +191,29 @@
         <button class="s-clear" id="sClear" onclick="clearSearch()">✕</button>
         <div class="auto-list" id="autoList"></div>
       </div>
+
+      <!-- Use my location button -->
+      <button class="s-locate-btn" id="locateBtn" onclick="useMyLocation()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        </svg>
+        <span>Use my location</span>
+      </button>
     </div>
 
-    <!-- RIGHT: mini interactive map -->
     <div class="network-hero-map-slot" id="heroMapSlot">
       <div id="heroMap"></div>
     </div>
-
   </div>
 </section>
 
 
-<!-- ══════════════════════════════════════
-     SECTION 2 — FILTERS + AGENCY LIST + BIG MAP
-══════════════════════════════════════ -->
-<section class="filter-section">
+<!-- ══ SECTION 2 — FILTERS + AGENCY LIST + BIG MAP ══ -->
+<section class="filter-section" id="filterSection">
 
-  <!-- FILTER BAR -->
   <div class="filter-bar-row">
 
-    <!-- Name search -->
     <div class="fd-search-wrap">
       <svg viewBox="0 0 24 24" class="fd-search-ico" stroke="#999" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input class="fd-search-input" id="fdSearchInput" type="text"
@@ -144,7 +222,6 @@
       <button class="fd-search-clear" id="fdSearchClear" onclick="clearNameSearch()">✕</button>
     </div>
 
-    <!-- Wilaya dropdown (populated by JS from all 58 wilayas) -->
     <div class="filter-dropdown" id="fd-wilaya">
       <button class="fd-btn" onclick="toggleDrop('fd-wilaya')">
         <span id="fdlbl-wilaya">Wilaya</span>
@@ -153,7 +230,6 @@
       <div class="fd-menu" id="fdm-wilaya"></div>
     </div>
 
-    <!-- City dropdown (dynamic — updates when wilaya is selected) -->
     <div class="filter-dropdown" id="fd-city">
       <button class="fd-btn" onclick="toggleDrop('fd-city')">
         <span id="fdlbl-city">City</span>
@@ -162,7 +238,6 @@
       <div class="fd-menu" id="fdm-city"></div>
     </div>
 
-    <!-- Agency type dropdown -->
     <div class="filter-dropdown" id="fd-type">
       <button class="fd-btn" onclick="toggleDrop('fd-type')">
         <span id="fdlbl-type">Agency Type</span>
@@ -179,7 +254,6 @@
       </div>
     </div>
 
-    <!-- Services dropdown -->
     <div class="filter-dropdown" id="fd-service">
       <button class="fd-btn" onclick="toggleDrop('fd-service')">
         <span id="fdlbl-service">Services</span>
@@ -197,18 +271,12 @@
       </div>
     </div>
 
-    <!-- Reset -->
     <button class="fd-reset" onclick="resetFilters()">↺ Reset Filters</button>
+  </div>
 
-  </div><!-- /filter-bar-row -->
-
-  <!-- Active filter tags -->
   <div class="filter-tags-row" id="filterTagsRow"></div>
 
-  <!-- GRID: cards left + big map right -->
   <div class="filter-grid">
-
-    <!-- LEFT: filtered agency cards -->
     <div class="filter-left">
       <div class="filter-count-bar">
         Showing <strong id="filterCountNum">39</strong> agencies
@@ -220,22 +288,25 @@
       </div>
     </div>
 
-    <!-- RIGHT: big Leaflet map -->
     <div class="filter-map-wrap">
       <div id="filterMap"></div>
-      <div class="filter-map-hint" id="filterMapHint">
-        Select filters or click an agency to highlight it on the map
-      </div>
     </div>
+  </div>
 
-  </div><!-- /filter-grid -->
+  <!-- Cross-nav inside filter section: "Need help instead?" -->
+  <div style="padding:16px 24px;background:#fafafa;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <span style="font-size:0.82rem;color:#666;">Can't find what you need? Our team is here to help.</span>
+    <a href="contact.html" style="font-size:0.78rem;font-weight:700;color:var(--hdr-orange);text-decoration:none;border:1.5px solid var(--hdr-orange);padding:6px 16px;border-radius:20px;transition:all 0.2s;"
+       onmouseover="this.style.background='var(--hdr-orange)';this.style.color='#fff';"
+       onmouseout="this.style.background='transparent';this.style.color='var(--hdr-orange)';">
+      Send us a message →
+    </a>
+  </div>
 
 </section>
 
 
-<!-- ══════════════════════════════════════
-     PDF DOWNLOADS SECTION
-══════════════════════════════════════ -->
+<!-- ══ PDF DOWNLOADS ══ -->
 <section class="pdf-downloads-section">
   <div class="pdf-downloads-inner">
     <div class="pdf-downloads-left">
@@ -289,9 +360,7 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════════════
-     FOOTER  — identical to index.html
-══════════════════════════════════════ -->
+<!-- ══ FOOTER ══ -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
@@ -338,8 +407,6 @@
   </div>
 </footer>
 
-
-<!-- Mobile nav overlay -->
 <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
 <nav class="mobile-nav" id="mobileNav">
   <div class="mobile-nav-header">
@@ -358,12 +425,11 @@
   </div>
 </nav>
 
-<!-- Leaflet JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
 /* ============================================================
-   REAL AGENCY DATA — from CAAR KML file (39 agencies)
+   AGENCY DATA
 ============================================================ */
 const AGENCIES = [
   {id:1,  name:'Kouba',                    city:'Kouba',                  wilaya:'Alger',      address:'Cité Serbat Bâtiment A9 Garidi, Kouba — Alger',                                     director:'Mr Lawachra',             type:'Main Agency',    services:['Auto','Habitation','Transport','Industrial'],  lat:36.730082, lng:3.061648},
@@ -385,21 +451,21 @@ const AGENCIES = [
   {id:17, name:'Bab Ezzouar 4',            city:'Bab Ezzouar',            wilaya:'Alger',      address:'Cité 1577 Logements Bâtiment 15, Bab Ezzouar — Alger',                              director:'Mme Benferrah Meriem',    type:'Main Agency',    services:['Auto','Habitation'],                            lat:36.715662, lng:3.193213},
   {id:18, name:'Reghaia',                  city:'Reghaia',                wilaya:'Alger',      address:'Cité Ahmed Faoussi, Reghaia — Alger',                                                director:'Melle Boussaid Malika',   type:'Main Agency',    services:['Auto','Habitation','Agricultural'],             lat:36.738071, lng:3.356188},
   {id:19, name:'Belouizded',               city:'Belouizded',             wilaya:'Alger',      address:'23, Rue Mohamed Belouizded — Alger',                                                 director:'Mr Rouag El Moundir',     type:'Main Agency',    services:['Auto','Habitation','Business','Transport'],     lat:36.758606, lng:3.055839},
-  {id:20, name:'Quartier Seghir',          city:'Quartier Seghir',        wilaya:'Bejaia',     address:'Bâtiment D11 et D12, Bvd de la Revolution, Quartier Seghir — Bejaia',               director:'Mr Hassani Laid',         type:'Regional Office',services:['Auto','Habitation','Transport'],                lat:36.748530, lng:5.055731},
-  {id:21, name:'Krim Belkacem',            city:'Krim Belkacem',          wilaya:'Bejaia',     address:'Big Center Centre Affaires Krim Belkacem, Edimco — Bejaia',                         director:'Mr Zaidi Abd Salem',      type:'Regional Office',services:['Auto','Habitation','Business'],                 lat:36.744811, lng:5.048222},
+  {id:20, name:'Quartier Seghir',          city:'Quartier Seghir',        wilaya:'Bejaia',     address:'Bâtiment D11 et D12, Bvd de la Revolution — Bejaia',                                director:'Mr Hassani Laid',         type:'Regional Office',services:['Auto','Habitation','Transport'],                lat:36.748530, lng:5.055731},
+  {id:21, name:'Krim Belkacem',            city:'Krim Belkacem',          wilaya:'Bejaia',     address:'Big Center Centre Affaires Krim Belkacem — Bejaia',                                  director:'Mr Zaidi Abd Salem',      type:'Regional Office',services:['Auto','Habitation','Business'],                 lat:36.744811, lng:5.048222},
   {id:22, name:'Frere Bouaouina',          city:'Bejaia Centre',          wilaya:'Bejaia',     address:'12, Boulevard Frere Bouaouina — Bejaia',                                             director:'Mr Taleb Zahir',          type:'Regional Office',services:['Auto','Claims'],                                lat:36.756511, lng:5.085508},
-  {id:23, name:'Krim Belkacem 2',          city:'Krim Belkacem',          wilaya:'Bejaia',     address:'Cité Administrative Somacob, Bâtiment C2 1er étage — Bejaia',                       director:'Mme Kadri Safia',         type:'Regional Office',services:['Auto','Habitation'],                            lat:36.744627, lng:5.049176},
-  {id:24, name:'Akbou',                    city:'Akbou',                  wilaya:'Bejaia',     address:'Route Nationale N°26, Cité Bendjaoud Taharacht, Akbou — Bejaia',                    director:'Mr Mohou Abdenacer',      type:'Regional Office',services:['Auto','Habitation','Agricultural'],             lat:36.481959, lng:4.557145},
-  {id:25, name:'Lakhdaria',                city:'Lakhdaria',              wilaya:'Bouira',     address:'Cité des 39 Logements, Route Nationale N°05, Lakhdaria — Bouira',                   director:'Mr Mokrani Said',         type:'Sub Agency',     services:['Auto','Habitation'],                            lat:36.564176, lng:3.596628},
+  {id:23, name:'Krim Belkacem 2',          city:'Krim Belkacem',          wilaya:'Bejaia',     address:'Cité Administrative Somacob, Bâtiment C2 — Bejaia',                                 director:'Mme Kadri Safia',         type:'Regional Office',services:['Auto','Habitation'],                            lat:36.744627, lng:5.049176},
+  {id:24, name:'Akbou',                    city:'Akbou',                  wilaya:'Bejaia',     address:'Route Nationale N°26, Cité Bendjaoud Taharacht — Bejaia',                           director:'Mr Mohou Abdenacer',      type:'Regional Office',services:['Auto','Habitation','Agricultural'],             lat:36.481959, lng:4.557145},
+  {id:25, name:'Lakhdaria',                city:'Lakhdaria',              wilaya:'Bouira',     address:'Cité des 39 Logements, Route Nationale N°05 — Bouira',                              director:'Mr Mokrani Said',         type:'Sub Agency',     services:['Auto','Habitation'],                            lat:36.564176, lng:3.596628},
   {id:26, name:'Axe Financier Bouira',     city:'Bouira',                 wilaya:'Bouira',     address:'Axe Financier à côté CNEP — Bouira',                                                director:'Mr Abdi Cherif',          type:'Sub Agency',     services:['Auto','Business'],                              lat:36.382931, lng:4.401990},
   {id:27, name:'Oued Tatareg',             city:'Oued Tatareg',           wilaya:'Boumerdes',  address:'Centre Commercial Oued Tatareg, Locaux 2&3 — Boumerdes',                            director:'Mr Amara Aghiles',        type:'Claims Center',  services:['Auto','Claims','Habitation'],                   lat:36.765068, lng:3.460068},
   {id:28, name:'Sidi Abbaz',               city:'Sidi Abbaz',             wilaya:'Ghardaia',   address:'BP 24, Sidi Abbaz — Ghardaia',                                                       director:'Mr Lakhoui Mohamed',      type:'Sub Agency',     services:['Auto','Habitation','Agricultural'],             lat:32.485676, lng:3.694851},
   {id:29, name:'Ouargla Centre',           city:'Ouargla',                wilaya:'Ouargla',    address:"Cité 460 Logements, Rue Larbi Ben M'hidi — Ouargla",                                 director:'Mme Kadi Karima',         type:'Sub Agency',     services:['Auto','Industrial'],                            lat:31.947023, lng:5.318237},
-  {id:30, name:'Hassi Messaoud',           city:'Hassi Messaoud',         wilaya:'Ouargla',    address:'Cité El Haoues 1039, BP 257, Hassi Messaoud — Ouargla',                              director:'Mr Ouamer Mohand',        type:'Sub Agency',     services:['Auto','Industrial','Business'],                 lat:31.695729, lng:6.065720},
-  {id:31, name:'Hassi Messaoud 2',         city:'Hassi Messaoud',         wilaya:'Ouargla',    address:'Cité 100 Logements AADL BP 548, Hassi Messaoud — Ouargla',                          director:'Mr Rezgui Bachir Eddine', type:'Sub Agency',     services:['Auto','Industrial'],                            lat:31.958203, lng:5.346406},
+  {id:30, name:'Hassi Messaoud',           city:'Hassi Messaoud',         wilaya:'Ouargla',    address:'Cité El Haoues 1039, BP 257 — Ouargla',                                              director:'Mr Ouamer Mohand',        type:'Sub Agency',     services:['Auto','Industrial','Business'],                 lat:31.695729, lng:6.065720},
+  {id:31, name:'Hassi Messaoud 2',         city:'Hassi Messaoud',         wilaya:'Ouargla',    address:'Cité 100 Logements AADL BP 548 — Ouargla',                                          director:'Mr Rezgui Bachir Eddine', type:'Sub Agency',     services:['Auto','Industrial'],                            lat:31.958203, lng:5.346406},
   {id:32, name:'Larbaa Nath Irathen',      city:'Larbaa Nath Irathen',    wilaya:'Tizi Ouzou', address:'Route du Lycée, Larbaa Nath Irathen — Tizi Ouzou',                                  director:'Mr Boulifa El Hachemi',   type:'Agency',         services:['Auto','Habitation','Agricultural'],             lat:36.642939, lng:4.201181},
   {id:33, name:'Azzazga',                  city:'Azzazga',                wilaya:'Tizi Ouzou', address:'Cité 300 Logements AADL, Azzazga — Tizi Ouzou',                                      director:'Mr Akir Ali',             type:'Agency',         services:['Auto','Habitation'],                            lat:36.747213, lng:4.359308},
-  {id:34, name:'Nouvelle Ville',           city:'Tizi Ouzou',             wilaya:'Tizi Ouzou', address:'Cité 600 Logements Genie Sider Bat 5 Local 07, Nouvelle Ville — Tizi Ouzou',         director:'Mr Mihoubi Hamid',        type:'Agency',         services:['Auto','Habitation','Claims'],                   lat:36.700551, lng:4.050789},
+  {id:34, name:'Nouvelle Ville',           city:'Tizi Ouzou',             wilaya:'Tizi Ouzou', address:'Cité 600 Logements Genie Sider Bat 5 Local 07 — Tizi Ouzou',                        director:'Mr Mihoubi Hamid',        type:'Agency',         services:['Auto','Habitation','Claims'],                   lat:36.700551, lng:4.050789},
   {id:35, name:'Tours-Villas',             city:'Tizi Ouzou',             wilaya:'Tizi Ouzou', address:'Route des Tours-Villas — Tizi Ouzou',                                                director:'Mr Medjbour Idir',        type:'Agency',         services:['Auto','Habitation'],                            lat:36.717122, lng:4.041346},
   {id:36, name:'Draa Ben Khedda',          city:'Draa Ben Khedda',        wilaya:'Tizi Ouzou', address:'06, Rue Kasseri Ahmed, Draa Ben Khedda — Tizi Ouzou',                               director:'Mme Boumrar Leila',       type:'Agency',         services:['Auto','Agricultural'],                          lat:36.732555, lng:3.966033},
   {id:37, name:'Nouvelle Ville 2',         city:'Tizi Ouzou',             wilaya:'Tizi Ouzou', address:'Boulevard des Freres Belhadj, Nouvelle Ville — Tizi Ouzou',                         director:'Mr Berraoui Kamel',       type:'Agency',         services:['Auto','Habitation'],                            lat:36.702103, lng:4.050065},
@@ -407,9 +473,8 @@ const AGENCIES = [
   {id:39, name:'Siege Social CAAR',        city:'Alger Centre',           wilaya:'Alger',      address:'48, Rue Didouche Mourad, Alger 16000',                                               director:'Direction Generale',      type:'Headquarters',   services:['Auto','Habitation','Business','Transport','Industrial','Agricultural','Claims'], lat:36.767043, lng:3.052792},
 ];
 
-/* ============================================================
-   ALL 58 WILAYAS
-============================================================ */
+const HQ_AGENCY = AGENCIES.find(function(a) { return a.id === 39; });
+
 const WILAYAS = [
   {name:'Adrar',               lat:27.874, lng:0.294,   zoom:10},
   {name:'Chlef',               lat:36.165, lng:1.330,   zoom:11},
@@ -472,44 +537,48 @@ const WILAYAS = [
 ];
 
 /* ============================================================
+   URL PARAM CHECK — focus=hq
+============================================================ */
+var urlParams = new URLSearchParams(window.location.search);
+var focusParam = urlParams.get('focus');
+
+/* ============================================================
    FILTER STATE
 ============================================================ */
 const activeFilters = { wilaya: '', city: '', type: '', service: '', search: '' };
 
 /* ============================================================
-   MAP VARIABLES — declared once here, used everywhere
+   MAP VARIABLES
 ============================================================ */
-let heroMap;
-let filterMap;
-const heroMarkerMap   = {};
-const filterMarkerMap = {};
+var heroMap, filterMap;
+var heroMarkerMap = {}, filterMarkerMap = {};
 
 /* ============================================================
-   HELPER — normalize strings for comparison
+   HELPERS
 ============================================================ */
 function normalize(s) {
-  return s.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/['']/g, '');
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/['']/g, '');
 }
 
-/* ============================================================
-   ICON FACTORIES
-============================================================ */
 function makeHeroDotIcon() {
   return L.divIcon({
     className: '',
     html: '<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4.5" fill="#E8761E" stroke="white" stroke-width="1"/></svg>',
-    iconSize: [10, 10],
-    iconAnchor: [5, 5],
+    iconSize: [10, 10], iconAnchor: [5, 5],
+  });
+}
+
+function makeHQDotIcon() {
+  // Larger, gold star for HQ
+  return L.divIcon({
+    className: '',
+    html: '<svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#C9601A" stroke="white" stroke-width="2"/><text x="9" y="13" text-anchor="middle" font-size="9" fill="white">★</text></svg>',
+    iconSize: [18, 18], iconAnchor: [9, 9],
   });
 }
 
 function makeFilterIcon(active) {
-  var w = active ? 32 : 26;
-  var h = active ? 42 : 34;
-  var cx = w / 2;
-  var cy = w / 2;
+  var w = active ? 32 : 26, h = active ? 42 : 34, cx = w / 2, cy = w / 2;
   var fill = active ? '#C9601A' : '#E8761E';
   return L.divIcon({
     className: '',
@@ -518,105 +587,158 @@ function makeFilterIcon(active) {
       '<circle cx="' + cx + '" cy="' + cy + '" r="' + (w*0.32) + '" fill="white"/>' +
       '<text x="' + cx + '" y="' + (cy + w*0.14) + '" text-anchor="middle" font-size="' + (w*0.3) + '" font-weight="800" fill="' + fill + '" font-family="DM Sans,sans-serif">C</text>' +
       '</svg>',
-    iconSize: [w, h],
-    iconAnchor: [cx, h],
-    popupAnchor: [0, -h - 4],
+    iconSize: [w, h], iconAnchor: [cx, h], popupAnchor: [0, -h - 4],
   });
 }
 
-/* ============================================================
-   POPUP FACTORY
-============================================================ */
+function makeHQFilterIcon(active) {
+  var w = active ? 36 : 30, h = active ? 46 : 38, cx = w / 2, cy = w / 2;
+  var fill = active ? '#8B0000' : '#C9601A';
+  return L.divIcon({
+    className: '',
+    html: '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" fill="none">' +
+      '<path d="M' + cx + ' 0C' + (cx*0.455) + ' 0 0 ' + (cy*0.455) + ' 0 ' + cy + 'C0 ' + (cy*1.75) + ' ' + cx + ' ' + h + ' ' + cx + ' ' + h + 'S' + w + ' ' + (cy*1.75) + ' ' + w + ' ' + cy + 'C' + w + ' ' + (cy*0.455) + ' ' + (cx*1.545) + ' 0 ' + cx + ' 0Z" fill="' + fill + '"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + (w*0.36) + '" fill="white"/>' +
+      '<text x="' + cx + '" y="' + (cy + w*0.2) + '" text-anchor="middle" font-size="' + (w*0.36) + '" fill="' + fill + '">★</text>' +
+      '</svg>',
+    iconSize: [w, h], iconAnchor: [cx, h], popupAnchor: [0, -h - 4],
+  });
+}
+
 function makePopup(ag) {
-  var tel = ag.phone ? ('+213' + ag.phone.replace(/\s/g, '').substring(1)) : '';
-  var callBtn = tel ? ('<button class="popup-btn pbtn-call" onclick="window.location.href=\'tel:' + tel + '\'">&#128222; Call</button>') : '';
+  var isHQ = ag.id === 39;
+  var hqBadge = isHQ ? '<span style="display:inline-block;background:#fff3e0;color:#C9601A;font-size:0.6rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-bottom:4px;">⭐ Headquarters</span><br>' : '';
   return '<div>' +
     '<div class="popup-head">' +
       '<div class="popup-head-code">' + ag.type + ' &bull; ' + ag.wilaya + '</div>' +
       '<div class="popup-head-name">' + ag.name + '</div>' +
     '</div>' +
     '<div class="popup-body">' +
+      hqBadge +
       '<div class="popup-addr">' + ag.address + '</div>' +
-      (ag.phone ? '<div class="popup-ph">&#128222; ' + ag.phone + '</div>' : '') +
       '<div class="popup-actions">' +
         '<button class="popup-btn pbtn-dir" onclick="window.open(\'https://www.google.com/maps/dir/?api=1&destination=' + ag.lat + ',' + ag.lng + '\',\'_blank\')">&#128506; Directions</button>' +
-        callBtn +
+        (isHQ ? '<button class="popup-btn pbtn-call" onclick="window.location.href=\'tel:+213216320072\'">&#128222; Call HQ</button>' : '') +
       '</div>' +
+      (isHQ ? '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;"><a href="contact.html" style="font-size:0.68rem;color:#E8761E;font-weight:700;text-decoration:none;">✉ Send a message instead →</a></div>' : '') +
     '</div>' +
   '</div>';
 }
 
 /* ============================================================
-   HERO MINI MAP  — controlled ONLY by the search input above
+   HERO MAP
 ============================================================ */
 function initHeroMap() {
   heroMap = L.map('heroMap', {
-    center: [28.0339, 1.6596],
-    zoom: 6,
-    zoomControl: true,
-    scrollWheelZoom: false,
-    attributionControl: false,
+    center: [28.0339, 1.6596], zoom: 6,
+    zoomControl: true, scrollWheelZoom: false, attributionControl: false,
   });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-  }).addTo(heroMap);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(heroMap);
   setTimeout(function() { heroMap.invalidateSize(); }, 150);
 
   var dotIcon = makeHeroDotIcon();
+  var hqIcon  = makeHQDotIcon();
+
   AGENCIES.forEach(function(ag) {
-    var m = L.marker([ag.lat, ag.lng], { icon: dotIcon }).addTo(heroMap);
+    var icon = ag.id === 39 ? hqIcon : dotIcon;
+    var m = L.marker([ag.lat, ag.lng], { icon: icon }).addTo(heroMap);
     m.bindPopup(
       '<div style="font-family:DM Sans,sans-serif;padding:4px 2px">' +
       '<strong style="font-size:0.75rem">' + ag.name + '</strong><br>' +
       '<span style="font-size:0.65rem;color:#666">' + ag.wilaya + '</span>' +
+      (ag.id === 39 ? '<br><a href="contact.html" style="font-size:0.65rem;color:#E8761E;font-weight:700;">Contact us →</a>' : '') +
       '</div>',
-      { maxWidth: 140, minWidth: 120 }
+      { maxWidth: 150, minWidth: 130 }
     );
     heroMarkerMap[ag.id] = m;
   });
+
+  // If focus=hq, fly to HQ on hero map too
+  if (focusParam === 'hq' && HQ_AGENCY) {
+    setTimeout(function() {
+      heroMap.flyTo([HQ_AGENCY.lat, HQ_AGENCY.lng], 15, { animate: true, duration: 1.8 });
+    }, 400);
+  }
 }
 
 /* ============================================================
-   FILTER MAP  — controlled ONLY by the filter dropdowns below
+   FILTER MAP
 ============================================================ */
 function initFilterMap() {
   filterMap = L.map('filterMap', {
-    center: [28.0339, 1.6596],
-    zoom: 6,
-    zoomControl: true,
-    scrollWheelZoom: true,
+    center: [28.0339, 1.6596], zoom: 6,
+    zoomControl: true, scrollWheelZoom: true,
   });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom: 19,
   }).addTo(filterMap);
   setTimeout(function() { filterMap.invalidateSize(); }, 150);
 
   AGENCIES.forEach(function(ag) {
-    var m = L.marker([ag.lat, ag.lng], { icon: makeFilterIcon(false) }).addTo(filterMap);
+    var icon = ag.id === 39 ? makeHQFilterIcon(false) : makeFilterIcon(false);
+    var m = L.marker([ag.lat, ag.lng], { icon: icon }).addTo(filterMap);
     m.bindPopup(makePopup(ag), { maxWidth: 260, minWidth: 250 });
     m.on('click', function() {
       resetFilterIcons();
-      m.setIcon(makeFilterIcon(true));
+      m.setIcon(ag.id === 39 ? makeHQFilterIcon(true) : makeFilterIcon(true));
       highlightFilterCard(ag.id);
-      // Brief delay so popup opens after icon update
       setTimeout(function() { m.openPopup(); }, 80);
     });
     filterMarkerMap[ag.id] = m;
   });
 
   renderFilterCards(AGENCIES);
-}
 
-function resetFilterIcons() {
-  Object.keys(filterMarkerMap).forEach(function(id) {
-    filterMarkerMap[id].setIcon(makeFilterIcon(false));
-  });
+  // Handle ?focus=hq URL param
+  if (focusParam === 'hq' && HQ_AGENCY) {
+    setTimeout(function() {
+      focusOnHQ();
+    }, 600);
+  }
 }
 
 /* ============================================================
-   RENDER FILTER CARD LIST
+   FOCUS ON HQ (called when ?focus=hq)
 ============================================================ */
+function focusOnHQ() {
+  // Show focus banner
+  document.getElementById('focusBanner').classList.add('show');
+
+  // Fly filter map to HQ
+  filterMap.flyTo([HQ_AGENCY.lat, HQ_AGENCY.lng], 15, { animate: true, duration: 1.5 });
+
+  // Highlight HQ marker
+  resetFilterIcons();
+  filterMarkerMap[39].setIcon(makeHQFilterIcon(true));
+
+  // Open popup after fly
+  setTimeout(function() {
+    filterMarkerMap[39].openPopup();
+  }, 1600);
+
+  // Highlight card
+  highlightFilterCard(39);
+
+  // Scroll to filter section
+  setTimeout(function() {
+    document.getElementById('filterSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
+
+function dismissFocusBanner() {
+  document.getElementById('focusBanner').classList.remove('show');
+}
+
+/* ============================================================
+   FILTER CARDS
+============================================================ */
+function resetFilterIcons() {
+  Object.keys(filterMarkerMap).forEach(function(id) {
+    var ag = AGENCIES.find(function(a) { return a.id === parseInt(id); });
+    filterMarkerMap[id].setIcon(ag && ag.id === 39 ? makeHQFilterIcon(false) : makeFilterIcon(false));
+  });
+}
+
 function renderFilterCards(list) {
   var container = document.getElementById('filterCardList');
   var noRes     = document.getElementById('filterNoResults');
@@ -632,44 +754,40 @@ function renderFilterCards(list) {
   noRes.classList.remove('show');
 
   container.innerHTML = list.map(function(ag) {
-    var typeIcon = ag.type === 'Headquarters' ? '&#11088;' :
-                  ag.type === 'Main Agency'    ? '&#127970;' :
-                  ag.type === 'Regional Office'? '&#127978;' :
-                  ag.type === 'Claims Center'  ? '&#128193;' : '&#128205;';
+    var isHQ = ag.id === 39;
+    var typeIcon = isHQ ? '⭐' :
+                  ag.type === 'Main Agency'    ? '🏢' :
+                  ag.type === 'Regional Office'? '🏬' :
+                  ag.type === 'Claims Center'  ? '🗂' : '📍';
     var svcs = (ag.services || []).map(function(s) {
       return '<span class="fc-service-tag">' + s + '</span>';
     }).join('');
-    return '<div class="filter-card" id="fcard-' + ag.id + '" onclick="flyToFilterAgency(' + ag.id + ')">' +
+    var hqStyle = isHQ ? 'border-left-color:var(--hdr-orange);background:#fff8f2;' : '';
+    return '<div class="filter-card" id="fcard-' + ag.id + '" style="' + hqStyle + '" onclick="flyToFilterAgency(' + ag.id + ')">' +
       '<div class="fc-header">' +
-        '<div class="fc-name">CAAR &mdash; ' + ag.name + '</div>' +
+        '<div class="fc-name">CAAR &mdash; ' + ag.name + (isHQ ? ' <span style="font-size:0.6rem;color:var(--hdr-orange);font-weight:700;">HQ</span>' : '') + '</div>' +
         '<div class="fc-code">' + typeIcon + '</div>' +
       '</div>' +
       '<div class="fc-wilaya">' + ag.city + ', ' + ag.wilaya + '</div>' +
-      (ag.director ? '<div class="fc-director">&#128100; ' + ag.director + '</div>' : '') +
-      (ag.phone    ? '<div class="fc-phone"><span class="fc-phone-icon">&#128222;</span> ' + ag.phone + '</div>' : '') +
-      '<div class="fc-hours">Sunday to Thursday, 08:30 &ndash; 16:00</div>' +
+      (ag.director ? '<div class="fc-director">👤 ' + ag.director + '</div>' : '') +
+      '<div class="fc-hours">Sunday to Thursday, 08:30 – 16:00</div>' +
       (svcs ? '<div class="fc-services">' + svcs + '</div>' : '') +
       '<div class="fc-btns" onclick="event.stopPropagation()">' +
         '<button class="fc-btn fc-btn-map" onclick="flyToFilterAgency(' + ag.id + ')">View on map</button>' +
         '<button class="fc-btn fc-btn-dir" onclick="window.open(\'https://www.google.com/maps/dir/?api=1&destination=' + ag.lat + ',' + ag.lng + '\',\'_blank\')">Directions</button>' +
-        '<button class="fc-btn fc-btn-call" onclick="window.location.href=\'tel:+213216320072\'">&#128222; Call</button>' +
+        '<button class="fc-btn fc-btn-call" onclick="window.location.href=\'tel:+213216320072\'">📞 Call</button>' +
       '</div>' +
     '</div>';
   }).join('');
 
-  // Show/hide markers
   var filteredIds = {};
   list.forEach(function(a) { filteredIds[a.id] = true; });
   Object.keys(filterMarkerMap).forEach(function(id) {
     var m = filterMarkerMap[id];
-    if (filteredIds[id]) {
-      if (!filterMap.hasLayer(m)) m.addTo(filterMap);
-    } else {
-      if (filterMap.hasLayer(m)) filterMap.removeLayer(m);
-    }
+    if (filteredIds[id]) { if (!filterMap.hasLayer(m)) m.addTo(filterMap); }
+    else                  { if (filterMap.hasLayer(m)) filterMap.removeLayer(m); }
   });
 
-  // Fit map to filtered markers
   if (list.length > 0 && list.length < AGENCIES.length) {
     var group = L.featureGroup(list.map(function(ag) { return filterMarkerMap[ag.id]; }));
     filterMap.fitBounds(group.getBounds().pad(0.2));
@@ -689,13 +807,13 @@ function flyToFilterAgency(id) {
   if (!ag) return;
   filterMap.flyTo([ag.lat, ag.lng], 15, { animate: true, duration: 1.2 });
   resetFilterIcons();
-  filterMarkerMap[id].setIcon(makeFilterIcon(true));
+  filterMarkerMap[id].setIcon(ag.id === 39 ? makeHQFilterIcon(true) : makeFilterIcon(true));
   setTimeout(function() { filterMarkerMap[id].openPopup(); }, 1200);
   highlightFilterCard(id);
 }
 
 /* ============================================================
-   HERO SEARCH  — autocomplete + fly hero mini-map only
+   HERO SEARCH
 ============================================================ */
 var autoItems = [];
 
@@ -708,7 +826,6 @@ function onSearchInput(val) {
   autoItems = [];
   var seen = {};
 
-  // Wilaya matches
   WILAYAS.forEach(function(w) {
     var key = normalize(w.name);
     if (key.indexOf(q) !== -1 && !seen['w:' + key]) {
@@ -717,7 +834,6 @@ function onSearchInput(val) {
     }
   });
 
-  // Agency matches
   AGENCIES.forEach(function(ag) {
     var hit = normalize(ag.name).indexOf(q) !== -1 ||
               normalize(ag.city).indexOf(q) !== -1 ||
@@ -738,7 +854,7 @@ function renderAuto(items) {
   if (!items.length) { list.classList.remove('open'); return; }
   list.innerHTML = items.map(function(it, i) {
     return '<div class="auto-item" onclick="selectAuto(' + i + ')">' +
-      '<span class="auto-ico">' + (it.type === 'wilaya' ? '&#128506;' : '&#128205;') + '</span>' +
+      '<span class="auto-ico">' + (it.type === 'wilaya' ? '🗺' : '📍') + '</span>' +
       '<div><div class="auto-name">' + it.label + '</div><div class="auto-sub">' + it.sub + '</div></div>' +
     '</div>';
   }).join('');
@@ -784,7 +900,7 @@ document.addEventListener('click', function(e) {
 });
 
 /* ============================================================
-   FILTER DROPDOWNS  — controls filter map only
+   FILTER DROPDOWNS
 ============================================================ */
 function toggleDrop(id) {
   ['fd-wilaya', 'fd-city', 'fd-type', 'fd-service'].forEach(function(d) {
@@ -805,12 +921,11 @@ function buildWilayaDropdown() {
   var menu = document.getElementById('fdm-wilaya');
   var agencyWilayas = {};
   AGENCIES.forEach(function(a) { agencyWilayas[a.wilaya] = true; });
-  var html = '<div class="fd-item fd-item-all active" onclick="setFilter(\'wilaya\',\'\',this)">&#127462;&#127465; All Wilayas</div>';
+  var html = '<div class="fd-item fd-item-all active" onclick="setFilter(\'wilaya\',\'\',this)">🌍 All Wilayas</div>';
   WILAYAS.forEach(function(w) {
     var has = !!agencyWilayas[w.name];
     html += '<div class="fd-item' + (has ? ' fd-has-agency' : '') + '" onclick="setFilter(\'wilaya\',\'' + w.name + '\',this)">' +
-      (has ? '&#128205;' : '&#9711;') + ' ' + w.name +
-    '</div>';
+      (has ? '📍' : '○') + ' ' + w.name + '</div>';
   });
   menu.innerHTML = html;
 }
@@ -848,7 +963,6 @@ function setFilter(key, val, el) {
       if (wc) filterMap.flyTo([wc.lat, wc.lng], wc.zoom, { animate: true, duration: 1.2 });
     }
   }
-
   applyFilters();
   updateFilterTags();
 }
@@ -891,15 +1005,15 @@ function updateFilterTags() {
   var row = document.getElementById('filterTagsRow');
   if (!row) return;
   var tags = [];
-  if (activeFilters.wilaya)  tags.push({ key: 'wilaya',  label: '&#128205; Wilaya: ' + activeFilters.wilaya });
-  if (activeFilters.city)    tags.push({ key: 'city',    label: '&#127961; City: '   + activeFilters.city   });
-  if (activeFilters.type)    tags.push({ key: 'type',    label: '&#127970; Type: '   + activeFilters.type   });
-  if (activeFilters.service) tags.push({ key: 'service', label: '&#9881;&#65039; '   + activeFilters.service });
-  if (activeFilters.search)  tags.push({ key: 'search',  label: '&#128269; "' + activeFilters.search + '"'  });
+  if (activeFilters.wilaya)  tags.push({ key: 'wilaya',  label: '📍 Wilaya: ' + activeFilters.wilaya });
+  if (activeFilters.city)    tags.push({ key: 'city',    label: '🏙 City: '   + activeFilters.city   });
+  if (activeFilters.type)    tags.push({ key: 'type',    label: '🏢 Type: '   + activeFilters.type   });
+  if (activeFilters.service) tags.push({ key: 'service', label: '⚙ '         + activeFilters.service });
+  if (activeFilters.search)  tags.push({ key: 'search',  label: '🔍 "' + activeFilters.search + '"'  });
   if (!tags.length) { row.innerHTML = ''; row.style.display = 'none'; return; }
   row.style.display = 'flex';
   row.innerHTML = tags.map(function(t) {
-    return '<span class="filter-tag" onclick="clearTag(\'' + t.key + '\')">' + t.label + ' <span class="filter-tag-x">&#10005;</span></span>';
+    return '<span class="filter-tag" onclick="clearTag(\'' + t.key + '\')">' + t.label + ' <span class="filter-tag-x">✕</span></span>';
   }).join('');
 }
 
@@ -954,7 +1068,7 @@ function resetFilters() {
 }
 
 /* ============================================================
-   HEADER SEARCH BAR
+   HEADER SEARCH + MOBILE NAV
 ============================================================ */
 document.getElementById('searchBtn').addEventListener('click', function() {
   document.getElementById('searchBar').classList.toggle('open');
@@ -963,9 +1077,6 @@ document.getElementById('searchCloseHdr').addEventListener('click', function() {
   document.getElementById('searchBar').classList.remove('open');
 });
 
-/* ============================================================
-   MOBILE NAV
-============================================================ */
 function toggleMobileMenu() {
   var nav = document.getElementById('mobileNav');
   var overlay = document.getElementById('mobileNavOverlay');
@@ -976,23 +1087,17 @@ function toggleMobileMenu() {
 }
 
 /* ============================================================
-   GEOLOCATION — "Use my location" button
+   GEOLOCATION
 ============================================================ */
 function useMyLocation() {
   var btn = document.getElementById('locateBtn');
-  if (!navigator.geolocation) {
-    alert('Geolocation is not supported by your browser.');
-    return;
-  }
+  if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
   btn.classList.add('loading');
   btn.querySelector('span').textContent = 'Locating…';
   navigator.geolocation.getCurrentPosition(
     function(pos) {
-      var lat = pos.coords.latitude;
-      var lng = pos.coords.longitude;
-      // Find nearest agency
-      var nearest = null;
-      var minDist = Infinity;
+      var lat = pos.coords.latitude, lng = pos.coords.longitude;
+      var nearest = null, minDist = Infinity;
       AGENCIES.forEach(function(ag) {
         var d = Math.pow(ag.lat - lat, 2) + Math.pow(ag.lng - lng, 2);
         if (d < minDist) { minDist = d; nearest = ag; }
@@ -1000,20 +1105,14 @@ function useMyLocation() {
       btn.classList.remove('loading');
       btn.querySelector('span').textContent = 'Use my location';
       if (nearest) {
-        // Pan hero map to show user + nearest agency
         heroMap.flyTo([nearest.lat, nearest.lng], 13, { animate: true, duration: 1.5 });
-        // Add user dot on hero map
-        L.circleMarker([lat, lng], {
-          radius: 8, color: '#2563eb', fillColor: '#3b82f6',
-          fillOpacity: 1, weight: 3
-        }).addTo(heroMap).bindPopup('<strong>Your location</strong>').openPopup();
-        // Highlight nearest in filter section
+        L.circleMarker([lat, lng], { radius: 8, color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 1, weight: 3 })
+          .addTo(heroMap).bindPopup('<strong>Your location</strong>').openPopup();
         flyToFilterAgency(nearest.id);
-        // Scroll to filter section
-        document.querySelector('.filter-section').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('filterSection').scrollIntoView({ behavior: 'smooth' });
       }
     },
-    function(err) {
+    function() {
       btn.classList.remove('loading');
       btn.querySelector('span').textContent = 'Use my location';
       alert('Could not get your location. Please allow location access.');
@@ -1031,7 +1130,6 @@ window.addEventListener('load', function() {
   initHeroMap();
   initFilterMap();
 });
-
 </script>
 </body>
 </html>

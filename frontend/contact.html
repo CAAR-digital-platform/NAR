@@ -4,20 +4,18 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR &mdash; Contact Us</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="css/contact.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
+<!-- HEADER -->
 <header class="header">
   <div class="header-inner">
     <div class="logo-block">
-      <a href="index.html">
-        <img src="img/grand_logo.png" alt="CAAR" class="logo-img"/>
-      </a>
+      <a href="index.html"><img src="img/grand_logo.png" alt="CAAR" class="logo-img"/></a>
     </div>
     <div class="right-side">
       <div class="top-row">
@@ -50,17 +48,18 @@
           <li><a href="contact.html" class="nav-link active">Contact</a></li>
         </ul>
         <div class="nav-icons">
+          <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
           <button class="icon-btn" id="searchBtn">
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </button>
           <div class="lang-dropdown">
-            <button class="icon-btn">
-              <span class="lang-label" id="currentLang">EN</span>
-            </button>
+            <button class="icon-btn"><span class="lang-label" id="currentLang">EN</span></button>
             <ul class="lang-menu">
               <li><a href="#" data-lang="FR">Français (FR)</a></li>
               <li><a href="#" data-lang="EN">English (EN)</a></li>
@@ -78,114 +77,112 @@
 </header>
 
 
-<!-- ===== SECTION 1: HERO ===== -->
+<!-- HERO -->
 <section class="contact-hero">
   <div class="contact-hero-inner">
-
-    <!-- LEFT: conversion zone -->
     <div class="contact-hero-text">
       <h1>Get help with your insurance—fast and hassle-free</h1>
       <p class="contact-hero-subtext">
         Have a question, claim, or issue? Our advisors respond within 24 hours and guide you step by step.
       </p>
-
       <div class="contact-hero-cta">
-        <a href="#contactForm" id="ctaBtn" class="btn-contact-primary">Send a Request</a>
+        <button class="btn-contact-primary" id="ctaBtn">Send a Request</button>
         <span class="contact-micro">No waiting time &bull; Free assistance</span>
       </div>
-
       <div class="contact-trust">
         <span>500,000+ clients insured</span>
         <span>Available Sunday–Thursday, 8:30–17:00</span>
         <span>Trusted insurance partner in Algeria</span>
       </div>
     </div>
-
-    <!-- RIGHT: illustration with 3 clean badges -->
     <div class="contact-hero-illustration">
-
       <div class="hero-badge hero-badge-lg badge-email">
-        <svg viewBox="0 0 24 24">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-          <polyline points="22,6 12,13 2,6"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
       </div>
-
       <div class="hero-badge hero-badge-lg badge-phone">
-        <svg viewBox="0 0 24 24">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
       </div>
-
       <div class="hero-badge hero-badge-sm badge-msg">
-        <svg viewBox="0 0 24 24">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </div>
-
       <img src="img/contact.png" alt="CAAR Support Team"/>
     </div>
-
   </div>
 </section>
 
 
-<!-- ===== SECTION 2: CONTACT FORM (hidden, revealed on CTA click) ===== -->
+<!-- CONTACT FORM (hidden by default, revealed on CTA click) -->
 <section class="contact-form-section" id="contactForm">
   <div class="contact-form-inner">
 
     <!-- LEFT: form -->
     <div class="contact-form-left">
+      <div class="form-collapse-row">
+        <div class="form-section-title">Send us a message</div>
+        <button class="btn-collapse" onclick="collapseForm()">
+          <svg viewBox="0 0 12 12" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2"><path d="M2 8l4-4 4 4"/></svg>
+          Close
+        </button>
+      </div>
       <p class="form-intro">Please select the subject of your request so we can direct it to the appropriate department.</p>
 
-      <div class="cf-group">
-        <label>Subject <span>*</span></label>
-        <select class="cf-select" id="cfSubject">
-          <option value="" disabled selected>Select the subject of your request</option>
-          <option>General Information</option>
-          <option>Claim Declaration</option>
-          <option>Policy Management</option>
-          <option>Auto Insurance</option>
-          <option>Habitation Insurance</option>
-          <option>Agriculture Insurance</option>
-          <option>Technical Support</option>
-          <option>Other</option>
-        </select>
+      <div id="formFields">
+        <div class="cf-group">
+          <label>Subject <span>*</span></label>
+          <select class="cf-select" id="cfSubject">
+            <option value="" disabled selected>Select the subject of your request</option>
+            <option>General Information</option>
+            <option>Claim Declaration</option>
+            <option>Policy Management</option>
+            <option>Auto Insurance</option>
+            <option>Habitation Insurance</option>
+            <option>Agriculture Insurance</option>
+            <option>Technical Support</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="cf-group">
+          <label>Full name <span>*</span></label>
+          <input class="cf-input" type="text" placeholder="Your full name"/>
+        </div>
+        <div class="cf-group">
+          <label>Email address <span>*</span></label>
+          <input class="cf-input" type="email" placeholder="yourname@email.com"/>
+        </div>
+        <div class="cf-group">
+          <label>Phone number</label>
+          <input class="cf-input" type="tel" placeholder="your phone number"/>
+          <div class="cf-hint">Optional &ndash; useful for faster follow-up.</div>
+        </div>
+        <div class="cf-group">
+          <label>Message <span>*</span></label>
+          <textarea class="cf-textarea" placeholder="Describe your request clearly (policy number, agency, date, or any useful detail)"></textarea>
+        </div>
+        <div class="cf-check-row">
+          <input type="checkbox" id="cfConsent"/>
+          <label for="cfConsent">I agree to the processing of my <a href="#">personal data</a> in accordance with applicable regulations.</label>
+        </div>
+        <div class="cf-robot">
+          <input type="checkbox" id="cfRobot"/>
+          <label for="cfRobot">I'm not a robot</label>
+        </div>
+        <button class="btn-send" id="sendBtn" onclick="submitForm()">send my request</button>
+        <p class="cf-confidential">Your request will be processed confidentially by CAAR</p>
       </div>
 
-      <div class="cf-group">
-        <label>Full name <span>*</span></label>
-        <input class="cf-input" type="text" placeholder="Your full name"/>
+      <!-- Success state -->
+      <div class="cf-success-state" id="successState">
+        <div class="cf-success-icon">✓</div>
+        <div class="cf-success-title">Request sent successfully!</div>
+        <div class="cf-success-sub">
+          Our team will review your message and get back to you within<br>
+          <strong>24 working hours</strong>. Check your email for confirmation.
+        </div>
+        <div class="cf-success-actions">
+          <a href="network.html" class="btn-success-primary">Find nearest agency</a>
+          <button class="btn-success-secondary" onclick="resetForm()">Send another request</button>
+        </div>
       </div>
-
-      <div class="cf-group">
-        <label>Email address <span>*</span></label>
-        <input class="cf-input" type="email" placeholder="yourname@email.com"/>
-      </div>
-
-      <div class="cf-group">
-        <label>Phone number</label>
-        <input class="cf-input" type="tel" placeholder="your phone number"/>
-        <div class="cf-hint">Optional &ndash; useful for faster follow-up.</div>
-      </div>
-
-      <div class="cf-group">
-        <label>Message <span>*</span></label>
-        <textarea class="cf-textarea" placeholder="Describe your request clearly (policy number, agency, date, or any useful detail)"></textarea>
-      </div>
-
-      <div class="cf-check-row">
-        <input type="checkbox" id="cfConsent"/>
-        <label for="cfConsent">I agree to the processing of my <a href="#">personal data</a> in accordance with applicable regulations.</label>
-      </div>
-
-      <div class="cf-robot">
-        <input type="checkbox" id="cfRobot"/>
-        <label for="cfRobot">I'm not a robot</label>
-      </div>
-
-      <button class="btn-send" onclick="submitForm()">send my request</button>
-      <p class="cf-confidential">Your request will be processed confidentially by CAAR</p>
     </div>
 
     <!-- RIGHT: other ways to contact -->
@@ -194,9 +191,7 @@
 
       <div class="contact-card">
         <div class="contact-card-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-          </svg>
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
         <h4>Call us</h4>
         <p>+213 (0)21 63 20 72<br/>Sunday to Thursday &ndash; business hours</p>
@@ -204,10 +199,7 @@
 
       <div class="contact-card">
         <div class="contact-card-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         </div>
         <h4>Email</h4>
         <p>contact@caar.dz<br/>For non-urgent requests</p>
@@ -215,14 +207,20 @@
 
       <div class="contact-card">
         <div class="contact-card-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
         <h4>Head office</h4>
         <p>48, Rue Didouche Mourad<br/>Algiers 16000, Algeria</p>
-        <a href="https://maps.google.com/?q=48+Rue+Didouche+Mourad+Alger" target="_blank" class="btn-directions">Get directions</a>
+        <a href="network.html?focus=hq" class="btn-directions">Get directions</a>
+      </div>
+
+      <div class="contact-crossnav">
+        <div class="contact-crossnav-label">Prefer in-person?</div>
+        <div class="contact-crossnav-text">Visit one of our 39+ agencies across Algeria. We'll find the nearest one to you.</div>
+        <a href="network.html" class="btn-crossnav">
+          Find an agency
+          <svg viewBox="0 0 12 12"><path d="M4 2l4 4-4 4"/></svg>
+        </a>
       </div>
     </div>
 
@@ -230,23 +228,42 @@
 </section>
 
 
-<!-- ===== SECTION 3: MAP ===== -->
+<!-- MAP SECTION -->
 <section class="contact-map-section">
-  <h2>CAAR Headquarters Location</h2>
-  <div class="map-embed-box">
-    <p>Embedded Google Map</p>
-    <a href="https://maps.google.com/?q=48+Rue+Didouche+Mourad+Alger" target="_blank" class="btn-maps">open with google maps</a>
+  <div class="contact-map-header">
+    <h2>CAAR Headquarters Location</h2>
+    <div class="map-smart-actions">
+      <a href="network.html" class="btn-map-action btn-map-secondary">🗺 View all agencies</a>
+      <a href="network.html?focus=hq" class="btn-map-action btn-map-primary">📍 Get directions</a>
+    </div>
+  </div>
+
+  <div class="map-container-wrap">
+    <div id="hqMap"></div>
+  </div>
+
+  <div class="hq-address-card">
+    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <div>
+      <strong>CAAR Headquarters</strong>
+      48 Rue Didouche Mourad, Algiers 16000 &mdash;
+      <a href="https://maps.google.com/?q=48+Rue+Didouche+Mourad+Alger" target="_blank"
+         style="color:var(--hdr-orange);font-weight:700;text-decoration:none;">Open in Google Maps ↗</a>
+    </div>
+  </div>
+
+  <div class="map-crossnav-row">
+    <span>Looking for a specific agency?</span>
+    <a href="network.html" class="btn-map-action btn-map-secondary">Browse all 39 agencies →</a>
   </div>
 </section>
 
 
-<!-- ===== FOOTER ===== -->
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
-      <div class="footer-logo">
-        <img src="img/caarfooter.jpg" alt="CAAR"/>
-      </div>
+      <div class="footer-logo"><img src="img/caarfooter.jpg" alt="CAAR"/></div>
       <div class="footer-col">
         <h4>Company</h4>
         <a href="company.html">About Us</a>
@@ -262,9 +279,7 @@
       </div>
       <div class="footer-col">
         <h4>Follow Us</h4>
-        <div class="footer-social">
-          <a href="#" aria-label="Facebook">f</a>
-        </div>
+        <div class="footer-social"><a href="#" aria-label="Facebook">f</a></div>
       </div>
       <div class="footer-col-1">
         <div class="footer-item">
@@ -288,53 +303,127 @@
 </footer>
 
 
-<script src="script.js"></script>
+<!-- MOBILE NAV DRAWER -->
+<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
+<nav class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-header">
+    <span class="mobile-nav-title">Menu</span>
+    <button onclick="toggleMobileMenu()" class="mobile-nav-close">✕</button>
+  </div>
+  <a href="index.html"    onclick="toggleMobileMenu()">Home</a>
+  <a href="products.html" onclick="toggleMobileMenu()">Products</a>
+  <a href="company.html"  onclick="toggleMobileMenu()">Company</a>
+  <a href="network.html"  onclick="toggleMobileMenu()">Network</a>
+  <a href="news.html"     onclick="toggleMobileMenu()">News</a>
+  <a href="contact.html" class="active" onclick="toggleMobileMenu()">Contact</a>
+  <div class="mobile-nav-btns">
+    <a href="network.html" class="btn-top">Find Agency</a>
+    <a href="contact.html" class="btn-top">Contact Us</a>
+  </div>
+</nav>
+
+
+<!-- ALL SCRIPTS — inside body, before </body> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-  /* ── Search bar ── */
-  document.getElementById('searchBtn').addEventListener('click', function () {
-    document.getElementById('searchBar').classList.toggle('open');
-  });
-  document.getElementById('searchClose').addEventListener('click', function () {
-    document.getElementById('searchBar').classList.remove('open');
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') document.getElementById('searchBar').classList.remove('open');
-  });
 
-  /* ── CTA → reveal form with smooth scroll ── */
-  var formRevealed = false;
-  document.getElementById('ctaBtn').addEventListener('click', function (e) {
-    e.preventDefault();
-    var form = document.getElementById('contactForm');
-    if (!formRevealed) {
-      form.classList.add('show');
-      formRevealed = true;
-    }
-    setTimeout(function () {
-      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
-  });
+/* ── Search bar ── */
+document.getElementById('searchBtn').addEventListener('click', function () {
+  document.getElementById('searchBar').classList.toggle('open');
+});
+document.getElementById('searchClose').addEventListener('click', function () {
+  document.getElementById('searchBar').classList.remove('open');
+});
 
-  /* ── Form submit ── */
-  function submitForm() {
-    var subject = document.getElementById('cfSubject').value;
-    var consent = document.getElementById('cfConsent').checked;
-    if (!subject) { alert('Please select a subject.'); return; }
-    if (!consent) { alert('Please agree to the data processing terms.'); return; }
-    var btn = document.querySelector('.btn-send');
-    btn.textContent = 'Request sent ✓';
-    btn.style.background = '#27ae60';
-    btn.disabled = true;
+/* ── Mobile nav ── */
+function toggleMobileMenu() {
+  var nav     = document.getElementById('mobileNav');
+  var overlay = document.getElementById('mobileNavOverlay');
+  var isOpen  = nav.classList.contains('open');
+  nav.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+
+/* ── CTA: reveal form + scroll ── */
+var formRevealed = false;
+document.getElementById('ctaBtn').addEventListener('click', function () {
+  var form = document.getElementById('contactForm');
+  if (!formRevealed) {
+    form.classList.add('show');
+    formRevealed = true;
+    requestAnimationFrame(function () { form.classList.add('highlight-flash'); });
   }
+  setTimeout(function () { form.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+});
 
-  /* ── Language switcher ── */
-  document.querySelectorAll('[data-lang]').forEach(function (link) {
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      document.getElementById('currentLang').textContent = this.getAttribute('data-lang');
-    });
+/* ── Collapse form ── */
+function collapseForm() {
+  var form = document.getElementById('contactForm');
+  form.classList.remove('show', 'highlight-flash');
+  formRevealed = false;
+  document.querySelector('.contact-hero').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ── Submit ── */
+function submitForm() {
+  var subject = document.getElementById('cfSubject').value;
+  var consent = document.getElementById('cfConsent').checked;
+  if (!subject) { alert('Please select a subject.'); return; }
+  if (!consent) { alert('Please agree to the data processing terms.'); return; }
+  var btn = document.getElementById('sendBtn');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+  setTimeout(function () {
+    document.getElementById('formFields').style.display = 'none';
+    document.getElementById('successState').classList.add('show');
+    document.getElementById('successState').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 800);
+}
+
+/* ── Reset form ── */
+function resetForm() {
+  document.getElementById('formFields').style.display = '';
+  document.getElementById('successState').classList.remove('show');
+  document.getElementById('cfSubject').value = '';
+  document.getElementById('cfConsent').checked = false;
+  document.getElementById('cfRobot').checked = false;
+  var btn = document.getElementById('sendBtn');
+  btn.textContent = 'send my request';
+  btn.disabled = false;
+}
+
+/* ── Language switcher ── */
+document.querySelectorAll('[data-lang]').forEach(function (link) {
+  link.addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('currentLang').textContent = this.getAttribute('data-lang');
   });
-</script>
+});
 
+/* ── Escape key ── */
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') {
+    document.getElementById('searchBar').classList.remove('open');
+    var nav = document.getElementById('mobileNav');
+    if (nav.classList.contains('open')) toggleMobileMenu();
+  }
+});
+
+/* ── HQ Leaflet Map ── */
+var HQ = { lat: 36.767043, lng: 3.052792 };
+var hqMap = L.map('hqMap', { center: [HQ.lat, HQ.lng], zoom: 16, zoomControl: true, scrollWheelZoom: false, attributionControl: false });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(hqMap);
+var hqIcon = L.divIcon({
+  className: '',
+  html: '<svg width="36" height="48" viewBox="0 0 36 48" fill="none"><path d="M18 0C8.06 0 0 8.06 0 18C0 31.5 18 48 18 48S36 31.5 36 18C36 8.06 27.94 0 18 0Z" fill="#F57C00"/><circle cx="18" cy="18" r="10" fill="white"/><text x="18" y="23" text-anchor="middle" font-size="12" font-weight="800" fill="#F57C00" font-family="DM Sans,sans-serif">&#9733;</text></svg>',
+  iconSize: [36, 48], iconAnchor: [18, 48], popupAnchor: [0, -52],
+});
+var hqPopup = L.popup({ closeButton: false, maxWidth: 220, minWidth: 200 }).setContent(
+  '<div style="font-family:DM Sans,sans-serif;padding:2px 0;"><div style="font-weight:800;font-size:0.82rem;color:#1C1C1C;margin-bottom:3px;">&#11088; CAAR Headquarters</div><div style="font-size:0.72rem;color:#555;line-height:1.5;margin-bottom:8px;">48 Rue Didouche Mourad<br>Algiers 16000, Algeria</div><a href="https://maps.google.com/?q=48+Rue+Didouche+Mourad+Alger" target="_blank" style="display:inline-block;padding:5px 14px;background:#F57C00;color:#fff;border-radius:14px;font-size:0.7rem;font-weight:700;text-decoration:none;">Get directions &#8599;</a></div>'
+);
+L.marker([HQ.lat, HQ.lng], { icon: hqIcon }).addTo(hqMap).bindPopup(hqPopup).openPopup();
+
+</script>
 </body>
 </html>
