@@ -8,30 +8,29 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --orange: #E8761E;
-      --orange-dark: #C9601A;
+      --orange:       #E8761E;
+      --orange-dark:  #C9601A;
       --orange-light: #FFF3E8;
-      --dark: #1C1C1C;
-      --gray: #666;
-      --border: #e0e0e0;
-      --white: #fff;
-      --font-serif: 'Lora', serif;
-      --font-sans: 'Source Sans 3', sans-serif;
+      --dark:         #1C1C1C;
+      --gray:         #666;
+      --border:       #e0e0e0;
+      --white:        #fff;
+      --font-serif:   'Lora', serif;
+      --font-sans:    'Source Sans 3', sans-serif;
     }
     body { font-family: var(--font-sans); color: var(--dark); background: var(--white); }
-    a { text-decoration: none; color: inherit; }
+    a    { text-decoration: none; color: inherit; }
 
-    /* ── NAVBAR ── */
+    /* NAVBAR */
     .navbar {
       position: sticky; top: 0; z-index: 100;
       background: var(--white); border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 40px; height: 60px;
     }
-    .nav-left { display: flex; align-items: center; gap: 28px; }
-    .nav-logo {
-      width: 42px; height: 42px; border-radius: 50%;
-      border: 2px solid var(--orange);
+    .nav-left  { display: flex; align-items: center; gap: 28px; }
+    .nav-logo  {
+      width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--orange);
       display: flex; align-items: center; justify-content: center;
       font-family: var(--font-serif); font-size: 0.58rem; font-weight: 700;
       color: var(--orange); text-align: center; line-height: 1.1; flex-shrink: 0;
@@ -56,19 +55,17 @@
     .nav-btn-fill { background: var(--orange); color: var(--white); }
     .nav-btn-fill:hover { background: var(--orange-dark); }
 
-    /* ── BREADCRUMB ── */
+    /* BREADCRUMB */
     .breadcrumb {
-      padding: 9px 64px; background: var(--white);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 6px;
-      font-size: 0.75rem; color: var(--gray);
+      padding: 9px 64px; background: var(--white); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--gray);
     }
     .breadcrumb a { color: var(--gray); transition: color 0.2s; }
     .breadcrumb a:hover { color: var(--orange); }
     .breadcrumb .sep { color: #bbb; }
     .breadcrumb .cur { color: var(--orange); font-weight: 600; }
 
-    /* ── HERO ── */
+    /* HERO */
     .hero {
       display: flex; align-items: flex-end; justify-content: space-between;
       padding: 36px 64px 0; gap: 24px; overflow: hidden; background: var(--white);
@@ -82,13 +79,13 @@
     .hero-img { flex-shrink: 0; }
     .hero-img img { height: 200px; width: auto; object-fit: contain; display: block; }
 
-    /* ── MAIN LAYOUT ── */
+    /* LAYOUT */
     .layout {
       display: grid; grid-template-columns: 300px 1fr;
       border-top: 1px solid var(--border); min-height: 420px;
     }
 
-    /* ── SIDEBAR ── */
+    /* SIDEBAR */
     .sidebar {
       border-right: 1px solid var(--border);
       padding: 24px 16px; display: flex; flex-direction: column; gap: 12px;
@@ -101,24 +98,23 @@
       background: var(--orange); color: var(--white); transition: all 0.22s;
     }
     .prod-btn-title { font-size: 0.86rem; font-weight: 700; display: block; margin-bottom: 4px; }
-    .prod-btn-sub { font-size: 0.74rem; opacity: 0.88; display: block; line-height: 1.4; }
+    .prod-btn-sub   { font-size: 0.74rem; opacity: 0.88; display: block; line-height: 1.4; }
     .prod-btn:hover:not(.active) { background: var(--orange-dark); }
     .prod-btn.active {
       background: var(--white); color: var(--dark);
       border-color: var(--orange); box-shadow: 0 2px 14px rgba(232,118,30,0.13);
     }
     .prod-btn.active .prod-btn-title { color: var(--dark); }
-    .prod-btn.active .prod-btn-sub { color: var(--gray); opacity: 1; }
+    .prod-btn.active .prod-btn-sub   { color: var(--gray); opacity: 1; }
 
-    /* ── CONTENT PANEL ── */
+    /* CONTENT PANEL */
     .panel { padding: 36px 48px; }
     .detail { display: none; animation: fadeUp 0.22s ease; }
     .detail.on { display: block; }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-
     .detail h2 {
       font-family: var(--font-serif); font-size: 1.35rem; font-weight: 700;
       color: var(--dark); margin-bottom: 6px;
@@ -138,8 +134,6 @@
       display: flex; align-items: center; gap: 8px;
     }
     .section-lbl::after { content: ''; flex: 1; height: 1px; background: #f0e4d8; }
-
-    /* Bullet point style matching individual-risks.html */
     .covers {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 6px 28px; margin-bottom: 22px;
@@ -152,7 +146,6 @@
       content: "•"; color: var(--orange); font-weight: 800;
       font-size: 1.1rem; flex-shrink: 0; margin-top: -2px;
     }
-
     .badge {
       display: inline-flex; align-items: center; gap: 8px;
       background: #fff8f2; border: 1px solid #f5ddc8;
@@ -162,7 +155,7 @@
     .badge svg { width: 15px; height: 15px; stroke: var(--orange); fill: none; stroke-width: 2; flex-shrink: 0; }
     .badge strong { color: var(--orange); }
 
-    /* ── FOOTER matching screenshot 2 ── */
+    /* FOOTER */
     footer {
       background: #3a3a3a; color: rgba(255,255,255,0.72);
       padding: 48px 64px 0; border-top: 4px solid var(--orange);
@@ -171,12 +164,9 @@
       display: grid; grid-template-columns: 1.6fr 1fr 1.4fr 1fr;
       gap: 40px; margin-bottom: 40px;
     }
-    .footer-logo-wrap {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
-    }
+    .footer-logo-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
     .footer-logo-circle {
-      width: 44px; height: 44px; border-radius: 50%;
-      border: 2px solid var(--orange);
+      width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--orange);
       display: flex; align-items: center; justify-content: center;
       font-family: var(--font-serif); font-size: 0.52rem; font-weight: 700;
       color: var(--orange); text-align: center; line-height: 1.15;
@@ -197,15 +187,11 @@
     }
     .footer-col ul { list-style: none; }
     .footer-col ul li { margin-bottom: 10px; }
-    .footer-col ul li a {
-      font-size: 0.8rem; color: rgba(255,255,255,0.72);
-      transition: color 0.2s;
-    }
+    .footer-col ul li a { font-size: 0.8rem; color: rgba(255,255,255,0.72); transition: color 0.2s; }
     .footer-col ul li a:hover { color: var(--orange); }
     .social-row { display: flex; gap: 8px; margin-top: 4px; }
     .s-icon {
-      width: 34px; height: 34px; border-radius: 50%;
-      border: 1.5px solid var(--orange);
+      width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--orange);
       display: flex; align-items: center; justify-content: center;
       font-size: 0.78rem; font-weight: 700; color: var(--orange);
       cursor: pointer; transition: all 0.2s;
@@ -223,9 +209,7 @@
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-left">
-    <a href="/index.html">
-      <div class="nav-logo">CAAR</div>
-    </a>
+    <a href="/index.html"><div class="nav-logo">CAAR</div></a>
     <div class="nav-ind">
       INDIVIDUALS
       <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
@@ -233,7 +217,7 @@
   </div>
   <div class="nav-center">
     <a href="/index.html">Home</a>
-    <a href="#" class="active">Insurance</a>
+    <a href="/products.html" class="active">Insurance</a>
     <a href="/company.html">Company</a>
     <a href="/network.html">Network</a>
     <a href="/news.html">News</a>
@@ -241,7 +225,7 @@
   </div>
   <div class="nav-right">
     <button class="nav-btn nav-btn-ghost" onclick="window.location.href='/network.html'">Find Agency</button>
-    <button class="nav-btn nav-btn-fill" onclick="window.location.href='/contact.html'">Contact Us</button>
+    <button class="nav-btn nav-btn-fill"  onclick="window.location.href='/contact.html'">Contact Us</button>
   </div>
 </nav>
 
@@ -249,28 +233,26 @@
 <div class="breadcrumb">
   <a href="/index.html">Home</a><span class="sep">›</span>
   <a href="/products.html">Insurance</a><span class="sep">›</span>
-  <span class="cur" id="bc">Auto Insurance</span>
+  <span class="cur" id="bc">Motor Insurance</span>
 </div>
 
-<!-- HERO -->
+<!-- HERO — image is in frontend/img/photo2.jpg -->
 <section class="hero">
   <div class="hero-text">
     <h1>Auto Insurance</h1>
     <p>
-      This section presents insurance solutions for vehicles, including mandatory
-      coverage and optional guarantees to protect drivers, passengers, and
-      third parties against damages.
+      Insurance solutions for vehicles, including mandatory coverage and optional
+      guarantees to protect drivers, passengers, and third parties against damages.
     </p>
   </div>
   <div class="hero-img">
-    <img src="resources/img/photo2.jpg" alt="Auto Insurance"/>
+    <img src="img/photo2.jpg" alt="Auto Insurance"/>
   </div>
 </section>
 
 <!-- LAYOUT -->
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <button class="prod-btn active" id="btn-motor" onclick="show('motor')">
       <span class="prod-btn-title">Motor Insurance</span>
@@ -286,10 +268,8 @@
     </button>
   </aside>
 
-  <!-- PANEL -->
   <div class="panel">
 
-    <!-- Motor Insurance -->
     <div class="detail on" id="d-motor">
       <h2>Motor Insurance</h2>
       <span class="abbr-tag">RC Auto</span>
@@ -313,7 +293,6 @@
       </div>
     </div>
 
-    <!-- Roadside Assistance -->
     <div class="detail" id="d-roadside">
       <h2>Roadside Assistance</h2>
       <span class="abbr-tag">Assistance</span>
@@ -337,7 +316,6 @@
       </div>
     </div>
 
-    <!-- Glass Breakage -->
     <div class="detail" id="d-glass">
       <h2>Glass Breakage Assistance</h2>
       <span class="abbr-tag">Bris de Glace</span>
@@ -363,11 +341,9 @@
   </div>
 </div>
 
-<!-- FOOTER matching screenshot 2 -->
+<!-- FOOTER -->
 <footer>
   <div class="footer-grid">
-
-    <!-- Col 1: logo + contact -->
     <div>
       <div class="footer-logo-wrap">
         <div class="footer-logo-circle">CAAR</div>
@@ -387,8 +363,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Col 2: Company -->
     <div class="footer-col">
       <h5>Company</h5>
       <ul>
@@ -396,46 +370,39 @@
         <li><a href="/company-careers.html">Careers</a></li>
       </ul>
     </div>
-
-    <!-- Col 3: Insurance -->
     <div class="footer-col">
       <h5>Insurance</h5>
       <ul>
         <li><a href="/auto-insurance.html">Auto Insurance</a></li>
-        <li><a href="/individual-risks.html">Entreprises Insurance</a></li>
-        <li><a href="/individual-risks.html">Natural Catastrophe Insurance</a></li>
-        <li><a href="/individual-risks.html">Multi-risk insurance for merchants and craftsmen</a></li>
+        <li><a href="/individual-risks.html">Individual Risks</a></li>
+        <li><a href="/transport-insurance.html">Transport Insurance</a></li>
+        <li><a href="/technical-risks.html">Technical Risks</a></li>
+        <li><a href="/industrial-risks.html">Industrial Risks</a></li>
       </ul>
     </div>
-
-    <!-- Col 4: Follow us -->
     <div class="footer-col">
       <h5>Follow Us</h5>
-      <div class="social-row">
-        <div class="s-icon">f</div>
-      </div>
+      <div class="social-row"><div class="s-icon">f</div></div>
     </div>
   </div>
   <div class="footer-bottom">© 2026 CAAR. All rights reserved.</div>
 </footer>
 
 <script>
-  const map = {
+  var map = {
     motor:    { btn: 'btn-motor',    detail: 'd-motor',    bc: 'Motor Insurance' },
     roadside: { btn: 'btn-roadside', detail: 'd-roadside', bc: 'Roadside Assistance' },
     glass:    { btn: 'btn-glass',    detail: 'd-glass',    bc: 'Windshield / Glass Breakage Assistance' }
   };
-
   function show(key) {
-    Object.values(map).forEach(({ btn, detail }) => {
-      document.getElementById(btn).classList.remove('active');
-      document.getElementById(detail).classList.remove('on');
+    Object.keys(map).forEach(function(k) {
+      document.getElementById(map[k].btn).classList.remove('active');
+      document.getElementById(map[k].detail).classList.remove('on');
     });
     document.getElementById(map[key].btn).classList.add('active');
     document.getElementById(map[key].detail).classList.add('on');
     document.getElementById('bc').textContent = map[key].bc;
   }
 </script>
-
 </body>
 </html>
