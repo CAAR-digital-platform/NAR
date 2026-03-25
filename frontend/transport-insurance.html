@@ -1,433 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR — Transport Insurance</title>
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --orange:       #E8761E;
-      --orange-dark:  #C9601A;
-      --orange-light: #FFF3E8;
-      --dark:         #1C1C1C;
-      --gray:         #666;
-      --border:       #e0e0e0;
-      --white:        #fff;
-      --font-serif:   'Lora', serif;
-      --font-sans:    'Source Sans 3', sans-serif;
-    }
-    body { font-family: var(--font-sans); color: var(--dark); background: var(--white); }
-    a    { text-decoration: none; color: inherit; }
-
-    /* NAVBAR */
-    .navbar {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--white); border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 40px; height: 60px;
-    }
-    .nav-left  { display: flex; align-items: center; gap: 28px; }
-    .nav-logo  {
-      width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--orange);
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-serif); font-size: 0.6rem; font-weight: 700;
-      color: var(--orange); text-align: center; line-height: 1.15; flex-shrink: 0;
-    }
-    .nav-ind {
-      display: flex; align-items: center; gap: 5px;
-      font-size: 0.82rem; font-weight: 700; cursor: pointer; color: var(--dark);
-    }
-    .nav-ind svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; }
-    .nav-center { display: flex; align-items: center; gap: 22px; }
-    .nav-center a { font-size: 0.78rem; color: var(--gray); font-weight: 500; transition: color 0.2s; }
-    .nav-center a:hover, .nav-center a.active { color: var(--orange); }
-    .nav-center a.active { font-weight: 600; }
-    .nav-right { display: flex; align-items: center; gap: 10px; }
-    .nav-btn {
-      padding: 8px 18px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
-      cursor: pointer; font-family: var(--font-sans); border: 1.5px solid var(--orange);
-      transition: all 0.2s;
-    }
-    .nav-btn-ghost { background: var(--white); color: var(--orange); }
-    .nav-btn-ghost:hover { background: var(--orange); color: var(--white); }
-    .nav-btn-fill { background: var(--orange); color: var(--white); }
-    .nav-btn-fill:hover { background: var(--orange-dark); }
-
-    /* BREADCRUMB */
-    .breadcrumb {
-      padding: 9px 64px; background: var(--white); border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--gray);
-    }
-    .breadcrumb a { color: var(--gray); transition: color 0.2s; }
-    .breadcrumb a:hover { color: var(--orange); }
-    .breadcrumb .sep { color: #bbb; }
-    .breadcrumb .cur { color: var(--orange); font-weight: 600; }
-
-    /* HERO */
-    .hero {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      padding: 36px 64px 0; gap: 24px; overflow: hidden; background: var(--white);
-    }
-    .hero-text { max-width: 420px; padding-bottom: 28px; }
-    .hero-text h1 {
-      font-family: var(--font-serif); font-size: 1.75rem; font-weight: 700;
-      color: var(--dark); margin-bottom: 10px; line-height: 1.25;
-    }
-    .hero-text p { font-size: 0.88rem; color: var(--gray); line-height: 1.65; }
-    .hero-img { flex-shrink: 0; }
-    .hero-img img { height: 200px; width: auto; object-fit: contain; display: block; }
-
-    /* LAYOUT */
-    .layout {
-      display: grid; grid-template-columns: 300px 1fr;
-      border-top: 1px solid var(--border); min-height: 420px;
-    }
-
-    /* SIDEBAR */
-    .sidebar {
-      border-right: 1px solid var(--border);
-      padding: 24px 16px; display: flex; flex-direction: column; gap: 12px;
-      background: var(--white);
-    }
-    .prod-btn {
-      display: block; width: 100%; text-align: left;
-      border: 2px solid transparent; border-radius: 10px;
-      padding: 16px 18px; cursor: pointer; font-family: var(--font-sans);
-      background: var(--orange); color: var(--white); transition: all 0.22s;
-    }
-    .prod-btn-title { font-size: 0.86rem; font-weight: 700; display: block; margin-bottom: 4px; }
-    .prod-btn-sub   { font-size: 0.74rem; opacity: 0.88; display: block; line-height: 1.4; }
-    .prod-btn:hover:not(.active) { background: var(--orange-dark); }
-    .prod-btn.active {
-      background: var(--white); color: var(--dark);
-      border-color: var(--orange); box-shadow: 0 2px 14px rgba(232,118,30,0.13);
-    }
-    .prod-btn.active .prod-btn-title { color: var(--dark); }
-    .prod-btn.active .prod-btn-sub   { color: var(--gray); opacity: 1; }
-
-    /* CONTENT PANEL */
-    .panel { padding: 36px 48px; }
-    .detail { display: none; animation: fadeUp 0.22s ease; }
-    .detail.on { display: block; }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .detail h2 {
-      font-family: var(--font-serif); font-size: 1.35rem; font-weight: 700;
-      color: var(--dark); margin-bottom: 6px;
-    }
-    .abbr-tag {
-      display: inline-block; background: var(--orange-light); color: var(--orange);
-      font-size: 0.74rem; font-weight: 700; padding: 3px 12px;
-      border-radius: 20px; margin-bottom: 14px;
-    }
-    .detail-desc {
-      font-size: 0.875rem; color: var(--gray); line-height: 1.68;
-      margin-bottom: 22px; max-width: 580px;
-    }
-    .section-lbl {
-      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.9px; color: var(--orange); margin-bottom: 14px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .section-lbl::after { content: ''; flex: 1; height: 1px; background: #f0e4d8; }
-    .covers {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 6px 28px; margin-bottom: 22px;
-    }
-    .cover-row {
-      display: flex; align-items: flex-start; gap: 8px;
-      font-size: 0.82rem; color: var(--dark); line-height: 1.45; padding: 3px 0;
-    }
-    .cover-row::before {
-      content: "•"; color: var(--orange); font-weight: 800;
-      font-size: 1.1rem; flex-shrink: 0; margin-top: -2px;
-    }
-    .badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: #fff8f2; border: 1px solid #f5ddc8;
-      border-radius: 8px; padding: 11px 16px;
-      font-size: 0.8rem; color: var(--dark); margin-top: 6px;
-    }
-    .badge svg { width: 15px; height: 15px; stroke: var(--orange); fill: none; stroke-width: 2; flex-shrink: 0; }
-    .badge strong { color: var(--orange); }
-
-    /* FOOTER */
-    footer {
-      background: #3a3a3a; color: rgba(255,255,255,0.72);
-      padding: 48px 64px 0; border-top: 4px solid var(--orange);
-    }
-    .footer-grid {
-      display: grid; grid-template-columns: 1.6fr 1fr 1.4fr 1fr;
-      gap: 40px; margin-bottom: 40px;
-    }
-    .footer-logo-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-    .footer-logo-circle {
-      width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--orange);
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-serif); font-size: 0.52rem; font-weight: 700;
-      color: var(--orange); text-align: center; line-height: 1.15;
-    }
-    .footer-contact { display: flex; flex-direction: column; gap: 10px; }
-    .footer-contact-row {
-      display: flex; align-items: flex-start; gap: 9px;
-      font-size: 0.8rem; color: rgba(255,255,255,0.72); line-height: 1.4;
-    }
-    .footer-contact-row svg {
-      width: 14px; height: 14px; stroke: var(--orange); fill: none;
-      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-      flex-shrink: 0; margin-top: 1px;
-    }
-    .footer-col h5 {
-      font-size: 0.7rem; font-weight: 700; color: #fff;
-      text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px;
-    }
-    .footer-col ul { list-style: none; }
-    .footer-col ul li { margin-bottom: 10px; }
-    .footer-col ul li a { font-size: 0.8rem; color: rgba(255,255,255,0.72); transition: color 0.2s; }
-    .footer-col ul li a:hover { color: var(--orange); }
-    .social-row { display: flex; gap: 8px; margin-top: 4px; }
-    .s-icon {
-      width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--orange);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.78rem; font-weight: 700; color: var(--orange);
-      cursor: pointer; transition: all 0.2s;
-    }
-    .s-icon:hover { background: var(--orange); color: #fff; }
-    .footer-bottom {
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 18px 0; text-align: center;
-      font-size: 0.72rem; color: rgba(255,255,255,0.35);
-    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--orange:#E8761E;--orange-dark:#C9601A;--orange-light:#FFF3E8;--dark:#1C1C1C;--gray:#666;--border:#E0E0E0;--white:#fff;--hdr-orange:#F57C00;}
+    body{font-family:'Source Sans 3',system-ui,sans-serif;color:var(--dark);background:var(--white);}
+    a{text-decoration:none;color:inherit;}img{max-width:100%;display:block;}
+    .header{background:var(--white);box-shadow:0 2px 10px rgba(0,0,0,0.09);position:sticky;top:0;z-index:1000;}
+    .header-inner{display:flex;align-items:stretch;padding:0 40px;}
+    .logo-block{display:flex;align-items:center;padding:10px 20px 10px 0;flex-shrink:0;border-right:1px solid var(--border);}
+    .logo-img{width:100px;height:100px;object-fit:contain;}
+    .right-side{display:flex;flex-direction:column;flex:1;}
+    .top-row{display:flex;justify-content:flex-end;align-items:center;gap:14px;padding:14px 0 14px 20px;}
+    .btn-top{padding:9px 24px;background:var(--hdr-orange);border:2px solid var(--hdr-orange);border-radius:30px;color:var(--white);font-size:14px;font-weight:600;transition:background .2s;cursor:pointer;text-decoration:none;display:inline-block;}
+    .btn-top:hover{background:#e06d00;}
+    .divider{border:none;border-top:1px solid var(--border);}
+    .bottom-row{display:flex;align-items:center;justify-content:space-between;flex:1;}
+    .nav-links{display:flex;align-items:center;list-style:none;flex:1;justify-content:space-between;}
+    .nav-link{display:flex;align-items:center;gap:4px;padding:16px 14px;font-size:15px;font-weight:600;color:var(--dark);position:relative;transition:color .2s;}
+    .nav-link:hover,.nav-link.active{color:var(--hdr-orange);}
+    .nav-link.active::after{content:'';position:absolute;bottom:0;left:14px;right:14px;height:3px;background:var(--hdr-orange);border-radius:3px 3px 0 0;}
+    .arrow{font-size:14px;color:var(--hdr-orange);font-weight:700;transition:transform .2s;}
+    .dropdown{position:relative;list-style:none;}
+    .dropdown-menu{display:none;position:absolute;top:calc(100% + 2px);left:0;background:var(--white);border:1px solid var(--border);border-radius:6px;min-width:200px;box-shadow:0 8px 20px rgba(0,0,0,.12);list-style:none;padding:6px 0;z-index:999;}
+    .dropdown:hover .dropdown-menu{display:block;}
+    .dropdown:hover .arrow{transform:rotate(180deg);}
+    .dropdown-menu li a{display:block;padding:11px 20px;font-size:13px;color:var(--dark);text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid #f0f0f0;transition:background .15s,color .15s;}
+    .dropdown-menu li:last-child a{border-bottom:none;}
+    .dropdown-menu li a:hover{background:#fff5e6;color:var(--hdr-orange);}
+    .nav-icons{display:flex;align-items:center;gap:4px;}
+    .icon-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 8px;border-radius:6px;transition:background .2s;}
+    .icon-btn:hover{background:#f5f5f5;}
+    .lang-label{font-size:13px;font-weight:700;color:var(--dark);}
+    .lang-dropdown{position:relative;}
+    .lang-menu{display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--white);border:1px solid var(--border);border-radius:6px;min-width:160px;box-shadow:0 8px 20px rgba(0,0,0,.12);list-style:none;padding:6px 0;z-index:999;}
+    .lang-dropdown:hover .lang-menu{display:block;}
+    .lang-menu li a{display:block;padding:9px 16px;font-size:13px;color:var(--dark);transition:background .15s,color .15s;}
+    .lang-menu li a:hover{background:#fff5e6;color:var(--hdr-orange);}
+    .breadcrumb{padding:9px 64px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--gray);}
+    .breadcrumb a{color:var(--gray);}.breadcrumb a:hover{color:var(--orange);}
+    .breadcrumb .sep{color:#bbb;}.breadcrumb .cur{color:var(--orange);font-weight:600;}
+    .hero{display:flex;align-items:flex-end;justify-content:space-between;padding:36px 64px 0;gap:24px;overflow:hidden;}
+    .hero-text{max-width:420px;padding-bottom:28px;}
+    .hero-text h1{font-family:'Lora',serif;font-size:1.75rem;font-weight:700;color:var(--dark);margin-bottom:10px;line-height:1.25;}
+    .hero-text p{font-size:0.88rem;color:var(--gray);line-height:1.65;}
+    .hero-img img{height:200px;width:auto;object-fit:contain;}
+    .layout{display:grid;grid-template-columns:300px 1fr;border-top:1px solid var(--border);min-height:420px;}
+    .sidebar{border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:12px;}
+    .prod-btn{display:block;width:100%;text-align:left;border:2px solid transparent;border-radius:10px;padding:16px 18px;cursor:pointer;font-family:inherit;background:var(--orange);color:var(--white);transition:all 0.22s;}
+    .prod-btn-title{font-size:0.86rem;font-weight:700;display:block;margin-bottom:4px;}
+    .prod-btn-sub{font-size:0.74rem;opacity:0.88;display:block;line-height:1.4;}
+    .prod-btn:hover:not(.active){background:var(--orange-dark);}
+    .prod-btn.active{background:var(--white);color:var(--dark);border-color:var(--orange);box-shadow:0 2px 14px rgba(232,118,30,0.13);}
+    .prod-btn.active .prod-btn-sub{color:var(--gray);opacity:1;}
+    .panel{padding:36px 48px;}
+    .detail{display:none;animation:fadeUp 0.22s ease;}
+    .detail.on{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+    .detail h2{font-family:'Lora',serif;font-size:1.35rem;font-weight:700;margin-bottom:6px;}
+    .abbr-tag{display:inline-block;background:var(--orange-light);color:var(--orange);font-size:0.74rem;font-weight:700;padding:3px 12px;border-radius:20px;margin-bottom:14px;}
+    .detail-desc{font-size:0.875rem;color:var(--gray);line-height:1.68;margin-bottom:22px;max-width:580px;}
+    .section-lbl{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.9px;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .section-lbl::after{content:'';flex:1;height:1px;background:#f0e4d8;}
+    .covers{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px;margin-bottom:22px;}
+    .cover-row{display:flex;align-items:flex-start;gap:8px;font-size:0.82rem;color:var(--dark);line-height:1.45;padding:3px 0;}
+    .cover-row::before{content:"•";color:var(--orange);font-weight:800;font-size:1.1rem;flex-shrink:0;margin-top:-2px;}
+    .badge{display:inline-flex;align-items:center;gap:8px;background:#fff8f2;border:1px solid #f5ddc8;border-radius:8px;padding:11px 16px;font-size:0.8rem;color:var(--dark);margin-top:6px;}
+    .badge svg{width:15px;height:15px;stroke:var(--orange);fill:none;stroke-width:2;flex-shrink:0;}
+    .badge strong{color:var(--orange);}
+    .footer{background:#3F3F3F;color:#ccc;padding:44px 7% 0;}
+    .footer-inner{max-width:1200px;margin:0 auto;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.14);}
+    .footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1.8fr 1fr;grid-template-rows:auto auto;column-gap:40px;row-gap:16px;align-items:start;}
+    .footer-logo{grid-column:1;grid-row:1;width:38px;height:38px;border-radius:50%;overflow:hidden;align-self:center;}
+    .footer-logo img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+    .footer-col{grid-row:1/span 2;}
+    .footer-col h4{color:#fff;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;height:38px;display:flex;align-items:center;}
+    .footer-col-1{grid-column:1;grid-row:2;}
+    .footer-item{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:#ccc;margin-bottom:10px;line-height:1.4;}
+    .footer-item svg{width:14px;height:14px;stroke:var(--orange);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:2px;}
+    .footer-col a{display:block;font-size:.82rem;color:#ccc;margin-bottom:9px;transition:color .2s;}
+    .footer-col a:hover{color:#fff;}
+    .footer-social{display:flex;gap:8px;}
+    .footer-social a{width:32px;height:32px;border-radius:50%;border:2px solid var(--orange);background:transparent;color:var(--orange);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;transition:background .2s,color .2s;}
+    .footer-social a:hover{background:var(--orange);color:#fff;}
+    .footer-bottom{text-align:center;font-size:.78rem;color:#999;padding:16px 0 20px;max-width:1200px;margin:0 auto;}
   </style>
 </head>
 <body>
-
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="nav-left">
-    <a href="/index.html"><div class="nav-logo">CAAR</div></a>
-    <div class="nav-ind">
-      INDIVIDUALS
-      <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-block"><a href="index.html"><img src="img/grand_logo.png" alt="CAAR" class="logo-img"/></a></div>
+    <div class="right-side">
+      <div class="top-row"><a href="network.html" class="btn-top">Find Agency</a><a href="contact.html" class="btn-top">Contact Us</a></div>
+      <hr class="divider"/>
+      <div class="bottom-row">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li class="dropdown"><a href="products.html" class="nav-link active">Products <span class="arrow">▾</span></a>
+            <ul class="dropdown-menu"><li><a href="individual-risks.html">Individual Risks</a></li><li><a href="auto-insurance.html">Auto Insurance</a></li><li><a href="transport-insurance.html">Transport Insurance</a></li><li><a href="technical-risks.html">Technical Risks</a></li><li><a href="industrial-risks.html">Industrial Risks</a></li></ul>
+          </li>
+          <li class="dropdown"><a href="company.html" class="nav-link">Company <span class="arrow">▾</span></a>
+            <ul class="dropdown-menu"><li><a href="company.html">About Us</a></li><li><a href="company-careers.html">Careers</a></li></ul>
+          </li>
+          <li><a href="network.html" class="nav-link">Network</a></li>
+          <li><a href="news.html" class="nav-link">News</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="nav-icons">
+          <button class="icon-btn"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+          <div class="lang-dropdown"><button class="icon-btn"><span class="lang-label">ANG</span></button><ul class="lang-menu"><li><a href="#">Français (FR)</a></li><li><a href="#">English (ANG)</a></li><li><a href="#">عربي (ARAB)</a></li></ul></div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="nav-center">
-    <a href="/index.html">Home</a>
-    <a href="/products.html" class="active">Insurance</a>
-    <a href="/company.html">Company</a>
-    <a href="/network.html">Network</a>
-    <a href="/news.html">News</a>
-    <a href="/contact.html">Contact</a>
-  </div>
-  <div class="nav-right">
-    <button class="nav-btn nav-btn-ghost" onclick="window.location.href='/network.html'">Find Agency</button>
-    <button class="nav-btn nav-btn-fill"  onclick="window.location.href='/contact.html'">Contact Us</button>
-  </div>
-</nav>
+</header>
 
-<!-- BREADCRUMB -->
-<div class="breadcrumb">
-  <a href="/index.html">Home</a><span class="sep">›</span>
-  <a href="/products.html">Insurance</a><span class="sep">›</span>
-  <span class="cur" id="bc">Pleasure Craft Insurance</span>
-</div>
+<div class="breadcrumb"><a href="index.html">Home</a><span class="sep">›</span><a href="products.html">Products</a><span class="sep">›</span><span class="cur" id="bc">Pleasure Craft Insurance</span></div>
 
-<!-- HERO — image is in frontend/img/photo3.jpg -->
 <section class="hero">
-  <div class="hero-text">
-    <h1>Transport Insurance</h1>
-    <p>
-      Insurance solutions related to the transport of goods and vehicles,
-      by land, sea, or air.
-    </p>
-  </div>
-  <div class="hero-img">
-    <img src="img/photo3.jpg" alt="Transport Insurance"/>
-  </div>
+  <div class="hero-text"><h1>Transport Insurance</h1><p>Insurance solutions for maritime, air and road transport — covering vessels, cargo and goods throughout their journey.</p></div>
+  <div class="hero-img"><img src="img/photo3.jpg" alt="Transport Insurance"/></div>
 </section>
 
-<!-- LAYOUT -->
 <div class="layout">
-
   <aside class="sidebar">
-    <button class="prod-btn active" id="btn-craft" onclick="show('craft')">
-      <span class="prod-btn-title">Pleasure Craft Insurance</span>
-      <span class="prod-btn-sub">Protection for private boats and leisure watercraft.</span>
-    </button>
-    <button class="prod-btn" id="btn-air" onclick="show('air')">
-      <span class="prod-btn-title">Air Cargo Insurance</span>
-      <span class="prod-btn-sub">Insurance for goods transported by air freight.</span>
-    </button>
-    <button class="prod-btn" id="btn-public" onclick="show('public')">
-      <span class="prod-btn-title">Goods Insurance (Public Transport)</span>
-      <span class="prod-btn-sub">Coverage for goods transported using public carriers.</span>
-    </button>
-    <button class="prod-btn" id="btn-private" onclick="show('private')">
-      <span class="prod-btn-title">Goods Insurance (Private Transport)</span>
-      <span class="prod-btn-sub">Coverage for businesses transporting their own goods.</span>
-    </button>
+    <button class="prod-btn active" onclick="show('craft')"><span class="prod-btn-title">Pleasure Craft Insurance</span><span class="prod-btn-sub">Coverage for recreational and non-commercial vessels.</span></button>
+    <button class="prod-btn" onclick="show('air')"><span class="prod-btn-title">Air Cargo Insurance</span><span class="prod-btn-sub">Protection for goods transported by air freight.</span></button>
+    <button class="prod-btn" onclick="show('public')"><span class="prod-btn-title">Goods Insurance (Public Transport)</span><span class="prod-btn-sub">Coverage for goods carried by public road transport.</span></button>
+    <button class="prod-btn" onclick="show('private')"><span class="prod-btn-title">Goods Insurance (Private Transport)</span><span class="prod-btn-sub">Coverage for goods carried by private vehicles.</span></button>
   </aside>
-
   <div class="panel">
-
     <div class="detail on" id="d-craft">
-      <h2>Pleasure Craft Insurance</h2>
-      <span class="abbr-tag">Corps de Bateau</span>
-      <p class="detail-desc">
-        For owners of pleasure boats seeking protection against maritime risks.
-        Covers the vessel itself and third-party liability during navigation.
-      </p>
+      <h2>Pleasure Craft Insurance</h2><span class="abbr-tag">Corps de Bateau</span>
+      <p class="detail-desc">Designed for owners of pleasure boats and non-commercial vessels. Covers the hull, equipment and civil liability towards third parties on the water.</p>
       <div class="section-lbl">Covered Risks</div>
       <div class="covers">
-        <div class="cover-row">Damage to the boat within territory</div>
-        <div class="cover-row">Third-party liability</div>
-        <div class="cover-row">Theft and vandalism</div>
-        <div class="cover-row">Fire and explosion</div>
-        <div class="cover-row">Personal accident for passengers</div>
-        <div class="cover-row">Towing and assistance at sea</div>
+        <div class="cover-row">Hull and structure damage</div>
+        <div class="cover-row">On-board equipment and accessories</div>
+        <div class="cover-row">Fire and explosion on board</div>
+        <div class="cover-row">Theft of vessel and equipment</div>
+        <div class="cover-row">Civil liability to third parties</div>
+        <div class="cover-row">Search and rescue costs</div>
       </div>
-      <div class="badge">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span><strong>Recommended</strong> for all owners of private boats and leisure vessels.</span>
-      </div>
+      <div class="badge"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong>Optional</strong> — recommended for all pleasure boat owners.</div>
     </div>
-
     <div class="detail" id="d-air">
-      <h2>Air Cargo Insurance</h2>
-      <span class="abbr-tag">Fret Aérien</span>
-      <p class="detail-desc">
-        For businesses shipping fragile, sensitive or high-value goods by air.
-        Covers the merchandise from the moment of loading to final delivery.
-      </p>
+      <h2>Air Cargo Insurance</h2><span class="abbr-tag">Fret Aérien</span>
+      <p class="detail-desc">Protects goods shipped by air against loss, damage or destruction occurring during transport, loading and unloading operations.</p>
       <div class="section-lbl">Covered Risks</div>
       <div class="covers">
-        <div class="cover-row">Accidental damage during flight</div>
-        <div class="cover-row">Theft or non-delivery</div>
-        <div class="cover-row">Damage during loading/unloading</div>
-        <div class="cover-row">Aircraft accident or emergency</div>
-        <div class="cover-row">Water damage from firefighting</div>
-        <div class="cover-row">Customs seizure or loss</div>
+        <div class="cover-row">Total or partial loss of goods</div>
+        <div class="cover-row">Damage during handling</div>
+        <div class="cover-row">Aircraft accidents</div>
+        <div class="cover-row">Theft and pilferage</div>
+        <div class="cover-row">Weather-related damage</div>
+        <div class="cover-row">Emergency diversion costs</div>
       </div>
-      <div class="badge">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span><strong>Recommended</strong> for importers, exporters and freight forwarders.</span>
-      </div>
+      <div class="badge"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong>Optional</strong> — essential for importers and exporters using air freight.</div>
     </div>
-
     <div class="detail" id="d-public">
-      <h2>Goods Insurance (Public Transport)</h2>
-      <span class="abbr-tag">TMD Public</span>
-      <p class="detail-desc">
-        For companies using public transport services to move their goods.
-        Covers merchandise entrusted to public carriers throughout the journey.
-      </p>
+      <h2>Goods Insurance — Public Transport</h2><span class="abbr-tag">TMD Public</span>
+      <p class="detail-desc">Covers goods entrusted to public road carriers for transport within Algeria or across borders. Compensation for loss or damage during transit.</p>
       <div class="section-lbl">Covered Risks</div>
       <div class="covers">
-        <div class="cover-row">Damage during transit</div>
-        <div class="cover-row">Theft while in custody of public carrier</div>
-        <div class="cover-row">Fire or accident involving the vehicle</div>
-        <div class="cover-row">Overturning or derailment</div>
+        <div class="cover-row">Collision and road accidents</div>
+        <div class="cover-row">Fire and explosion during transit</div>
+        <div class="cover-row">Theft and hijacking</div>
         <div class="cover-row">Loading and unloading damage</div>
-        <div class="cover-row">Delay-related losses</div>
+        <div class="cover-row">Total or partial loss of goods</div>
+        <div class="cover-row">Contamination of perishables</div>
       </div>
-      <div class="badge">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span><strong>Recommended</strong> for all merchants and companies shipping goods via carriers.</span>
-      </div>
+      <div class="badge"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong>Optional</strong> — highly recommended for businesses shipping goods by road.</div>
     </div>
-
     <div class="detail" id="d-private">
-      <h2>Goods Insurance (Private Transport)</h2>
-      <span class="abbr-tag">TMD Privé</span>
-      <p class="detail-desc">
-        For businesses transporting their own goods with their own vehicles.
-        Protects the merchandise against all risks during private road transport.
-      </p>
+      <h2>Goods Insurance — Private Transport</h2><span class="abbr-tag">TMD Privé</span>
+      <p class="detail-desc">Coverage for goods transported in company-owned vehicles. Protects the shipper's own merchandise against damage or loss during movement.</p>
       <div class="section-lbl">Covered Risks</div>
       <div class="covers">
-        <div class="cover-row">Road accidents involving the vehicle</div>
-        <div class="cover-row">Theft following violent entry</div>
+        <div class="cover-row">Road accident and collision</div>
         <div class="cover-row">Fire and explosion</div>
-        <div class="cover-row">Overturning and collision</div>
-        <div class="cover-row">Loading and unloading damage</div>
-        <div class="cover-row">Theft following vehicle entry</div>
+        <div class="cover-row">Theft during transit</div>
+        <div class="cover-row">Damage during loading/unloading</div>
+        <div class="cover-row">Natural perils (flood, storm)</div>
+        <div class="cover-row">Total or partial loss of goods</div>
       </div>
-      <div class="badge">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span><strong>Recommended</strong> for businesses with their own transport fleet.</span>
-      </div>
+      <div class="badge"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong>Optional</strong> — ideal for companies with their own delivery fleet.</div>
     </div>
-
   </div>
 </div>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-grid">
-    <div>
-      <div class="footer-logo-wrap">
-        <div class="footer-logo-circle">CAAR</div>
-      </div>
-      <div class="footer-contact">
-        <div class="footer-contact-row">
-          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>48 Rue Didouche Mourad, Algiers 16000</span>
-        </div>
-        <div class="footer-contact-row">
-          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          <span>+213 21 34 10 16</span>
-        </div>
-        <div class="footer-contact-row">
-          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          <span>contact@caar.dz</span>
-        </div>
-      </div>
+<footer class="footer">
+  <div class="footer-inner"><div class="footer-grid">
+    <div class="footer-logo"><img src="img/caarfooter.jpg" alt="CAAR"/></div>
+    <div class="footer-col"><h4>Company</h4><a href="company.html">About Us</a><a href="company-careers.html">Careers</a></div>
+    <div class="footer-col"><h4>Insurance</h4><a href="auto-insurance.html">Auto Insurance</a><a href="individual-risks.html">Individual Risks</a><a href="transport-insurance.html">Transport Insurance</a><a href="technical-risks.html">Technical Risks</a><a href="industrial-risks.html">Industrial Risks</a></div>
+    <div class="footer-col"><h4>Follow Us</h4><div class="footer-social"><a href="#">f</a></div></div>
+    <div class="footer-col-1">
+      <div class="footer-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>48 Rue Didouche Mourad, Algiers 16000</span></div>
+      <div class="footer-item"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>+213 21 34 10 16</span></div>
+      <div class="footer-item"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span>contact@caar.dz</span></div>
     </div>
-    <div class="footer-col">
-      <h5>Company</h5>
-      <ul>
-        <li><a href="/company.html">About Us</a></li>
-        <li><a href="/company-careers.html">Careers</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h5>Insurance</h5>
-      <ul>
-        <li><a href="/auto-insurance.html">Auto Insurance</a></li>
-        <li><a href="/individual-risks.html">Individual Risks</a></li>
-        <li><a href="/transport-insurance.html">Transport Insurance</a></li>
-        <li><a href="/technical-risks.html">Technical Risks</a></li>
-        <li><a href="/industrial-risks.html">Industrial Risks</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h5>Follow Us</h5>
-      <div class="social-row"><div class="s-icon">f</div></div>
-    </div>
-  </div>
-  <div class="footer-bottom">© 2026 CAAR. All rights reserved.</div>
+  </div></div>
+  <div class="footer-bottom">© 2026 CAAR — Compagnie Algérienne d'Assurances et de Réassurances. All rights reserved.</div>
 </footer>
-
 <script>
-  var map = {
-    craft:   { btn: 'btn-craft',   detail: 'd-craft',   bc: 'Pleasure Craft Insurance'           },
-    air:     { btn: 'btn-air',     detail: 'd-air',     bc: 'Air Cargo Insurance'                },
-    public:  { btn: 'btn-public',  detail: 'd-public',  bc: 'Goods Insurance (Public Transport)' },
-    private: { btn: 'btn-private', detail: 'd-private', bc: 'Goods Insurance (Private Transport)'}
-  };
-  function show(key) {
-    Object.keys(map).forEach(function(k) {
-      document.getElementById(map[k].btn).classList.remove('active');
-      document.getElementById(map[k].detail).classList.remove('on');
-    });
-    document.getElementById(map[key].btn).classList.add('active');
-    document.getElementById(map[key].detail).classList.add('on');
-    document.getElementById('bc').textContent = map[key].bc;
-  }
+  var ids=['craft','air','public','private'],labels={'craft':'Pleasure Craft Insurance','air':'Air Cargo Insurance','public':'Goods Insurance (Public Transport)','private':'Goods Insurance (Private Transport)'};
+  function show(k){ids.forEach(function(i){document.getElementById('d-'+i).classList.remove('on');document.querySelectorAll('.prod-btn')[ids.indexOf(i)].classList.remove('active');});document.getElementById('d-'+k).classList.add('on');document.querySelectorAll('.prod-btn')[ids.indexOf(k)].classList.add('active');document.getElementById('bc').textContent=labels[k];}
 </script>
-</body>
-</html>
+</body></html>
