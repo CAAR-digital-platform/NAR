@@ -95,7 +95,7 @@
       align-items: flex-start;
     }
 
-    /* ── Sidebar nav ── */
+    /* Sidebar nav */
     .company-nav {
       flex-shrink: 0;
       width: 220px;
@@ -121,37 +121,69 @@
     .company-nav-btn:hover  { background: #333; }
     .company-nav-btn.active { background: #E8761E; }
 
-    /* ── Content area ── */
+    /* Beige content panel */
     .company-content {
       flex: 1;
       background: #F5EDE0;
       border-radius: 18px;
-      padding: 32px 32px 24px;
-      display: flex;
-      flex-direction: column;
+      padding: 32px 32px 32px;
       min-height: 520px;
     }
-    .company-content-box {
-      background: #fff;
-      border-radius: 14px;
-      padding: 32px 36px;
-      flex: 1;
-      overflow-y: auto;
-      max-height: 440px;
+
+    /* Tab panes — hidden by default, shown via .active */
+    .tab-pane {
+      display: none;
       font-family: 'DM Sans', sans-serif;
       font-size: 0.9rem;
       color: #222;
       line-height: 1.85;
     }
-    .company-content-box p            { margin-bottom: 14px; }
-    .company-content-box p:last-child { margin-bottom: 0; }
+    .tab-pane.active { display: block; }
 
-    .company-content-box::-webkit-scrollbar       { width: 5px; }
-    .company-content-box::-webkit-scrollbar-track { background: #f0ebe4; border-radius: 4px; }
-    .company-content-box::-webkit-scrollbar-thumb { background: #d4b896; border-radius: 4px; }
+    /* White card used only where needed */
+    .white-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 28px 30px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
 
-    /* ── Back button ── */
-    .company-back-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+    /* Shared tab header */
+    .tab-header {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 6px;
+    }
+    .tab-header-icon {
+      width: 42px; height: 42px;
+      background: #E8761E;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .tab-header-icon svg {
+      width: 20px; height: 20px;
+      stroke: #fff; fill: none;
+      stroke-width: 2;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .tab-section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.38rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0;
+    }
+    .tab-rule {
+      width: 46px; height: 3px;
+      background: #E8761E;
+      border-radius: 2px;
+      margin: 10px 0 24px 0;
+    }
+
+    /* Back button — Leadership ONLY */
+    .company-back-row { display: flex; justify-content: flex-end; margin-top: 20px; }
     .company-back-btn {
       display: inline-flex;
       align-items: center;
@@ -179,80 +211,16 @@
     @media (max-width: 900px) {
       .company-section-inner { flex-direction: column; padding: 0 16px; }
       .company-nav            { width: 100%; flex-direction: row; flex-wrap: wrap; }
-      .company-nav-btn        { flex: 1; }
+      .company-nav-btn        { flex: 1; min-width: 100px; }
     }
 
-    /* =====================================================
-       OVERVIEW TAB
-       ===================================================== */
-    .overview-card {
-      position: relative;
-      overflow: hidden;
-    }
-    .overview-card::before {
-      content: '';
-      position: absolute;
-      top: -70px; right: -90px;
-      width: 360px; height: 360px;
-      background: radial-gradient(circle, #E8761E 0%, transparent 70%);
-      opacity: 0.09;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .overview-card::after {
-      content: '';
-      position: absolute;
-      bottom: 10px; left: -60px;
-      width: 200px; height: 200px;
-      background: radial-gradient(circle, #E8761E 0%, transparent 70%);
-      opacity: 0.07;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .overview-inner {
-      position: relative;
-      z-index: 1;
-    }
-    .overview-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 16px;
-    }
-    .overview-icon {
-      width: 44px; height: 44px;
-      background: #E8761E;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .overview-icon svg {
-      width: 22px; height: 22px;
-      stroke: #fff; fill: none;
-      stroke-width: 2;
-      stroke-linecap: round; stroke-linejoin: round;
-    }
-    .overview-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.45rem;
-      font-weight: 700;
-      color: #1a1a1a;
-      margin: 0;
-    }
-    .overview-rule {
-      width: 52px; height: 3px;
-      background: #E8761E;
-      border-radius: 2px;
-      margin-bottom: 18px;
-    }
+
+    /* ==============================================
+       OVERVIEW
+    ============================================== */
     .overview-description {
-      font-family: 'DM Sans', sans-serif;
       font-size: 0.92rem;
-      color: #444;
+      color: #333;
       line-height: 1.85;
       margin-bottom: 28px;
     }
@@ -262,10 +230,10 @@
     }
     .stat-box {
       flex: 1;
-      background: #fafafa;
-      border: 1px solid #ececec;
-      border-radius: 12px;
-      padding: 20px 18px 18px;
+      background: #fff;
+      border: 1px solid #ecddd0;
+      border-radius: 14px;
+      padding: 22px 18px 18px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       display: flex;
       flex-direction: column;
@@ -274,34 +242,31 @@
       cursor: default;
     }
     .stat-box:hover {
-      box-shadow: 0 6px 20px rgba(232,118,30,0.13);
-      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(232,118,30,0.15);
+      transform: translateY(-3px);
     }
     .stat-icon {
-      width: 32px; height: 32px;
+      width: 34px; height: 34px;
       background: #FEF0E3;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 2px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
     }
     .stat-icon svg {
-      width: 16px; height: 16px;
+      width: 17px; height: 17px;
       stroke: #E8761E; fill: none;
       stroke-width: 2;
       stroke-linecap: round; stroke-linejoin: round;
     }
     .stat-highlight {
       font-family: 'Playfair Display', serif;
-      font-size: 1.7rem;
+      font-size: 1.75rem;
       font-weight: 700;
       color: #E8761E;
       line-height: 1;
     }
     .stat-label {
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 500;
       color: #555;
       line-height: 1.4;
@@ -311,56 +276,315 @@
       background: linear-gradient(to right, #E8761E, #f5a964);
       border-radius: 2px;
       margin-top: 4px;
-      opacity: 0.45;
+      opacity: 0.4;
     }
-    @media (max-width: 700px) {
-      .overview-stats  { flex-direction: column; }
-      .overview-title  { font-size: 1.2rem; }
-      .stat-highlight  { font-size: 1.4rem; }
-      .overview-card::before { width: 200px; height: 200px; top: -30px; right: -40px; }
-    }
+    @media (max-width: 680px) { .overview-stats { flex-direction: column; } }
 
-    /* =====================================================
-       ACTIVITIES TAB
-       ===================================================== */
-    .act-section-title {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #1a1a1a;
-      margin: 0 0 18px 0;
-    }
+
+    /* ==============================================
+       ACTIVITIES
+    ============================================== */
     .act-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
     .act-card {
       background: #fff;
-      border: 1px solid #e8e8e8;
-      border-radius: 12px;
+      border: 1px solid #ecddd0;
+      border-radius: 14px;
       padding: 20px 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      transition: box-shadow 0.2s, transform 0.2s;
+      transition: box-shadow 0.25s ease, transform 0.25s ease;
       cursor: default;
+      position: relative;
+      overflow: hidden;
     }
     .act-card:hover {
-      box-shadow: 0 6px 18px rgba(232,118,30,0.12);
-      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(232,118,30,0.14);
+      transform: translateY(-3px);
     }
+    .act-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 18%; bottom: 18%;
+      width: 3px;
+      background: #E8761E;
+      border-radius: 0 3px 3px 0;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .act-card:hover::before { opacity: 1; }
+    .act-card-icon {
+      flex-shrink: 0;
+      width: 46px; height: 46px;
+      background: #FEF0E3;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .act-card-icon svg {
+      width: 22px; height: 22px;
+      stroke: #E8761E; fill: none;
+      stroke-width: 2;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .act-card-body { flex: 1; }
     .act-card-title {
-      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0 0 6px 0;
+    }
+    .act-card-desc {
+      font-size: 0.875rem;
+      color: #555;
+      line-height: 1.75;
+      margin: 0;
+    }
+
+
+    /* ==============================================
+       LEADERSHIP
+    ============================================== */
+    .leadership-scroll {
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .leadership-scroll::-webkit-scrollbar       { width: 5px; }
+    .leadership-scroll::-webkit-scrollbar-track { background: #f0ebe4; border-radius: 4px; }
+    .leadership-scroll::-webkit-scrollbar-thumb { background: #d4b896; border-radius: 4px; }
+    .leadership-scroll p {
+      font-size: 0.9rem;
+      color: #333;
+      line-height: 1.9;
+      margin-bottom: 14px;
+    }
+    .leadership-scroll p:last-child { margin-bottom: 0; }
+
+
+    /* ==============================================
+       HISTORY — vertical timeline, scrollable
+    ============================================== */
+    .hist-timeline {
+      position: relative;
+      padding-left: 28px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    .hist-timeline::-webkit-scrollbar       { width: 5px; }
+    .hist-timeline::-webkit-scrollbar-track { background: #ede4d6; border-radius: 4px; }
+    .hist-timeline::-webkit-scrollbar-thumb { background: #d4b896; border-radius: 4px; }
+    .hist-timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 6px; bottom: 6px;
+      width: 3px;
+      background: linear-gradient(to bottom, #1a1a1a 85%, transparent 100%);
+      border-radius: 2px;
+    }
+    .hist-item {
+      position: relative;
+      padding: 0 0 28px 26px;
+    }
+    .hist-item:last-child { padding-bottom: 4px; }
+    .hist-item::before {
+      content: '';
+      position: absolute;
+      left: -5px; top: 5px;
+      width: 13px; height: 13px;
+      background: #E8761E;
+      border: 2px solid #F5EDE0;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px #E8761E;
+      transition: transform 0.2s ease;
+    }
+    .hist-item:hover::before { transform: scale(1.3); }
+    .hist-item.hist-today::before {
+      background: #1a1a1a;
+      box-shadow: 0 0 0 2px #1a1a1a;
+    }
+    .hist-year {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #E8761E;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .hist-milestone {
       font-size: 0.92rem;
       font-weight: 700;
       color: #1a1a1a;
-      margin: 0 0 7px 0;
+      margin: 0 0 5px 0;
+      line-height: 1.4;
     }
-    .act-card-desc {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
-      color: #444;
-      line-height: 1.72;
+    .hist-detail {
+      font-size: 0.855rem;
+      color: #555;
+      line-height: 1.75;
       margin: 0;
+    }
+
+
+    /* ==============================================
+       ORGANIZATION — image scrollable
+    ============================================== */
+    .org-img-wrap {
+      width: 100%;
+      max-height: 420px;
+      overflow-y: auto;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .org-img-wrap::-webkit-scrollbar       { width: 5px; height: 5px; }
+    .org-img-wrap::-webkit-scrollbar-track { background: #ede4d6; border-radius: 4px; }
+    .org-img-wrap::-webkit-scrollbar-thumb { background: #d4b896; border-radius: 4px; }
+    .org-img-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+
+    /* ==============================================
+       KEY FIGURES
+    ============================================== */
+    .kf-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 860px) { .kf-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .kf-grid { grid-template-columns: 1fr; } }
+
+    .kf-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 22px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      border: 1px solid #ecddd0;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+    .kf-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 26px rgba(232,118,30,0.15);
+    }
+    .kf-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 18%; right: 18%;
+      height: 3px;
+      background: linear-gradient(to right, transparent, #E8761E, transparent);
+      border-radius: 0 0 4px 4px;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .kf-card:hover::after { opacity: 1; }
+    .kf-card-icon {
+      width: 38px; height: 38px;
+      background: #FEF0E3;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .kf-card-icon svg {
+      width: 18px; height: 18px;
+      stroke: #E8761E; fill: none;
+      stroke-width: 2;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .kf-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #E8761E;
+      line-height: 1;
+    }
+    .kf-number-bar {
+      width: 28px; height: 2px;
+      background: linear-gradient(to right, #E8761E, #f5a964);
+      border-radius: 2px;
+      opacity: 0.5;
+    }
+    .kf-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #444;
+      line-height: 1.4;
+    }
+    .kf-sublabel {
+      font-size: 0.7rem;
+      color: #aaa;
+    }
+
+    /* Mini charts */
+    .kf-charts-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 12px;
+    }
+    .kf-charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 640px) { .kf-charts-row { grid-template-columns: 1fr; } }
+    .kf-chart-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px 18px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid #ecddd0;
+    }
+    .kf-chart-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .kf-bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 60px;
+    }
+    .kf-bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+    .kf-bar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(to top, #E8761E, #f5a964);
+      transition: opacity 0.2s;
+      min-height: 4px;
+    }
+    .kf-bar-group:hover .kf-bar { opacity: 0.7; }
+    .kf-bar-year {
+      font-size: 0.62rem;
+      color: #999;
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -461,143 +685,406 @@
       <button class="company-nav-btn"         onclick="showTab('keyfigures',   this)">Key Figures</button>
     </nav>
 
-    <!-- Content panel -->
+    <!-- Beige content panel -->
     <div class="company-content">
 
-      <!-- ── OVERVIEW (shown by default) ── -->
-      <div class="company-content-box overview-card" id="tab-overview">
-        <div class="overview-inner">
+      <!-- ════════════════════════════════════
+           OVERVIEW
+           Text + 3 white stat cards on beige
+           ════════════════════════════════════ -->
+      <div class="tab-pane active" id="tab-overview">
 
-          <div class="overview-header">
-            <div class="overview-icon">
-              <svg viewBox="0 0 24 24">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-              </svg>
-            </div>
-            <h2 class="overview-title">Company Overview</h2>
+        <div class="tab-header">
+          <div class="tab-header-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
           </div>
+          <h2 class="tab-section-title">Company Overview</h2>
+        </div>
+        <div class="tab-rule"></div>
 
-          <div class="overview-rule"></div>
+        <p class="overview-description">
+          The Compagnie Algérienne d'Assurance et de Réassurance (CAAR) is a major player in the national
+          insurance market. Founded in 1963, it has supported the country's economic development for decades,
+          providing comprehensive protection for individuals, businesses, and industrial complexes.
+        </p>
 
-          <p class="overview-description">
-            The Compagnie Algérienne d'Assurance et de Réassurance (CAAR) is a major player in the national
-            insurance market. Founded in 1963, it has supported the country's economic development for decades,
-            providing comprehensive protection for individuals, businesses, and industrial complexes.
-          </p>
-
-          <div class="overview-stats">
-
-            <div class="stat-box">
-              <div class="stat-icon">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10"/>
-                  <polyline points="12 6 12 12 16 14"/>
-                </svg>
-              </div>
-              <div class="stat-highlight">60+</div>
-              <div class="stat-label">Years of Experience</div>
-              <div class="stat-bar"></div>
+        <div class="overview-stats">
+          <div class="stat-box">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </div>
-
-            <div class="stat-box">
-              <div class="stat-icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                  <circle cx="12" cy="10" r="3"/>
-                </svg>
-              </div>
-              <div class="stat-highlight">48</div>
-              <div class="stat-label">Wilayas — National Presence</div>
-              <div class="stat-bar"></div>
+            <div class="stat-highlight">60+</div>
+            <div class="stat-label">Years of Experience</div>
+            <div class="stat-bar"></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             </div>
-
-            <div class="stat-box">
-              <div class="stat-icon">
-                <svg viewBox="0 0 24 24">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-              </div>
-              <div class="stat-highlight">#1</div>
-              <div class="stat-label">Leader in Industrial Risks</div>
-              <div class="stat-bar"></div>
+            <div class="stat-highlight">48</div>
+            <div class="stat-label">National Presence<br/>(48 Wilayas)</div>
+            <div class="stat-bar"></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             </div>
+            <div class="stat-highlight">#1</div>
+            <div class="stat-label">Leader in Industrial Risks</div>
+            <div class="stat-bar"></div>
+          </div>
+        </div>
 
-          </div><!-- end overview-stats -->
-        </div><!-- end overview-inner -->
-      </div><!-- end tab-overview -->
+      </div><!-- /tab-overview -->
 
-      <!-- ── ACTIVITIES ── -->
-      <div class="company-content-box" id="tab-activities" style="display:none;">
-        <h2 class="act-section-title">Our Activities</h2>
+
+      <!-- ════════════════════════════════════
+           ACTIVITIES
+           Title on beige + 3 white cards below
+           ════════════════════════════════════ -->
+      <div class="tab-pane" id="tab-activities">
+
+        <div class="tab-header">
+          <div class="tab-header-icon">
+            <svg viewBox="0 0 24 24">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <h2 class="tab-section-title">Our Activities</h2>
+        </div>
+        <div class="tab-rule"></div>
+
         <div class="act-list">
 
           <div class="act-card">
-            <h3 class="act-card-title">Insurance</h3>
-            <p class="act-card-desc">Offering a wide range of products including Automotive, Industrial Risks, Transport, and Personal insurance.</p>
+            <div class="act-card-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="act-card-body">
+              <h3 class="act-card-title">Insurance</h3>
+              <p class="act-card-desc">Offering a wide range of products including Automotive, Industrial Risks, Transport, and Personal insurance.</p>
+            </div>
           </div>
 
           <div class="act-card">
-            <h3 class="act-card-title">Reinsurance</h3>
-            <p class="act-card-desc">Providing reinsurance capacity and expertise to secure major national risks and projects.</p>
+            <div class="act-card-icon">
+              <svg viewBox="0 0 24 24">
+                <polyline points="17 1 21 5 17 9"/>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                <polyline points="7 23 3 19 7 15"/>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              </svg>
+            </div>
+            <div class="act-card-body">
+              <h3 class="act-card-title">Reinsurance</h3>
+              <p class="act-card-desc">Providing reinsurance capacity and expertise to secure major national risks and projects.</p>
+            </div>
           </div>
 
           <div class="act-card">
-            <h3 class="act-card-title">Financial Investments</h3>
-            <p class="act-card-desc">Active participation in the national financial market through strategic placements and investments.</p>
+            <div class="act-card-icon">
+              <svg viewBox="0 0 24 24">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </div>
+            <div class="act-card-body">
+              <h3 class="act-card-title">Financial Investments</h3>
+              <p class="act-card-desc">Active participation in the national financial market through strategic placements and investments.</p>
+            </div>
           </div>
 
         </div>
-      </div>
+      </div><!-- /tab-activities -->
 
-      <!-- ── LEADERSHIP ── -->
-      <div class="company-content-box" id="tab-leadership" style="display:none;">
-        <p>Dear partners,<br/>Dear colleagues,</p>
-        <p>Assuming the presidency of the Algerian Insurance and Reinsurance Company is for me an immense honor and a responsibility that I embrace with humility and determination.</p>
-        <p>It is also a return to an institution to which I remain deeply attached, and whose history merges with that of the economic and social development of our country.</p>
-        <p>For more than six decades, the CAAR has embodied solidity, trust and commitment. It has accompanied the major changes in the national economy, protected generations of citizens, and supported the ambitions of thousands of companies. This heritage is our pride, but also our responsibility: that of keeping it alive, strengthening it, and transmitting it.</p>
-        <p>Today, a new stage opens.</p>
-        <p>Our ambition is clear: to bring the CAAR into an era of modernity and agility, while remaining faithful to its identity as a reference company, close to its clients and faithful to its values.</p>
-        <p>This involves:</p>
-        <p>
-          • Digitize our services to offer our policyholders a smooth, fast and accessible experience;<br/>
-          • Strengthen our proximity with our customers, by placing their expectations and satisfaction at the heart of our priorities;<br/>
-          • Valuing our internal talents, by encouraging innovation, continuous training and operational excellence;<br/>
-          • Reaffirm our leadership role, adopting international best practices and anticipating market developments.
-        </p>
-        <p>This transformation will not be a break, but an ambitious continuity.</p>
-        <p>It will build on the solid foundations of CAAR, while instilling a new dynamic focused on sustainable performance, social responsibility and value creation for all our stakeholders. I measure the human richness, expertise and professionalism that exist within our teams. It is together, in a spirit of cohesion, responsibility and openness, that we will write the next chapter of the CAAR and restore all the lustre it deserves.</p>
-        <p>To our employees, partners and clients:</p>
-        <p>Thank you for your trust.</p>
-        <p>The future of CAAR is built with you, and it is with you that we will face the challenges ahead.</p>
-      </div>
 
-      <!-- ── HISTORY ── -->
-      <div class="company-content-box" id="tab-history" style="display:none;">
-        <p>Content for <strong>History</strong> — coming soon.</p>
-      </div>
+      <!-- ════════════════════════════════════
+           LEADERSHIP
+           White scrollable card + Back button
+           ════════════════════════════════════ -->
+      <div class="tab-pane" id="tab-leadership">
 
-      <!-- ── ORGANIZATION ── -->
-      <div class="company-content-box" id="tab-organization" style="display:none;">
-        <p>Content for <strong>Organization</strong> — coming soon.</p>
-      </div>
+        <div class="tab-header">
+          <div class="tab-header-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <h2 class="tab-section-title">Leadership</h2>
+        </div>
+        <div class="tab-rule"></div>
 
-      <!-- ── KEY FIGURES ── -->
-      <div class="company-content-box" id="tab-keyfigures" style="display:none;">
-        <p>Content for <strong>Key Figures</strong> — coming soon.</p>
-      </div>
+        <div class="white-card">
+          <div class="leadership-scroll">
+            <p>Dear partners,<br/>Dear colleagues,</p>
+            <p>Assuming the presidency of the Algerian Insurance and Reinsurance Company is for me an immense honor and a responsibility that I embrace with humility and determination.</p>
+            <p>It is also a return to an institution to which I remain deeply attached, and whose history merges with that of the economic and social development of our country.</p>
+            <p>For more than six decades, the CAAR has embodied solidity, trust and commitment. It has accompanied the major changes in the national economy, protected generations of citizens, and supported the ambitions of thousands of companies. This heritage is our pride, but also our responsibility: that of keeping it alive, strengthening it, and transmitting it.</p>
+            <p>Today, a new stage opens.</p>
+            <p>Our ambition is clear: to bring the CAAR into an era of modernity and agility, while remaining faithful to its identity as a reference company, close to its clients and faithful to its values.</p>
+            <p>This involves:</p>
+            <p>
+              • Digitize our services to offer our policyholders a smooth, fast and accessible experience;<br/>
+              • Strengthen our proximity with our customers, by placing their expectations and satisfaction at the heart of our priorities;<br/>
+              • Valuing our internal talents, by encouraging innovation, continuous training and operational excellence;<br/>
+              • Reaffirm our leadership role, adopting international best practices and anticipating market developments.
+            </p>
+            <p>This transformation will not be a break, but an ambitious continuity.</p>
+            <p>It will build on the solid foundations of CAAR, while instilling a new dynamic focused on sustainable performance, social responsibility and value creation for all our stakeholders.</p>
+            <p>To our employees, partners and clients:</p>
+            <p>Thank you for your trust.</p>
+            <p>The future of CAAR is built with you, and it is with you that we will face the challenges ahead.</p>
+          </div>
+        </div>
 
-      <!-- Back button -->
-      <div class="company-back-row">
-        <a href="index.html" class="company-back-btn">
-          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-          Back
-        </a>
-      </div>
+        <!-- Back button — ONLY in Leadership -->
+        <div class="company-back-row">
+          <a href="index.html" class="company-back-btn">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+          </a>
+        </div>
 
-    </div><!-- end company-content -->
-  </div><!-- end company-section-inner -->
+      </div><!-- /tab-leadership -->
+
+
+      <!-- ════════════════════════════════════
+           HISTORY
+           Timeline directly on beige, scrollable
+           ════════════════════════════════════ -->
+      <div class="tab-pane" id="tab-history">
+
+        <div class="tab-header">
+          <div class="tab-header-icon">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h2 class="tab-section-title">Company History</h2>
+        </div>
+        <div class="tab-rule"></div>
+
+        <div class="hist-timeline">
+
+          <div class="hist-item">
+            <div class="hist-year">1963</div>
+            <h3 class="hist-milestone">Creation of CAAR Insurance</h3>
+            <p class="hist-detail">CAAR was established as Algeria's national insurance and reinsurance company, tasked with protecting the country's economic development.</p>
+          </div>
+
+          <div class="hist-item">
+            <div class="hist-year">1988</div>
+            <h3 class="hist-milestone">Transformation into a Joint-Stock Company</h3>
+            <p class="hist-detail">CAAR restructured into a joint-stock company, marking a pivotal shift toward a more autonomous and commercially oriented model.</p>
+          </div>
+
+          <div class="hist-item">
+            <div class="hist-year">2006</div>
+            <h3 class="hist-milestone">Introduction of New Regulatory Instruments</h3>
+            <p class="hist-detail">The company adapted to new national insurance regulations, reinforcing its governance and compliance frameworks.</p>
+          </div>
+
+          <div class="hist-item">
+            <div class="hist-year">2006</div>
+            <h3 class="hist-milestone">The Multiple Missions of CAAR Insurance</h3>
+            <p class="hist-detail">CAAR expanded its mandate, broadening its portfolio across insurance, reinsurance, and financial investment activities.</p>
+          </div>
+
+          <div class="hist-item">
+            <div class="hist-year">2011</div>
+            <h3 class="hist-milestone">Creation of the CAARAMA Subsidiary</h3>
+            <p class="hist-detail">CAAR launched CAARAMA, a dedicated subsidiary reinforcing its presence in specialized insurance segments.</p>
+          </div>
+
+          <div class="hist-item hist-today">
+            <div class="hist-year">Today</div>
+            <h3 class="hist-milestone">Market Leadership Consolidated</h3>
+            <p class="hist-detail">CAAR has not only maintained its position as a leader in industrial risk but has also increased its market share, continuing to serve individuals, businesses, and major national projects.</p>
+          </div>
+
+        </div>
+      </div><!-- /tab-history -->
+
+
+      <!-- ════════════════════════════════════
+           ORGANIZATION
+           Photo image, scrollable
+           ════════════════════════════════════ -->
+      <div class="tab-pane" id="tab-organization">
+
+        <div class="tab-header">
+          <div class="tab-header-icon">
+            <svg viewBox="0 0 24 24">
+              <rect x="8" y="2" width="8" height="5" rx="1"/>
+              <rect x="1" y="16" width="7" height="5" rx="1"/>
+              <rect x="9" y="16" width="7" height="5" rx="1"/>
+              <rect x="17" y="16" width="7" height="5" rx="1"/>
+              <line x1="12" y1="7" x2="12" y2="11"/>
+              <line x1="4.5" y1="11" x2="19.5" y2="11"/>
+              <line x1="4.5" y1="11" x2="4.5" y2="16"/>
+              <line x1="12" y1="11" x2="12" y2="16"/>
+              <line x1="19.5" y1="11" x2="19.5" y2="16"/>
+            </svg>
+          </div>
+          
+          
+        </div>
+        <div class="tab-rule"></div>
+
+        <div class="org-img-wrap">
+          <img src="img/photo7.webp" alt="CAAR Organigramme"/>
+        </div>
+
+      </div><!-- /tab-organization -->
+
+
+      <!-- ════════════════════════════════════
+           KEY FIGURES
+           4 stat cards + 2 mini bar charts on beige
+           ════════════════════════════════════ -->
+      <div class="tab-pane" id="tab-keyfigures">
+
+        <div class="tab-header">
+          <div class="tab-header-icon">
+            <svg viewBox="0 0 24 24">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6"  y1="20" x2="6"  y2="14"/>
+            </svg>
+          </div>
+          <h2 class="tab-section-title">Key Figures</h2>
+        </div>
+        <div class="tab-rule"></div>
+
+        <!-- 4 stat cards -->
+        <div class="kf-grid">
+
+          <div class="kf-card">
+            <div class="kf-card-icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="2" y="7" width="20" height="14" rx="2"/>
+                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                <line x1="12" y1="12" x2="12" y2="16"/>
+                <line x1="10" y1="14" x2="14" y2="14"/>
+              </svg>
+            </div>
+            <div class="kf-number">20B</div>
+            <div class="kf-number-bar"></div>
+            <div class="kf-label">Capital Social</div>
+            <div class="kf-sublabel">DZD</div>
+          </div>
+
+          <div class="kf-card">
+            <div class="kf-card-icon">
+              <svg viewBox="0 0 24 24">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                <polyline points="17 6 23 6 23 12"/>
+              </svg>
+            </div>
+            <div class="kf-number">14.8B</div>
+            <div class="kf-number-bar"></div>
+            <div class="kf-label">Chiffre d'Affaires</div>
+            <div class="kf-sublabel">DZD — Dernière année</div>
+          </div>
+
+          <div class="kf-card">
+            <div class="kf-card-icon">
+              <svg viewBox="0 0 24 24">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </div>
+            <div class="kf-number">21.2B</div>
+            <div class="kf-number-bar"></div>
+            <div class="kf-label">Fonds Propres</div>
+            <div class="kf-sublabel">DZD</div>
+          </div>
+
+          <div class="kf-card">
+            <div class="kf-card-icon">
+              <svg viewBox="0 0 24 24">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <div class="kf-number">1.14B</div>
+            <div class="kf-number-bar"></div>
+            <div class="kf-label">Résultat Net</div>
+            <div class="kf-sublabel">DZD</div>
+          </div>
+
+        </div><!-- /kf-grid -->
+
+        <!-- Evolution charts -->
+        <div class="kf-charts-title">Évolution des indicateurs</div>
+        <div class="kf-charts-row">
+
+          <div class="kf-chart-box">
+            <div class="kf-chart-label">Chiffre d'Affaires (Milliards DZD)</div>
+            <div class="kf-bar-chart">
+              <div class="kf-bar-group">
+                <div class="kf-bar" style="height:28px;"></div>
+                <div class="kf-bar-year">2020</div>
+              </div>
+              <div class="kf-bar-group">
+                <div class="kf-bar" style="height:34px;"></div>
+                <div class="kf-bar-year">2021</div>
+              </div>
+              <div class="kf-bar-group">
+                <div class="kf-bar" style="height:40px;"></div>
+                <div class="kf-bar-year">2022</div>
+              </div>
+              <div class="kf-bar-group">
+                <div class="kf-bar" style="height:50px;"></div>
+                <div class="kf-bar-year">2023</div>
+              </div>
+              <div class="kf-bar-group">
+                <div class="kf-bar" style="height:60px;"></div>
+                <div class="kf-bar-year" style="color:#E8761E;font-weight:700;">2024</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kf-chart-box">
+            <div class="kf-chart-label">Fonds Propres (Milliards DZD)</div>
+            <div class="kf-bar-chart">
+              <div class="kf-bar-group">
+                <div class="kf-bar" style="height:22px;"></div>
+                <div class="kf-bar-year">2020</div>
+              </div>
+              <div class="kf-bar-group">
+                <div class="kf-bar" style="height:30px;"></div>
+                <div class="kf-bar-year">2021</div>
+              </div>
+              <div class="kf-bar-group">
+                <div class="kf-bar" style="height:38px;"></div>
+                <div class="kf-bar-year">2022</div>
+              </div>
+              <div class="kf-bar-group">
+                <div class="kf-bar" style="height:50px;"></div>
+                <div class="kf-bar-year">2023</div>
+              </div>
+              <div class="kf-bar-group">
+                <div class="kf-bar" style="height:60px;"></div>
+                <div class="kf-bar-year" style="color:#E8761E;font-weight:700;">2024</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /kf-charts-row -->
+
+      </div><!-- /tab-keyfigures -->
+
+    </div><!-- /company-content (beige) -->
+  </div><!-- /company-section-inner -->
 </section>
+
 
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
@@ -666,9 +1153,9 @@
 
   /* ── Tabs ── */
   function showTab(tabId, btn) {
-    document.querySelectorAll('.company-content-box').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.company-nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + tabId).style.display = 'block';
+    document.getElementById('tab-' + tabId).classList.add('active');
     btn.classList.add('active');
   }
 
