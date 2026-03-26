@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CAAR &mdash; About Us</title>
+
+  <!-- FONTS -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css"/>
+
+  <style>
+    /* ================= HERO ================= */
+    .about-hero {
+      position: relative;
+      padding: 50px 0 40px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .about-brush {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 650px;
+      opacity: 0.55;
+    }
+    .about-hero-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 60px;
+    }
+    .about-title {
+      font-family: 'Playfair Display';
+      font-size: 3.2rem;
+      font-weight: 700;
+      color: #000;
+    }
+    .about-subtitle {
+      font-size: 1.15rem;
+      color: #222;
+      margin-top: 20px;
+      max-width: 520px;
+    }
+    @media (max-width:768px){
+      .about-hero-inner { padding: 0 20px; }
+      .about-brush { width: 350px; opacity: 0.3; }
+    }
+
+    /* ================= SEARCH BAR ================= */
+    .search-bar {
+      width: 100%;
+      background: #f5f5f5;
+      border-top: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 40px;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+    .search-bar.open {
+      max-height: 80px;
+      padding: 15px 40px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px 20px;
+      border-radius: 30px;
+      border: 2px solid orange;
+      outline: none;
+      font-size: 16px;
+    }
+    .search-close {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #e76d0f;
+    }
+
+    /* ================= COMPANY SECTION ================= */
+    .company-section {
+      background: #fff;
+      padding: 40px 0 70px;
+    }
+
+    .company-section-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    /* ── Colonne gauche : boutons ── */
+    .company-nav {
+      flex-shrink: 0;
+      width: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .company-nav-btn {
+      display: block;
+      width: 100%;
+      padding: 15px 22px;
+      background: #1a1a1a;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.94rem;
+      font-weight: 600;
+      text-align: left;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .company-nav-btn:hover { background: #333; }
+    .company-nav-btn.active { background: #E8761E; }
+
+    /* ── Colonne droite : zone beige ── */
+    .company-content {
+      flex: 1;
+      background: #F5EDE0;
+      border-radius: 18px;
+      padding: 32px 32px 24px;
+      display: flex;
+      flex-direction: column;
+      min-height: 520px;
+    }
+
+    /* Case blanche scrollable */
+    .company-content-box {
+      background: #fff;
+      border-radius: 14px;
+      padding: 32px 36px;
+      flex: 1;
+      overflow-y: auto;
+      max-height: 440px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: #222;
+      line-height: 1.85;
+    }
+    .company-content-box p { margin-bottom: 14px; }
+    .company-content-box p:last-child { margin-bottom: 0; }
+
+    /* Scrollbar discrète */
+    .company-content-box::-webkit-scrollbar { width: 5px; }
+    .company-content-box::-webkit-scrollbar-track { background: #f0ebe4; border-radius: 4px; }
+    .company-content-box::-webkit-scrollbar-thumb { background: #d4b896; border-radius: 4px; }
+
+    /* Bouton Back */
+    .company-back-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+    .company-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: 2px solid #E8761E;
+      color: #E8761E;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .company-back-btn:hover { background: #E8761E; color: #fff; }
+    .company-back-btn svg {
+      width: 16px; height: 16px;
+      stroke: currentColor; fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    @media (max-width: 900px) {
+      .company-section-inner { flex-direction: column; padding: 0 16px; }
+      .company-nav { width: 100%; flex-direction: row; flex-wrap: wrap; }
+      .company-nav-btn { flex: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ================= HEADER (doc5 — intact) ================= -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-block">
+      <a href="index.html"><img src="img/grand_logo.png" alt="CAAR" class="logo-img"/></a>
+    </div>
+    <div class="right-side">
+      <div class="top-row">
+        <a href="network.html" class="btn-top">Find Agency</a>
+        <a href="contact.html" class="btn-top">Contact Us</a>
+      </div>
+      <hr class="divider"/>
+      <div class="bottom-row">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li class="dropdown">
+            <a href="products.html" class="nav-link">Products <span class="arrow">▾</span></a>
+            <ul class="dropdown-menu">
+              <li><a href="individual-risks.html">Individual Risks</a></li>
+              <li><a href="auto-insurance.html">Auto Insurance</a></li>
+              <li><a href="transport-insurance.html">Transport Insurance</a></li>
+              <li><a href="technical-risks.html">Technical Risks</a></li>
+              <li><a href="industrial-risks.html">Industrial Risks</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="company.html" class="nav-link active">Company <span class="arrow">▾</span></a>
+            <ul class="dropdown-menu">
+              <li><a href="company.html">About Us</a></li>
+              <li><a href="company-careers.html">Careers</a></li>
+            </ul>
+          </li>
+          <li><a href="network.html" class="nav-link">Network</a></li>
+          <li><a href="news.html" class="nav-link">News</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="nav-icons">
+          <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <button class="icon-btn" id="searchBtn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+          <div class="lang-dropdown">
+            <button class="icon-btn"><span class="lang-label" id="currentLang">EN</span></button>
+            <ul class="lang-menu">
+              <li><a href="#" data-lang="FR">Français (FR)</a></li>
+              <li><a href="#" data-lang="EN">English (EN)</a></li>
+              <li><a href="#" data-lang="AR">عربي (AR)</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="search-bar" id="searchBar">
+  <input type="text" placeholder="Search CAAR..." class="search-input"/>
+  <button class="search-close" id="searchClose">✕</button>
+</div>
+
+<!-- ================= HERO ================= -->
+<section class="about-hero">
+  <img src="img/fleche.png" class="about-brush"/>
+  <div class="about-hero-inner">
+    <h1 class="about-title">About CAAR</h1>
+    <p class="about-subtitle">
+      CAAR is a national insurance and reinsurance company
+      serving individuals, professionals, and institutions.
+    </p>
+  </div>
+</section>
+
+<!-- ================= COMPANY NAV + CONTENT ================= -->
+<section class="company-section">
+  <div class="company-section-inner">
+
+    <!-- Gauche : boutons de navigation -->
+    <nav class="company-nav">
+      <button class="company-nav-btn" onclick="showTab('overview', this)">Overview</button>
+      <button class="company-nav-btn" onclick="showTab('activities', this)">Activities</button>
+      <button class="company-nav-btn active" onclick="showTab('leadership', this)">Leadership</button>
+      <button class="company-nav-btn" onclick="showTab('history', this)">History</button>
+      <button class="company-nav-btn" onclick="showTab('organization', this)">Organization</button>
+      <button class="company-nav-btn" onclick="showTab('keyfigures', this)">Key Figures</button>
+    </nav>
+
+    <!-- Droite : zone beige + case blanche scrollable -->
+    <div class="company-content">
+
+      <!-- LEADERSHIP (affiché par défaut) -->
+      <div class="company-content-box" id="tab-leadership">
+        <p>Dear partners,<br/>Dear colleagues,</p>
+        <p>Assuming the presidency of the Algerian Insurance and Reinsurance Company is for me an immense honor and a responsibility that I embrace with humility and determination.</p>
+        <p>It is also a return to an institution to which I remain deeply attached, and whose history merges with that of the economic and social development of our country.</p>
+        <p>For more than six decades, the CAAR has embodied solidity, trust and commitment. It has accompanied the major changes in the national economy, protected generations of citizens, and supported the ambitions of thousands of companies. This heritage is our pride, but also our responsibility: that of keeping it alive, strengthening it, and transmitting it.</p>
+        <p>Today, a new stage opens.</p>
+        <p>Our ambition is clear: to bring the CAAR into an era of modernity and agility, while remaining faithful to its identity as a reference company, close to its clients and faithful to its values.</p>
+        <p>This involves:</p>
+        <p>
+          • Digitize our services to offer our policyholders a smooth, fast and accessible experience;<br/>
+          • Strengthen our proximity with our customers, by placing their expectations and satisfaction at the heart of our priorities;<br/>
+          • Valuing our internal talents, by encouraging innovation, continuous training and operational excellence;<br/>
+          • Reaffirm our leadership role, adopting international best practices and anticipating market developments.
+        </p>
+        <p>This transformation will not be a break, but an ambitious continuity.</p>
+        <p>It will build on the solid foundations of CAAR, while instilling a new dynamic focused on sustainable performance, social I measure the human richness, expertise and professionalism that exist within our teams. It is together, in a spirit of cohesion, responsibility and openness, that we will write the next chapter of the CAAR and restore all the lustre it deserves.</p>
+        <p>To our employees, partners and clients:</p>
+        <p>Thank you for your trust.</p>
+        <p>The future of CAAR is built with you, and it is with you that we will face the challenges ahead, responsibility and value creation for all our stakeholders.</p>
+      </div>
+
+      <!-- OVERVIEW (masqué) -->
+      <div class="company-content-box" id="tab-overview" style="display:none;">
+        <p>Content for <strong>Overview</strong> — coming soon.</p>
+      </div>
+
+      <!-- ACTIVITIES (masqué) -->
+      <div class="company-content-box" id="tab-activities" style="display:none;">
+        <p>Content for <strong>Activities</strong> — coming soon.</p>
+      </div>
+
+      <!-- HISTORY (masqué) -->
+      <div class="company-content-box" id="tab-history" style="display:none;">
+        <p>Content for <strong>History</strong> — coming soon.</p>
+      </div>
+
+      <!-- ORGANIZATION (masqué) -->
+      <div class="company-content-box" id="tab-organization" style="display:none;">
+        <p>Content for <strong>Organization</strong> — coming soon.</p>
+      </div>
+
+      <!-- KEY FIGURES (masqué) -->
+      <div class="company-content-box" id="tab-keyfigures" style="display:none;">
+        <p>Content for <strong>Key Figures</strong> — coming soon.</p>
+      </div>
+
+      <!-- Bouton Back -->
+      <div class="company-back-row">
+        <a href="index.html" class="company-back-btn">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </a>
+      </div>
+
+    </div><!-- fin company-content -->
+  </div><!-- fin company-section-inner -->
+</section>
+
+<!-- ================= FOOTER (doc5 — intact) ================= -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-logo"><img src="img/caarfooter.jpg" alt="CAAR"/></div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="company.html">About Us</a>
+        <a href="company-careers.html">Careers</a>
+        <a href="news.html">News</a>
+      </div>
+      <div class="footer-col">
+        <h4>Insurance</h4>
+        <a href="auto-insurance.html">Auto Insurance</a>
+        <a href="individual-risks.html">Entreprises Insurance</a>
+        <a href="#">Natural Catastrophe Insurance</a>
+        <a href="#">Multi-risk insurance for merchants</a>
+      </div>
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <div class="footer-social"><a href="#" aria-label="Facebook">f</a></div>
+      </div>
+      <div class="footer-col-1">
+        <div class="footer-item">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>48 Rue Didouche Mourad, Algiers 16000</span>
+        </div>
+        <div class="footer-item">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>+213 21 34 10 16</span>
+        </div>
+        <div class="footer-item">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>contact@caar.dz</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2026 CAAR &mdash; Compagnie Alg&eacute;rienne d&rsquo;Assurances et de R&eacute;assurances. All rights reserved.
+  </div>
+</footer>
+
+<script>
+  /* ── Recherche ── */
+  const searchBtn   = document.getElementById('searchBtn');
+  const searchBar   = document.getElementById('searchBar');
+  const searchClose = document.getElementById('searchClose');
+
+  searchBtn.addEventListener('click', () => {
+    searchBar.classList.toggle('open');
+    document.querySelector('.search-input').focus();
+  });
+  searchClose.addEventListener('click', () => {
+    searchBar.classList.remove('open');
+  });
+
+  /* ── Langue ── */
+  document.querySelectorAll('.lang-menu a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.getElementById('currentLang').textContent = a.dataset.lang;
+    });
+  });
+
+  /* ── Tabs ── */
+  function showTab(tabId, btn) {
+    document.querySelectorAll('.company-content-box').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.company-nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tabId).style.display = 'block';
+    btn.classList.add('active');
+  }
+
+  /* ── Mobile menu ── */
+  function toggleMobileMenu() {
+    const nav     = document.getElementById('mobileNav');
+    const overlay = document.getElementById('mobileNavOverlay');
+    if (!nav) return;
+    const isOpen = nav.classList.contains('open');
+    nav.classList.toggle('open', !isOpen);
+    if (overlay) overlay.classList.toggle('open', !isOpen);
+    document.body.style.overflow = isOpen ? '' : 'hidden';
+  }
+</script>
+
+</body>
+</html>
