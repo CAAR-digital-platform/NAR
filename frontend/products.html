@@ -4,134 +4,395 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR — Our Insurance Products</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/news.css"/>
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{
-      --orange:#E8761E;
-      --orange-dark:#C9601A;
-      --orange-lt:#FFF3E8;
-      --dark:#1C1C1C;
-      --gray:#666;
-      --border:#E0E0E0;
-      --white:#fff;
-      --hdr-orange:#F57C00;
+    /* ═══════════════════════════════════════════
+       PRODUCTS PAGE — REDESIGN
+    ═══════════════════════════════════════════ */
+    :root {
+      --orange: #E8761E;
+      --orange-dark: #C9601A;
+      --orange-lt: #FFF3E8;
+      --dark: #111111;
+      --gray: #666666;
+      --border: #E8E8E8;
+      --white: #ffffff;
+      --hdr-orange: #F57C00;
+      --bg: #F8F9FA;
     }
-    body{font-family:'Source Sans 3',system-ui,sans-serif;color:var(--dark);background:var(--white);}
-    a{text-decoration:none;color:inherit;}
-    img{max-width:100%;display:block;}
 
-    /* ════════════════════════════════
-       HEADER — exact copy from index.html
-    ════════════════════════════════ */
-    .header{background:var(--white);box-shadow:0 2px 10px rgba(0,0,0,0.09);position:sticky;top:0;z-index:1000;}
-    .header-inner{display:flex;align-items:stretch;padding:0 40px;}
-    .logo-block{display:flex;align-items:center;padding:10px 20px 10px 0;flex-shrink:0;border-right:1px solid var(--border);}
-    .logo-img{width:100px;height:100px;object-fit:contain;}
-    .right-side{display:flex;flex-direction:column;flex:1;}
-    .top-row{display:flex;justify-content:flex-end;align-items:center;gap:14px;padding:14px 0 14px 20px;}
-    .btn-top{padding:9px 24px;background:var(--hdr-orange);border:2px solid var(--hdr-orange);border-radius:30px;color:var(--white);font-size:14px;font-weight:600;transition:background .2s;cursor:pointer;text-decoration:none;display:inline-block;}
-    .btn-top:hover{background:#e06d00;border-color:#e06d00;}
-    .divider{border:none;border-top:1px solid var(--border);}
-    .bottom-row{display:flex;align-items:center;justify-content:space-between;flex:1;}
-    .nav-links{display:flex;align-items:center;list-style:none;flex:1;justify-content:space-between;}
-    .nav-link{display:flex;align-items:center;gap:4px;padding:16px 14px;font-size:15px;font-weight:600;color:var(--dark);position:relative;transition:color .2s;}
-    .nav-link:hover{color:var(--hdr-orange);}
-    .nav-link.active{color:var(--hdr-orange);}
-    .nav-link.active::after{content:'';position:absolute;bottom:0;left:14px;right:14px;height:3px;background:var(--hdr-orange);border-radius:3px 3px 0 0;}
-    .arrow{font-size:14px;color:var(--hdr-orange);font-weight:700;transition:transform .2s;}
-    .dropdown{position:relative;list-style:none;}
-    .dropdown-menu{display:none;position:absolute;top:calc(100% + 2px);left:0;background:var(--white);border:1px solid var(--border);border-radius:6px;min-width:200px;box-shadow:0 8px 20px rgba(0,0,0,.12);list-style:none;padding:6px 0;z-index:999;}
-    .dropdown:hover .dropdown-menu{display:block;}
-    .dropdown:hover .arrow{transform:rotate(180deg);}
-    .dropdown-menu li a{display:block;padding:11px 20px;font-size:13px;color:var(--dark);text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid #f0f0f0;transition:background .15s,color .15s;}
-    .dropdown-menu li:last-child a{border-bottom:none;}
-    .dropdown-menu li a:hover{background:#fff5e6;color:var(--hdr-orange);}
-    .nav-icons{display:flex;align-items:center;gap:4px;}
-    .icon-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 8px;border-radius:6px;transition:background .2s;}
-    .icon-btn:hover{background:#f5f5f5;}
-    .lang-label{font-size:13px;font-weight:700;color:var(--dark);}
-    .lang-dropdown{position:relative;}
-    .lang-menu{display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--white);border:1px solid var(--border);border-radius:6px;min-width:160px;box-shadow:0 8px 20px rgba(0,0,0,.12);list-style:none;padding:6px 0;z-index:999;}
-    .lang-dropdown:hover .lang-menu{display:block;}
-    .lang-menu li a{display:block;padding:9px 16px;font-size:13px;color:var(--dark);transition:background .15s,color .15s;}
-    .lang-menu li a:hover{background:#fff5e6;color:var(--hdr-orange);}
+    /* ── HERO ── */
+    .products-hero {
+      background: var(--white);
+      border-bottom: 2px solid #000;
+      padding: 64px 7% 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .products-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, #e8d4b8 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+    .products-hero__inner {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 48px;
+      align-items: flex-end;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .products-hero__text {
+      padding-bottom: 48px;
+    }
+    .products-hero__tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--hdr-orange);
+      background: var(--orange-lt);
+      border: 1px solid #f0dcc8;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    .products-hero__tag::before { content: '✦'; font-size: 0.6rem; }
+    .products-hero__title {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .products-hero__subtitle {
+      font-size: 1rem;
+      color: var(--gray);
+      line-height: 1.7;
+      max-width: 480px;
+    }
+    .products-hero__img {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .products-hero__img img {
+      height: 240px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
 
-    /* ══ BREADCRUMB ══ */
-    .breadcrumb{padding:10px 48px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--gray);}
-    .breadcrumb a{color:var(--gray);transition:color 0.2s;}
-    .breadcrumb a:hover{color:var(--orange);}
-    .breadcrumb .sep{color:#bbb;}
-    .breadcrumb .cur{color:var(--orange);font-weight:600;}
+    /* ── BREADCRUMB ── */
+    .breadcrumb {
+      padding: 12px 7%;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--gray);
+      max-width: 100%;
+    }
+    .breadcrumb a { color: var(--gray); transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--orange); }
+    .breadcrumb-sep { color: #bbb; }
+    .breadcrumb-cur { color: var(--orange); font-weight: 600; }
 
-    /* ══ HERO ══ */
-    .hero{padding:32px 48px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:32px;overflow:hidden;background:var(--white);}
-    .hero-text{max-width:400px;padding-bottom:20px;}
-    .hero-text h1{font-family:'Lora',serif;font-size:1.7rem;font-weight:700;color:var(--dark);margin-bottom:6px;line-height:1.25;}
-    .hero-text p{font-size:0.88rem;color:var(--gray);line-height:1.5;}
-    .hero-img{flex-shrink:0;}
-    .hero-img img{height:200px;width:auto;object-fit:contain;display:block;}
+    /* ── PRODUCT SECTIONS ── */
+    .products-body {
+      background: var(--bg);
+      padding: 80px 7%;
+    }
+    .products-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-    /* ══ PRODUCTS — orange background ══ */
-    .products-section{background:var(--orange);padding:32px 48px 52px;}
+    .product-section {
+      margin-bottom: 80px;
+    }
+    .product-section:last-child { margin-bottom: 0; }
 
-    .row{display:grid;gap:20px;max-width:960px;margin:0 auto 20px;}
-    .row:last-child{margin-bottom:0;}
-    .row-2{grid-template-columns:1fr 1fr;}
-    .row-1{grid-template-columns:1fr;}
+    .product-section__header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+    .product-section__title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+    .product-section__subtitle {
+      font-size: 0.86rem;
+      color: var(--gray);
+    }
+    .product-section__link {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--orange);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: 24px;
+      transition: gap 0.2s;
+    }
+    .product-section__link:hover { gap: 9px; }
 
-    .prod-card{background:var(--white);border-radius:18px;padding:22px 24px 20px;border:3px solid var(--orange);cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;transition:box-shadow 0.2s,transform 0.2s;}
-    .prod-card:hover{box-shadow:0 8px 28px rgba(0,0,0,0.18);transform:translateY(-3px);}
-    .prod-card.centered{align-items:center;text-align:center;}
-    .prod-card.centered .card-list{text-align:left;display:inline-block;}
+    /* ── CARDS GRID ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .cards-grid--2 {
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 800px;
+    }
+    .cards-grid--4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
 
-    .card-icon{width:60px;height:60px;border-radius:50%;border:2.5px solid var(--orange);background:var(--white);display:flex;align-items:center;justify-content:center;margin-bottom:14px;flex-shrink:0;overflow:hidden;}
-    .card-icon img{width:100%;height:100%;object-fit:cover;display:block;}
+    /* ── PRODUCT CARD ── */
+    .prod-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--dark);
+      transition: transform 0.22s cubic-bezier(0.4,0,0.2,1),
+                  box-shadow 0.22s cubic-bezier(0.4,0,0.2,1),
+                  border-color 0.22s;
+      position: relative;
+      overflow: hidden;
+    }
+    .prod-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--orange);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+    .prod-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+      border-color: rgba(232,118,30,0.35);
+    }
+    .prod-card:hover::before { transform: scaleX(1); }
 
-    .card-title{font-size:0.82rem;font-weight:900;text-transform:uppercase;letter-spacing:0.7px;color:var(--dark);margin-bottom:10px;}
-    .card-list{list-style:none;}
-    .card-list li{font-size:0.76rem;color:var(--dark);padding:2px 0 2px 13px;position:relative;line-height:1.5;}
-    .card-list li::before{content:">";position:absolute;left:0;color:var(--dark);font-weight:700;font-size:0.76rem;}
+    .prod-card__icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: var(--orange-lt);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .prod-card__icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .prod-card__icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--orange);
+      fill: none;
+      stroke-width: 1.8;
+    }
 
-    /* ════════════════════════════════
-       FOOTER — exact copy from index.html
-    ════════════════════════════════ */
-    .footer{background:#3F3F3F;color:#ccc;padding:44px 7% 0;}
-    .footer-inner{max-width:1200px;margin:0 auto;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.14);}
-    .footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1.8fr 1fr;grid-template-rows:auto auto;column-gap:40px;row-gap:16px;align-items:start;}
-    .footer-logo{grid-column:1;grid-row:1;width:38px;height:38px;border-radius:50%;overflow:hidden;align-self:center;}
-    .footer-logo img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;}
-    .footer-col{grid-row:1/span 2;}
-    .footer-col h4{color:#fff;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;height:38px;display:flex;align-items:center;}
-    .footer-col-1{grid-column:1;grid-row:2;}
-    .footer-item{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:#ccc;margin-bottom:10px;line-height:1.4;}
-    .footer-item svg{width:14px;height:14px;stroke:var(--orange);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:2px;}
-    .footer-col a{display:block;font-size:.82rem;color:#ccc;margin-bottom:9px;transition:color .2s;}
-    .footer-col a:hover{color:#fff;}
-    .footer-social{display:flex;gap:8px;}
-    .footer-social a{width:32px;height:32px;border-radius:50%;border:2px solid var(--orange);background:transparent;color:var(--orange);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;transition:background .2s,color .2s;}
-    .footer-social a:hover{background:var(--orange);color:#fff;}
-    .footer-bottom{text-align:center;font-size:.78rem;color:#999;padding:16px 0 20px;max-width:1200px;margin:0 auto;}
+    .prod-card__cat {
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--orange);
+    }
+
+    .prod-card__title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.35;
+    }
+
+    .prod-card__desc {
+      font-size: 0.8rem;
+      color: var(--gray);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .prod-card__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
+    .prod-card__badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 10px;
+      background: #f0f4ff;
+      color: #4466cc;
+    }
+    .prod-card__badge--required {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .prod-card__arrow {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--gray);
+      transition: all 0.2s;
+    }
+    .prod-card:hover .prod-card__arrow {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+    }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      background: var(--dark);
+      border-radius: 20px;
+      padding: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      margin-top: 80px;
+    }
+    .cta-banner__text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .cta-banner__text p {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.65);
+      max-width: 400px;
+      line-height: 1.6;
+    }
+    .cta-banner__actions {
+      display: flex;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .btn-cta-primary {
+      padding: 13px 28px;
+      background: var(--orange);
+      color: #fff;
+      border: 2px solid var(--orange);
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-cta-primary:hover { background: var(--orange-dark); border-color: var(--orange-dark); }
+    .btn-cta-secondary {
+      padding: 13px 28px;
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-cta-secondary:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.6);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .products-hero { padding: 48px 5% 0; }
+      .products-hero__inner { grid-template-columns: 1fr 280px; }
+      .products-hero__title { font-size: 2.4rem; }
+      .cards-grid--4 { grid-template-columns: repeat(2, 1fr); }
+      .products-body { padding: 60px 5%; }
+      .cta-banner { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 768px) {
+      .products-hero__inner { grid-template-columns: 1fr; }
+      .products-hero__img { display: none; }
+      .products-hero__title { font-size: 2rem; }
+      .cards-grid, .cards-grid--4 { grid-template-columns: 1fr; }
+      .cards-grid--2 { grid-template-columns: 1fr; max-width: 100%; }
+      .product-section__header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .cta-banner { padding: 32px 24px; }
+      .cta-banner__actions { flex-direction: column; width: 100%; }
+      .btn-cta-primary, .btn-cta-secondary { text-align: center; }
+      .products-body { padding: 40px 16px; }
+    }
   </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════
-     HEADER — same as index.html
-════════════════════════════════ -->
+<!-- ══ HEADER (from news.css) ══ -->
 <header class="header">
   <div class="header-inner">
     <div class="logo-block">
-      <a href="index.html">
-        <img src="img/grand_logo.png" alt="CAAR" class="logo-img"/>
-      </a>
+      <a href="index.html"><img src="img/grand_logo.png" alt="CAAR" class="logo-img"/></a>
     </div>
     <div class="right-side">
       <div class="top-row">
         <a href="network.html" class="btn-top">Find Agency</a>
         <a href="contact.html" class="btn-top">Contact Us</a>
       </div>
-      <hr class="divider"/>
+      <hr class="top-divider"/>
       <div class="bottom-row">
         <ul class="nav-links">
           <li><a href="index.html" class="nav-link">Home</a></li>
@@ -157,15 +418,18 @@
           <li><a href="contact.html" class="nav-link">Contact</a></li>
         </ul>
         <div class="nav-icons">
+          <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
           <button class="icon-btn" id="searchBtn">
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </button>
           <div class="lang-dropdown">
-            <button class="icon-btn">
-              <span class="lang-label" id="currentLang">ANG</span>
-            </button>
+            <button class="icon-btn"><span class="lang-label" id="currentLang">ANG</span></button>
             <ul class="lang-menu">
               <li><a href="#" data-lang="FR">Français (FR)</a></li>
               <li><a href="#" data-lang="ANG">English (ANG)</a></li>
@@ -176,132 +440,321 @@
       </div>
     </div>
   </div>
+  <div class="search-bar" id="searchBar">
+    <input type="text" placeholder="Search CAAR..." class="hdr-search-input"/>
+    <button class="search-close-hdr" id="searchCloseHdr">✕</button>
+  </div>
 </header>
 
-<!-- BREADCRUMB -->
+<!-- ══ BREADCRUMB ══ -->
 <div class="breadcrumb">
   <a href="index.html">Home</a>
-  <span class="sep">›</span>
-  <span class="cur">Our Insurance Products</span>
+  <span class="breadcrumb-sep">›</span>
+  <span class="breadcrumb-cur">Our Insurance Products</span>
 </div>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-text">
-    <h1>Our Insurance Products</h1>
-    <p>Browse all insurance solutions offered by CAAR.</p>
-  </div>
-  <div class="hero-img">
-    <img src="img/family.webp" alt="CAAR Insurance Products"/>
+<!-- ══ HERO ══ -->
+<section class="products-hero">
+  <div class="products-hero__inner">
+    <div class="products-hero__text">
+      <span class="products-hero__tag">Insurance Products</span>
+      <h1 class="products-hero__title">Complete coverage<br>for every need</h1>
+      <p class="products-hero__subtitle">Explore our full range of insurance solutions — from individual and home coverage to industrial and transport risks.</p>
+    </div>
+    <div class="products-hero__img">
+      <img src="img/family.webp" alt="CAAR Insurance Products"/>
+    </div>
   </div>
 </section>
 
-<!-- PRODUCTS — orange background, image circles -->
-<section class="products-section">
+<!-- ══ PRODUCTS BODY ══ -->
+<div class="products-body">
+  <div class="products-inner">
 
-  <!-- Row 1: Individual Risks + Auto Insurance -->
-  <div class="row row-2">
-
-    <div class="prod-card" onclick="window.location.href='individual-risks.html'">
-      <div class="card-icon">
-        <img src="img/home.webp" alt="Individual Risks"/>
+    <!-- ── Individual Risks ── -->
+    <section class="product-section">
+      <div class="product-section__header">
+        <div>
+          <h2 class="product-section__title">Individual Risks</h2>
+          <p class="product-section__subtitle">Protection for your home, belongings and professional space</p>
+        </div>
+        <a href="individual-risks.html" class="product-section__link">View all → </a>
       </div>
-      <div class="card-title">Individual Risks</div>
-      <ul class="card-list">
-        <li>Multi-Risk Home Insurance</li>
-        <li>Multi-Risk Professional Insurance</li>
-        <li>Natural Disaster Insurance</li>
-      </ul>
-    </div>
-
-    <div class="prod-card" onclick="window.location.href='auto-insurance.html'">
-      <div class="card-icon">
-        <img src="img/car.webp" alt="Auto Insurance"/>
+      <div class="cards-grid">
+        <a href="individual-risks.html" class="prod-card">
+          <div class="prod-card__icon">
+            <img src="img/home.webp" alt="MRH"/>
+          </div>
+          <span class="prod-card__cat">Individual</span>
+          <h3 class="prod-card__title">Multi-Risk Home Insurance</h3>
+          <p class="prod-card__desc">Complete protection for your home and its contents against fire, theft, water damage and more.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <a href="individual-risks.html" class="prod-card">
+          <div class="prod-card__icon">
+            <img src="img/home.webp" alt="MRP"/>
+          </div>
+          <span class="prod-card__cat">Professional</span>
+          <h3 class="prod-card__title">Multi-Risk Professional Insurance</h3>
+          <p class="prod-card__desc">Coverage for your professional premises, equipment and liability in a single contract.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <a href="individual-risks.html" class="prod-card">
+          <div class="prod-card__icon">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <span class="prod-card__cat">Natural Disaster</span>
+          <h3 class="prod-card__title">Natural Disaster Insurance</h3>
+          <p class="prod-card__desc">Coverage against earthquakes, floods, storms and landslides — mandatory by Algerian law.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge prod-card__badge--required">Mandatory</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
       </div>
-      <div class="card-title">Auto Insurance</div>
-      <ul class="card-list">
-        <li>Motor Insurance</li>
-        <li>Roadside Assistance</li>
-        <li>Windshield / Glass Breakage Assistance</li>
-      </ul>
+    </section>
+
+    <!-- ── Auto Insurance ── -->
+    <section class="product-section">
+      <div class="product-section__header">
+        <div>
+          <h2 class="product-section__title">Auto Insurance</h2>
+          <p class="product-section__subtitle">Mandatory and optional coverage for your vehicle</p>
+        </div>
+        <a href="auto-insurance.html" class="product-section__link">View all →</a>
+      </div>
+      <div class="cards-grid">
+        <a href="auto-insurance.html" class="prod-card">
+          <div class="prod-card__icon">
+            <img src="img/car.webp" alt="Motor"/>
+          </div>
+          <span class="prod-card__cat">Auto</span>
+          <h3 class="prod-card__title">Motor Insurance</h3>
+          <p class="prod-card__desc">Mandatory civil liability for all vehicles on Algerian roads, covering bodily injury and property damage to third parties.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge prod-card__badge--required">Mandatory</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <a href="auto-insurance.html" class="prod-card">
+          <div class="prod-card__icon">
+            <img src="img/car.webp" alt="Roadside"/>
+          </div>
+          <span class="prod-card__cat">Assistance</span>
+          <h3 class="prod-card__title">Roadside Assistance</h3>
+          <p class="prod-card__desc">24/7 assistance in case of breakdown or accident — towing, on-site repair and support wherever you are.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <a href="auto-insurance.html" class="prod-card">
+          <div class="prod-card__icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg>
+          </div>
+          <span class="prod-card__cat">Add-on</span>
+          <h3 class="prod-card__title">Glass Breakage Assistance</h3>
+          <p class="prod-card__desc">Coverage for repair or replacement of all glass elements — windshield, side windows, sunroof and lenses.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── Transport Insurance ── -->
+    <section class="product-section">
+      <div class="product-section__header">
+        <div>
+          <h2 class="product-section__title">Transport Insurance</h2>
+          <p class="product-section__subtitle">Protecting goods and vessels across all transport modes</p>
+        </div>
+        <a href="transport-insurance.html" class="product-section__link">View all →</a>
+      </div>
+      <div class="cards-grid cards-grid--4">
+        <a href="transport-insurance.html" class="prod-card">
+          <div class="prod-card__icon">
+            <img src="img/travel.webp" alt="Pleasure Craft"/>
+          </div>
+          <span class="prod-card__cat">Maritime</span>
+          <h3 class="prod-card__title">Pleasure Craft Insurance</h3>
+          <p class="prod-card__desc">Coverage for recreational vessels — hull, equipment and civil liability.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <a href="transport-insurance.html" class="prod-card">
+          <div class="prod-card__icon">
+            <svg viewBox="0 0 24 24"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+          </div>
+          <span class="prod-card__cat">Air</span>
+          <h3 class="prod-card__title">Air Cargo Insurance</h3>
+          <p class="prod-card__desc">Protection for goods shipped by air against loss, damage or destruction.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <a href="transport-insurance.html" class="prod-card">
+          <div class="prod-card__icon">
+            <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          </div>
+          <span class="prod-card__cat">Road</span>
+          <h3 class="prod-card__title">Goods (Public Transport)</h3>
+          <p class="prod-card__desc">Coverage for goods carried by public road carriers within Algeria or across borders.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <a href="transport-insurance.html" class="prod-card">
+          <div class="prod-card__icon">
+            <svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3m-9 12h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v8z"/></svg>
+          </div>
+          <span class="prod-card__cat">Private</span>
+          <h3 class="prod-card__title">Goods (Private Transport)</h3>
+          <p class="prod-card__desc">Coverage for goods transported in company-owned vehicles against damage or loss.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── Technical & Industrial Risks ── -->
+    <section class="product-section">
+      <div class="product-section__header">
+        <div>
+          <h2 class="product-section__title">Technical &amp; Industrial Risks</h2>
+          <p class="product-section__subtitle">Specialised coverage for construction, equipment and professional liability</p>
+        </div>
+      </div>
+      <div class="cards-grid cards-grid--4" style="margin-bottom: 24px;">
+        <!-- Technical -->
+        <a href="technical-risks.html" class="prod-card">
+          <div class="prod-card__icon">
+            <img src="img/risk.webp" alt="CPM"/>
+          </div>
+          <span class="prod-card__cat">Technical</span>
+          <h3 class="prod-card__title">Contractors' Plant &amp; Machinery</h3>
+          <p class="prod-card__desc">Coverage for mobile construction equipment against sudden, unforeseen damage.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <a href="technical-risks.html" class="prod-card">
+          <div class="prod-card__icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+          </div>
+          <span class="prod-card__cat">Technical</span>
+          <h3 class="prod-card__title">IT All Risks Insurance</h3>
+          <p class="prod-card__desc">Comprehensive protection for computer hardware, software and data.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <!-- Industrial -->
+        <a href="industrial-risks.html" class="prod-card">
+          <div class="prod-card__icon">
+            <img src="img/industry.webp" alt="Machinery"/>
+          </div>
+          <span class="prod-card__cat">Industrial</span>
+          <h3 class="prod-card__title">Machinery Breakdown Insurance</h3>
+          <p class="prod-card__desc">Covers repair or replacement of industrial machines following sudden accidental breakdown.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <a href="industrial-risks.html" class="prod-card">
+          <div class="prod-card__icon">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <span class="prod-card__cat">Industrial</span>
+          <h3 class="prod-card__title">Decennial Civil Liability</h3>
+          <p class="prod-card__desc">10-year liability for construction professionals covering structural defects after completion.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge prod-card__badge--required">Mandatory</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+      </div>
+      <!-- More technical/industrial -->
+      <div class="cards-grid--2 cards-grid">
+        <a href="technical-risks.html" class="prod-card">
+          <div class="prod-card__icon">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <span class="prod-card__cat">Technical</span>
+          <h3 class="prod-card__title">Construction &amp; Erection All Risks</h3>
+          <p class="prod-card__desc">Covers civil engineering and erection projects against material damage and third-party liability throughout the construction period.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+        <a href="industrial-risks.html" class="prod-card">
+          <div class="prod-card__icon">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <span class="prod-card__cat">Industrial</span>
+          <h3 class="prod-card__title">RC Pro for Contractors</h3>
+          <p class="prod-card__desc">Professional civil liability for building contractors — covers damages to third parties arising from professional activities during construction.</p>
+          <div class="prod-card__footer">
+            <span class="prod-card__badge">Optional</span>
+            <span class="prod-card__arrow">→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── CTA Banner ── -->
+    <div class="cta-banner">
+      <div class="cta-banner__text">
+        <h2>Not sure which coverage is right for you?</h2>
+        <p>Our advisors are available Sunday to Thursday, 8:30–17:00. Find your nearest agency or send us a message.</p>
+      </div>
+      <div class="cta-banner__actions">
+        <a href="network.html" class="btn-cta-primary">Find an Agency</a>
+        <a href="contact.html" class="btn-cta-secondary">Contact an Advisor</a>
+      </div>
     </div>
 
   </div>
+</div>
 
-  <!-- Row 2: Transport Insurance (full width, centered) -->
-  <div class="row row-1">
-    <div class="prod-card centered" onclick="window.location.href='transport-insurance.html'">
-      <div class="card-icon">
-        <img src="img/travel.webp" alt="Transport Insurance"/>
-      </div>
-      <div class="card-title">Transport Insurance</div>
-      <ul class="card-list">
-        <li>Pleasure Craft Insurance</li>
-        <li>Air Cargo Insurance</li>
-        <li>Goods Insurance (Public Transport)</li>
-        <li>Goods Insurance (Private Transport)</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Row 3: Technical Risks + Industrial Risks -->
-  <div class="row row-2">
-
-    <div class="prod-card" onclick="window.location.href='technical-risks.html'">
-      <div class="card-icon">
-        <img src="img/risk.webp" alt="Technical Risks"/>
-      </div>
-      <div class="card-title">Technical Risks</div>
-      <ul class="card-list">
-        <li>Contractors' Plant and Machinery Insurance</li>
-        <li>Computer / IT All Risks Insurance</li>
-        <li>Construction and Erection All Risks Insurance</li>
-      </ul>
-    </div>
-
-    <div class="prod-card" onclick="window.location.href='industrial-risks.html'">
-      <div class="card-icon">
-        <img src="img/industry.webp" alt="Industrial Risks"/>
-      </div>
-      <div class="card-title">Industrial Risks</div>
-      <ul class="card-list">
-        <li>Machinery Breakdown Insurance</li>
-        <li>Decennial Civil Liability Insurance</li>
-        <li>Professional Civil Liability Insurance for Contractors</li>
-      </ul>
-    </div>
-
-  </div>
-
-</section>
-
-<!-- ════════════════════════════════
-     FOOTER — same as index.html
-════════════════════════════════ -->
+<!-- ══ FOOTER ══ -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
-      <div class="footer-logo">
-        <img src="img/caarfooter.jpg" alt="CAAR"/>
-      </div>
+      <div class="footer-logo"><img src="img/caarfooter.jpg" alt="CAAR"/></div>
       <div class="footer-col">
         <h4>Company</h4>
         <a href="company.html">About Us</a>
         <a href="company-careers.html">Careers</a>
+        <a href="news.html">News</a>
       </div>
       <div class="footer-col">
         <h4>Insurance</h4>
         <a href="auto-insurance.html">Auto Insurance</a>
-        <a href="individual-risks.html">Individual Risks</a>
-        <a href="transport-insurance.html">Transport Insurance</a>
-        <a href="technical-risks.html">Technical Risks</a>
-        <a href="industrial-risks.html">Industrial Risks</a>
+        <a href="individual-risks.html">Entreprises Insurance</a>
+        <a href="#">Natural Catastrophe Insurance</a>
+        <a href="#">Multi-risk insurance for merchants</a>
       </div>
       <div class="footer-col">
         <h4>Follow Us</h4>
-        <div class="footer-social">
-          <a href="#" aria-label="Facebook">f</a>
-        </div>
+        <div class="footer-social"><a href="#" aria-label="Facebook">f</a></div>
       </div>
       <div class="footer-col-1">
         <div class="footer-item">
@@ -319,23 +772,33 @@
       </div>
     </div>
   </div>
-  <div class="footer-bottom">© 2026 CAAR — Compagnie Algérienne d'Assurances et de Réassurances. All rights reserved.</div>
+  <div class="footer-bottom">&copy; 2026 CAAR &mdash; Compagnie Alg&eacute;rienne d&rsquo;Assurances et de R&eacute;assurances. All rights reserved.</div>
 </footer>
 
-<script>
-  // Language switcher
-  var currentLang = document.getElementById('currentLang');
-  document.querySelectorAll('[data-lang]').forEach(function(link) {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      currentLang.textContent = this.getAttribute('data-lang');
-    });
-  });
-  // Search button
-  document.getElementById('searchBtn').addEventListener('click', function() {
-    alert('Search coming soon');
-  });
-</script>
+<!-- Mobile Nav -->
+<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
+<nav class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-header">
+    <span class="mobile-nav-title">Menu</span>
+    <button onclick="toggleMobileMenu()" class="mobile-nav-close">✕</button>
+  </div>
+  <a href="index.html" onclick="toggleMobileMenu()">Home</a>
+  <a href="products.html" class="active" onclick="toggleMobileMenu()">Products</a>
+  <a href="company.html" onclick="toggleMobileMenu()">Company</a>
+  <a href="network.html" onclick="toggleMobileMenu()">Network</a>
+  <a href="news.html" onclick="toggleMobileMenu()">News</a>
+  <a href="contact.html" onclick="toggleMobileMenu()">Contact</a>
+  <div class="mobile-nav-btns">
+    <a href="network.html" class="btn-top">Find Agency</a>
+    <a href="contact.html" class="btn-top">Contact Us</a>
+  </div>
+</nav>
 
+<script>
+  document.getElementById('searchBtn').addEventListener('click', function() { document.getElementById('searchBar').classList.toggle('open'); });
+  document.getElementById('searchCloseHdr').addEventListener('click', function() { document.getElementById('searchBar').classList.remove('open'); });
+  document.querySelectorAll('[data-lang]').forEach(function(l) { l.addEventListener('click', function(e) { e.preventDefault(); document.getElementById('currentLang').textContent = this.getAttribute('data-lang'); }); });
+  function toggleMobileMenu() { var n=document.getElementById('mobileNav'),o=document.getElementById('mobileNavOverlay'),i=n.classList.contains('open'); n.classList.toggle('open',!i); o.classList.toggle('open',!i); document.body.style.overflow=i?'':'hidden'; }
+</script>
 </body>
 </html>

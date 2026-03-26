@@ -3,99 +3,18 @@
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR — Auto Insurance</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--orange:#E8761E;--orange-dark:#C9601A;--orange-light:#FFF3E8;--dark:#1C1C1C;--gray:#666;--border:#E0E0E0;--white:#fff;--hdr-orange:#F57C00;}
-    body{font-family:'Source Sans 3',system-ui,sans-serif;color:var(--dark);background:var(--white);}
-    a{text-decoration:none;color:inherit;}img{max-width:100%;display:block;}
-    .header{background:var(--white);box-shadow:0 2px 10px rgba(0,0,0,0.09);position:sticky;top:0;z-index:1000;}
-    .header-inner{display:flex;align-items:stretch;padding:0 40px;}
-    .logo-block{display:flex;align-items:center;padding:10px 20px 10px 0;flex-shrink:0;border-right:1px solid var(--border);}
-    .logo-img{width:100px;height:100px;object-fit:contain;}
-    .right-side{display:flex;flex-direction:column;flex:1;}
-    .top-row{display:flex;justify-content:flex-end;align-items:center;gap:14px;padding:14px 0 14px 20px;}
-    .btn-top{padding:9px 24px;background:var(--hdr-orange);border:2px solid var(--hdr-orange);border-radius:30px;color:var(--white);font-size:14px;font-weight:600;transition:background .2s;cursor:pointer;text-decoration:none;display:inline-block;}
-    .btn-top:hover{background:#e06d00;}
-    .divider{border:none;border-top:1px solid var(--border);}
-    .bottom-row{display:flex;align-items:center;justify-content:space-between;flex:1;}
-    .nav-links{display:flex;align-items:center;list-style:none;flex:1;justify-content:space-between;}
-    .nav-link{display:flex;align-items:center;gap:4px;padding:16px 14px;font-size:15px;font-weight:600;color:var(--dark);position:relative;transition:color .2s;}
-    .nav-link:hover,.nav-link.active{color:var(--hdr-orange);}
-    .nav-link.active::after{content:'';position:absolute;bottom:0;left:14px;right:14px;height:3px;background:var(--hdr-orange);border-radius:3px 3px 0 0;}
-    .arrow{font-size:14px;color:var(--hdr-orange);font-weight:700;transition:transform .2s;}
-    .dropdown{position:relative;list-style:none;}
-    .dropdown-menu{display:none;position:absolute;top:calc(100% + 2px);left:0;background:var(--white);border:1px solid var(--border);border-radius:6px;min-width:200px;box-shadow:0 8px 20px rgba(0,0,0,.12);list-style:none;padding:6px 0;z-index:999;}
-    .dropdown:hover .dropdown-menu{display:block;}
-    .dropdown:hover .arrow{transform:rotate(180deg);}
-    .dropdown-menu li a{display:block;padding:11px 20px;font-size:13px;color:var(--dark);text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid #f0f0f0;transition:background .15s,color .15s;}
-    .dropdown-menu li:last-child a{border-bottom:none;}
-    .dropdown-menu li a:hover{background:#fff5e6;color:var(--hdr-orange);}
-    .nav-icons{display:flex;align-items:center;gap:4px;}
-    .icon-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 8px;border-radius:6px;transition:background .2s;}
-    .icon-btn:hover{background:#f5f5f5;}
-    .lang-label{font-size:13px;font-weight:700;color:var(--dark);}
-    .lang-dropdown{position:relative;}
-    .lang-menu{display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--white);border:1px solid var(--border);border-radius:6px;min-width:160px;box-shadow:0 8px 20px rgba(0,0,0,.12);list-style:none;padding:6px 0;z-index:999;}
-    .lang-dropdown:hover .lang-menu{display:block;}
-    .lang-menu li a{display:block;padding:9px 16px;font-size:13px;color:var(--dark);transition:background .15s,color .15s;}
-    .lang-menu li a:hover{background:#fff5e6;color:var(--hdr-orange);}
-    .breadcrumb{padding:9px 64px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--gray);}
-    .breadcrumb a{color:var(--gray);}.breadcrumb a:hover{color:var(--orange);}
-    .breadcrumb .sep{color:#bbb;}.breadcrumb .cur{color:var(--orange);font-weight:600;}
-    .hero{display:flex;align-items:flex-end;justify-content:space-between;padding:36px 64px 0;gap:24px;overflow:hidden;}
-    .hero-text{max-width:420px;padding-bottom:28px;}
-    .hero-text h1{font-family:'Lora',serif;font-size:1.75rem;font-weight:700;color:var(--dark);margin-bottom:10px;line-height:1.25;}
-    .hero-text p{font-size:0.88rem;color:var(--gray);line-height:1.65;}
-    .hero-img img{height:200px;width:auto;object-fit:contain;}
-    .layout{display:grid;grid-template-columns:300px 1fr;border-top:1px solid var(--border);min-height:420px;}
-    .sidebar{border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:12px;}
-    .prod-btn{display:block;width:100%;text-align:left;border:2px solid transparent;border-radius:10px;padding:16px 18px;cursor:pointer;font-family:inherit;background:var(--orange);color:var(--white);transition:all 0.22s;}
-    .prod-btn-title{font-size:0.86rem;font-weight:700;display:block;margin-bottom:4px;}
-    .prod-btn-sub{font-size:0.74rem;opacity:0.88;display:block;line-height:1.4;}
-    .prod-btn:hover:not(.active){background:var(--orange-dark);}
-    .prod-btn.active{background:var(--white);color:var(--dark);border-color:var(--orange);box-shadow:0 2px 14px rgba(232,118,30,0.13);}
-    .prod-btn.active .prod-btn-sub{color:var(--gray);opacity:1;}
-    .panel{padding:36px 48px;}
-    .detail{display:none;animation:fadeUp 0.22s ease;}
-    .detail.on{display:block;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-    .detail h2{font-family:'Lora',serif;font-size:1.35rem;font-weight:700;margin-bottom:6px;}
-    .abbr-tag{display:inline-block;background:var(--orange-light);color:var(--orange);font-size:0.74rem;font-weight:700;padding:3px 12px;border-radius:20px;margin-bottom:14px;}
-    .detail-desc{font-size:0.875rem;color:var(--gray);line-height:1.68;margin-bottom:22px;max-width:580px;}
-    .section-lbl{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.9px;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-    .section-lbl::after{content:'';flex:1;height:1px;background:#f0e4d8;}
-    .covers{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px;margin-bottom:22px;}
-    .cover-row{display:flex;align-items:flex-start;gap:8px;font-size:0.82rem;color:var(--dark);line-height:1.45;padding:3px 0;}
-    .cover-row::before{content:"•";color:var(--orange);font-weight:800;font-size:1.1rem;flex-shrink:0;margin-top:-2px;}
-    .badge{display:inline-flex;align-items:center;gap:8px;background:#fff8f2;border:1px solid #f5ddc8;border-radius:8px;padding:11px 16px;font-size:0.8rem;color:var(--dark);margin-top:6px;}
-    .badge svg{width:15px;height:15px;stroke:var(--orange);fill:none;stroke-width:2;flex-shrink:0;}
-    .badge strong{color:var(--orange);}
-    .footer{background:#3F3F3F;color:#ccc;padding:44px 7% 0;}
-    .footer-inner{max-width:1200px;margin:0 auto;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.14);}
-    .footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1.8fr 1fr;grid-template-rows:auto auto;column-gap:40px;row-gap:16px;align-items:start;}
-    .footer-logo{grid-column:1;grid-row:1;width:38px;height:38px;border-radius:50%;overflow:hidden;align-self:center;}
-    .footer-logo img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-    .footer-col{grid-row:1/span 2;}
-    .footer-col h4{color:#fff;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;height:38px;display:flex;align-items:center;}
-    .footer-col-1{grid-column:1;grid-row:2;}
-    .footer-item{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:#ccc;margin-bottom:10px;line-height:1.4;}
-    .footer-item svg{width:14px;height:14px;stroke:var(--orange);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:2px;}
-    .footer-col a{display:block;font-size:.82rem;color:#ccc;margin-bottom:9px;transition:color .2s;}
-    .footer-col a:hover{color:#fff;}
-    .footer-social{display:flex;gap:8px;}
-    .footer-social a{width:32px;height:32px;border-radius:50%;border:2px solid var(--orange);background:transparent;color:var(--orange);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;transition:background .2s,color .2s;}
-    .footer-social a:hover{background:var(--orange);color:#fff;}
-    .footer-bottom{text-align:center;font-size:.78rem;color:#999;padding:16px 0 20px;max-width:1200px;margin:0 auto;}
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/news.css"/>
+  <link rel="stylesheet" href="css/products.css"/>
 </head>
 <body>
+
 <header class="header">
   <div class="header-inner">
     <div class="logo-block"><a href="index.html"><img src="img/grand_logo.png" alt="CAAR" class="logo-img"/></a></div>
     <div class="right-side">
       <div class="top-row"><a href="network.html" class="btn-top">Find Agency</a><a href="contact.html" class="btn-top">Contact Us</a></div>
-      <hr class="divider"/>
+      <hr class="top-divider"/>
       <div class="bottom-row">
         <ul class="nav-links">
           <li><a href="index.html" class="nav-link">Home</a></li>
@@ -110,77 +29,167 @@
           <li><a href="contact.html" class="nav-link">Contact</a></li>
         </ul>
         <div class="nav-icons">
-          <button class="icon-btn"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-          <div class="lang-dropdown"><button class="icon-btn"><span class="lang-label">ANG</span></button><ul class="lang-menu"><li><a href="#">Français (FR)</a></li><li><a href="#">English (ANG)</a></li><li><a href="#">عربي (ARAB)</a></li></ul></div>
+          <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          <button class="icon-btn" id="searchBtn"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+          <div class="lang-dropdown"><button class="icon-btn"><span class="lang-label" id="currentLang">ANG</span></button><ul class="lang-menu"><li><a href="#" data-lang="FR">Français (FR)</a></li><li><a href="#" data-lang="ANG">English (ANG)</a></li><li><a href="#" data-lang="ARAB">عربي (ARAB)</a></li></ul></div>
         </div>
       </div>
     </div>
   </div>
+  <div class="search-bar" id="searchBar"><input type="text" placeholder="Search CAAR..." class="hdr-search-input"/><button class="search-close-hdr" id="searchCloseHdr">✕</button></div>
 </header>
 
-<div class="breadcrumb"><a href="index.html">Home</a><span class="sep">›</span><a href="products.html">Products</a><span class="sep">›</span><span class="cur" id="bc">Motor Insurance</span></div>
+<div class="breadcrumb">
+  <a href="index.html">Home</a><span class="breadcrumb-sep">›</span>
+  <a href="products.html">Products</a><span class="breadcrumb-sep">›</span>
+  <span class="breadcrumb-cur" id="bc">Auto Insurance</span>
+</div>
 
-<section class="hero">
-  <div class="hero-text"><h1>Auto Insurance</h1><p>Complete vehicle insurance solutions — mandatory civil liability and optional guarantees to protect you, your passengers and third parties on Algerian roads.</p></div>
-  <div class="hero-img"><img src="img/photo2.jpg" alt="Auto Insurance"/></div>
+<section class="product-hero">
+  <div class="product-hero__inner">
+    <div class="product-hero__text">
+      <span class="product-hero__cat">Auto Insurance</span>
+      <h1 class="product-hero__title">Auto Insurance</h1>
+      <p class="product-hero__subtitle">Complete vehicle insurance solutions — mandatory civil liability and optional guarantees to protect you, your passengers and third parties on Algerian roads.</p>
+    </div>
+    <div class="product-hero__img"><img src="img/photo2.jpg" alt="Auto Insurance"/></div>
+  </div>
 </section>
 
-<div class="layout">
-  <aside class="sidebar">
-    <button class="prod-btn active" onclick="show('motor')"><span class="prod-btn-title">Motor Insurance</span><span class="prod-btn-sub">Mandatory RC coverage for all vehicles on Algerian roads.</span></button>
-    <button class="prod-btn" onclick="show('roadside')"><span class="prod-btn-title">Roadside Assistance</span><span class="prod-btn-sub">24/7 assistance in case of breakdown or accident.</span></button>
-    <button class="prod-btn" onclick="show('glass')"><span class="prod-btn-title">Glass Breakage Assistance</span><span class="prod-btn-sub">Coverage for vehicle glass damage and replacement.</span></button>
-  </aside>
-  <div class="panel">
-    <div class="detail on" id="d-motor">
-      <h2>Motor Insurance</h2><span class="abbr-tag">RC Auto</span>
-      <p class="detail-desc">Mandatory for all vehicles registered in Algeria. Covers civil liability towards third parties in the event of a traffic accident, ensuring full legal compliance.</p>
-      <div class="section-lbl">Covered Risks</div>
-      <div class="covers">
-        <div class="cover-row">Bodily injury to third parties</div>
-        <div class="cover-row">Material damage to third parties</div>
-        <div class="cover-row">Passenger liability coverage</div>
-        <div class="cover-row">Hit-and-run accident coverage</div>
-        <div class="cover-row">Legal defense and recourse</div>
-        <div class="cover-row">Uninsured driver protection</div>
+<div class="product-layout">
+  <div class="product-layout__inner">
+
+    <!-- SIDEBAR -->
+    <aside class="product-sidebar">
+      <span class="sidebar-label">Products</span>
+      <button class="sidebar-btn active" onclick="show('motor', this)">
+        <div class="sidebar-btn__icon">🚗</div>
+        <div>
+          <div>Motor Insurance</div>
+          <div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">RC Auto</div>
+        </div>
+        <span class="sidebar-btn__abbr">RC</span>
+      </button>
+      <button class="sidebar-btn" onclick="show('roadside', this)">
+        <div class="sidebar-btn__icon">🛞</div>
+        <div>
+          <div>Roadside Assistance</div>
+          <div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">Assistance</div>
+        </div>
+      </button>
+      <button class="sidebar-btn" onclick="show('glass', this)">
+        <div class="sidebar-btn__icon">🪟</div>
+        <div>
+          <div>Glass Breakage</div>
+          <div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">Bris de Glace</div>
+        </div>
+      </button>
+
+      <div class="sidebar-cta">
+        <a href="Online_subscription.html" class="btn-sidebar-primary">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14m7-7H5"/></svg>
+          Subscribe Online
+        </a>
+        <a href="network.html" class="btn-sidebar-secondary">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Find an Agency
+        </a>
+        <a href="contact.html" class="btn-sidebar-secondary">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Contact Advisor
+        </a>
       </div>
-      <div class="badge"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong>Mandatory</strong> — required for all vehicles on public roads in Algeria.</div>
-    </div>
-    <div class="detail" id="d-roadside">
-      <h2>Roadside Assistance</h2><span class="abbr-tag">Assistance</span>
-      <p class="detail-desc">Available 24 hours a day, 7 days a week, throughout the national territory. Fast response to keep you safe wherever you are.</p>
-      <div class="section-lbl">Services Included</div>
-      <div class="covers">
-        <div class="cover-row">Vehicle towing to nearest garage</div>
-        <div class="cover-row">On-site mechanical assistance</div>
-        <div class="cover-row">Replacement vehicle provision</div>
-        <div class="cover-row">Hotel accommodation if stranded</div>
-        <div class="cover-row">Repatriation of vehicle and passengers</div>
-        <div class="cover-row">24/7 telephone support line</div>
+    </aside>
+
+    <!-- CONTENT PANEL -->
+    <div class="product-panel">
+
+      <!-- Motor Insurance -->
+      <div class="detail on" id="d-motor">
+        <span class="detail__abbr">RC Auto</span>
+        <h2 class="detail__title">Motor Insurance</h2>
+        <div class="detail__divider"></div>
+        <p class="detail__desc">Mandatory for all vehicles registered in Algeria. Covers civil liability towards third parties in the event of a traffic accident, ensuring full legal compliance.</p>
+        <div class="detail__status detail__status--required">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <strong>Mandatory</strong> — required for all vehicles on public roads in Algeria.
+        </div>
+        <div class="covers-label">Covered Risks</div>
+        <div class="covers-grid">
+          <div class="cover-item"><div class="cover-item__dot"></div>Bodily injury to third parties</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Material damage to third parties</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Passenger liability coverage</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Hit-and-run accident coverage</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Legal defense and recourse</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Uninsured driver protection</div>
+        </div>
+        <div class="detail__cta">
+          <a href="Online_subscription.html" class="btn-detail-primary">Get a Quote Online →</a>
+          <a href="network.html" class="btn-detail-secondary">Find an Agency</a>
+          <a href="contact.html" class="btn-detail-secondary">Contact an Advisor</a>
+        </div>
       </div>
-      <div class="badge"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong>Optional</strong> — highly recommended for all vehicle owners.</div>
-    </div>
-    <div class="detail" id="d-glass">
-      <h2>Glass Breakage Assistance</h2><span class="abbr-tag">Bris de Glace</span>
-      <p class="detail-desc">Covers repair or replacement of all glass elements of your vehicle following impact, vandalism, or adverse weather conditions.</p>
-      <div class="section-lbl">Covered Elements</div>
-      <div class="covers">
-        <div class="cover-row">Windshield damage and cracks</div>
-        <div class="cover-row">Side and rear windows</div>
-        <div class="cover-row">Sunroof glass panel</div>
-        <div class="cover-row">Rear-view mirror glass</div>
-        <div class="cover-row">Headlight and indicator lenses</div>
-        <div class="cover-row">Emergency replacement service</div>
+
+      <!-- Roadside Assistance -->
+      <div class="detail" id="d-roadside">
+        <span class="detail__abbr">Assistance</span>
+        <h2 class="detail__title">Roadside Assistance</h2>
+        <div class="detail__divider"></div>
+        <p class="detail__desc">Available 24 hours a day, 7 days a week, throughout the national territory. Fast response to keep you safe wherever you are.</p>
+        <div class="detail__status">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <strong>Optional</strong> — highly recommended for all vehicle owners.
+        </div>
+        <div class="covers-label">Services Included</div>
+        <div class="covers-grid">
+          <div class="cover-item"><div class="cover-item__dot"></div>Vehicle towing to nearest garage</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>On-site mechanical assistance</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Replacement vehicle provision</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Hotel accommodation if stranded</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Repatriation of vehicle and passengers</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>24/7 telephone support line</div>
+        </div>
+        <div class="detail__cta">
+          <a href="roads.html" class="btn-detail-primary">Subscribe Online →</a>
+          <a href="network.html" class="btn-detail-secondary">Find an Agency</a>
+          <a href="contact.html" class="btn-detail-secondary">Contact an Advisor</a>
+        </div>
       </div>
-      <div class="badge"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong>Optional</strong> — available as an add-on to any auto policy.</div>
+
+      <!-- Glass Breakage -->
+      <div class="detail" id="d-glass">
+        <span class="detail__abbr">Bris de Glace</span>
+        <h2 class="detail__title">Glass Breakage Assistance</h2>
+        <div class="detail__divider"></div>
+        <p class="detail__desc">Covers repair or replacement of all glass elements of your vehicle following impact, vandalism, or adverse weather conditions.</p>
+        <div class="detail__status">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <strong>Optional</strong> — available as an add-on to any auto policy.
+        </div>
+        <div class="covers-label">Covered Elements</div>
+        <div class="covers-grid">
+          <div class="cover-item"><div class="cover-item__dot"></div>Windshield damage and cracks</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Side and rear windows</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Sunroof glass panel</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Rear-view mirror glass</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Headlight and indicator lenses</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Emergency replacement service</div>
+        </div>
+        <div class="detail__cta">
+          <a href="network.html" class="btn-detail-primary">Get a Quote →</a>
+          <a href="network.html" class="btn-detail-secondary">Find an Agency</a>
+          <a href="contact.html" class="btn-detail-secondary">Contact an Advisor</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner"><div class="footer-grid">
     <div class="footer-logo"><img src="img/caarfooter.jpg" alt="CAAR"/></div>
-    <div class="footer-col"><h4>Company</h4><a href="company.html">About Us</a><a href="company-careers.html">Careers</a></div>
+    <div class="footer-col"><h4>Company</h4><a href="company.html">About Us</a><a href="company-careers.html">Careers</a><a href="news.html">News</a></div>
     <div class="footer-col"><h4>Insurance</h4><a href="auto-insurance.html">Auto Insurance</a><a href="individual-risks.html">Individual Risks</a><a href="transport-insurance.html">Transport Insurance</a><a href="technical-risks.html">Technical Risks</a><a href="industrial-risks.html">Industrial Risks</a></div>
     <div class="footer-col"><h4>Follow Us</h4><div class="footer-social"><a href="#">f</a></div></div>
     <div class="footer-col-1">
@@ -191,8 +200,27 @@
   </div></div>
   <div class="footer-bottom">© 2026 CAAR — Compagnie Algérienne d'Assurances et de Réassurances. All rights reserved.</div>
 </footer>
+
+<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
+<nav class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-header"><span class="mobile-nav-title">Menu</span><button onclick="toggleMobileMenu()" class="mobile-nav-close">✕</button></div>
+  <a href="index.html" onclick="toggleMobileMenu()">Home</a><a href="products.html" onclick="toggleMobileMenu()">Products</a><a href="news.html" onclick="toggleMobileMenu()">News</a><a href="contact.html" onclick="toggleMobileMenu()">Contact</a>
+  <div class="mobile-nav-btns"><a href="network.html" class="btn-top">Find Agency</a><a href="contact.html" class="btn-top">Contact Us</a></div>
+</nav>
+
 <script>
   var ids=['motor','roadside','glass'];
-  function show(k){ids.forEach(function(i){document.getElementById('d-'+i).classList.remove('on');document.querySelectorAll('.prod-btn')[ids.indexOf(i)].classList.remove('active');});document.getElementById('d-'+k).classList.add('on');document.querySelectorAll('.prod-btn')[ids.indexOf(k)].classList.add('active');document.getElementById('bc').textContent={'motor':'Motor Insurance','roadside':'Roadside Assistance','glass':'Glass Breakage Assistance'}[k];}
+  function show(k,btn) {
+    ids.forEach(function(i){ document.getElementById('d-'+i).classList.remove('on'); });
+    document.querySelectorAll('.sidebar-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById('d-'+k).classList.add('on');
+    btn.classList.add('active');
+    document.getElementById('bc').textContent = {'motor':'Motor Insurance','roadside':'Roadside Assistance','glass':'Glass Breakage Assistance'}[k];
+  }
+  document.getElementById('searchBtn').addEventListener('click', function() { document.getElementById('searchBar').classList.toggle('open'); });
+  document.getElementById('searchCloseHdr').addEventListener('click', function() { document.getElementById('searchBar').classList.remove('open'); });
+  document.querySelectorAll('[data-lang]').forEach(function(l) { l.addEventListener('click', function(e) { e.preventDefault(); document.getElementById('currentLang').textContent = this.getAttribute('data-lang'); }); });
+  function toggleMobileMenu() { var n=document.getElementById('mobileNav'),o=document.getElementById('mobileNavOverlay'),i=n.classList.contains('open'); n.classList.toggle('open',!i); o.classList.toggle('open',!i); document.body.style.overflow=i?'':'hidden'; }
 </script>
-</body></html>
+</body>
+</html>
