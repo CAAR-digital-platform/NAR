@@ -4,13 +4,12 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR — Insurance Advice &amp; Articles</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/news.css"/>
 </head>
 <body>
 
-<!-- ══ HEADER (from network.html) ══ -->
+<!-- ══ HEADER ══ -->
 <header class="header">
   <div class="header-inner">
     <div class="logo-block">
@@ -81,100 +80,134 @@
   </div>
 </header>
 
-<!-- ══ HERO SECTION ══ -->
-<section class="hero-section">
-  <div class="hero-inner">
-
-    <!-- LEFT: Text content -->
-    <div class="hero-text">
-      <h1 class="hero-title">Insurance Advice &amp; Articles</h1>
-      <p class="hero-subtitle">
-        Practical insurance advice to help you understand risks,
-        procedures, and your rights, supported by official CAAR
-        articles.
+<!-- ══ HERO ══ -->
+<section class="news-hero">
+  <div class="news-hero__inner">
+    <div class="news-hero__text">
+      <span class="news-hero__tag">Insurance Knowledge</span>
+      <h1 class="news-hero__title">Insurance Advice<br>&amp; Articles</h1>
+      <p class="news-hero__subtitle">
+        Practical guidance to help you understand risks, procedures,
+        and your rights — supported by official CAAR publications.
       </p>
     </div>
+    <div class="news-hero__illustration">
+      <img src="img/new.webp" alt="Insurance Advice" class="news-hero__image"/>
+    </div>
+  </div>
+</section>
 
-    <!-- RIGHT: Illustration -->
-    <div class="hero-illustration">
-      <!--
-        Replace the src below with the actual illustration path.
-        Example: src="img/articles-illustration.webp"
-      -->
-      <img
-        src="img/new.webp"
-        alt="Insurance Advice Illustration"
-        class="hero-image"
-      />
+<!-- ══ ADVICE SECTION ══ -->
+<section class="advice-section">
+  <div class="advice-section__inner">
+
+    <div class="advice-section__header">
+      <h2 class="advice-section__title">Find advice for:</h2>
+    </div>
+
+    <div class="advice-categories" role="tablist">
+      <button class="advice-category-btn is-active" role="tab" aria-selected="true"
+        onclick="switchAdvice('road', this)">Road Accidents</button>
+      <button class="advice-category-btn" role="tab" aria-selected="false"
+        onclick="switchAdvice('home', this)">Home Insurance</button>
+      <button class="advice-category-btn" role="tab" aria-selected="false"
+        onclick="switchAdvice('business', this)">Business Insurance</button>
+      <button class="advice-category-btn" role="tab" aria-selected="false"
+        onclick="switchAdvice('basics', this)">Insurance Basics</button>
+    </div>
+
+    <article class="advice-card is-active" id="advice-road" role="tabpanel">
+      <h3 class="advice-card__title">What to do after a road accident?</h3>
+      <p class="advice-card__text">Knowing the correct steps to take after a road accident helps protect your safety and ensures a smoother insurance process.</p>
+      <ul class="advice-card__list">
+        <li>Secure the accident area and ensure everyone's safety</li>
+        <li>Contact the authorities if necessary</li>
+        <li>Document damages and collect information from all parties</li>
+        <li>Inform your insurance company as soon as possible</li>
+      </ul>
+      <a href="#" class="advice-card__btn">Read related article →</a>
+    </article>
+
+    <article class="advice-card" id="advice-home" role="tabpanel">
+      <h3 class="advice-card__title">How to properly protect your home?</h3>
+      <p class="advice-card__text">Home insurance helps protect your property and belongings against common risks such as fire, water damage, and theft.</p>
+      <ul class="advice-card__list">
+        <li>Identify the main risks affecting your home</li>
+        <li>Insure both the building and its contents when applicable</li>
+        <li>Accurately declare the value of your belongings</li>
+        <li>Regularly update your contract after renovations or new purchases</li>
+      </ul>
+      <a href="#" class="advice-card__btn">Read related article →</a>
+    </article>
+
+    <article class="advice-card" id="advice-business" role="tabpanel">
+      <h3 class="advice-card__title">Why is business insurance essential?</h3>
+      <p class="advice-card__text">Business insurance protects companies against operational, financial, and liability risks that may threaten their activity.</p>
+      <ul class="advice-card__list">
+        <li>Identify risks related to your business activity and sector</li>
+        <li>Insure company assets: buildings, equipment, and stock</li>
+        <li>Protect your business against third-party liability</li>
+        <li>Review coverage regularly as the business grows</li>
+      </ul>
+      <a href="#" class="advice-card__btn">Read related article →</a>
+    </article>
+
+    <article class="advice-card" id="advice-basics" role="tabpanel">
+      <h3 class="advice-card__title">Understanding the basics of insurance</h3>
+      <p class="advice-card__text">Insurance is a financial protection mechanism that helps individuals and businesses manage risks and unforeseen events.</p>
+      <ul class="advice-card__list">
+        <li>Understand the difference between mandatory and optional coverage</li>
+        <li>Know what risks are covered and what exclusions apply</li>
+        <li>Choose coverage adapted to your personal or professional situation</li>
+        <li>Respect contract conditions to avoid claim rejection</li>
+      </ul>
+      <a href="#" class="advice-card__btn">Read related article →</a>
+    </article>
+
+  </div>
+</section>
+
+<!-- ══ ARTICLES SECTION ══ -->
+<section class="articles-section" id="articles-section">
+  <div class="articles-section__container">
+
+    <!-- Grid view -->
+    <div id="articles-list-view">
+      <div class="articles-section__header">
+        <div>
+          <h2 class="articles-section__title">CAAR Articles</h2>
+          <p class="articles-section__subtitle">Recent activities and initiatives carried out by CAAR across the country.</p>
+        </div>
+      </div>
+
+      <div class="articles-grid" id="articles-grid"></div>
+      <div class="articles-pagination" id="articles-pagination"></div>
+    </div>
+
+    <!-- Detail view -->
+    <div class="article-detail is-hidden" id="article-detail">
+      <button class="article-back-link" onclick="closeArticleDetail()">
+        ← Back to articles
+      </button>
+      <div class="article-detail__card">
+        <h2 class="article-detail__title" id="detail-title"></h2>
+        <div class="article-detail__body">
+          <div class="article-detail__text" id="detail-text"></div>
+          <div class="article-detail__image-wrap" id="detail-image-wrap">
+            <img class="article-detail__image" id="detail-image" src="" alt=""/>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
 </section>
 
-<!-- ══ ARTICLES GRID ══ -->
-<section class="articles-section">
-  <div class="articles-inner">
-
-    <div class="articles-header">
-      <h2 class="articles-section-title">Latest Articles</h2>
-      <a href="news.html" class="view-all-link">View all →</a>
-    </div>
-
-    <div class="articles-grid">
-
-      <article class="article-card">
-        <div class="article-tag">Auto Insurance</div>
-        <h3 class="article-card-title">What to do after a road accident in Algeria</h3>
-        <p class="article-card-excerpt">Step-by-step guidance on reporting, documenting and filing a claim after a traffic incident on Algerian roads.</p>
-        <a href="#" class="article-read-more">Read article →</a>
-      </article>
-
-      <article class="article-card">
-        <div class="article-tag">Habitation</div>
-        <h3 class="article-card-title">Understanding your multi-risk home policy</h3>
-        <p class="article-card-excerpt">A clear breakdown of what your MRH policy covers, common exclusions, and how to make sure you are fully protected.</p>
-        <a href="#" class="article-read-more">Read article →</a>
-      </article>
-
-      <article class="article-card">
-        <div class="article-tag">CATNAT</div>
-        <h3 class="article-card-title">Natural disaster insurance: your rights and obligations</h3>
-        <p class="article-card-excerpt">Everything you need to know about the mandatory CATNAT coverage, how it works, and how to file a claim after a seismic event.</p>
-        <a href="#" class="article-read-more">Read article →</a>
-      </article>
-
-      <article class="article-card">
-        <div class="article-tag">Claims</div>
-        <h3 class="article-card-title">How to file an insurance claim efficiently</h3>
-        <p class="article-card-excerpt">Tips and best practices for preparing your claim file, gathering evidence, and communicating with your CAAR agent.</p>
-        <a href="#" class="article-read-more">Read article →</a>
-      </article>
-
-      <article class="article-card">
-        <div class="article-tag">Professional</div>
-        <h3 class="article-card-title">Protecting your business: multi-risk professional insurance</h3>
-        <p class="article-card-excerpt">How MRP insurance shields artisans, traders and liberal professions against fire, theft and civil liability risks.</p>
-        <a href="#" class="article-read-more">Read article →</a>
-      </article>
-
-      <article class="article-card">
-        <div class="article-tag">Transport</div>
-        <h3 class="article-card-title">Insuring your goods during transport in Algeria</h3>
-        <p class="article-card-excerpt">An overview of goods transport insurance options available for private and public carriers, and how coverage applies.</p>
-        <a href="#" class="article-read-more">Read article →</a>
-      </article>
-
-    </div>
-  </div>
-</section>
-
-<!-- ══ FOOTER (from network.html) ══ -->
+<!-- ══ FOOTER ══ -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
-      <div class="footer-logo">
-        <img src="img/caarfooter.jpg" alt="CAAR"/>
-      </div>
+      <div class="footer-logo"><img src="img/caarfooter.jpg" alt="CAAR"/></div>
       <div class="footer-col">
         <h4>Company</h4>
         <a href="company.html">About Us</a>
@@ -190,9 +223,7 @@
       </div>
       <div class="footer-col">
         <h4>Follow Us</h4>
-        <div class="footer-social">
-          <a href="#" aria-label="Facebook">f</a>
-        </div>
+        <div class="footer-social"><a href="#" aria-label="Facebook">f</a></div>
       </div>
       <div class="footer-col-1">
         <div class="footer-item">
@@ -215,19 +246,19 @@
   </div>
 </footer>
 
-<!-- ══ MOBILE NAV DRAWER ══ -->
+<!-- ══ MOBILE NAV ══ -->
 <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
 <nav class="mobile-nav" id="mobileNav">
   <div class="mobile-nav-header">
     <span class="mobile-nav-title">Menu</span>
     <button onclick="toggleMobileMenu()" class="mobile-nav-close">✕</button>
   </div>
-  <a href="index.html"    onclick="toggleMobileMenu()">Home</a>
+  <a href="index.html" onclick="toggleMobileMenu()">Home</a>
   <a href="products.html" onclick="toggleMobileMenu()">Products</a>
-  <a href="company.html"  onclick="toggleMobileMenu()">Company</a>
-  <a href="network.html"  onclick="toggleMobileMenu()">Network</a>
-  <a href="news.html"     onclick="toggleMobileMenu()">News</a>
-  <a href="contact.html"  onclick="toggleMobileMenu()">Contact</a>
+  <a href="company.html" onclick="toggleMobileMenu()">Company</a>
+  <a href="network.html" onclick="toggleMobileMenu()">Network</a>
+  <a href="news.html" class="active" onclick="toggleMobileMenu()">News</a>
+  <a href="contact.html" onclick="toggleMobileMenu()">Contact</a>
   <div class="mobile-nav-btns">
     <a href="network.html" class="btn-top">Find Agency</a>
     <a href="contact.html" class="btn-top">Contact Us</a>
@@ -235,7 +266,7 @@
 </nav>
 
 <script>
-  /* Search bar */
+  /* Header */
   document.getElementById('searchBtn').addEventListener('click', function() {
     document.getElementById('searchBar').classList.toggle('open');
   });
@@ -245,24 +276,175 @@
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') document.getElementById('searchBar').classList.remove('open');
   });
-
-  /* Language switcher */
   document.querySelectorAll('[data-lang]').forEach(function(link) {
     link.addEventListener('click', function(e) {
       e.preventDefault();
       document.getElementById('currentLang').textContent = this.getAttribute('data-lang');
     });
   });
-
-  /* Mobile menu */
   function toggleMobileMenu() {
-    var nav     = document.getElementById('mobileNav');
+    var nav = document.getElementById('mobileNav');
     var overlay = document.getElementById('mobileNavOverlay');
-    var isOpen  = nav.classList.contains('open');
+    var isOpen = nav.classList.contains('open');
     nav.classList.toggle('open', !isOpen);
     overlay.classList.toggle('open', !isOpen);
     document.body.style.overflow = isOpen ? '' : 'hidden';
   }
+
+  /* Advice tabs */
+  function switchAdvice(key, btn) {
+    document.querySelectorAll('.advice-category-btn').forEach(function(b) {
+      b.classList.remove('is-active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    document.querySelectorAll('.advice-card').forEach(function(c) {
+      c.classList.remove('is-active');
+    });
+    btn.classList.add('is-active');
+    btn.setAttribute('aria-selected', 'true');
+    var card = document.getElementById('advice-' + key);
+    if (card) card.classList.add('is-active');
+  }
 </script>
+
+<script>
+(function () {
+  var articles = [
+    {
+      id: 'agency602',
+      title: 'Agency 602 Renovated – Didouche Mourad',
+      excerpt: 'CAAR modernized Agency 602 in Didouche Mourad to enhance customer experience and service quality.',
+      date: 'Sep 24, 2023',
+      image: 'img/art1.png',
+      isLatest: false,
+      content: '<p>As part of its network modernization strategy, CAAR has completed the renovation of Agency No. 602, located in Didouche Mourad and attached to the Bouzaréah branch.</p><p>Reopened on September 24, 2023, the agency now features a modern design aligned with CAAR\'s visual identity, offering improved service and customer experience.</p>'
+    },
+    {
+      id: 'agency228',
+      title: 'Agency 228 Renovated – Larbâa Nath Irathen',
+      excerpt: 'Agency 228 was renovated as part of CAAR\'s ongoing distribution network modernization.',
+      date: 'Sep 25, 2023',
+      image: 'img/art2.png',
+      isLatest: false,
+      content: '<p>CAAR continues the modernization of its distribution network with the renovation of Agency No. 228, located in Larbâa Nath Irathen and affiliated with the Chéraga branch.</p><p>Officially reopened on September 25, 2023, the agency is now better equipped to meet customer needs in an efficient and modern environment.</p>'
+    },
+    {
+      id: 'bejaia',
+      title: 'CAAR Information Day in Béjaïa',
+      excerpt: 'CAAR organized an information day in Béjaïa to engage with partners during its 60th anniversary.',
+      date: 'Oct 4, 2023',
+      image: 'img/art3.png',
+      isLatest: false,
+      content: '<p>As part of its 60th anniversary celebrations, CAAR organized an information day on October 4, 2023, at the Cristal Hotel in Béjaïa.</p><p>The event brought together key regional partners under the theme: "CAAR listens to its partners."</p>'
+    },
+    {
+      id: 'sada2025',
+      title: 'CAAR at the African Business Forum – SADA 2025',
+      excerpt: 'CAAR took part in SADA 2025 in Oran, strengthening its presence within the African business community.',
+      date: 'Apr 28, 2025',
+      image: 'img/art4.png',
+      isLatest: false,
+      content: '<p>CAAR participated in the 3rd edition of the African Business Forum (SADA 2025), held at the Rodina Convention Center in Oran from April 26 to April 28, 2025.</p><p>The event provided an opportunity for CAAR to exchange with economic stakeholders and reinforce its role within the African business ecosystem.</p>'
+    },
+    {
+      id: 'tiziagri',
+      title: 'TIZI AGRI EXPO 2025',
+      excerpt: 'CAAR participated in the 1st edition of TIZI AGRI EXPO, supporting the livestock and dairy sector.',
+      date: 'May 10, 2025',
+      image: 'img/art5.png',
+      isLatest: true,
+      content: '<p>CAAR participated in the 1st edition of TIZI AGRI EXPO, supporting the livestock and dairy sector in Tizi Ouzou.</p><p>The expo provided CAAR with an excellent platform to showcase its agricultural insurance products and connect with professionals in the sector across the Kabylie region.</p>'
+    }
+  ];
+
+  var PER_PAGE = 4;
+  var currentPage = 1;
+  var totalPages = Math.ceil(articles.length / PER_PAGE);
+
+  var gridEl = document.getElementById('articles-grid');
+  var paginationEl = document.getElementById('articles-pagination');
+  var detailEl = document.getElementById('article-detail');
+  var listView = document.getElementById('articles-list-view');
+
+  function renderPage(page) {
+    currentPage = page;
+    var slice = articles.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+    gridEl.innerHTML = '';
+
+    slice.forEach(function(art) {
+      var card = document.createElement('div');
+      card.className = 'article-card';
+      card.setAttribute('tabindex', '0');
+      card.innerHTML =
+        '<div class="article-card__img-wrap">' +
+          (art.isLatest ? '<span class="article-card__latest">Latest</span>' : '') +
+          '<img src="' + art.image + '" alt="' + art.title + '" class="article-card__img" onerror="this.style.display=\'none\'"/>' +
+        '</div>' +
+        '<div class="article-card__body">' +
+          '<span class="article-card__date">' + art.date + '</span>' +
+          '<h3 class="article-card__title">' + art.title + '</h3>' +
+          '<p class="article-card__excerpt">' + art.excerpt + '</p>' +
+          '<button class="article-card__read-btn">Read article →</button>' +
+        '</div>';
+
+      card.addEventListener('click', function() { openDetail(art.id); });
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') openDetail(art.id);
+      });
+      gridEl.appendChild(card);
+    });
+
+    renderPagination();
+  }
+
+  function renderPagination() {
+    paginationEl.innerHTML = '';
+    if (totalPages <= 1) return;
+    for (var i = 1; i <= totalPages; i++) {
+      var btn = document.createElement('button');
+      btn.className = 'pagination-btn' + (i === currentPage ? ' is-active' : '');
+      btn.textContent = i;
+      btn.addEventListener('click', (function(p) {
+        return function() { renderPage(p); };
+      })(i));
+      paginationEl.appendChild(btn);
+    }
+  }
+
+  function openDetail(id) {
+    var art = articles.find(function(a) { return a.id === id; });
+    if (!art) return;
+
+    document.getElementById('detail-title').textContent = art.title;
+    document.getElementById('detail-text').innerHTML = art.content;
+
+    var img = document.getElementById('detail-image');
+    var wrap = document.getElementById('detail-image-wrap');
+    if (art.image) {
+      img.src = art.image;
+      img.alt = art.title;
+      wrap.style.display = '';
+    } else {
+      wrap.style.display = 'none';
+    }
+
+    listView.style.display = 'none';
+    detailEl.classList.remove('is-hidden');
+    detailEl.classList.add('fade-in');
+    document.getElementById('articles-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function closeArticleDetail() {
+    detailEl.classList.add('is-hidden');
+    detailEl.classList.remove('fade-in');
+    listView.style.display = '';
+    document.getElementById('articles-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  window.closeArticleDetail = closeArticleDetail;
+  renderPage(1);
+})();
+</script>
+
 </body>
 </html>
