@@ -41,9 +41,13 @@
   <span class="breadcrumb-cur">Home Insurance</span>
 </div>
 
+<!-- HERO with meta info line -->
 <section class="article-hero">
   <div class="article-hero__inner">
-    <span class="article-hero__category">Home Insurance</span>
+    <div class="article-hero__meta">
+      <span class="article-hero__category">Home Insurance</span>
+      <span class="article-hero__date">Last updated: March 2026</span>
+    </div>
     <h1 class="article-hero__title">Why home insurance is important</h1>
     <p class="article-hero__summary">
       Homeowners insurance protects your home, belongings, and finances from damage, theft, or accidents. It also covers liability and living expenses if you cannot stay in your home after a disaster. Most mortgage lenders require homeowners insurance when buying a house.
@@ -51,12 +55,14 @@
   </div>
 </section>
 
+<!-- ARTICLE BODY -->
 <section class="article-body">
   <div class="article-body__inner">
 
-   <div class="article-image">
-  <img src="img/homeadvice.webp" alt="Home advice in Algeria">
-</div>
+    <!-- Hero image — animated on load -->
+    <div class="article-image">
+      <img src="img/homeadvice.webp" alt="Home advice in Algeria">
+    </div>
 
     <div class="article-section">
       <h2>What is Homeowners Insurance?</h2>
@@ -113,6 +119,35 @@
   </div>
 </section>
 
+<!-- RELATED ARTICLES -->
+<section class="article-related">
+  <div class="article-related__inner">
+    <h2 class="article-related__title">Related Articles</h2>
+    <div class="article-related__grid">
+      <a href="article-business.html" class="article-related__card">
+        <span class="article-related__card-cat">Business Insurance</span>
+        <span class="article-related__card-title">How to protect your business from financial risks</span>
+        <span class="article-related__card-arrow">Read guide →</span>
+      </a>
+      <a href="article-basics.html" class="article-related__card">
+        <span class="article-related__card-cat">Insurance Basics</span>
+        <span class="article-related__card-title">How insurance works — understanding the fundamentals</span>
+        <span class="article-related__card-arrow">Read guide →</span>
+      </a>
+      <a href="article-accident.html" class="article-related__card">
+        <span class="article-related__card-cat">Road Accidents</span>
+        <span class="article-related__card-title">What to do after a road accident in Algeria</span>
+        <span class="article-related__card-arrow">Read guide →</span>
+      </a>
+      <a href="news.html" class="article-related__card">
+        <span class="article-related__card-cat">All Articles</span>
+        <span class="article-related__card-title">Browse all CAAR insurance guides and news</span>
+        <span class="article-related__card-arrow">View all →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
 <div class="article-back-section">
   <div class="article-back-section__inner">
     <p>Return to the advice section for more insurance guidance.</p>
@@ -134,17 +169,37 @@
   </div></div>
   <div class="footer-bottom">&copy; 2026 CAAR &mdash; Compagnie Alg&eacute;rienne d&rsquo;Assurances et de R&eacute;assurances. All rights reserved.</div>
 </footer>
+
 <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
 <nav class="mobile-nav" id="mobileNav">
   <div class="mobile-nav-header"><span class="mobile-nav-title">Menu</span><button onclick="toggleMobileMenu()" class="mobile-nav-close">✕</button></div>
   <a href="index.html" onclick="toggleMobileMenu()">Home</a><a href="products.html" onclick="toggleMobileMenu()">Products</a><a href="news.html" class="active" onclick="toggleMobileMenu()">News</a><a href="contact.html" onclick="toggleMobileMenu()">Contact</a>
   <div class="mobile-nav-btns"><a href="network.html" class="btn-top">Find Agency</a><a href="contact.html" class="btn-top">Contact Us</a></div>
 </nav>
+
 <script>
+  /* ── Header ── */
   document.getElementById('searchBtn').addEventListener('click', function() { document.getElementById('searchBar').classList.toggle('open'); });
   document.getElementById('searchCloseHdr').addEventListener('click', function() { document.getElementById('searchBar').classList.remove('open'); });
   document.querySelectorAll('[data-lang]').forEach(function(l) { l.addEventListener('click', function(e) { e.preventDefault(); document.getElementById('currentLang').textContent = this.getAttribute('data-lang'); }); });
   function toggleMobileMenu() { var n=document.getElementById('mobileNav'),o=document.getElementById('mobileNavOverlay'),i=n.classList.contains('open'); n.classList.toggle('open',!i); o.classList.toggle('open',!i); document.body.style.overflow=i?'':'hidden'; }
+
+  /* ── Scroll reveal for article sections ── */
+  (function() {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+    document.querySelectorAll('.article-section, .article-keypoints').forEach(function(el, i) {
+      el.style.transitionDelay = (i * 0.06) + 's';
+      observer.observe(el);
+    });
+  })();
 </script>
 </body>
 </html>

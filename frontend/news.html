@@ -99,20 +99,21 @@
 </section>
 
 <!-- ══ ADVICE SECTION ══ -->
-<section class="advice-section">
+<section class="advice-section scroll-reveal">
   <div class="advice-section__inner">
     <div class="advice-section__header">
       <h2 class="advice-section__title">Find advice for:</h2>
+      <p class="advice-section__intro">Choose a topic to access practical insurance advice and understand procedures, coverage, and your rights as a policyholder.</p>
     </div>
 
-    <div class="advice-categories" role="tablist">
-      <button class="advice-category-btn is-active" role="tab" aria-selected="true"
+    <div class="advice-categories scroll-reveal-group" role="tablist">
+      <button class="advice-category-btn is-active scroll-reveal-item" role="tab" aria-selected="true"
         onclick="switchAdvice('road', this)">Road Accidents</button>
-      <button class="advice-category-btn" role="tab" aria-selected="false"
+      <button class="advice-category-btn scroll-reveal-item" role="tab" aria-selected="false"
         onclick="switchAdvice('home', this)">Home Insurance</button>
-      <button class="advice-category-btn" role="tab" aria-selected="false"
+      <button class="advice-category-btn scroll-reveal-item" role="tab" aria-selected="false"
         onclick="switchAdvice('business', this)">Business Insurance</button>
-      <button class="advice-category-btn" role="tab" aria-selected="false"
+      <button class="advice-category-btn scroll-reveal-item" role="tab" aria-selected="false"
         onclick="switchAdvice('basics', this)">Insurance Basics</button>
     </div>
 
@@ -126,7 +127,7 @@
         <li>Document damages and collect information from all parties</li>
         <li>Inform your insurance company as soon as possible</li>
       </ul>
-      <a href="article-accident.html" class="advice-card__btn">Learn more→</a>
+      <a href="article-accident.html" class="advice-card__btn">Read full guide →</a>
     </article>
 
     <!-- Home Insurance -->
@@ -139,7 +140,7 @@
         <li>Accurately declare the value of your belongings</li>
         <li>Regularly update your contract after renovations or new purchases</li>
       </ul>
-      <a href="article-home.html" class="advice-card__btn">Learn more→</a>
+      <a href="article-home.html" class="advice-card__btn">Read full guide →</a>
     </article>
 
     <!-- Business Insurance -->
@@ -152,7 +153,7 @@
         <li>Protect your business against third-party liability</li>
         <li>Review coverage regularly as the business grows</li>
       </ul>
-      <a href="article-business.html" class="advice-card__btn">Learn more→</a>
+      <a href="article-business.html" class="advice-card__btn">Read full guide →</a>
     </article>
 
     <!-- Insurance Basics -->
@@ -165,27 +166,29 @@
         <li>Choose coverage adapted to your personal or professional situation</li>
         <li>Respect contract conditions to avoid claim rejection</li>
       </ul>
-      <a href="article-basics.html" class="advice-card__btn">Learn more→</a>
+      <a href="article-basics.html" class="advice-card__btn">Read full guide →</a>
     </article>
   </div>
 </section>
 
 <!-- ══ ARTICLES SECTION ══ -->
-<section class="articles-section" id="articles-section">
+<section class="articles-section scroll-reveal" id="articles-section">
   <div class="articles-section__container">
 
     <div id="articles-list-view">
-      <div class="articles-section__header">
+      <div class="articles-section__header scroll-reveal">
         <div>
-          <h2 class="articles-section__title">CAAR Articles → CAAR News & Events</h2>
+          <h2 class="articles-section__title">CAAR News &amp; Events</h2>
           <p class="articles-section__subtitle">Recent activities and initiatives carried out by CAAR across the country.</p>
         </div>
       </div>
-      <div class="articles-grid" id="articles-grid"></div>
+      <div class="articles-grid-wrap is-visible">
+        <div class="articles-grid scroll-reveal-group" id="articles-grid"></div>
+      </div>
       <div class="articles-pagination" id="articles-pagination"></div>
     </div>
 
-    <!-- Detail view (for non-linked articles) -->
+    <!-- Detail view -->
     <div class="article-detail is-hidden" id="article-detail">
       <button class="article-back-link" onclick="closeArticleDetail()">← Back to articles</button>
       <div class="article-detail__card">
@@ -263,6 +266,7 @@
 </nav>
 
 <script>
+  /* ── Header utils ── */
   document.getElementById('searchBtn').addEventListener('click', function() { document.getElementById('searchBar').classList.toggle('open'); });
   document.getElementById('searchCloseHdr').addEventListener('click', function() { document.getElementById('searchBar').classList.remove('open'); });
   document.addEventListener('keydown', function(e) { if (e.key === 'Escape') document.getElementById('searchBar').classList.remove('open'); });
@@ -273,122 +277,168 @@
     nav.classList.toggle('open', !isOpen); overlay.classList.toggle('open', !isOpen);
     document.body.style.overflow = isOpen ? '' : 'hidden';
   }
+
+  /* ════════════════════════════════════
+     ADVICE SWITCH — animated fade + slide
+  ════════════════════════════════════ */
+  var currentAdviceKey = 'road';
+
   function switchAdvice(key, btn) {
-    document.querySelectorAll('.advice-category-btn').forEach(function(b) { b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false'); });
-    document.querySelectorAll('.advice-card').forEach(function(c) { c.classList.remove('is-active'); });
-    btn.classList.add('is-active'); btn.setAttribute('aria-selected', 'true');
-    var card = document.getElementById('advice-' + key);
-    if (card) card.classList.add('is-active');
+    if (key === currentAdviceKey) return;
+
+    var currentCard = document.getElementById('advice-' + currentAdviceKey);
+    var nextCard    = document.getElementById('advice-' + key);
+
+    /* 1. Fade out current */
+    currentCard.classList.add('is-leaving');
+    currentCard.classList.remove('is-active');
+
+    /* 2. After leave animation, swap */
+    setTimeout(function() {
+      currentCard.classList.remove('is-leaving');
+
+      /* Update buttons */
+      document.querySelectorAll('.advice-category-btn').forEach(function(b) {
+        b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('is-active'); btn.setAttribute('aria-selected', 'true');
+
+      /* Show next with enter animation */
+      nextCard.classList.add('is-active');
+      currentAdviceKey = key;
+    }, 200);
   }
+
+  /* ════════════════════════════════════
+     SCROLL REVEAL — IntersectionObserver
+  ════════════════════════════════════ */
+  (function () {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.scroll-reveal, .scroll-reveal-group').forEach(function(el) {
+      observer.observe(el);
+    });
+  })();
 </script>
 
 <script>
+/* ════════════════════════════════════
+   ARTICLES — pagination with fade transition
+════════════════════════════════════ */
 (function () {
   var articles = [
     {
-      id: 'agency602',
-      category: 'PRESS',
+      id: 'agency602', category: 'PRESS',
       title: 'Agency 602 Renovated – Didouche Mourad',
       excerpt: 'CAAR modernized Agency 602 in Didouche Mourad to enhance customer experience and service quality.',
-      date: 'Sep 24, 2023',
-      image: 'img/art1.png',
-      emoji: '🏢',
-      isLatest: false,
-      link: null,
+      date: 'Sep 24, 2023', image: 'img/art1.png', emoji: '🏢', isLatest: false, link: null,
       content: '<p>As part of its network modernization strategy, CAAR has completed the renovation of Agency No. 602, located in Didouche Mourad and attached to the Bouzaréah branch.</p><p>Reopened on September 24, 2023, the agency now features a modern design aligned with CAAR\'s visual identity, offering improved service and customer experience.</p>'
     },
     {
-      id: 'agency228',
-      category: 'PRESS',
+      id: 'agency228', category: 'PRESS',
       title: 'Agency 228 Renovated – Larbâa Nath Irathen',
       excerpt: 'Agency 228 was renovated as part of CAAR\'s ongoing distribution network modernization.',
-      date: 'Sep 25, 2023',
-      image: 'img/art2.png',
-      emoji: '🏢',
-      isLatest: false,
-      link: null,
+      date: 'Sep 25, 2023', image: 'img/art2.png', emoji: '🏢', isLatest: false, link: null,
       content: '<p>CAAR continues the modernization of its distribution network with the renovation of Agency No. 228, located in Larbâa Nath Irathen and affiliated with the Chéraga branch.</p><p>Officially reopened on September 25, 2023, the agency is now better equipped to meet customer needs in an efficient and modern environment.</p>'
     },
     {
-      id: 'bejaia',
-      category: 'EVENT',
+      id: 'bejaia', category: 'EVENT',
       title: 'CAAR Information Day in Béjaïa',
       excerpt: 'CAAR organized an information day in Béjaïa to engage with partners during its 60th anniversary.',
-      date: 'Oct 4, 2023',
-      image: 'img/art3.png',
-      emoji: '📅',
-      isLatest: false,
-      link: null,
+      date: 'Oct 4, 2023', image: 'img/art3.png', emoji: '📅', isLatest: false, link: null,
       content: '<p>As part of its 60th anniversary celebrations, CAAR organized an information day on October 4, 2023, at the Cristal Hotel in Béjaïa.</p><p>The event brought together key regional partners under the theme: "CAAR listens to its partners."</p>'
     },
     {
-      id: 'sada2025',
-      category: 'PARTNERSHIP',
+      id: 'sada2025', category: 'PARTNERSHIP',
       title: 'CAAR at the African Business Forum – SADA 2025',
       excerpt: 'CAAR took part in SADA 2025 in Oran, strengthening its presence within the African business community.',
-      date: 'Apr 28, 2025',
-      image: 'img/art4.png',
-      emoji: '🤝',
-      isLatest: false,
-      link: null,
+      date: 'Apr 28, 2025', image: 'img/art4.png', emoji: '🤝', isLatest: false, link: null,
       content: '<p>CAAR participated in the 3rd edition of the African Business Forum (SADA 2025), held at the Rodina Convention Center in Oran from April 26 to April 28, 2025.</p><p>The event provided an opportunity for CAAR to exchange with economic stakeholders and reinforce its role within the African business ecosystem.</p>'
     },
     {
-      id: 'tiziagri',
-      category: 'EVENT',
+      id: 'tiziagri', category: 'EVENT',
       title: 'TIZI AGRI EXPO 2025',
       excerpt: 'CAAR participated in the 1st edition of TIZI AGRI EXPO, supporting the livestock and dairy sector.',
-      date: 'May 10, 2025',
-      image: 'img/art5.png',
-      emoji: '🌾',
-      isLatest: true,
-      link: null,
+      date: 'May 10, 2025', image: 'img/art5.png', emoji: '🌾', isLatest: true, link: null,
       content: '<p>CAAR participated in the 1st edition of TIZI AGRI EXPO, supporting the livestock and dairy sector in Tizi Ouzou.</p><p>The expo provided CAAR with an excellent platform to showcase its agricultural insurance products and connect with professionals in the sector across the Kabylie region.</p>'
     }
   ];
 
   var PER_PAGE = 4;
   var currentPage = 1;
-  var totalPages = Math.ceil(articles.length / PER_PAGE);
-  var gridEl = document.getElementById('articles-grid');
+  var totalPages  = Math.ceil(articles.length / PER_PAGE);
+  var gridEl      = document.getElementById('articles-grid');
+  var wrapEl      = gridEl.closest('.articles-grid-wrap');
   var paginationEl = document.getElementById('articles-pagination');
-  var detailEl = document.getElementById('article-detail');
-  var listView = document.getElementById('articles-list-view');
+  var detailEl    = document.getElementById('article-detail');
+  var listView    = document.getElementById('articles-list-view');
 
   function renderPage(page) {
-    currentPage = page;
-    var slice = articles.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-    gridEl.innerHTML = '';
-    slice.forEach(function(art) {
-      var card = document.createElement('div');
-      card.className = 'article-card';
-      card.setAttribute('tabindex', '0');
+    /* Fade out */
+    wrapEl.classList.remove('is-visible');
+    wrapEl.classList.add('is-transitioning');
 
-      var imgHtml = art.image
-        ? '<img src="' + art.image + '" alt="' + art.title + '" class="article-card__img" onerror="this.parentElement.innerHTML=\'<div class=article-card__img-placeholder>' + art.emoji + '</div>\'">'
-        : '<div class="article-card__img-placeholder">' + art.emoji + '</div>';
+    setTimeout(function() {
+      currentPage = page;
+      var slice = articles.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+      gridEl.innerHTML = '';
 
-      card.innerHTML =
-        '<div class="article-card__img-wrap">' +
-          (art.isLatest ? '<span class="article-card__latest">Latest</span>' : '') +
-          imgHtml +
-        '</div>' +
-        '<div class="article-card__body">' +
-          '<span class="article-card__category">' + art.category + '</span>' +
-          '<span class="article-card__date">' + art.date + '</span>' +
-          '<h3 class="article-card__title">' + art.title + '</h3>' +
-          '<p class="article-card__excerpt">' + art.excerpt + '</p>' +
-          '<button class="article-card__read-btn">Read article →</button>' +
-        '</div>';
+      slice.forEach(function(art, idx) {
+        var card = document.createElement('div');
+        card.className = 'article-card scroll-reveal-item';
+        card.setAttribute('tabindex', '0');
+        card.style.transitionDelay = (idx * 0.07) + 's';
 
-      card.addEventListener('click', function() {
-        if (art.link) { window.location.href = art.link; }
-        else { openDetail(art.id); }
+        var imgHtml = art.image
+          ? '<img src="' + art.image + '" alt="' + art.title + '" class="article-card__img" onerror="this.parentElement.innerHTML=\'<div class=article-card__img-placeholder>' + art.emoji + '</div>\'">'
+          : '<div class="article-card__img-placeholder">' + art.emoji + '</div>';
+
+        card.innerHTML =
+          '<div class="article-card__img-wrap">' +
+            (art.isLatest ? '<span class="article-card__latest">Latest</span>' : '') +
+            imgHtml +
+          '</div>' +
+          '<div class="article-card__body">' +
+            '<span class="article-card__category">' + art.category + '</span>' +
+            '<span class="article-card__date">' + art.date + '</span>' +
+            '<h3 class="article-card__title">' + art.title + '</h3>' +
+            '<p class="article-card__excerpt">' + art.excerpt + '</p>' +
+            '<button class="article-card__read-btn">Read article →</button>' +
+          '</div>';
+
+        card.addEventListener('click', function() {
+          if (art.link) { window.location.href = art.link; }
+          else { openDetail(art.id); }
+        });
+        card.addEventListener('keydown', function(e) { if (e.key === 'Enter') card.click(); });
+        gridEl.appendChild(card);
       });
-      card.addEventListener('keydown', function(e) { if (e.key === 'Enter') card.click(); });
-      gridEl.appendChild(card);
-    });
-    renderPagination();
+
+      renderPagination();
+
+      /* Fade in */
+      wrapEl.classList.remove('is-transitioning');
+      wrapEl.classList.add('is-visible');
+
+      /* Stagger items in */
+      gridEl.querySelectorAll('.scroll-reveal-item').forEach(function(item, i) {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        setTimeout(function() {
+          item.style.transition = 'opacity 0.38s ease, transform 0.38s ease';
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
+        }, i * 70 + 30);
+      });
+
+    }, 220);
   }
 
   function renderPagination() {
