@@ -110,7 +110,157 @@
 
   </div>
 </section>
+<!-- ══ ADVICE SECTION — "Find our advices for:" ══ -->
+<section class="advice-section">
+  <div class="advice-inner">
 
+    <!-- Title -->
+    <h2 class="advice-section-title">Find our advices for :</h2>
+
+    <!-- Category Buttons -->
+    <div class="advice-categories" role="tablist" aria-label="Insurance advice categories">
+      <button
+        class="advice-cat-btn active"
+        role="tab"
+        aria-selected="true"
+        aria-controls="advice-road"
+        onclick="switchAdvice('road', this)"
+      >Road Accidents</button>
+
+      <button
+        class="advice-cat-btn"
+        role="tab"
+        aria-selected="false"
+        aria-controls="advice-home"
+        onclick="switchAdvice('home', this)"
+      >Home Insurance</button>
+
+      <button
+        class="advice-cat-btn"
+        role="tab"
+        aria-selected="false"
+        aria-controls="advice-business"
+        onclick="switchAdvice('business', this)"
+      >Business Insurance</button>
+
+      <button
+        class="advice-cat-btn"
+        role="tab"
+        aria-selected="false"
+        aria-controls="advice-basics"
+        onclick="switchAdvice('basics', this)"
+      >Insurance Basics</button>
+    </div>
+
+    <!-- ── CARD: Road Accidents ── -->
+    <article
+      class="advice-card active"
+      id="advice-road"
+      role="tabpanel"
+      aria-labelledby="btn-road"
+    >
+      <h3 class="advice-card-title">What to do after a road accident?</h3>
+      <p class="advice-card-text">
+        Knowing the correct steps to take after a road accident helps protect your
+        safety and ensures a smoother insurance process.
+      </p>
+      <ul class="advice-card-list">
+        <li>Secure the accident area and ensure everyone's safety</li>
+        <li>Contact the authorities if necessary</li>
+        <li>Document damages and collect information</li>
+        <li>Inform your insurance company as soon as possible</li>
+      </ul>
+      <a href="#" class="advice-card-btn">Read related article →</a>
+    </article>
+
+    <!-- ── CARD: Home Insurance ── -->
+    <article
+      class="advice-card"
+      id="advice-home"
+      role="tabpanel"
+      aria-labelledby="btn-home"
+    >
+      <h3 class="advice-card-title">How to properly protect your home?</h3>
+      <p class="advice-card-text">
+        Home insurance helps protect your property and belongings against common
+        risks such as fire, water damage, and theft.
+      </p>
+      <ul class="advice-card-list">
+        <li>Identify the main risks affecting your home (fire, water damage, theft)</li>
+        <li>Insure both the building and its contents when applicable</li>
+        <li>Accurately declare the value of your belongings</li>
+        <li>Regularly update your insurance contract after renovations or new purchases</li>
+      </ul>
+      <a href="#" class="advice-card-btn">Read related article →</a>
+    </article>
+
+    <!-- ── CARD: Business Insurance ── -->
+    <article
+      class="advice-card"
+      id="advice-business"
+      role="tabpanel"
+      aria-labelledby="btn-business"
+    >
+      <h3 class="advice-card-title">Why is business insurance essential?</h3>
+      <p class="advice-card-text">
+        Business insurance protects companies against operational, financial, and
+        liability risks that may threaten their activity.
+      </p>
+      <ul class="advice-card-list">
+        <li>Identify risks related to your business activity and sector</li>
+        <li>Insure company assets such as buildings, equipment, and stock</li>
+        <li>Protect your business against third-party liability</li>
+        <li>Review insurance coverage regularly as the business grows</li>
+      </ul>
+      <a href="#" class="advice-card-btn">Read related article →</a>
+    </article>
+
+    <!-- ── CARD: Insurance Basics ── -->
+    <article
+      class="advice-card"
+      id="advice-basics"
+      role="tabpanel"
+      aria-labelledby="btn-basics"
+    >
+      <h3 class="advice-card-title">Understanding the basics of insurance</h3>
+      <p class="advice-card-text">
+        Insurance is a financial protection mechanism that helps individuals and
+        businesses manage risks and unforeseen events.
+      </p>
+      <ul class="advice-card-list">
+        <li>Understand the difference between mandatory and optional insurance</li>
+        <li>Know what risks are covered and what exclusions apply</li>
+        <li>Choose coverage adapted to your personal or professional situation</li>
+        <li>Respect contract conditions to avoid claim rejection</li>
+      </ul>
+      <a href="#" class="advice-card-btn">Read related article →</a>
+    </article>
+
+  </div>
+</section>
+
+<script>
+  function switchAdvice(key, btn) {
+    /* Deactivate all buttons */
+    document.querySelectorAll('.advice-cat-btn').forEach(function(b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+
+    /* Deactivate all cards */
+    document.querySelectorAll('.advice-card').forEach(function(c) {
+      c.classList.remove('active');
+    });
+
+    /* Activate clicked button */
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+
+    /* Activate matching card */
+    var card = document.getElementById('advice-' + key);
+    if (card) card.classList.add('active');
+  }
+</script>
 <!-- ══ ARTICLES GRID ══ -->
 <section class="articles-section">
   <div class="articles-inner">

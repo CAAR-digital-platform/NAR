@@ -286,6 +286,170 @@ img { max-width: 100%; display: block; }
   height: auto;
   display: block;
 }
+/* ============================================================
+   ADVICE SECTION — "Find our advices for:"
+   Matches the existing news.css design system
+   ============================================================ */
+
+/* ── Section wrapper ── */
+.advice-section {
+  background: var(--white);
+  padding: 64px 40px 80px;
+  border-top: 1px solid var(--border);
+}
+
+.advice-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ── Section title ── */
+.advice-section-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+/* ── Category buttons row ── */
+.advice-categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;   /* center horizontally */
+  gap: 14px 18px;            /* vertical gap / horizontal gap */
+  max-width: 520px;          /* forces 2 rows */
+  margin: 0 auto 32px auto;  /* center the whole block */
+}
+
+.advice-cat-btn {
+  padding: 9px 20px;
+  border-radius: 999px;
+  border: none;
+  background: var(--dark);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+  min-width: 180px;
+  text-align: center;
+}
+
+.advice-cat-btn:hover {
+  background: #333;
+  transform: translateY(-1px);
+}
+
+.advice-cat-btn.active {
+  background: var(--orange);
+  color: var(--white);
+}
+
+/* ── Advice card ── */
+.advice-card {
+  background: #fdf5e8;
+  border-radius: 14px;
+  padding: 28px 32px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  max-width: 700px;
+  display: none;
+  animation: adviceFadeIn 0.22s ease;
+}
+
+.advice-card.active {
+  display: block;
+}
+
+@keyframes adviceFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+.advice-card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 12px;
+  line-height: 1.35;
+}
+
+.advice-card-text {
+  font-size: 0.86rem;
+  color: #555;
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+
+.advice-card-list {
+  list-style: none;
+  margin-bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.advice-card-list li {
+  font-size: 0.84rem;
+  color: var(--dark);
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+
+.advice-card-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--dark);
+  font-weight: 700;
+}
+
+.advice-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 24px;
+  background: var(--orange);
+  color: var(--white);
+  border: none;
+  border-radius: 999px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.advice-card-btn:hover {
+  background: #e06d00;
+  transform: translateY(-1px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .advice-section {
+    padding: 48px 16px 56px;
+  }
+
+  .advice-categories {
+    gap: 8px;
+  }
+
+  .advice-cat-btn {
+    font-size: 0.76rem;
+    padding: 8px 16px;
+  }
+
+  .advice-card {
+    padding: 22px 20px;
+  }
+}
 
 /* ============================================================
    ARTICLES SECTION
