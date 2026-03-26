@@ -94,7 +94,7 @@
   justify-content: center;
 }
 .product-hero__img img {
-  height: 210px;
+  height: 300px;
   width: auto;
   object-fit: contain;
   display: block;
@@ -423,7 +423,7 @@
 /* ── RESPONSIVE ── */
 @media (max-width: 1024px) {
   .product-hero { padding: 44px 5% 0; }
-  .product-hero__inner { grid-template-columns: 1fr 240px; }
+  .product-hero__inner { grid-template-columns: 60% 40%;}
   .product-hero__title { font-size: 2rem; }
   .product-layout { padding: 48px 5%; }
   .product-layout__inner { gap: 28px; }
