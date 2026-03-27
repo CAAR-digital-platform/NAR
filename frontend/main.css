@@ -258,18 +258,51 @@ textarea     { font-family: var(--font-sans); }
 
 /* Language dropdown */
 .lang-dropdown { position: relative; }
-.lang-menu {
-  display: none;
+.lang-dropdown-menu {
+  display: none;                    /* hidden by default */
   position: absolute;
-  top: calc(100% + 6px); right: 0;
-  background: var(--white);
-  border: 1px solid var(--border);
+  top: calc(100% + 6px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   min-width: 160px;
-  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   list-style: none;
   padding: 6px 0;
-  z-index: 999;
+  z-index: 1010;
+  /* Smooth entrance */
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.lang-dropdown-menu.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+.lang-dropdown-menu li a {
+  display: block;
+  padding: 9px 16px;
+  font-size: 13px;
+  color: #1c1c1c;
+  transition: background 0.14s, color 0.14s;
+  white-space: nowrap;
+}
+.lang-dropdown-menu li a:hover {
+  background: #fff5e6;
+  color: #F57C00;
+}
+ 
+/* Rotate the chevron when open */
+.lang-dropdown.lang-open .lang-toggle-btn svg {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
+}
+ 
+/* ── Mobile menu button (hidden on desktop) ─────────────── */
+.mobile-menu-btn {
+  display: none;    /* shown via media query below */
 }
 .lang-dropdown:hover .lang-menu { display: block; }
 .lang-menu li a {
@@ -286,8 +319,9 @@ textarea     { font-family: var(--font-sans); }
   display: none;
   align-items: center;
   padding: 10px 40px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid #e0e0e0;
   gap: 10px;
+  background: #fff;
 }
 .search-bar.open { display: flex; }
 
@@ -295,22 +329,23 @@ textarea     { font-family: var(--font-sans); }
 .hdr-search-input {
   flex: 1;
   padding: 9px 16px;
-  border: 1.5px solid var(--hdr-orange);
+  border: 1.5px solid #F57C00;
   border-radius: 25px;
   font-size: 14px;
   outline: none;
-  font-family: var(--font-sans);
+  font-family: inherit;
 }
-
-.search-close,
 .search-close-hdr {
   background: none;
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: var(--gray);
+  color: #666;
   padding: 4px 8px;
   border-radius: 50%;
+}
+.search-close-hdr:hover {
+  background: #f0f0f0;
 }
 .search-close:hover,
 .search-close-hdr:hover { background: #f0f0f0; }
@@ -521,7 +556,101 @@ textarea     { font-family: var(--font-sans); }
   border-top: 1px solid var(--border);
 }
 .mobile-nav-btns .btn-top { text-align: center; border-radius: var(--btn-radius); font-size: .84rem; padding: 10px; display: block; }
-
+ 
+/* ── Mobile menu button (hidden on desktop) ─────────────── */
+.mobile-menu-btn {
+  display: none;    /* shown via media query below */
+}
+ 
+/* ── Mobile nav overlay ─────────────────────────────────── */
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1100;
+  cursor: pointer;
+}
+.mobile-nav-overlay.open {
+  display: block;
+}
+ 
+/* ── Mobile nav drawer ──────────────────────────────────── */
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  right: -300px;           /* off-screen by default */
+  bottom: 0;
+  width: 280px;
+  background: #fff;
+  z-index: 1200;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.18);
+  transition: right 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+ 
+/* JS adds .open → drawer slides in */
+.mobile-nav.open {
+  right: 0;
+}
+ 
+.mobile-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+.mobile-nav-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1c1c1c;
+}
+.mobile-nav-close {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  line-height: 1;
+}
+ 
+.mobile-nav a {
+  display: block;
+  padding: 14px 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1c1c1c;
+  border-bottom: 1px solid #f5f5f5;
+  transition: color 0.15s, background 0.15s;
+  text-decoration: none;
+}
+.mobile-nav a:hover,
+.mobile-nav a.active {
+  color: #F57C00;
+  background: #fff8f2;
+}
+ 
+.mobile-nav-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  margin-top: auto;
+  border-top: 1px solid #e0e0e0;
+}
+.mobile-nav-btns .btn-top {
+  text-align: center;
+  border-radius: 30px;
+  font-size: 0.84rem;
+  padding: 10px;
+  display: block;
+}
+ 
 
 /* =====================================================================
    7. BREADCRUMB
@@ -1845,6 +1974,20 @@ textarea     { font-family: var(--font-sans); }
   .logo-block    { border-right: 1px solid var(--border); padding: 8px 12px 8px 0; }
   .logo-img      { width: 72px; height: 72px; }
 
+  @media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+  .nav-links {
+    display: none;
+  }
+  .top-row {
+    display: none;
+  }
+  .top-divider {
+    display: none;
+  }
+}
   /* Footer — single column */
   .footer        { padding: 32px 16px 0; }
   .footer-inner  { padding-bottom: 24px; }
