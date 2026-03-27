@@ -1,21 +1,25 @@
 /* ============================================================
-   CAAR — main.js  (v4 — Unified Dynamic Header)
+   CAAR — main.js  (v5 — Fixed & Unified)
 
-   HOW IT WORKS
-   ────────────
-   1. loadHeader()          — fetch components/header.html → inject into #site-header
-   2. initHeaderFunctions() — wire ALL header interactions (called AFTER injection)
-   3. setActiveNav()        — highlight the current page nav link
+   WHAT CHANGED from v4:
+   ─────────────────────
+   ▸ Lang dropdown now uses CSS class toggle (.open) instead of
+     inline style — eliminates conflict with :hover CSS rule
+   ▸ Nav dropdowns: added .touch-open support via JS (CSS rule
+     must mirror .dropdown:hover .dropdown-menu)
+   ▸ All header interactions unified here — pages must NOT
+     duplicate searchBtn / lang / mobile-menu listeners inline
+   ▸ Added null-guard on every getElementById call
+   ▸ Escape key closes search, mobile-nav, lang dropdown
 
    RULE: Every page must have exactly ONE of:
-     A) <div id="site-header"></div>   ← header is injected here by this file
-     B) A hardcoded <header> block     ← page manages its own header events inline
-                                          (legacy; migrate to A over time)
+     A) <div id="site-header"></div>  ← injected by this file
+     B) A hardcoded <header> block    ← LEGACY; migrate to A
 
-   If a page uses (A), it must NOT have any inline scripts that touch
-   searchBtn / searchCloseHdr / mobileMenuBtn / toggleMobileMenu / langMenu,
-   and it must NOT have a hardcoded mobile-nav drawer at the bottom —
-   those are already included inside components/header.html.
+   If a page uses (A) it must NOT have:
+     • inline scripts touching searchBtn/mobileMenuBtn/langMenu
+     • a hardcoded mobile-nav drawer at the bottom
+     • a toggleMobileMenu() global function
    ============================================================ */
 
 (function () {
@@ -55,7 +59,7 @@
   }
 
   /* ──────────────────────────────────────────────────────────
-     2. SET ACTIVE NAV LINK (called after header is in DOM)
+     2. SET ACTIVE NAV LINK
   ────────────────────────────────────────────────────────── */
   function setActiveNav() {
     var activePage = getActivePage();
@@ -71,8 +75,6 @@
 
   /* ──────────────────────────────────────────────────────────
      3. WIRE ALL HEADER INTERACTIONS
-        Called once, immediately after header HTML is in the DOM.
-        Pages must not duplicate any of this logic inline.
   ────────────────────────────────────────────────────────── */
   function initHeaderFunctions() {
 
@@ -88,7 +90,7 @@
         var opening = !searchBar.classList.contains('open');
         searchBar.classList.toggle('open', opening);
         if (opening && searchInput) {
-          setTimeout(function () { searchInput.focus(); }, 50);
+          setTimeout(function () { searchInput.focus(); }, 60);
         }
       });
     }
@@ -96,44 +98,45 @@
     if (searchClose && searchBar) {
       searchClose.addEventListener('click', function () {
         searchBar.classList.remove('open');
+        if (searchInput) searchInput.value = '';
       });
     }
 
-    // Close search bar when clicking outside the header
+    /* Close search when clicking outside header */
     document.addEventListener('click', function (e) {
       if (!searchBar) return;
-      if (searchBar.classList.contains('open')) {
-        var header = document.querySelector('.header');
-        if (header && !header.contains(e.target)) {
-          searchBar.classList.remove('open');
-        }
+      if (!searchBar.classList.contains('open')) return;
+      var header = document.querySelector('.header');
+      if (header && !header.contains(e.target)) {
+        searchBar.classList.remove('open');
       }
     });
 
-    /* ── 3b. Language dropdown ──────────────────────────── */
+    /* ── 3b. Language dropdown — CLASS-BASED (no inline style) ── */
     var langDropdown = document.querySelector('.lang-dropdown');
-    var langMenu     = langDropdown ? langDropdown.querySelector('.lang-menu') : null;
     var langToggle   = langDropdown ? langDropdown.querySelector('.lang-toggle-btn') : null;
+    var langMenu     = langDropdown ? langDropdown.querySelector('.lang-menu')       : null;
     var currentLang  = document.getElementById('currentLang');
 
-    if (langToggle && langMenu) {
+    if (langToggle && langDropdown) {
       langToggle.addEventListener('click', function (e) {
         e.stopPropagation();
-        var isOpen = langMenu.style.display === 'block';
-        langMenu.style.display = isOpen ? '' : 'block';
+        langDropdown.classList.toggle('lang-open');
       });
 
-      langMenu.querySelectorAll('[data-lang]').forEach(function (link) {
-        link.addEventListener('click', function (e) {
-          e.preventDefault();
-          if (currentLang) currentLang.textContent = this.getAttribute('data-lang');
-          langMenu.style.display = '';
+      if (langMenu) {
+        langMenu.querySelectorAll('[data-lang]').forEach(function (link) {
+          link.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (currentLang) currentLang.textContent = this.getAttribute('data-lang');
+            langDropdown.classList.remove('lang-open');
+          });
         });
-      });
+      }
 
       document.addEventListener('click', function (e) {
         if (langDropdown && !langDropdown.contains(e.target)) {
-          langMenu.style.display = '';
+          langDropdown.classList.remove('lang-open');
         }
       });
     }
@@ -160,7 +163,7 @@
     if (mobileClose)   mobileClose.addEventListener('click', closeMobileMenu);
     if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenu);
 
-    // Close drawer when any link inside it is tapped
+    /* Close drawer when any link inside is tapped */
     if (mobileNav) {
       mobileNav.querySelectorAll('a').forEach(function (link) {
         link.addEventListener('click', closeMobileMenu);
@@ -172,25 +175,29 @@
       if (e.key !== 'Escape') return;
       if (searchBar && searchBar.classList.contains('open')) {
         searchBar.classList.remove('open');
+        if (searchInput) searchInput.value = '';
       }
       if (mobileNav && mobileNav.classList.contains('open')) {
         closeMobileMenu();
       }
-      if (langMenu) {
-        langMenu.style.display = '';
+      if (langDropdown) {
+        langDropdown.classList.remove('lang-open');
       }
     });
 
-    /* ── 3e. Desktop dropdowns (touch support) ──────────── */
+    /* ── 3e. Desktop nav dropdowns — touch support ──────── */
     document.querySelectorAll('.dropdown').forEach(function (dropdown) {
       dropdown.addEventListener('touchstart', function (e) {
         var isOpen = dropdown.classList.contains('touch-open');
+        /* Close all other open dropdowns */
         document.querySelectorAll('.dropdown.touch-open').forEach(function (d) {
-          d.classList.remove('touch-open');
+          if (d !== dropdown) d.classList.remove('touch-open');
         });
         if (!isOpen) {
           e.preventDefault();
           dropdown.classList.add('touch-open');
+        } else {
+          dropdown.classList.remove('touch-open');
         }
       }, { passive: false });
     });
@@ -201,24 +208,20 @@
           d.classList.remove('touch-open');
         });
       }
-    });
+    }, { passive: true });
   }
 
   /* ──────────────────────────────────────────────────────────
      4. LOAD HEADER
-        Fetches components/header.html, injects it into
-        #site-header, then wires all interactions.
-        If no #site-header exists the page has a hardcoded
-        header — skip silently.
   ────────────────────────────────────────────────────────── */
   function loadHeader() {
     var placeholder = document.getElementById('site-header');
     if (!placeholder) {
       /*
-       * Page uses a hardcoded <header> block.
-       * main.js is still loaded for setActiveNav on those pages
-       * that call it manually, but we don't touch the DOM here.
+       * Page has a hardcoded <header> — still set active nav
+       * (search/lang/mobile wired by page's own inline script)
        */
+      setActiveNav();
       return;
     }
 

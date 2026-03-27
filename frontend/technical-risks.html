@@ -4,76 +4,136 @@
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR — Technical Risks</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
-
   <link rel="stylesheet" href="main.css"/>
 </head>
 <body>
+
+<!-- Header injected by main.js -->
 <div id="site-header"></div>
-<div class="breadcrumb"><a href="index.html">Home</a><span class="breadcrumb-sep">›</span><a href="products.html">Products</a><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur" id="bc">Contractors' Plant &amp; Machinery</span></div>
 
-<section class="product-hero"><div class="product-hero__inner"><div class="product-hero__text"><span class="product-hero__cat">Technical Risks</span><h1 class="product-hero__title">Technical Risks</h1><p class="product-hero__subtitle">Specialised insurance for construction projects, IT systems and industrial equipment — covering technical risks from planning through to completion.</p></div><div class="product-hero__img"><img src="img/technique.webp" alt="Technical Risks"/></div></div></section>
+<div class="breadcrumb">
+  <a href="index.html">Home</a><span class="breadcrumb-sep">›</span>
+  <a href="products.html">Products</a><span class="breadcrumb-sep">›</span>
+  <span class="breadcrumb-cur" id="bc">Contractors' Plant &amp; Machinery</span>
+</div>
 
-<div class="product-layout"><div class="product-layout__inner">
-<aside class="product-sidebar">
-  <span class="sidebar-label">Products</span>
-  <button class="sidebar-btn active" onclick="show('cpm',this)"><div class="sidebar-btn__icon">🏗️</div><div><div>Contractors' Plant &amp; Machinery</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">CPM</div></div><span class="sidebar-btn__abbr">CPM</span></button>
-  <button class="sidebar-btn" onclick="show('it',this)"><div class="sidebar-btn__icon">💻</div><div><div>IT All Risks Insurance</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">IT All Risks</div></div></button>
-  <button class="sidebar-btn" onclick="show('car',this)"><div class="sidebar-btn__icon">🏛️</div><div><div>Construction &amp; Erection All Risks</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">CAR / EAR</div></div><span class="sidebar-btn__abbr">CAR</span></button>
-  <div class="sidebar-cta">
-    <a href="network.html" class="btn-sidebar-primary">Get a Quote →</a>
-    <a href="network.html" class="btn-sidebar-secondary">Find an Agency</a>
-    <a href="contact.html" class="btn-sidebar-secondary">Contact Advisor</a>
-  </div>
-</aside>
-<div class="product-panel">
-  <div class="detail on" id="d-cpm">
-    <span class="detail__abbr">CPM</span><h2 class="detail__title">Contractors' Plant &amp; Machinery Insurance</h2><div class="detail__divider"></div>
-    <p class="detail__desc">Covers mobile and stationary construction equipment against sudden, unforeseen damage occurring on or off the construction site during operation, maintenance or transport.</p>
-    <div class="detail__status"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong>Optional</strong> — essential for construction companies with heavy equipment.</div>
-    <div class="covers-label">Covered Risks</div>
-    <div class="covers-grid">
-      <div class="cover-item"><div class="cover-item__dot"></div>Accidental physical damage</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Operator error and mishandling</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Mechanical and electrical breakdown</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Fire and explosion</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Theft of machinery</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Third-party liability</div>
+<section class="product-hero">
+  <div class="product-hero__inner">
+    <div class="product-hero__text">
+      <span class="product-hero__cat">Technical Risks</span>
+      <h1 class="product-hero__title">Technical Risks</h1>
+      <p class="product-hero__subtitle">Specialised insurance for construction projects, IT systems and industrial equipment — covering technical risks from planning through to completion.</p>
     </div>
-    <div class="detail__cta"><a href="network.html" class="btn-detail-primary">Get a Quote →</a><a href="network.html" class="btn-detail-secondary">Find an Agency</a><a href="contact.html" class="btn-detail-secondary">Contact an Advisor</a></div>
+    <div class="product-hero__img"><img src="img/technique.webp" alt="Technical Risks"/></div>
   </div>
-  <div class="detail" id="d-it">
-    <span class="detail__abbr">IT All Risks</span><h2 class="detail__title">IT All Risks Insurance</h2><div class="detail__divider"></div>
-    <p class="detail__desc">Comprehensive protection for all computer hardware, software and data against accidental damage, theft, power surges and other technical hazards.</p>
-    <div class="detail__status"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong>Optional</strong> — recommended for all businesses dependent on IT infrastructure.</div>
-    <div class="covers-label">Covered Risks</div>
-    <div class="covers-grid">
-      <div class="cover-item"><div class="cover-item__dot"></div>Accidental physical damage</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Power surge and electrical damage</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Theft of IT equipment</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Data loss and reconstruction costs</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Fire and water damage</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Cost of temporary replacement equipment</div>
+</section>
+
+<div class="product-layout">
+  <div class="product-layout__inner">
+
+    <aside class="product-sidebar">
+      <span class="sidebar-label">Products</span>
+      <button class="sidebar-btn active" onclick="show('cpm',this)">
+        <div class="sidebar-btn__icon">🏗️</div>
+        <div><div>Contractors' Plant &amp; Machinery</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">CPM</div></div>
+        <span class="sidebar-btn__abbr">CPM</span>
+      </button>
+      <button class="sidebar-btn" onclick="show('it',this)">
+        <div class="sidebar-btn__icon">💻</div>
+        <div><div>IT All Risks Insurance</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">IT All Risks</div></div>
+      </button>
+      <button class="sidebar-btn" onclick="show('car',this)">
+        <div class="sidebar-btn__icon">🏛️</div>
+        <div><div>Construction &amp; Erection All Risks</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">CAR / EAR</div></div>
+        <span class="sidebar-btn__abbr">CAR</span>
+      </button>
+      <div class="sidebar-cta">
+        <a href="network.html" class="btn-sidebar-primary">Get a Quote →</a>
+        <a href="network.html" class="btn-sidebar-secondary">Find an Agency</a>
+        <a href="contact.html" class="btn-sidebar-secondary">Contact Advisor</a>
+      </div>
+    </aside>
+
+    <div class="product-panel">
+      <div class="detail on" id="d-cpm">
+        <span class="detail__abbr">CPM</span>
+        <h2 class="detail__title">Contractors' Plant &amp; Machinery Insurance</h2>
+        <div class="detail__divider"></div>
+        <p class="detail__desc">Covers mobile and stationary construction equipment against sudden, unforeseen damage occurring on or off the construction site during operation, maintenance or transport.</p>
+        <div class="detail__status">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <strong>Optional</strong> — essential for construction companies with heavy equipment.
+        </div>
+        <div class="covers-label">Covered Risks</div>
+        <div class="covers-grid">
+          <div class="cover-item"><div class="cover-item__dot"></div>Accidental physical damage</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Operator error and mishandling</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Mechanical and electrical breakdown</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Fire and explosion</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Theft of machinery</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Third-party liability</div>
+        </div>
+        <div class="detail__cta">
+          <a href="network.html" class="btn-detail-primary">Get a Quote →</a>
+          <a href="network.html" class="btn-detail-secondary">Find an Agency</a>
+          <a href="contact.html" class="btn-detail-secondary">Contact an Advisor</a>
+        </div>
+      </div>
+
+      <div class="detail" id="d-it">
+        <span class="detail__abbr">IT All Risks</span>
+        <h2 class="detail__title">IT All Risks Insurance</h2>
+        <div class="detail__divider"></div>
+        <p class="detail__desc">Comprehensive protection for all computer hardware, software and data against accidental damage, theft, power surges and other technical hazards.</p>
+        <div class="detail__status">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <strong>Optional</strong> — recommended for all businesses dependent on IT infrastructure.
+        </div>
+        <div class="covers-label">Covered Risks</div>
+        <div class="covers-grid">
+          <div class="cover-item"><div class="cover-item__dot"></div>Accidental physical damage</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Power surge and electrical damage</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Theft of IT equipment</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Data loss and reconstruction costs</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Fire and water damage</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Cost of temporary replacement equipment</div>
+        </div>
+        <div class="detail__cta">
+          <a href="network.html" class="btn-detail-primary">Get a Quote →</a>
+          <a href="network.html" class="btn-detail-secondary">Find an Agency</a>
+          <a href="contact.html" class="btn-detail-secondary">Contact an Advisor</a>
+        </div>
+      </div>
+
+      <div class="detail" id="d-car">
+        <span class="detail__abbr">CAR / EAR</span>
+        <h2 class="detail__title">Construction &amp; Erection All Risks</h2>
+        <div class="detail__divider"></div>
+        <p class="detail__desc">Covers civil engineering and erection projects against material damage and third-party liability arising throughout the construction or assembly period.</p>
+        <div class="detail__status">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <strong>Optional</strong> — widely required by project owners and lenders.
+        </div>
+        <div class="covers-label">Covered Risks</div>
+        <div class="covers-grid">
+          <div class="cover-item"><div class="cover-item__dot"></div>Damage to works under construction</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Construction materials and supplies</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Third-party bodily injury</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Third-party property damage</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Natural perils (storm, flood, earthquake)</div>
+          <div class="cover-item"><div class="cover-item__dot"></div>Removal of debris costs</div>
+        </div>
+        <div class="detail__cta">
+          <a href="network.html" class="btn-detail-primary">Get a Quote →</a>
+          <a href="network.html" class="btn-detail-secondary">Find an Agency</a>
+          <a href="contact.html" class="btn-detail-secondary">Contact an Advisor</a>
+        </div>
+      </div>
     </div>
-    <div class="detail__cta"><a href="network.html" class="btn-detail-primary">Get a Quote →</a><a href="network.html" class="btn-detail-secondary">Find an Agency</a><a href="contact.html" class="btn-detail-secondary">Contact an Advisor</a></div>
-  </div>
-  <div class="detail" id="d-car">
-    <span class="detail__abbr">CAR / EAR</span><h2 class="detail__title">Construction &amp; Erection All Risks</h2><div class="detail__divider"></div>
-    <p class="detail__desc">Covers civil engineering and erection projects against material damage and third-party liability arising throughout the construction or assembly period.</p>
-    <div class="detail__status"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong>Optional</strong> — widely required by project owners and lenders.</div>
-    <div class="covers-label">Covered Risks</div>
-    <div class="covers-grid">
-      <div class="cover-item"><div class="cover-item__dot"></div>Damage to works under construction</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Construction materials and supplies</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Third-party bodily injury</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Third-party property damage</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Natural perils (storm, flood, earthquake)</div>
-      <div class="cover-item"><div class="cover-item__dot"></div>Removal of debris costs</div>
-    </div>
-    <div class="detail__cta"><a href="network.html" class="btn-detail-primary">Get a Quote →</a><a href="network.html" class="btn-detail-secondary">Find an Agency</a><a href="contact.html" class="btn-detail-secondary">Contact an Advisor</a></div>
   </div>
 </div>
-</div></div>
-<!-- FOOTER (unchanged) -->
+
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
@@ -115,16 +175,24 @@
     &copy; 2026 CAAR &mdash; Compagnie Alg&eacute;rienne d&rsquo;Assurances et de R&eacute;assurances. All rights reserved.
   </div>
 </footer>
-<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
-<nav class="mobile-nav" id="mobileNav"><div class="mobile-nav-header"><span class="mobile-nav-title">Menu</span><button onclick="toggleMobileMenu()" class="mobile-nav-close">✕</button></div><a href="index.html" onclick="toggleMobileMenu()">Home</a><a href="products.html" onclick="toggleMobileMenu()">Products</a><a href="news.html" onclick="toggleMobileMenu()">News</a><a href="contact.html" onclick="toggleMobileMenu()">Contact</a><div class="mobile-nav-btns"><a href="network.html" class="btn-top">Find Agency</a><a href="contact.html" class="btn-top">Contact Us</a></div></nav>
+
+<!-- main.js handles ALL header/search/lang/mobile interactions -->
 <script src="js/main.js"></script>
+<!-- Page-specific: sidebar tab switching only -->
 <script>
-var ids=['cpm','it','car'],labels={'cpm':"Contractors' Plant & Machinery",'it':'IT All Risks Insurance','car':'Construction & Erection All Risks'};
-function show(k,btn){ids.forEach(function(i){document.getElementById('d-'+i).classList.remove('on');});document.querySelectorAll('.sidebar-btn').forEach(function(b){b.classList.remove('active');});document.getElementById('d-'+k).classList.add('on');btn.classList.add('active');document.getElementById('bc').textContent=labels[k];}
-document.getElementById('searchBtn').addEventListener('click',function(){document.getElementById('searchBar').classList.toggle('open');});
-document.getElementById('searchCloseHdr').addEventListener('click',function(){document.getElementById('searchBar').classList.remove('open');});
-document.querySelectorAll('[data-lang]').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();document.getElementById('currentLang').textContent=this.getAttribute('data-lang');});});
-function toggleMobileMenu(){var n=document.getElementById('mobileNav'),o=document.getElementById('mobileNavOverlay'),i=n.classList.contains('open');n.classList.toggle('open',!i);o.classList.toggle('open',!i);document.body.style.overflow=i?'':'hidden';}
+  var ids = ['cpm', 'it', 'car'];
+  var labels = {
+    'cpm': "Contractors' Plant & Machinery",
+    'it':  'IT All Risks Insurance',
+    'car': 'Construction & Erection All Risks'
+  };
+  function show(k, btn) {
+    ids.forEach(function(i) { document.getElementById('d-' + i).classList.remove('on'); });
+    document.querySelectorAll('.sidebar-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById('d-' + k).classList.add('on');
+    btn.classList.add('active');
+    document.getElementById('bc').textContent = labels[k];
+  }
 </script>
 </body>
 </html>

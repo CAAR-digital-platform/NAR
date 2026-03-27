@@ -314,7 +314,10 @@ textarea     { font-family: var(--font-sans); }
 }
 .search-close:hover,
 .search-close-hdr:hover { background: #f0f0f0; }
-
+.lang-dropdown.lang-open .lang-menu { display: block; }
+.dropdown.touch-open .dropdown-menu { display: block; }
+.dropdown.touch-open .arrow         { transform: rotate(180deg); }
+ 
 
 /* =====================================================================
    5. FOOTER  — single authoritative definition
