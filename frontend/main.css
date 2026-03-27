@@ -514,14 +514,23 @@ textarea     { font-family: var(--font-sans); }
 
 .mobile-nav {
   position: fixed;
-  top: 0; right: -280px; bottom: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   width: 280px;
-  background: var(--white);
+  background: #fff;
   z-index: 1200;
-  box-shadow: -4px 0 24px rgba(0,0,0,.18);
-  transition: right 0.28s cubic-bezier(.4,0,.2,1);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+
+  transform: translateX(100%);
+  transition: transform 0.28s ease;
+}
+
+.mobile-nav.open {
+  transform: translateX(0);
 }
 .mobile-nav.open { right: 0; }
 
@@ -575,21 +584,7 @@ textarea     { font-family: var(--font-sans); }
   display: block;
 }
  
-/* ── Mobile nav drawer ──────────────────────────────────── */
-.mobile-nav {
-  position: fixed;
-  top: 0;
-  right: -300px;           /* off-screen by default */
-  bottom: 0;
-  width: 280px;
-  background: #fff;
-  z-index: 1200;
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.18);
-  transition: right 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-}
+
  
 /* JS adds .open → drawer slides in */
 .mobile-nav.open {

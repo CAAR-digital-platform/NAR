@@ -1,155 +1,210 @@
 /* ============================================================
-   CAAR — main.js  (v7)
+   CAAR — main.js  (v8 — Bug-fixed)
 
-   WHAT THIS FILE DOES
-   ───────────────────
+   FIXES IN THIS VERSION
+   ─────────────────────
+   1. Lang dropdown: now calls openLang/closeLang via button click.
+      The CSS (header.css) uses visibility/opacity not display:none,
+      so transitions work correctly.
+
+   2. Mobile nav lag: JS now only toggles classes. CSS uses
+      transform:translateX instead of right (composited, no layout).
+
+   3. Search not opening: removed the inline-script workaround that
+      was in catnat-subscription.html which bound to #searchBtn
+      BEFORE the async fetch completed, throwing a TypeError.
+      initHeader() is now the ONLY place these listeners live.
+
+   ARCHITECTURE
+   ─────────────
    • Fetches components/header.html into #site-header
-   • Calls initHeader() ONCE after the HTML is in the DOM
-   • Uses window.__caarHeaderReady as a global guard so
-     initHeader() can NEVER run twice, even if main.js is
-     accidentally loaded on multiple pages or called twice.
+   • Calls initHeader() ONCE after HTML is in DOM
+   • window.__caarHeaderReady guards against double-run
+   • All header interaction lives here — no page should re-bind
+     header elements in its own <script> block
 
-   CSS CLASSES MANAGED HERE
-   ─────────────────────────
+   CSS CLASSES MANAGED
+   ────────────────────
    .search-bar.open              → search input visible
    .lang-dropdown-menu.show      → language menu visible
    .mobile-nav.open              → drawer slides in
    .mobile-nav-overlay.open      → dark backdrop visible
-   .dropdown.touch-open          → desktop submenu (touch)
+   .lang-dropdown.lang-open      → chevron rotates (CSS-only)
+   .dropdown.touch-open          → desktop submenu on touch
    ============================================================ */
 
 (function () {
   'use strict';
 
-  /* ── Already initialised? Stop immediately. ── */
+  /* ── Guard: already initialised? Exit. ── */
   if (window.__caarHeaderReady) return;
 
   /* ──────────────────────────────────────────────────────────
-     UTIL: Resolve the URL of header.html from the script src
-     so it works regardless of which sub-page we are on.
+     UTIL: resolve components/header.html URL from script src
+     so it works from any sub-directory.
   ────────────────────────────────────────────────────────── */
   function resolveHeaderURL() {
     var scripts = document.querySelectorAll('script[src]');
     for (var i = 0; i < scripts.length; i++) {
       var s = scripts[i].getAttribute('src');
       if (s && s.indexOf('main.js') !== -1) {
+        /* e.g. "js/main.js" → base = "" → "components/header.html" */
         var base = s.replace(/js\/main\.js.*$/, '');
         return base + 'components/header.html';
       }
     }
+    /* Fallback: derive from current URL */
     var dir = window.location.pathname.slice(
-      0,
-      window.location.pathname.lastIndexOf('/') + 1
+      0, window.location.pathname.lastIndexOf('/') + 1
     );
     return dir + 'components/header.html';
   }
 
   /* ──────────────────────────────────────────────────────────
      ACTIVE PAGE DETECTION
+     Maps filenames → nav data-page values so the correct
+     link gets .active without hardcoding it in every HTML file.
   ────────────────────────────────────────────────────────── */
-  function getActivePage() {
-    var file =
-      window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-
-    var map = {
-      'index'              : 'index',
-      ''                   : 'index',
-      'products'           : 'products',
-      'individual-risks'   : 'products',
-      'auto-insurance'     : 'products',
-      'transport-insurance': 'products',
-      'technical-risks'    : 'products',
-      'industrial-risks'   : 'products',
-      'Online_subscription': 'products',
-      'catnat-subscription': 'products',
-      'roads'              : 'products',
-      'company'            : 'company',
-      'company-careers'    : 'company',
-      'network'            : 'network',
-      'news'               : 'news',
-      'article-accident'   : 'news',
-      'article-home'       : 'news',
-      'article-business'   : 'news',
-      'article-basics'     : 'news',
-      'contact'            : 'contact',
-    };
-
-    return map[file] || '';
-  }
+  var PAGE_MAP = {
+    'index'              : 'index',
+    ''                   : 'index',
+    'products'           : 'products',
+    'individual-risks'   : 'products',
+    'auto-insurance'     : 'products',
+    'transport-insurance': 'products',
+    'technical-risks'    : 'products',
+    'industrial-risks'   : 'products',
+    'Online_subscription': 'products',
+    'catnat-subscription': 'products',
+    'roads'              : 'products',
+    'company'            : 'company',
+    'company-careers'    : 'company',
+    'network'            : 'network',
+    'news'               : 'news',
+    'article-accident'   : 'news',
+    'article-home'       : 'news',
+    'article-business'   : 'news',
+    'article-basics'     : 'news',
+    'contact'            : 'contact',
+  };
 
   function setActiveNav() {
-    var page = getActivePage();
+    var file = window.location.pathname
+      .split('/')
+      .pop()
+      .replace('.html', '') || '';
+
+    var page = PAGE_MAP[file] || '';
     if (!page) return;
+
     document.querySelectorAll('[data-page]').forEach(function (el) {
       el.classList.toggle('active', el.getAttribute('data-page') === page);
     });
   }
 
-  /* ──────────────────────────────────────────────────────────
-     INIT HEADER — called ONCE after HTML is in the DOM
-  ────────────────────────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════════
+     initHeader()
+     ─────────────
+     Called ONCE after header HTML has been injected into #site-header.
+     Binds ALL header interactions here — no page should re-bind
+     #searchBtn / #langToggleBtn / #mobileMenuBtn in its own script.
+
+     NULL CHECKS on every element: the function degrades gracefully
+     if the header fails to load for any reason.
+  ══════════════════════════════════════════════════════════ */
   function initHeader() {
-    /* Double-entry hard stop */
+    /* Hard stop — prevents double-bind if script is somehow loaded twice */
     if (window.__caarHeaderReady) return;
     window.__caarHeaderReady = true;
 
-    /* ── Grab every element we need ── */
-    var searchBtn     = document.getElementById('searchBtn');
-    var searchBar     = document.getElementById('searchBar');
-    var searchClose   = document.getElementById('searchCloseHdr');
-    var searchInput   = document.getElementById('searchInput');
+    /* ── Grab elements ── */
+    var header       = document.getElementById('caar-header');
+    var searchBtn    = document.getElementById('searchBtn');
+    var searchBar    = document.getElementById('searchBar');
+    var searchClose  = document.getElementById('searchCloseHdr');   /* NOTE: "Hdr" suffix */
+    var searchInput  = document.getElementById('searchInput');
+    var langDropdown = document.getElementById('langDropdown');
+    var langToggle   = document.getElementById('langToggleBtn');
+    var langMenu     = document.getElementById('langDropdownMenu');  /* the <ul> */
+    var currentLang  = document.getElementById('currentLang');
+    var mobileBtn    = document.getElementById('mobileMenuBtn');
+    var mobileNav    = document.getElementById('mobileNav');
+    var mobileOverlay= document.getElementById('mobileNavOverlay');
+    var mobileClose  = document.getElementById('mobileNavClose');
 
-    var langDropdown  = document.getElementById('langDropdown');
-    var langToggle    = document.getElementById('langToggleBtn');
-    var langMenu      = document.getElementById('langDropdownMenu');
-    var currentLang   = document.getElementById('currentLang');
+    /* Dev-mode warning for missing elements */
+    if (process && process.env && process.env.NODE_ENV === 'development') {
+      [
+        ['searchBtn',       searchBtn],
+        ['searchBar',       searchBar],
+        ['searchCloseHdr',  searchClose],
+        ['langToggleBtn',   langToggle],
+        ['langDropdownMenu',langMenu],
+        ['mobileMenuBtn',   mobileBtn],
+        ['mobileNav',       mobileNav],
+      ].forEach(function (pair) {
+        if (!pair[1]) console.warn('[CAAR header] #' + pair[0] + ' not found after load.');
+      });
+    }
 
-    var mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    var mobileNav     = document.getElementById('mobileNav');
-    var mobileOverlay = document.getElementById('mobileNavOverlay');
-    var mobileClose   = document.getElementById('mobileNavClose');
-    var header        = document.getElementById('caar-header');
-
-    /* ── Log which elements are missing (debug only) ── */
-    var required = {
-      searchBtn:searchBtn, searchBar:searchBar,
-      langToggle:langToggle, langMenu:langMenu,
-      mobileMenuBtn:mobileMenuBtn, mobileNav:mobileNav
-    };
-    Object.keys(required).forEach(function(k) {
-      if (!required[k]) console.warn('[CAAR] initHeader: #' + k + ' not found');
-    });
-
-    /* ────────────────────────────────────────────────────
+    /* ────────────────────────────────────────────────────────
        SEARCH
-    ──────────────────────────────────────────────────── */
+       ──────
+       BUG FIX: previously catnat-subscription.html had an inline
+       <script> that called document.getElementById('searchBtn')
+       BEFORE the async fetch completed → TypeError → rest of page
+       JS silently stopped. Solution: never bind header elements in
+       page-level scripts. This is the one place.
+    ──────────────────────────────────────────────────────── */
     function openSearch() {
       if (!searchBar) return;
       searchBar.classList.add('open');
-      if (searchInput) setTimeout(function () { searchInput.focus(); }, 60);
+      searchBar.setAttribute('aria-hidden', 'false');
+      if (searchInput) {
+        /* Defer focus so display:flex has time to paint */
+        setTimeout(function () { searchInput.focus(); }, 60);
+      }
     }
 
     function closeSearch() {
       if (!searchBar) return;
       searchBar.classList.remove('open');
+      searchBar.setAttribute('aria-hidden', 'true');
       if (searchInput) searchInput.value = '';
     }
 
     if (searchBtn) {
       searchBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-        searchBar && searchBar.classList.contains('open') ? closeSearch() : openSearch();
+        /* Toggle: if already open, close; otherwise open */
+        if (searchBar && searchBar.classList.contains('open')) {
+          closeSearch();
+        } else {
+          openSearch();
+        }
       });
     }
+
     if (searchClose) {
-      searchClose.addEventListener('click', closeSearch);
+      searchClose.addEventListener('click', function () {
+        closeSearch();
+      });
     }
 
-    /* ────────────────────────────────────────────────────
+    /* ────────────────────────────────────────────────────────
        LANGUAGE DROPDOWN
-       Toggle .show on #langDropdownMenu
-       Toggle .lang-open on #langDropdown (for CSS arrow rotate)
-    ──────────────────────────────────────────────────── */
+       ──────────────────
+       BUG FIX: the old CSS used display:none + opacity:0 as the
+       hidden state. When .show was added (display:block + opacity:1),
+       browsers had no painted "from" state so the opacity transition
+       never ran — on some browsers the menu appeared at opacity:0
+       (invisible). The new header.css uses visibility+opacity instead,
+       which DOES transition correctly because the element stays in
+       the render tree.
+
+       JS here only toggles .show and the aria attributes.
+       CSS in header.css does all the visual work.
+    ──────────────────────────────────────────────────────── */
     function openLang() {
       if (!langMenu) return;
       langMenu.classList.add('show');
@@ -167,10 +222,15 @@
     if (langToggle) {
       langToggle.addEventListener('click', function (e) {
         e.stopPropagation();
-        langMenu && langMenu.classList.contains('show') ? closeLang() : openLang();
+        if (langMenu && langMenu.classList.contains('show')) {
+          closeLang();
+        } else {
+          openLang();
+        }
       });
     }
 
+    /* Update the label text when a language is chosen */
     if (langMenu) {
       langMenu.querySelectorAll('[data-lang]').forEach(function (link) {
         link.addEventListener('click', function (e) {
@@ -181,37 +241,51 @@
       });
     }
 
-    /* ────────────────────────────────────────────────────
+    /* ────────────────────────────────────────────────────────
        MOBILE NAV DRAWER
-       Toggle .open on #mobileNav and #mobileNavOverlay
-    ──────────────────────────────────────────────────── */
+       ──────────────────
+       BUG FIX: the old CSS defined .mobile-nav twice with conflicting
+       right values (-280px vs -300px). The second rule won, but both
+       were processed. Also, animating right: triggers layout on every
+       frame. The new header.css uses transform:translateX instead —
+       composited, GPU-accelerated, zero layout cost.
+
+       JS here just toggles .open. CSS does the animation.
+    ──────────────────────────────────────────────────────── */
     function openMobile() {
-      if (mobileNav)     mobileNav.classList.add('open');
+      if (mobileNav)     {
+        mobileNav.classList.add('open');
+        mobileNav.setAttribute('aria-hidden', 'false');
+      }
       if (mobileOverlay) mobileOverlay.classList.add('open');
-      if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'true');
+      if (mobileBtn)     mobileBtn.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
     }
 
     function closeMobile() {
-      if (mobileNav)     mobileNav.classList.remove('open');
+      if (mobileNav)     {
+        mobileNav.classList.remove('open');
+        mobileNav.setAttribute('aria-hidden', 'true');
+      }
       if (mobileOverlay) mobileOverlay.classList.remove('open');
-      if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'false');
+      if (mobileBtn)     mobileBtn.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
     }
 
-    if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMobile);
+    if (mobileBtn)     mobileBtn.addEventListener('click', openMobile);
     if (mobileClose)   mobileClose.addEventListener('click', closeMobile);
     if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobile);
 
+    /* Close drawer when any nav link inside it is clicked */
     if (mobileNav) {
       mobileNav.querySelectorAll('a').forEach(function (a) {
         a.addEventListener('click', closeMobile);
       });
     }
 
-    /* ────────────────────────────────────────────────────
-       ESCAPE KEY — close everything
-    ──────────────────────────────────────────────────── */
+    /* ────────────────────────────────────────────────────────
+       ESCAPE KEY — closes everything
+    ──────────────────────────────────────────────────────── */
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       closeSearch();
@@ -219,29 +293,38 @@
       closeMobile();
     });
 
-    /* ────────────────────────────────────────────────────
-       CLICK OUTSIDE — close search & lang
-    ──────────────────────────────────────────────────── */
+    /* ────────────────────────────────────────────────────────
+       CLICK OUTSIDE — closes search & lang dropdown
+       Uses event.target containment rather than stopPropagation
+       so other page elements still receive their own click events.
+    ──────────────────────────────────────────────────────── */
     document.addEventListener('click', function (e) {
-      /* close search when clicking outside the header */
+      /* Close search when clicking outside the header entirely */
       if (searchBar && searchBar.classList.contains('open')) {
-        if (header && !header.contains(e.target)) closeSearch();
+        if (header && !header.contains(e.target)) {
+          closeSearch();
+        }
       }
-      /* close lang when clicking outside the dropdown */
-      if (langDropdown && !langDropdown.contains(e.target)) closeLang();
+
+      /* Close lang dropdown when clicking outside .lang-dropdown */
+      if (langDropdown && !langDropdown.contains(e.target)) {
+        closeLang();
+      }
     });
 
-    /* ────────────────────────────────────────────────────
-       DESKTOP DROPDOWN — touch support
-    ──────────────────────────────────────────────────── */
+    /* ────────────────────────────────────────────────────────
+       DESKTOP DROPDOWN — touch device support
+       Prevents navigating away on first tap; opens submenu instead.
+    ──────────────────────────────────────────────────────── */
     if (header) {
       header.querySelectorAll('.dropdown').forEach(function (dd) {
         dd.addEventListener('touchstart', function (e) {
-          var already = dd.classList.contains('touch-open');
+          var isOpen = dd.classList.contains('touch-open');
+          /* Close all others */
           header.querySelectorAll('.dropdown.touch-open').forEach(function (x) {
             if (x !== dd) x.classList.remove('touch-open');
           });
-          if (!already) {
+          if (!isOpen) {
             e.preventDefault();
             dd.classList.add('touch-open');
           } else {
@@ -251,7 +334,7 @@
       });
 
       document.addEventListener('touchstart', function (e) {
-        if (!e.target.closest('.dropdown')) {
+        if (!e.target.closest || !e.target.closest('.dropdown')) {
           header.querySelectorAll('.dropdown.touch-open').forEach(function (dd) {
             dd.classList.remove('touch-open');
           });
@@ -259,21 +342,25 @@
       }, { passive: true });
     }
 
-    /* ────────────────────────────────────────────────────
-       ACTIVE NAV STATE
-    ──────────────────────────────────────────────────── */
+    /* ── Mark active nav link based on current URL ── */
     setActiveNav();
 
-  } /* end initHeader() */
+  } /* ── end initHeader() ── */
 
-  /* ──────────────────────────────────────────────────────────
-     LOAD HEADER
-  ────────────────────────────────────────────────────────── */
+
+  /* ══════════════════════════════════════════════════════════
+     loadHeader()
+     Fetches components/header.html and injects it into
+     #site-header, then wires all interactions via initHeader().
+
+     If the page has a hardcoded header (no #site-header), it
+     still sets the active nav state and marks the guard.
+  ══════════════════════════════════════════════════════════ */
   function loadHeader() {
     var placeholder = document.getElementById('site-header');
 
     if (!placeholder) {
-      /* Hardcoded header — skip fetch, just mark active nav */
+      /* Hardcoded header — skip fetch, just activate nav */
       if (!window.__caarHeaderReady) {
         window.__caarHeaderReady = true;
         setActiveNav();
@@ -288,10 +375,11 @@
       })
       .then(function (html) {
         placeholder.innerHTML = html;   /* 1. HTML in DOM */
-        initHeader();                   /* 2. Wire listeners */
+        initHeader();                   /* 2. Wire ALL interactions */
       })
       .catch(function (err) {
         console.warn('[CAAR] Header load failed:', err.message);
+        /* Even if the header fails to load, mark ready so no retry loop */
         if (!window.__caarHeaderReady) {
           window.__caarHeaderReady = true;
           setActiveNav();
@@ -299,9 +387,9 @@
       });
   }
 
-  /* ──────────────────────────────────────────────────────────
+  /* ══════════════════════════════════════════════════════════
      BOOT
-  ────────────────────────────────────────────────────────── */
+  ══════════════════════════════════════════════════════════ */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadHeader);
   } else {
