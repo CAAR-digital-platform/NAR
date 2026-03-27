@@ -1,37 +1,59 @@
 /* ============================================================
-   CAAR — main.js  (v5 — Fixed & Unified)
+   CAAR — main.js  (v6 — Robust Header Injection)
 
-   WHAT CHANGED from v4:
-   ─────────────────────
-   ▸ Lang dropdown now uses CSS class toggle (.open) instead of
-     inline style — eliminates conflict with :hover CSS rule
-   ▸ Nav dropdowns: added .touch-open support via JS (CSS rule
-     must mirror .dropdown:hover .dropdown-menu)
-   ▸ All header interactions unified here — pages must NOT
-     duplicate searchBtn / lang / mobile-menu listeners inline
-   ▸ Added null-guard on every getElementById call
-   ▸ Escape key closes search, mobile-nav, lang dropdown
+   KEY FIXES vs v5:
+   ─────────────────────────────────────────────────────────
+   ▸ initHeader() is called INSIDE the fetch().then() callback,
+     AFTER innerHTML is set — guarantees DOM elements exist
+   ▸ All querySelector calls are scoped to the injected <header>
+     element, not document — prevents stale-reference bugs
+   ▸ One-time guard (data-header-init) prevents duplicate
+     listener attachment if script somehow runs twice
+   ▸ Fetch path is resolved relative to main.js location via
+     import.meta is not available in classic scripts, so we
+     derive the base URL from the <script> src attribute
+   ▸ CSS class toggles documented at bottom of file
+   ▸ Pages must NOT wire their own search/lang/mobile listeners
 
-   RULE: Every page must have exactly ONE of:
-     A) <div id="site-header"></div>  ← injected by this file
-     B) A hardcoded <header> block    ← LEGACY; migrate to A
-
-   If a page uses (A) it must NOT have:
-     • inline scripts touching searchBtn/mobileMenuBtn/langMenu
-     • a hardcoded mobile-nav drawer at the bottom
-     • a toggleMobileMenu() global function
+   CSS CLASSES TOGGLED BY THIS FILE:
+     .search-bar.open          — shows the search overlay bar
+     .lang-dropdown.lang-open  — shows language menu
+     .mobile-nav.open          — slides in the mobile drawer
+     .mobile-nav-overlay.open  — dims the background
+     .dropdown.touch-open      — opens nav dropdowns on touch
    ============================================================ */
 
 (function () {
   'use strict';
 
   /* ──────────────────────────────────────────────────────────
+     HELPERS
+  ────────────────────────────────────────────────────────── */
+
+  /** Resolve the URL of components/header.html relative to
+   *  wherever main.js lives, so it works from any sub-page. */
+  function getHeaderURL() {
+    var scripts = document.querySelectorAll('script[src]');
+    for (var i = 0; i < scripts.length; i++) {
+      var src = scripts[i].getAttribute('src');
+      if (src && src.indexOf('main.js') !== -1) {
+        // src is e.g. "js/main.js" or "../js/main.js"
+        // Strip the filename and go up one directory (out of js/)
+        var base = src.replace(/js\/main\.js.*$/, '');
+        return base + 'components/header.html';
+      }
+    }
+    // Fallback — same origin, try to derive from pathname
+    var path = window.location.pathname; // e.g. /frontend/contact.html
+    var dir  = path.substring(0, path.lastIndexOf('/') + 1);
+    return dir + 'components/header.html';
+  }
+
+  /* ──────────────────────────────────────────────────────────
      1. DETERMINE ACTIVE PAGE
   ────────────────────────────────────────────────────────── */
   function getActivePage() {
-    var path = window.location.pathname;
-    var file = path.split('/').pop().replace('.html', '') || 'index';
-
+    var file = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
     var map = {
       'index':               'index',
       '':                    'index',
@@ -54,69 +76,75 @@
       'article-basics':      'news',
       'contact':             'contact',
     };
-
     return map[file] || '';
   }
 
   /* ──────────────────────────────────────────────────────────
-     2. SET ACTIVE NAV LINK
+     2. MARK ACTIVE NAV LINK (scoped to a root element)
   ────────────────────────────────────────────────────────── */
-  function setActiveNav() {
+  function setActiveNav(root) {
     var activePage = getActivePage();
     if (!activePage) return;
-
-    document.querySelectorAll('.nav-link[data-page]').forEach(function (link) {
+    root = root || document;
+    root.querySelectorAll('.nav-link[data-page]').forEach(function (link) {
       link.classList.toggle('active', link.getAttribute('data-page') === activePage);
     });
-    document.querySelectorAll('.mobile-nav a[data-page]').forEach(function (link) {
+    root.querySelectorAll('.mobile-nav a[data-page]').forEach(function (link) {
       link.classList.toggle('active', link.getAttribute('data-page') === activePage);
     });
   }
 
   /* ──────────────────────────────────────────────────────────
      3. WIRE ALL HEADER INTERACTIONS
+        Called ONLY after header HTML exists in the DOM.
+        All queries are scoped to `header` element.
   ────────────────────────────────────────────────────────── */
-  function initHeaderFunctions() {
+  function initHeader(header) {
+    // Guard: prevent double-init
+    if (header.dataset.headerInit === '1') return;
+    header.dataset.headerInit = '1';
 
-    /* ── 3a. Search bar ─────────────────────────────────── */
-    var searchBtn   = document.getElementById('searchBtn');
-    var searchBar   = document.getElementById('searchBar');
-    var searchClose = document.getElementById('searchCloseHdr');
-    var searchInput = document.getElementById('searchInput');
+    /* ── 3a. Search bar ────────────────────────────────── */
+    var searchBtn   = header.querySelector('#searchBtn');
+    var searchBar   = header.querySelector('#searchBar');
+    var searchClose = header.querySelector('#searchCloseHdr');
+    var searchInput = header.querySelector('#searchInput');
 
-    if (searchBtn && searchBar) {
+    function openSearch() {
+      if (!searchBar) return;
+      searchBar.classList.add('open');
+      if (searchInput) setTimeout(function () { searchInput.focus(); }, 60);
+    }
+    function closeSearch() {
+      if (!searchBar) return;
+      searchBar.classList.remove('open');
+      if (searchInput) searchInput.value = '';
+    }
+
+    if (searchBtn) {
       searchBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-        var opening = !searchBar.classList.contains('open');
-        searchBar.classList.toggle('open', opening);
-        if (opening && searchInput) {
-          setTimeout(function () { searchInput.focus(); }, 60);
-        }
+        searchBar && searchBar.classList.contains('open') ? closeSearch() : openSearch();
       });
     }
-
-    if (searchClose && searchBar) {
-      searchClose.addEventListener('click', function () {
-        searchBar.classList.remove('open');
-        if (searchInput) searchInput.value = '';
-      });
+    if (searchClose) {
+      searchClose.addEventListener('click', closeSearch);
     }
-
-    /* Close search when clicking outside header */
+    // Close search when clicking outside the header
     document.addEventListener('click', function (e) {
-      if (!searchBar) return;
-      if (!searchBar.classList.contains('open')) return;
-      var header = document.querySelector('.header');
-      if (header && !header.contains(e.target)) {
-        searchBar.classList.remove('open');
-      }
+      if (!searchBar || !searchBar.classList.contains('open')) return;
+      if (!header.contains(e.target)) closeSearch();
     });
 
-    /* ── 3b. Language dropdown — CLASS-BASED (no inline style) ── */
-    var langDropdown = document.querySelector('.lang-dropdown');
+    /* ── 3b. Language dropdown ─────────────────────────── */
+    var langDropdown = header.querySelector('.lang-dropdown');
     var langToggle   = langDropdown ? langDropdown.querySelector('.lang-toggle-btn') : null;
     var langMenu     = langDropdown ? langDropdown.querySelector('.lang-menu')       : null;
-    var currentLang  = document.getElementById('currentLang');
+    var currentLang  = header.querySelector('#currentLang');
+
+    function closeLang() {
+      if (langDropdown) langDropdown.classList.remove('lang-open');
+    }
 
     if (langToggle && langDropdown) {
       langToggle.addEventListener('click', function (e) {
@@ -129,20 +157,19 @@
           link.addEventListener('click', function (e) {
             e.preventDefault();
             if (currentLang) currentLang.textContent = this.getAttribute('data-lang');
-            langDropdown.classList.remove('lang-open');
+            closeLang();
           });
         });
       }
 
       document.addEventListener('click', function (e) {
-        if (langDropdown && !langDropdown.contains(e.target)) {
-          langDropdown.classList.remove('lang-open');
-        }
+        if (langDropdown && !langDropdown.contains(e.target)) closeLang();
       });
     }
 
-    /* ── 3c. Mobile nav drawer ──────────────────────────── */
-    var mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    /* ── 3c. Mobile nav drawer ─────────────────────────── */
+    var mobileMenuBtn = header.querySelector('#mobileMenuBtn');
+    // Drawer and overlay live outside the <header> in the injected HTML
     var mobileNav     = document.getElementById('mobileNav');
     var mobileOverlay = document.getElementById('mobileNavOverlay');
     var mobileClose   = document.getElementById('mobileNavClose');
@@ -152,7 +179,6 @@
       if (mobileOverlay) mobileOverlay.classList.add('open');
       document.body.style.overflow = 'hidden';
     }
-
     function closeMobileMenu() {
       if (mobileNav)     mobileNav.classList.remove('open');
       if (mobileOverlay) mobileOverlay.classList.remove('open');
@@ -163,34 +189,25 @@
     if (mobileClose)   mobileClose.addEventListener('click', closeMobileMenu);
     if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenu);
 
-    /* Close drawer when any link inside is tapped */
     if (mobileNav) {
       mobileNav.querySelectorAll('a').forEach(function (link) {
         link.addEventListener('click', closeMobileMenu);
       });
     }
 
-    /* ── 3d. Escape key ─────────────────────────────────── */
+    /* ── 3d. Escape key ────────────────────────────────── */
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
-      if (searchBar && searchBar.classList.contains('open')) {
-        searchBar.classList.remove('open');
-        if (searchInput) searchInput.value = '';
-      }
-      if (mobileNav && mobileNav.classList.contains('open')) {
-        closeMobileMenu();
-      }
-      if (langDropdown) {
-        langDropdown.classList.remove('lang-open');
-      }
+      closeSearch();
+      closeLang();
+      closeMobileMenu();
     });
 
-    /* ── 3e. Desktop nav dropdowns — touch support ──────── */
-    document.querySelectorAll('.dropdown').forEach(function (dropdown) {
+    /* ── 3e. Desktop nav dropdowns — touch support ─────── */
+    header.querySelectorAll('.dropdown').forEach(function (dropdown) {
       dropdown.addEventListener('touchstart', function (e) {
         var isOpen = dropdown.classList.contains('touch-open');
-        /* Close all other open dropdowns */
-        document.querySelectorAll('.dropdown.touch-open').forEach(function (d) {
+        header.querySelectorAll('.dropdown.touch-open').forEach(function (d) {
           if (d !== dropdown) d.classList.remove('touch-open');
         });
         if (!isOpen) {
@@ -204,11 +221,14 @@
 
     document.addEventListener('touchstart', function (e) {
       if (!e.target.closest('.dropdown')) {
-        document.querySelectorAll('.dropdown.touch-open').forEach(function (d) {
+        header.querySelectorAll('.dropdown.touch-open').forEach(function (d) {
           d.classList.remove('touch-open');
         });
       }
     }, { passive: true });
+
+    // Set active nav state
+    setActiveNav(header);
   }
 
   /* ──────────────────────────────────────────────────────────
@@ -216,27 +236,38 @@
   ────────────────────────────────────────────────────────── */
   function loadHeader() {
     var placeholder = document.getElementById('site-header');
+
+    // No placeholder → page has a hardcoded header; just set active nav
     if (!placeholder) {
-      /*
-       * Page has a hardcoded <header> — still set active nav
-       * (search/lang/mobile wired by page's own inline script)
-       */
-      setActiveNav();
+      setActiveNav(document);
       return;
     }
 
-    fetch('components/header.html')
+    var url = getHeaderURL();
+
+    fetch(url)
       .then(function (res) {
-        if (!res.ok) throw new Error('Header fetch failed: ' + res.status);
+        if (!res.ok) throw new Error('Header fetch ' + res.status + ' for ' + url);
         return res.text();
       })
       .then(function (html) {
+        // 1. Inject HTML
         placeholder.innerHTML = html;
-        initHeaderFunctions();
-        setActiveNav();
+
+        // 2. The <header> element is now in the DOM — wire everything
+        var header = placeholder.querySelector('header');
+        if (header) {
+          initHeader(header);
+        } else {
+          // header.html root might be the header itself
+          initHeader(placeholder);
+          setActiveNav(placeholder);
+        }
       })
       .catch(function (err) {
-        console.warn('[CAAR] Could not load header component:', err.message);
+        console.warn('[CAAR] Header load failed:', err.message);
+        // Still mark active nav on whatever is in the DOM
+        setActiveNav(document);
       });
   }
 
@@ -250,3 +281,15 @@
   }
 
 })();
+
+/* ============================================================
+   CSS CLASSES MANAGED BY THIS FILE — reference for designers
+   ─────────────────────────────────────────────────────────
+   .search-bar.open         → search input bar slides down
+   .lang-dropdown.lang-open → language menu appears
+   .mobile-nav.open         → drawer slides in from right
+   .mobile-nav-overlay.open → semi-transparent dark backdrop
+   .dropdown.touch-open     → desktop nav submenu on touch
+   header[data-header-init] → set to "1" after init; prevents
+                               duplicate listener attachment
+   ============================================================ */
