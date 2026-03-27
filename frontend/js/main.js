@@ -1,14 +1,17 @@
 /* ============================================================
-   CAAR — main.js  (Refactored v2)
-   Single source of truth for ALL header behaviour:
-     • Dynamic header injection
-     • Active nav-link highlighting
-     • Search bar toggle
-     • Language switcher
-     • Mobile nav drawer (open / close / overlay / Escape key)
-
-   Pages MUST NOT duplicate any of these listeners.
-   Page-specific scripts (maps, forms, etc.) are unaffected.
+   CAAR — main.js  (v3 — Fixed Dynamic Header)
+   
+   Architecture:
+     1. loadHeader()          — fetch + inject header.html into #site-header
+     2. initHeaderFunctions() — wire ALL header interactions (called after injection)
+     3. setActiveNav()        — highlight the current page nav link
+   
+   Pages using #site-header: all header behaviour is managed here.
+   Pages with hardcoded headers: their inline scripts handle their own events
+     (main.js detects no #site-header and skips injection gracefully).
+   
+   IMPORTANT: Pages that used to have inline header JS (catnat-subscription.html,
+   roads.html) should have those duplicate listeners removed — main.js handles them.
    ============================================================ */
 
 (function () {
@@ -30,6 +33,9 @@
       'transport-insurance': 'products',
       'technical-risks':     'products',
       'industrial-risks':    'products',
+      'Online_subscription': 'products',
+      'catnat-subscription': 'products',
+      'roads':               'products',
       'company':             'company',
       'company-careers':     'company',
       'network':             'network',
@@ -39,57 +45,14 @@
       'article-business':    'news',
       'article-basics':      'news',
       'contact':             'contact',
-      'Online_subscription': 'products',
-      'catnat-subscription': 'products',
-      'roads':               'products',
     };
 
     return map[file] || '';
   }
 
   /* ----------------------------------------------------------
-     2. INJECT HEADER
-  ---------------------------------------------------------- */
-  function loadHeader() {
-    var placeholder = document.getElementById('site-header');
-    if (!placeholder) return;
-
-    fetch('components/header.html')
-      .then(function (res) { return res.text(); })
-      .then(function (html) {
-        placeholder.innerHTML = html;
-
-        /* Safety: if a page somehow still has a duplicate element
-           outside the placeholder, remove it so our IDs are unique. */
-        var managed = [
-          'searchBar', 'searchCloseHdr', 'currentLang',
-          'mobileMenuBtn', 'mobileNav', 'mobileNavOverlay', 'mobileNavClose'
-        ];
-        managed.forEach(function (id) {
-          deduplicateById(id, placeholder);
-        });
-
-        initHeader();
-        setActiveNav();
-      })
-      .catch(function (err) {
-        console.warn('[CAAR] Could not load header:', err);
-      });
-  }
-
-  /* Keep only the copy that lives inside `placeholder`. */
-  function deduplicateById(id, placeholder) {
-    var all = document.querySelectorAll('#' + id);
-    if (all.length <= 1) return;
-    all.forEach(function (el) {
-      if (!placeholder.contains(el) && el.parentNode) {
-        el.parentNode.removeChild(el);
-      }
-    });
-  }
-
-  /* ----------------------------------------------------------
-     3. SET ACTIVE NAV LINK
+     2. SET ACTIVE NAV LINK
+     Called after header injection so elements exist in DOM.
   ---------------------------------------------------------- */
   function setActiveNav() {
     var activePage = getActivePage();
@@ -105,22 +68,25 @@
   }
 
   /* ----------------------------------------------------------
-     4. WIRE ALL HEADER INTERACTIONS
-        Called once after header HTML is injected into the DOM.
+     3. INIT ALL HEADER FUNCTIONS
+     This is the single source of truth for every interactive
+     header element. Called once after the header HTML is in DOM.
   ---------------------------------------------------------- */
-  function initHeader() {
+  function initHeaderFunctions() {
 
-    /* ── 4a. Search bar ── */
+    /* ── 3a. Search bar ── */
     var searchBtn   = document.getElementById('searchBtn');
     var searchBar   = document.getElementById('searchBar');
     var searchClose = document.getElementById('searchCloseHdr');
+    var searchInput = document.getElementById('searchInput');
 
     if (searchBtn && searchBar) {
-      searchBtn.addEventListener('click', function () {
-        var isOpen = searchBar.classList.toggle('open');
-        if (isOpen) {
-          var inp = searchBar.querySelector('input');
-          if (inp) inp.focus();
+      searchBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var opening = !searchBar.classList.contains('open');
+        searchBar.classList.toggle('open', opening);
+        if (opening && searchInput) {
+          setTimeout(function () { searchInput.focus(); }, 50);
         }
       });
     }
@@ -131,16 +97,51 @@
       });
     }
 
-    /* ── 4b. Language switcher ── */
-    document.querySelectorAll('[data-lang]').forEach(function (link) {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        var langEl = document.getElementById('currentLang');
-        if (langEl) langEl.textContent = this.getAttribute('data-lang');
-      });
+    /* Close search bar when clicking anywhere outside it */
+    document.addEventListener('click', function (e) {
+      if (!searchBar) return;
+      if (searchBar.classList.contains('open')) {
+        var header = document.querySelector('.header');
+        if (header && !header.contains(e.target)) {
+          searchBar.classList.remove('open');
+        }
+      }
     });
 
-    /* ── 4c. Mobile nav drawer ── */
+    /* ── 3b. Language dropdown (JS-driven for reliability) ── */
+    var langDropdown = document.querySelector('.lang-dropdown');
+    var langMenu     = langDropdown ? langDropdown.querySelector('.lang-menu') : null;
+    var langToggle   = langDropdown ? langDropdown.querySelector('.lang-toggle-btn') : null;
+    var currentLang  = document.getElementById('currentLang');
+
+    if (langToggle && langMenu) {
+      /* Toggle on button click */
+      langToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var isOpen = langMenu.style.display === 'block';
+        langMenu.style.display = isOpen ? '' : 'block';
+      });
+
+      /* Select language */
+      langMenu.querySelectorAll('[data-lang]').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (currentLang) {
+            currentLang.textContent = this.getAttribute('data-lang');
+          }
+          langMenu.style.display = '';
+        });
+      });
+
+      /* Close when clicking outside */
+      document.addEventListener('click', function (e) {
+        if (langDropdown && !langDropdown.contains(e.target)) {
+          langMenu.style.display = '';
+        }
+      });
+    }
+
+    /* ── 3c. Mobile nav drawer ── */
     var mobileMenuBtn = document.getElementById('mobileMenuBtn');
     var mobileNav     = document.getElementById('mobileNav');
     var mobileOverlay = document.getElementById('mobileNavOverlay');
@@ -159,17 +160,17 @@
     }
 
     if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMobileMenu);
-    if (mobileClose)   mobileClose.addEventListener('click',   closeMobileMenu);
+    if (mobileClose)   mobileClose.addEventListener('click', closeMobileMenu);
     if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenu);
 
-    /* Close drawer when any nav link inside it is tapped */
+    /* Close drawer when any link inside it is tapped */
     if (mobileNav) {
       mobileNav.querySelectorAll('a').forEach(function (link) {
         link.addEventListener('click', closeMobileMenu);
       });
     }
 
-    /* ── 4d. Escape key — closes search bar OR mobile drawer ── */
+    /* ── 3d. Escape key — closes search bar AND mobile drawer ── */
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       if (searchBar && searchBar.classList.contains('open')) {
@@ -178,15 +179,76 @@
       if (mobileNav && mobileNav.classList.contains('open')) {
         closeMobileMenu();
       }
+      if (langMenu) {
+        langMenu.style.display = '';
+      }
+    });
+
+    /* ── 3e. Desktop dropdown menus (Products, Company) ── */
+    /* CSS :hover handles the visual toggle; JS adds keyboard/touch support */
+    document.querySelectorAll('.dropdown').forEach(function (dropdown) {
+      var menu = dropdown.querySelector('.dropdown-menu');
+      if (!menu) return;
+
+      /* Touch devices: first tap opens, second navigates */
+      dropdown.addEventListener('touchstart', function (e) {
+        var isOpen = dropdown.classList.contains('touch-open');
+        /* Close all other dropdowns */
+        document.querySelectorAll('.dropdown.touch-open').forEach(function (d) {
+          d.classList.remove('touch-open');
+        });
+        if (!isOpen) {
+          e.preventDefault();
+          dropdown.classList.add('touch-open');
+        }
+      }, { passive: false });
+    });
+
+    /* Close touch dropdowns when tapping outside */
+    document.addEventListener('touchstart', function (e) {
+      if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown.touch-open').forEach(function (d) {
+          d.classList.remove('touch-open');
+        });
+      }
     });
   }
 
   /* ----------------------------------------------------------
-     5. BOOT
+     4. LOAD HEADER
+     Fetches components/header.html, injects it, then calls
+     initHeaderFunctions() and setActiveNav().
   ---------------------------------------------------------- */
-  document.addEventListener('DOMContentLoaded', function () {
+  function loadHeader() {
+    var placeholder = document.getElementById('site-header');
+    if (!placeholder) return; /* page uses hardcoded header — nothing to do */
+
+    fetch('components/header.html')
+      .then(function (res) {
+        if (!res.ok) throw new Error('Header fetch failed: ' + res.status);
+        return res.text();
+      })
+      .then(function (html) {
+        placeholder.innerHTML = html;
+
+        /* Run initialisation now that elements are in the DOM */
+        initHeaderFunctions();
+        setActiveNav();
+      })
+      .catch(function (err) {
+        console.warn('[CAAR] Could not load header component:', err.message);
+        /* Degrade gracefully — page still usable without dynamic header */
+      });
+  }
+
+  /* ----------------------------------------------------------
+     5. BOOT — wait for DOM, then load the header
+  ---------------------------------------------------------- */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadHeader);
+  } else {
+    /* DOMContentLoaded already fired (e.g. script at bottom of body) */
     loadHeader();
-    /* Footer is hardcoded per page — no dynamic load needed. */
-  });
+  }
 
 })();
