@@ -4,9 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR &mdash; Careers</title>
-   <link rel="stylesheet" href="main.css"/>
+  <link rel="stylesheet" href="main.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
-
 </head>
 <body>
 
@@ -295,9 +294,7 @@
   </div>
 </div>
 
-
-
-<!-- FOOTER (unchanged) -->
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
@@ -340,6 +337,7 @@
   </div>
 </footer>
 
+<!-- ===== PAGE-SPECIFIC SCRIPTS (careers only — no header logic here) ===== -->
 <script>
 /* ── Tabs ── */
 function goToTab(key) {
@@ -521,7 +519,7 @@ function resetForm() {
 }
 </script>
 
-<!-- 3 Load the shared script LAST -->
+<!-- 3 Shared script LAST — injects header and wires all header interactions -->
 <script src="js/main.js"></script>
 
 </body>

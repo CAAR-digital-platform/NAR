@@ -9,9 +9,6 @@
   <link rel="stylesheet" href="main.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 
-  <!-- ════════════════════════════════════════════
-       INLINE VALIDATION STYLES (added on top of contact.css)
-       ════════════════════════════════════════════ -->
   <style>
     /* ── Field error state ── */
     .cf-input.field-error,
@@ -28,7 +25,6 @@
       color: #e53e3e;
       margin-top: 5px;
       font-weight: 500;
-      display: none;
       align-items: center;
       gap: 4px;
     }
@@ -87,75 +83,13 @@
 <body>
 
 <!-- ════════════════════════════════════════════
-     HEADER  (unchanged from your original)
+     HEADER — injected by main.js
 ════════════════════════════════════════════ -->
-<header class="header">
-  <div class="header-inner">
-    <div class="logo-block">
-      <a href="index.html"><img src="img/grand_logo.png" alt="CAAR" class="logo-img"/></a>
-    </div>
-    <div class="right-side">
-      <div class="top-row">
-        <a href="network.html" class="btn-top">Find Agency</a>
-        <a href="contact.html" class="btn-top">Contact Us</a>
-      </div>
-      <hr class="divider"/>
-      <div class="bottom-row">
-        <ul class="nav-links">
-          <li><a href="index.html" class="nav-link">Home</a></li>
-          <li class="dropdown">
-            <a href="products.html" class="nav-link">Products <span class="arrow">▾</span></a>
-            <ul class="dropdown-menu">
-              <li><a href="individual-risks.html">Individual Risks</a></li>
-              <li><a href="auto-insurance.html">Auto Insurance</a></li>
-              <li><a href="transport-insurance.html">Transport Insurance</a></li>
-              <li><a href="technical-risks.html">Technical Risks</a></li>
-              <li><a href="industrial-risks.html">Industrial Risks</a></li>
-            </ul>
-          </li>
-          <li class="dropdown">
-            <a href="company.html" class="nav-link">Company <span class="arrow">▾</span></a>
-            <ul class="dropdown-menu">
-              <li><a href="company.html">About Us</a></li>
-              <li><a href="company-careers.html">Careers</a></li>
-            </ul>
-          </li>
-          <li><a href="network.html" class="nav-link">Network</a></li>
-          <li><a href="news.html" class="nav-link">News</a></li>
-          <li><a href="contact.html" class="nav-link active">Contact</a></li>
-        </ul>
-        <div class="nav-icons">
-          <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
-              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-          </button>
-          <button class="icon-btn" id="searchBtn">
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </button>
-          <div class="lang-dropdown">
-            <button class="icon-btn"><span class="lang-label" id="currentLang">EN</span></button>
-            <ul class="lang-menu">
-              <li><a href="#" data-lang="FR">Français (FR)</a></li>
-              <li><a href="#" data-lang="EN">English (EN)</a></li>
-              <li><a href="#" data-lang="AR">عربي (AR)</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="search-bar" id="searchBar">
-    <input type="text" placeholder="Search CAAR..." class="search-input"/>
-    <button class="search-close" id="searchClose">✕</button>
-  </div>
-</header>
+<div id="site-header"></div>
 
 
 <!-- ════════════════════════════════════════════
-     HERO  (unchanged)
+     HERO
 ════════════════════════════════════════════ -->
 <section class="contact-hero">
   <div class="contact-hero-inner">
@@ -191,17 +125,7 @@
 
 
 <!-- ════════════════════════════════════════════
-     CONTACT FORM  — FULLY CORRECTED
-     Changes:
-       • Wrapped in <form> with HTML5 attributes (layer 1)
-       • Added name attributes to all inputs
-       • Added required, minlength, pattern attributes
-       • Added id attributes to all inputs for JS access
-       • Added inline error message spans under each field
-       • Added character counter for message textarea
-       • Real JS validation (layer 2) — see <script> below
-       • Real API call to POST /api/contact
-       • Success shown ONLY after server confirms
+     CONTACT FORM
 ════════════════════════════════════════════ -->
 <section class="contact-form-section" id="contactForm">
   <div class="contact-form-inner">
@@ -217,8 +141,6 @@
       </div>
       <p class="form-intro">Please select the subject of your request so we can direct it to the appropriate department.</p>
 
-      <!-- ─── THE ACTUAL FORM ELEMENT ─── -->
-      <!-- novalidate prevents browser default popups — we handle all UI ourselves -->
       <form id="caarContactForm" novalidate autocomplete="on">
 
         <div id="formFields">
@@ -226,12 +148,7 @@
           <!-- Subject -->
           <div class="cf-group">
             <label for="cfSubject">Subject <span>*</span></label>
-            <select
-              class="cf-select"
-              id="cfSubject"
-              name="subject"
-              required
-            >
+            <select class="cf-select" id="cfSubject" name="subject" required>
               <option value="" disabled selected>Select the subject of your request</option>
               <option value="General Information">General Information</option>
               <option value="Claim Declaration">Claim Declaration</option>
@@ -242,54 +159,30 @@
               <option value="Technical Support">Technical Support</option>
               <option value="Other">Other</option>
             </select>
-            <!-- Inline error for this field -->
             <span class="cf-field-error" id="err-subject">Please select a subject.</span>
           </div>
 
           <!-- Full name -->
           <div class="cf-group">
             <label for="cfName">Full name <span>*</span></label>
-            <input
-              class="cf-input"
-              type="text"
-              id="cfName"
-              name="full_name"
-              placeholder="Your full name"
-              required
-              minlength="3"
-              maxlength="100"
-              autocomplete="name"
-            />
+            <input class="cf-input" type="text" id="cfName" name="full_name"
+              placeholder="Your full name" required minlength="3" maxlength="100" autocomplete="name"/>
             <span class="cf-field-error" id="err-name">Please enter your full name (at least 3 characters, letters only).</span>
           </div>
 
           <!-- Email -->
           <div class="cf-group">
             <label for="cfEmail">Email address <span>*</span></label>
-            <input
-              class="cf-input"
-              type="email"
-              id="cfEmail"
-              name="email"
-              placeholder="yourname@email.com"
-              required
-              autocomplete="email"
-            />
+            <input class="cf-input" type="email" id="cfEmail" name="email"
+              placeholder="yourname@email.com" required autocomplete="email"/>
             <span class="cf-field-error" id="err-email">Please enter a valid email address.</span>
           </div>
 
           <!-- Phone (optional) -->
           <div class="cf-group">
             <label for="cfPhone">Phone number</label>
-            <input
-              class="cf-input"
-              type="tel"
-              id="cfPhone"
-              name="phone"
-              placeholder="your phone number"
-              pattern="[0-9\s\+\-\(\)]{8,20}"
-              autocomplete="tel"
-            />
+            <input class="cf-input" type="tel" id="cfPhone" name="phone"
+              placeholder="your phone number" pattern="[0-9\s\+\-\(\)]{8,20}" autocomplete="tel"/>
             <div class="cf-hint">Optional &ndash; useful for faster follow-up.</div>
             <span class="cf-field-error" id="err-phone">Please enter a valid phone number (8–15 digits).</span>
           </div>
@@ -297,16 +190,10 @@
           <!-- Message -->
           <div class="cf-group">
             <label for="cfMessage">Message <span>*</span></label>
-            <textarea
-              class="cf-textarea"
-              id="cfMessage"
-              name="message"
+            <textarea class="cf-textarea" id="cfMessage" name="message"
               placeholder="Describe your request clearly (policy number, agency, date, or any useful detail)"
-              required
-              minlength="10"
-              maxlength="2000"
-              oninput="updateCharCount(this)"
-            ></textarea>
+              required minlength="10" maxlength="2000"
+              oninput="updateCharCount(this)"></textarea>
             <div class="cf-char-count" id="cfCharCount">0 / 2000</div>
             <span class="cf-field-error" id="err-message">Message must be at least 10 characters.</span>
           </div>
@@ -330,7 +217,7 @@
           <p class="cf-confidential">Your request will be processed confidentially by CAAR</p>
         </div>
 
-        <!-- Success state (shown after real API success) -->
+        <!-- Success state -->
         <div class="cf-success-state" id="successState">
           <div class="cf-success-icon">✓</div>
           <div class="cf-success-title">Request sent successfully!</div>
@@ -345,10 +232,9 @@
         </div>
 
       </form>
-      <!-- ─── END FORM ─── -->
     </div>
 
-    <!-- RIGHT: other ways to contact (unchanged) -->
+    <!-- RIGHT: other contact channels -->
     <div class="contact-other-ways">
       <h3>Other ways to contact us</h3>
 
@@ -391,7 +277,7 @@
 </section>
 
 
-<!-- MAP SECTION (unchanged) -->
+<!-- MAP SECTION -->
 <section class="contact-map-section">
   <div class="contact-map-header">
     <h2>CAAR Headquarters Location</h2>
@@ -422,7 +308,7 @@
 </section>
 
 
-<!-- FOOTER (unchanged) -->
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
@@ -466,28 +352,10 @@
 </footer>
 
 
-<!-- MOBILE NAV DRAWER (unchanged) -->
-<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
-<nav class="mobile-nav" id="mobileNav">
-  <div class="mobile-nav-header">
-    <span class="mobile-nav-title">Menu</span>
-    <button onclick="toggleMobileMenu()" class="mobile-nav-close">✕</button>
-  </div>
-  <a href="index.html"    onclick="toggleMobileMenu()">Home</a>
-  <a href="products.html" onclick="toggleMobileMenu()">Products</a>
-  <a href="company.html"  onclick="toggleMobileMenu()">Company</a>
-  <a href="network.html"  onclick="toggleMobileMenu()">Network</a>
-  <a href="news.html"     onclick="toggleMobileMenu()">News</a>
-  <a href="contact.html" class="active" onclick="toggleMobileMenu()">Contact</a>
-  <div class="mobile-nav-btns">
-    <a href="network.html" class="btn-top">Find Agency</a>
-    <a href="contact.html" class="btn-top">Contact Us</a>
-  </div>
-</nav>
-
-
 <!-- ════════════════════════════════════════════
-     SCRIPTS
+     PAGE-SPECIFIC SCRIPTS ONLY
+     (form validation, map, CTA reveal, collapse)
+     NO header/search/lang/mobile-nav logic here.
 ════════════════════════════════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -509,16 +377,12 @@ function clearError(inputId, errorId) {
   if (errEl)  { errEl.classList.remove('visible'); }
 }
 
-/* Clear error as soon as user starts fixing the field (real-time feedback) */
 function liveValidate(inputId, errorId, validatorFn) {
   var el = document.getElementById(inputId);
   if (!el) return;
   el.addEventListener('input', function () {
-    if (validatorFn(el.value.trim())) {
-      clearError(inputId, errorId);
-    }
+    if (validatorFn(el.value.trim())) clearError(inputId, errorId);
   });
-  /* Also validate on blur (when user leaves the field) */
   el.addEventListener('blur', function () {
     if (el.value.trim() && !validatorFn(el.value.trim())) {
       showError(inputId, errorId);
@@ -529,7 +393,7 @@ function liveValidate(inputId, errorId, validatorFn) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   CHARACTER COUNTER for textarea
+   CHARACTER COUNTER
 ══════════════════════════════════════════════════════════════ */
 function updateCharCount(textarea) {
   var count   = textarea.value.length;
@@ -565,22 +429,18 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ══════════════════════════════════════════════════════════════
-   MAIN FORM SUBMIT — LAYER 2 (full JS validation)
-   Called by the <form>'s submit event (not onclick)
+   FORM SUBMIT
 ══════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', function () {
   var form = document.getElementById('caarContactForm');
   if (!form) return;
-
   form.addEventListener('submit', async function (e) {
-    e.preventDefault();   /* stop browser default */
+    e.preventDefault();
     submitForm();
   });
 });
 
 async function submitForm() {
-
-  /* ── Collect values ── */
   var subject = document.getElementById('cfSubject').value;
   var name    = document.getElementById('cfName').value.trim();
   var email   = document.getElementById('cfEmail').value.trim();
@@ -589,58 +449,26 @@ async function submitForm() {
   var consent = document.getElementById('cfConsent').checked;
   var robot   = document.getElementById('cfRobot').checked;
 
-  /* ── Run all validators, collect errors ── */
   var hasError = false;
 
-  /* Subject */
-  if (!RULES.subject(subject)) {
-    showError('cfSubject', 'err-subject');
-    hasError = true;
-  } else {
-    clearError('cfSubject', 'err-subject');
-  }
+  if (!RULES.subject(subject)) { showError('cfSubject', 'err-subject'); hasError = true; }
+  else { clearError('cfSubject', 'err-subject'); }
 
-  /* Full name */
-  if (!RULES.name(name)) {
-    showError('cfName', 'err-name');
-    hasError = true;
-  } else {
-    clearError('cfName', 'err-name');
-  }
+  if (!RULES.name(name)) { showError('cfName', 'err-name'); hasError = true; }
+  else { clearError('cfName', 'err-name'); }
 
-  /* Email */
-  if (!RULES.email(email)) {
-    showError('cfEmail', 'err-email');
-    hasError = true;
-  } else {
-    clearError('cfEmail', 'err-email');
-  }
+  if (!RULES.email(email)) { showError('cfEmail', 'err-email'); hasError = true; }
+  else { clearError('cfEmail', 'err-email'); }
 
-  /* Phone (optional — only validate if filled) */
-  if (phone && !RULES.phone(phone)) {
-    showError('cfPhone', 'err-phone');
-    hasError = true;
-  } else {
-    clearError('cfPhone', 'err-phone');
-  }
+  if (phone && !RULES.phone(phone)) { showError('cfPhone', 'err-phone'); hasError = true; }
+  else { clearError('cfPhone', 'err-phone'); }
 
-  /* Message */
-  if (!RULES.message(message)) {
-    showError('cfMessage', 'err-message');
-    hasError = true;
-  } else {
-    clearError('cfMessage', 'err-message');
-  }
+  if (!RULES.message(message)) { showError('cfMessage', 'err-message'); hasError = true; }
+  else { clearError('cfMessage', 'err-message'); }
 
-  /* Consent checkbox */
-  if (!consent) {
-    document.getElementById('err-consent').classList.add('visible');
-    hasError = true;
-  } else {
-    document.getElementById('err-consent').classList.remove('visible');
-  }
+  if (!consent) { document.getElementById('err-consent').classList.add('visible'); hasError = true; }
+  else { document.getElementById('err-consent').classList.remove('visible'); }
 
-  /* Robot checkbox */
   if (!robot) {
     document.getElementById('cfRobotWrap').classList.add('robot-error');
     document.getElementById('err-robot').classList.add('visible');
@@ -650,17 +478,12 @@ async function submitForm() {
     document.getElementById('err-robot').classList.remove('visible');
   }
 
-  /* ── Stop here if any validation failed ── */
   if (hasError) {
-    /* Scroll to first error */
     var firstError = document.querySelector('.field-error, .cf-field-error.visible');
-    if (firstError) {
-      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
-  /* ── All valid: send to API ── */
   var btn = document.getElementById('sendBtn');
   btn.textContent = 'Sending…';
   btn.disabled    = true;
@@ -671,29 +494,25 @@ async function submitForm() {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({
-        subject:    subject,
-        full_name:  name,
-        email:      email,
-        phone:      phone || null,
-        message:    message
+        subject:   subject,
+        full_name: name,
+        email:     email,
+        phone:     phone || null,
+        message:   message
       })
     });
 
     var data = await res.json();
-
     if (!res.ok) {
-      /* Server returned a validation error */
       alert(data.error || 'Something went wrong. Please try again.');
       return;
     }
 
-    /* ── SUCCESS — show success state ONLY after server confirms ── */
-    document.getElementById('formFields').style.display  = 'none';
+    document.getElementById('formFields').style.display = 'none';
     document.getElementById('successState').classList.add('show');
     document.getElementById('successState').scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   } catch (err) {
-    /* Network / server unreachable */
     alert('Server error. Please try again later or call us at +213 (0)21 63 20 72.');
   } finally {
     btn.disabled = false;
@@ -703,13 +522,11 @@ async function submitForm() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   RESET FORM  (Send another request)
+   RESET FORM
 ══════════════════════════════════════════════════════════════ */
 function resetForm() {
   var form = document.getElementById('caarContactForm');
   form.reset();
-
-  /* Clear all visual error / ok states */
   form.querySelectorAll('.cf-input, .cf-select, .cf-textarea').forEach(function (el) {
     el.classList.remove('field-error', 'field-ok');
   });
@@ -719,7 +536,6 @@ function resetForm() {
   document.getElementById('cfRobotWrap').classList.remove('robot-error');
   document.getElementById('cfCharCount').textContent = '0 / 2000';
   document.getElementById('cfCharCount').className   = 'cf-char-count';
-
   document.getElementById('formFields').style.display = '';
   document.getElementById('successState').classList.remove('show');
 }
@@ -728,14 +544,18 @@ function resetForm() {
    CTA BUTTON — reveal form
 ══════════════════════════════════════════════════════════════ */
 var formRevealed = false;
-document.getElementById('ctaBtn').addEventListener('click', function () {
-  var section = document.getElementById('contactForm');
-  if (!formRevealed) {
-    section.classList.add('show');
-    formRevealed = true;
-    requestAnimationFrame(function () { section.classList.add('highlight-flash'); });
-  }
-  setTimeout(function () { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+document.addEventListener('DOMContentLoaded', function () {
+  var ctaBtn = document.getElementById('ctaBtn');
+  if (!ctaBtn) return;
+  ctaBtn.addEventListener('click', function () {
+    var section = document.getElementById('contactForm');
+    if (!formRevealed) {
+      section.classList.add('show');
+      formRevealed = true;
+      requestAnimationFrame(function () { section.classList.add('highlight-flash'); });
+    }
+    setTimeout(function () { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+  });
 });
 
 /* ══════════════════════════════════════════════════════════════
@@ -749,43 +569,7 @@ function collapseForm() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   HEADER: Search + Mobile nav
-══════════════════════════════════════════════════════════════ */
-document.getElementById('searchBtn').addEventListener('click', function () {
-  document.getElementById('searchBar').classList.toggle('open');
-});
-document.getElementById('searchClose').addEventListener('click', function () {
-  document.getElementById('searchBar').classList.remove('open');
-});
-
-function toggleMobileMenu() {
-  var nav     = document.getElementById('mobileNav');
-  var overlay = document.getElementById('mobileNavOverlay');
-  var isOpen  = nav.classList.contains('open');
-  nav.classList.toggle('open', !isOpen);
-  overlay.classList.toggle('open', !isOpen);
-  document.body.style.overflow = isOpen ? '' : 'hidden';
-}
-
-/* Language switcher */
-document.querySelectorAll('[data-lang]').forEach(function (link) {
-  link.addEventListener('click', function (e) {
-    e.preventDefault();
-    document.getElementById('currentLang').textContent = this.getAttribute('data-lang');
-  });
-});
-
-/* Escape key */
-document.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') {
-    document.getElementById('searchBar').classList.remove('open');
-    var nav = document.getElementById('mobileNav');
-    if (nav.classList.contains('open')) toggleMobileMenu();
-  }
-});
-
-/* ══════════════════════════════════════════════════════════════
-   HQ LEAFLET MAP  (unchanged)
+   HQ LEAFLET MAP
 ══════════════════════════════════════════════════════════════ */
 var HQ = { lat: 36.767043, lng: 3.052792 };
 var hqMap = L.map('hqMap', {
@@ -811,5 +595,9 @@ var hqPopup = L.popup({ closeButton: false, maxWidth: 220, minWidth: 200 }).setC
 L.marker([HQ.lat, HQ.lng], { icon: hqIcon }).addTo(hqMap).bindPopup(hqPopup).openPopup();
 
 </script>
+
+<!-- Shared script LAST — injects header and wires all header interactions -->
+<script src="js/main.js"></script>
+
 </body>
 </html>

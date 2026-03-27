@@ -1,15 +1,21 @@
 /* ============================================================
-   CAAR — main.js
-   Loads shared header, sets active nav link,
-   and wires up ALL header interactions (search, lang, mobile menu).
+   CAAR — main.js  (Refactored v2)
+   Single source of truth for ALL header behaviour:
+     • Dynamic header injection
+     • Active nav-link highlighting
+     • Search bar toggle
+     • Language switcher
+     • Mobile nav drawer (open / close / overlay / Escape key)
 
-   Pages should NOT duplicate any of this logic inline.
-============================================================ */
+   Pages MUST NOT duplicate any of these listeners.
+   Page-specific scripts (maps, forms, etc.) are unaffected.
+   ============================================================ */
 
 (function () {
+  'use strict';
 
   /* ----------------------------------------------------------
-     1. DETERMINE ACTIVE PAGE from current URL
+     1. DETERMINE ACTIVE PAGE from the current URL
   ---------------------------------------------------------- */
   function getActivePage() {
     var path = window.location.pathname;
@@ -53,13 +59,15 @@
       .then(function (html) {
         placeholder.innerHTML = html;
 
-        /* Guard: if somehow duplicate IDs exist outside the placeholder,
-           remove them so event wiring below always targets the right element. */
-        var guarded = [
+        /* Safety: if a page somehow still has a duplicate element
+           outside the placeholder, remove it so our IDs are unique. */
+        var managed = [
           'searchBar', 'searchCloseHdr', 'currentLang',
           'mobileMenuBtn', 'mobileNav', 'mobileNavOverlay', 'mobileNavClose'
         ];
-        guarded.forEach(function (id) { deduplicateById(id, placeholder); });
+        managed.forEach(function (id) {
+          deduplicateById(id, placeholder);
+        });
 
         initHeader();
         setActiveNav();
@@ -69,13 +77,13 @@
       });
   }
 
-  /* Remove duplicates: keep the one INSIDE the placeholder. */
+  /* Keep only the copy that lives inside `placeholder`. */
   function deduplicateById(id, placeholder) {
     var all = document.querySelectorAll('#' + id);
     if (all.length <= 1) return;
     all.forEach(function (el) {
-      if (!placeholder.contains(el)) {
-        el.parentNode && el.parentNode.removeChild(el);
+      if (!placeholder.contains(el) && el.parentNode) {
+        el.parentNode.removeChild(el);
       }
     });
   }
@@ -97,35 +105,33 @@
   }
 
   /* ----------------------------------------------------------
-     4. WIRE UP ALL HEADER INTERACTIONS
-     (search bar, language switcher, mobile nav drawer)
-     This is the SINGLE source of truth — pages must not
-     duplicate these listeners inline.
+     4. WIRE ALL HEADER INTERACTIONS
+        Called once after header HTML is injected into the DOM.
   ---------------------------------------------------------- */
   function initHeader() {
 
-    /* ── Search bar ── */
+    /* ── 4a. Search bar ── */
     var searchBtn   = document.getElementById('searchBtn');
     var searchBar   = document.getElementById('searchBar');
     var searchClose = document.getElementById('searchCloseHdr');
 
     if (searchBtn && searchBar) {
       searchBtn.addEventListener('click', function () {
-        searchBar.classList.toggle('open');
+        var isOpen = searchBar.classList.toggle('open');
+        if (isOpen) {
+          var inp = searchBar.querySelector('input');
+          if (inp) inp.focus();
+        }
       });
     }
+
     if (searchClose && searchBar) {
       searchClose.addEventListener('click', function () {
         searchBar.classList.remove('open');
       });
     }
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && searchBar) {
-        searchBar.classList.remove('open');
-      }
-    });
 
-    /* ── Language switcher ── */
+    /* ── 4b. Language switcher ── */
     document.querySelectorAll('[data-lang]').forEach(function (link) {
       link.addEventListener('click', function (e) {
         e.preventDefault();
@@ -134,7 +140,7 @@
       });
     });
 
-    /* ── Mobile nav drawer ── */
+    /* ── 4c. Mobile nav drawer ── */
     var mobileMenuBtn = document.getElementById('mobileMenuBtn');
     var mobileNav     = document.getElementById('mobileNav');
     var mobileOverlay = document.getElementById('mobileNavOverlay');
@@ -152,15 +158,27 @@
       document.body.style.overflow = '';
     }
 
-    if (mobileMenuBtn)  mobileMenuBtn.addEventListener('click', openMobileMenu);
-    if (mobileClose)    mobileClose.addEventListener('click',   closeMobileMenu);
-    if (mobileOverlay)  mobileOverlay.addEventListener('click', closeMobileMenu);
+    if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMobileMenu);
+    if (mobileClose)   mobileClose.addEventListener('click',   closeMobileMenu);
+    if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenu);
 
+    /* Close drawer when any nav link inside it is tapped */
     if (mobileNav) {
       mobileNav.querySelectorAll('a').forEach(function (link) {
         link.addEventListener('click', closeMobileMenu);
       });
     }
+
+    /* ── 4d. Escape key — closes search bar OR mobile drawer ── */
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      if (searchBar && searchBar.classList.contains('open')) {
+        searchBar.classList.remove('open');
+      }
+      if (mobileNav && mobileNav.classList.contains('open')) {
+        closeMobileMenu();
+      }
+    });
   }
 
   /* ----------------------------------------------------------
