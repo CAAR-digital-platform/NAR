@@ -4,13 +4,12 @@
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR — Industrial Risks</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
-  
+
   <link rel="stylesheet" href="main.css"/>
 </head>
 <body>
-<header class="header"><div class="header-inner"><div class="logo-block"><a href="index.html"><img src="img/grand_logo.png" alt="CAAR" class="logo-img"/></a></div><div class="right-side"><div class="top-row"><a href="network.html" class="btn-top">Find Agency</a><a href="contact.html" class="btn-top">Contact Us</a></div><hr class="top-divider"/><div class="bottom-row"><ul class="nav-links"><li><a href="index.html" class="nav-link">Home</a></li><li class="dropdown"><a href="products.html" class="nav-link active">Products <span class="arrow">▾</span></a><ul class="dropdown-menu"><li><a href="individual-risks.html">Individual Risks</a></li><li><a href="auto-insurance.html">Auto Insurance</a></li><li><a href="transport-insurance.html">Transport Insurance</a></li><li><a href="technical-risks.html">Technical Risks</a></li><li><a href="industrial-risks.html">Industrial Risks</a></li></ul></li><li class="dropdown"><a href="company.html" class="nav-link">Company <span class="arrow">▾</span></a><ul class="dropdown-menu"><li><a href="company.html">About Us</a></li><li><a href="company-careers.html">Careers</a></li></ul></li><li><a href="network.html" class="nav-link">Network</a></li><li><a href="news.html" class="nav-link">News</a></li><li><a href="contact.html" class="nav-link">Contact</a></li></ul><div class="nav-icons"><button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button><button class="icon-btn" id="searchBtn"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button><div class="lang-dropdown"><button class="icon-btn"><span class="lang-label" id="currentLang">ANG</span></button><ul class="lang-menu"><li><a href="#" data-lang="FR">Français (FR)</a></li><li><a href="#" data-lang="ANG">English (ANG)</a></li><li><a href="#" data-lang="ARAB">عربي (ARAB)</a></li></ul></div></div></div></div></div><div class="search-bar" id="searchBar"><input type="text" placeholder="Search CAAR..." class="hdr-search-input"/><button class="search-close-hdr" id="searchCloseHdr">✕</button></div></header>
-
-<div class="breadcrumb"><a href="index.html">Home</a><span class="breadcrumb-sep">›</span><a href="products.html">Products</a><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur" id="bc">Machinery Breakdown Insurance</span></div>
+  <div id="site-header"></div>
+  <div class="breadcrumb"><a href="index.html">Home</a><span class="breadcrumb-sep">›</span><a href="products.html">Products</a><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur" id="bc">Machinery Breakdown Insurance</span></div>
 
 <section class="product-hero"><div class="product-hero__inner"><div class="product-hero__text"><span class="product-hero__cat">Industrial Risks</span><h1 class="product-hero__title">Industrial Risks</h1><p class="product-hero__subtitle">Comprehensive insurance for industrial facilities, machinery and professional liability — protecting businesses against major operational and structural risks.</p></div><div class="product-hero__img"><img src="img/bigindustry.webp" alt="Industrial Risks"/></div></div></section>
 
@@ -120,7 +119,7 @@
 
 <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
 <nav class="mobile-nav" id="mobileNav"><div class="mobile-nav-header"><span class="mobile-nav-title">Menu</span><button onclick="toggleMobileMenu()" class="mobile-nav-close">✕</button></div><a href="index.html" onclick="toggleMobileMenu()">Home</a><a href="products.html" onclick="toggleMobileMenu()">Products</a><a href="news.html" onclick="toggleMobileMenu()">News</a><a href="contact.html" onclick="toggleMobileMenu()">Contact</a><div class="mobile-nav-btns"><a href="network.html" class="btn-top">Find Agency</a><a href="contact.html" class="btn-top">Contact Us</a></div></nav>
-
+<script src="js/main.js"></script>
 <script>
 var ids=['mb','dec','rc'],labels={'mb':'Machinery Breakdown Insurance','dec':'Decennial Civil Liability','rc':'RC Pro for Contractors'};
 function show(k,btn){ids.forEach(function(i){document.getElementById('d-'+i).classList.remove('on');});document.querySelectorAll('.sidebar-btn').forEach(function(b){b.classList.remove('active');});document.getElementById('d-'+k).classList.add('on');btn.classList.add('active');document.getElementById('bc').textContent=labels[k];}

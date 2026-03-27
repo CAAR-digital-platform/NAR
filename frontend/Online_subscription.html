@@ -134,57 +134,7 @@
   </div>
 </footer>
 
-
-<!-- ===== MOBILE NAV DRAWER ===== -->
-<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
-<nav class="mobile-nav" id="mobileNav">
-  <div class="mobile-nav-header">
-    <span class="mobile-nav-title">Menu</span>
-    <button onclick="toggleMobileMenu()" class="mobile-nav-close">&#x2715;</button>
-  </div>
-  <a href="index.html"    onclick="toggleMobileMenu()">Home</a>
-  <a href="products.html" onclick="toggleMobileMenu()">Products</a>
-  <a href="company.html"  onclick="toggleMobileMenu()">Company</a>
-  <a href="network.html"  onclick="toggleMobileMenu()">Network</a>
-  <a href="news.html"     onclick="toggleMobileMenu()">News</a>
-  <a href="contact.html"  onclick="toggleMobileMenu()">Contact</a>
-  <div class="mobile-nav-btns">
-    <a href="network.html" class="btn-top">Find Agency</a>
-    <a href="contact.html" class="btn-top">Contact Us</a>
-  </div>
-</nav>
-
-
-<script>
-  /* Search bar */
-  document.getElementById('searchBtn').addEventListener('click', function() {
-    document.getElementById('searchBar').classList.toggle('open');
-  });
-  document.getElementById('searchClose').addEventListener('click', function() {
-    document.getElementById('searchBar').classList.remove('open');
-  });
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') document.getElementById('searchBar').classList.remove('open');
-  });
-
-  /* Language switcher */
-  document.querySelectorAll('[data-lang]').forEach(function(link) {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      document.getElementById('currentLang').textContent = this.getAttribute('data-lang');
-    });
-  });
-
-  /* Mobile menu */
-  function toggleMobileMenu() {
-    var nav     = document.getElementById('mobileNav');
-    var overlay = document.getElementById('mobileNavOverlay');
-    var isOpen  = nav.classList.contains('open');
-    nav.classList.toggle('open', !isOpen);
-    overlay.classList.toggle('open', !isOpen);
-    document.body.style.overflow = isOpen ? '' : 'hidden';
-  }
-</script>
+<!-- main.js handles header injection, search, language switcher, and mobile nav -->
 <script src="js/main.js"></script>
 </body>
 </html>
