@@ -49,7 +49,7 @@
     fetch('components/header.html')
       .then(function (res) { return res.text(); })
       .then(function (html) {
-        placeholder.outerHTML = html;
+        placeholder.innerHTML = html;
         initHeader();
         setActiveNav();
       })
@@ -68,7 +68,7 @@
     fetch('components/footer.html')
       .then(function (res) { return res.text(); })
       .then(function (html) {
-        placeholder.outerHTML = html;
+        placeholder.innerHTML = html;
       })
       .catch(function (err) {
         console.warn('Could not load footer:', err);
