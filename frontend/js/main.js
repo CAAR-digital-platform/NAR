@@ -88,22 +88,6 @@
     });
   }
 
-  /* ----------------------------------------------------------
-     3. INJECT FOOTER
-  ---------------------------------------------------------- */
-  function loadFooter() {
-    var placeholder = document.getElementById('site-footer');
-    if (!placeholder) return;
-
-    fetch('components/footer.html')
-      .then(function (res) { return res.text(); })
-      .then(function (html) {
-        placeholder.innerHTML = html;
-      })
-      .catch(function (err) {
-        console.warn('[CAAR] Could not load footer:', err);
-      });
-  }
 
   /* ----------------------------------------------------------
      4. SET ACTIVE NAV LINK
