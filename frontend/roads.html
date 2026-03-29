@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CAAR — Roadside Assistance Subscription</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet"/>
-
   <link rel="stylesheet" href="main.css">
 </head>
 <body>
@@ -151,7 +150,7 @@
         <div class="plan-cards">
 
           <!-- Basic -->
-          <div class="plan-card" id="plan-basic" onclick="selectPlan('Basic', 4900)">
+          <div class="plan-card" id="plan-basic" onclick="selectPlan('Basic', 4900, 1)">
             <input type="radio" name="plan" value="Basic" class="plan-radio"/>
             <span class="plan-badge-selected">&#10003; Selected</span>
             <div class="plan-name">Basic</div>
@@ -166,7 +165,7 @@
           </div>
 
           <!-- Plus -->
-          <div class="plan-card popular" id="plan-plus" onclick="selectPlan('Plus', 7900)">
+          <div class="plan-card popular" id="plan-plus" onclick="selectPlan('Plus', 7900, 2)">
             <span class="plan-popular-badge">&#11088; Most Popular</span>
             <input type="radio" name="plan" value="Plus" class="plan-radio"/>
             <span class="plan-badge-selected">&#10003; Selected</span>
@@ -183,7 +182,7 @@
           </div>
 
           <!-- Premium -->
-          <div class="plan-card" id="plan-premium" onclick="selectPlan('Premium', 11500)">
+          <div class="plan-card" id="plan-premium" onclick="selectPlan('Premium', 11500, 3)">
             <input type="radio" name="plan" value="Premium" class="plan-radio"/>
             <span class="plan-badge-selected">&#10003; Selected</span>
             <div class="plan-name">Premium</div>
@@ -409,9 +408,17 @@
             </div>
           </div>
 
+          <!-- API error display -->
+          <div id="api-error-msg" style="display:none; background:#fff0f0; border:1.5px solid #e53e3e; border-radius:10px; padding:14px 18px; margin:12px 0; font-size:0.84rem; color:#c53030;">
+            <strong>Error:</strong> <span id="api-error-text"></span>
+          </div>
+
           <div class="form-nav-btns review-nav">
             <button class="btn-back-products" type="button" onclick="showSubscriptionForm()">&#8592; Back</button>
-            <button class="btn-continue" type="button" onclick="goToStep(3)">Pay with CIB/Baridi Mob &#8594;</button>
+            <!-- FIX: this now calls submitAndProceed() instead of goToStep(3) directly -->
+            <button class="btn-continue" type="button" id="btn-pay-cib" onclick="submitAndProceed()">
+              Pay with CIB/Baridi Mob &#8594;
+            </button>
           </div>
         </div>
       </div><!-- /subscription-review-view -->
@@ -489,10 +496,16 @@
             </div>
           </div>
 
+          <!-- Payment API error display -->
+          <div id="pay-error-msg" style="display:none; background:#fff0f0; border:1px solid #e53e3e; border-radius:8px; padding:12px 16px; margin:10px 14px; font-size:0.82rem; color:#c53030;">
+            <strong>Payment Error:</strong> <span id="pay-error-text"></span>
+          </div>
+
           <div class="payment-actions">
             <button type="button" class="btn-cancel-payment" onclick="goToStep(2)">&#x2715; Cancel</button>
             <button type="button" class="btn-reset-payment" onclick="resetPaymentForm()">&#8635; Reset</button>
-            <button type="button" class="btn-validate-payment" onclick="validatePayment()">&#10003; Validate Payment</button>
+            <!-- FIX: this now calls validateAndPay() instead of validatePayment() -->
+            <button type="button" class="btn-validate-payment" id="btn-validate-pay" onclick="validateAndPay()">&#10003; Validate Payment</button>
           </div>
 
           <div class="payment-footer-bar">
@@ -629,24 +642,55 @@
 
 
 <!-- ============================================================
-     PAGE-SPECIFIC SCRIPT — NO header/search/language/mobile-nav
-     logic here. All of that is handled exclusively by main.js.
+     PAGE-SPECIFIC SCRIPT
+     ─────────────────────────────────────────────────────────
+     FIXES APPLIED:
+       1. selectPlan() now accepts plan_id as 3rd argument
+       2. submitQuoteToAPI()  — POST /api/roadside/quote
+       3. confirmQuoteAPI()   — POST /api/roadside/confirm/:id
+       4. processPaymentAPI() — POST /api/roadside/pay/:id
+       5. submitAndProceed()  — orchestrates 2→3 transition
+       6. validateAndPay()    — orchestrates payment + step 4
+       7. token + quote_id stored in localStorage
+       8. console.log debugging throughout
+       9. API error messages surfaced to UI
+      10. Buttons disabled during async calls to prevent double-submit
 ============================================================ -->
 <script>
+'use strict';
+
+/* ============================================================
+   CONFIG
+   Change this to your production URL when deploying.
+   ============================================================ */
+var API_BASE = 'http://localhost:3000';
+
 /* ============================================================
    STATE
    ============================================================ */
-var selectedPlan  = null;
-var selectedPrice = 0;
-var currentStep   = 1;
+var selectedPlan   = null;   // e.g. 'Plus'
+var selectedPrice  = 0;      // e.g. 7900
+var selectedPlanId = null;   // e.g. 2  (maps to DB plans table)
+var currentStep    = 1;
 var countdownTimer = null;
+
+// Populated after successful POST /api/roadside/quote
+var quoteId    = null;
+var authToken  = null;
+
+// Populated after successful POST /api/roadside/pay/:id
+var policyData = null;
 
 /* ============================================================
    PLAN SELECTION
+   FIX: added planId parameter to track the integer ID
    ============================================================ */
-function selectPlan(name, price) {
-  selectedPlan  = name;
-  selectedPrice = price;
+function selectPlan(name, price, planId) {
+  selectedPlan   = name;
+  selectedPrice  = price;
+  selectedPlanId = planId;
+
+  console.log('[CAAR] Plan selected:', { name: name, price: price, plan_id: planId });
 
   ['basic', 'plus', 'premium'].forEach(function(p) {
     document.getElementById('plan-' + p).classList.remove('selected');
@@ -699,24 +743,14 @@ function formatDate(d) {
   var yyyy = d.getFullYear();
   return dd + '/' + mm + '/' + yyyy;
 }
+
 function getStartDate() { return new Date(); }
+
 function getEndDate() {
   var d = new Date();
   d.setFullYear(d.getFullYear() + 1);
   d.setDate(d.getDate() - 1);
   return d;
-}
-
-/* ============================================================
-   GENERATE POLICY REFERENCE
-   ============================================================ */
-function generatePolicyRef() {
-  var now  = new Date();
-  var y    = now.getFullYear();
-  var m    = String(now.getMonth() + 1).padStart(2, '0');
-  var d    = String(now.getDate()).padStart(2, '0');
-  var rand = Math.random().toString(36).substr(2, 4).toUpperCase();
-  return 'RSA-' + y + m + d + '-' + rand;
 }
 
 /* ============================================================
@@ -780,12 +814,13 @@ function populateReview() {
 }
 
 /* ============================================================
-   POPULATE PAYMENT
+   POPULATE PAYMENT PAGE
    ============================================================ */
 function populatePayment() {
   document.getElementById('pay-amount').textContent = formatDZD(selectedPrice);
-  document.getElementById('pay-ref').textContent    = 'New Contract — Roadside Assistance (' + (selectedPlan || 'Plus') + ')';
-  startCountdown(300);
+  document.getElementById('pay-ref').textContent    =
+    'New Contract — Roadside Assistance (' + (selectedPlan || 'Plus') + ')';
+  startCountdown(300); // 5-minute session timer
 }
 
 /* ============================================================
@@ -816,10 +851,9 @@ function goToStep(n) {
     if (!validateStep1()) return;
     populateStep2Summary();
   }
-  if (currentStep === 2 && n === 3) {
-    if (!validateStep2()) return;
-    populatePayment();
-  }
+
+  // NOTE: the 2→3 transition is now handled by submitAndProceed()
+  // This function only handles direct nav (Back buttons etc.)
 
   document.getElementById('form-step-' + currentStep).classList.add('hidden');
   currentStep = n;
@@ -876,10 +910,13 @@ function validateStep2() {
 function showReviewView() {
   if (!validateStep2()) return;
   populateReview();
+  // Clear any previous API error
+  hideApiError();
   document.getElementById('subscription-form-view').classList.add('hidden');
   document.getElementById('subscription-review-view').classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
 function showSubscriptionForm() {
   document.getElementById('subscription-review-view').classList.add('hidden');
   document.getElementById('subscription-form-view').classList.remove('hidden');
@@ -887,9 +924,317 @@ function showSubscriptionForm() {
 }
 
 /* ============================================================
-   PAYMENT VALIDATION → go to Step 4
+   UI HELPERS
    ============================================================ */
-function validatePayment() {
+function setButtonLoading(btnId, loading, label) {
+  var btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  if (loading) {
+    btn.dataset.originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ ' + (label || 'Processing…');
+  } else {
+    btn.innerHTML = btn.dataset.originalText || label || btn.innerHTML;
+  }
+}
+
+function showApiError(msg) {
+  var box  = document.getElementById('api-error-msg');
+  var text = document.getElementById('api-error-text');
+  if (box && text) { text.textContent = msg; box.style.display = 'block'; }
+  console.error('[CAAR] API Error:', msg);
+}
+
+function hideApiError() {
+  var box = document.getElementById('api-error-msg');
+  if (box) box.style.display = 'none';
+}
+
+function showPayError(msg) {
+  var box  = document.getElementById('pay-error-msg');
+  var text = document.getElementById('pay-error-text');
+  if (box && text) { text.textContent = msg; box.style.display = 'block'; }
+  console.error('[CAAR] Pay Error:', msg);
+}
+
+function hidePayError() {
+  var box = document.getElementById('pay-error-msg');
+  if (box) box.style.display = 'none';
+}
+
+/* ============================================================
+   ─────────────────────────────────────────────────────────
+   API CALL 1: POST /api/roadside/quote
+   FIX: This is the missing API call that was never implemented.
+   ─────────────────────────────────────────────────────────
+   Collects all form data and sends to backend.
+   Returns true on success, false on failure.
+   ============================================================ */
+async function submitQuoteToAPI() {
+  // ── Collect form values (field names match backend expectations) ──
+  var first_name    = document.getElementById('first_name').value.trim();
+  var last_name     = document.getElementById('last_name').value.trim();
+  var email         = document.getElementById('email').value.trim().toLowerCase();
+  var phone         = document.getElementById('mobile_1').value.trim() || null;
+
+  // FIX: backend expects 'brand', not 'vehicle_brand'
+  var brand         = document.getElementById('vehicle_brand').value.trim();
+  // FIX: backend expects 'model', not 'vehicle_model'
+  var model         = document.getElementById('vehicle_model').value.trim();
+  // FIX: backend expects 'year' as integer, not 'vehicle_year' string
+  var year          = parseInt(document.getElementById('vehicle_year').value, 10);
+  // FIX: backend expects 'license_plate' — matches field ID already
+  var license_plate = document.getElementById('license_plate').value.trim().toUpperCase();
+  // Wilaya: send the text value of the selected option (e.g. "16 _ ALGER")
+  var wilaya_select = document.getElementById('wilaya');
+  var wilaya        = wilaya_select.options[wilaya_select.selectedIndex].text || null;
+
+  // FIX: backend expects 'plan_id' as integer (Basic=1, Plus=2, Premium=3)
+  var plan_id = selectedPlanId;
+
+  var payload = {
+    first_name:    first_name,
+    last_name:     last_name,
+    email:         email,
+    phone:         phone,
+    license_plate: license_plate,
+    brand:         brand,
+    model:         model,
+    year:          year,
+    wilaya:        wilaya,
+    plan_id:       plan_id
+  };
+
+  console.log('[CAAR] ── submitQuoteToAPI ──');
+  console.log('[CAAR] URL:    POST ' + API_BASE + '/api/roadside/quote');
+  console.log('[CAAR] Payload:', JSON.stringify(payload, null, 2));
+
+  try {
+    var response = await fetch(API_BASE + '/api/roadside/quote', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    var data = await response.json();
+    console.log('[CAAR] Quote response (HTTP ' + response.status + '):', data);
+
+    if (!response.ok) {
+      var errMsg = data.error || 'Failed to create quote (HTTP ' + response.status + ')';
+      showApiError(errMsg);
+      return false;
+    }
+
+    // ── Store quote_id and token ──
+    quoteId   = data.quote_id;
+    authToken = data.token;
+
+    // FIX: persist in localStorage for page refresh resilience
+    localStorage.setItem('caar_quote_id',  String(quoteId));
+    localStorage.setItem('caar_auth_token', authToken);
+    localStorage.setItem('caar_plan_name',  data.plan_name || selectedPlan);
+
+    console.log('[CAAR] Quote created successfully:', {
+      quote_id:          quoteId,
+      estimated_amount:  data.estimated_amount,
+      plan_name:         data.plan_name,
+      token_preview:     authToken ? authToken.substring(0, 20) + '…' : null
+    });
+
+    return true;
+
+  } catch (err) {
+    console.error('[CAAR] Network error in submitQuoteToAPI:', err);
+    showApiError('Network error — please check your connection and try again. (' + err.message + ')');
+    return false;
+  }
+}
+
+/* ============================================================
+   ─────────────────────────────────────────────────────────
+   API CALL 2: POST /api/roadside/confirm/:quoteId
+   FIX: Confirms the quote (pending → confirmed) before payment.
+        Backend requires this step before /pay can be called.
+   ─────────────────────────────────────────────────────────
+   Returns true on success, false on failure.
+   ============================================================ */
+async function confirmQuoteAPI() {
+  var token = authToken || localStorage.getItem('caar_auth_token');
+  var qId   = quoteId   || localStorage.getItem('caar_quote_id');
+
+  if (!token || !qId) {
+    console.error('[CAAR] confirmQuoteAPI: missing token or quoteId');
+    showApiError('Session data missing. Please start the form again.');
+    return false;
+  }
+
+  console.log('[CAAR] ── confirmQuoteAPI ──');
+  console.log('[CAAR] URL:   POST ' + API_BASE + '/api/roadside/confirm/' + qId);
+  console.log('[CAAR] Token: ' + token.substring(0, 20) + '…');
+
+  try {
+    var response = await fetch(API_BASE + '/api/roadside/confirm/' + qId, {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    var data = await response.json();
+    console.log('[CAAR] Confirm response (HTTP ' + response.status + '):', data);
+
+    if (!response.ok) {
+      var errMsg = data.error || 'Failed to confirm quote (HTTP ' + response.status + ')';
+      showApiError(errMsg);
+      return false;
+    }
+
+    console.log('[CAAR] Quote confirmed:', data.message);
+    return true;
+
+  } catch (err) {
+    console.error('[CAAR] Network error in confirmQuoteAPI:', err);
+    showApiError('Network error during confirmation: ' + err.message);
+    return false;
+  }
+}
+
+/* ============================================================
+   ─────────────────────────────────────────────────────────
+   API CALL 3: POST /api/roadside/pay/:quoteId
+   FIX: Processes payment and creates the contract.
+   ─────────────────────────────────────────────────────────
+   Returns the response data on success, null on failure.
+   ============================================================ */
+async function processPaymentAPI() {
+  var token = authToken || localStorage.getItem('caar_auth_token');
+  var qId   = quoteId   || localStorage.getItem('caar_quote_id');
+
+  if (!token || !qId) {
+    console.error('[CAAR] processPaymentAPI: missing token or quoteId');
+    showPayError('Session expired. Please go back and start again.');
+    return null;
+  }
+
+  console.log('[CAAR] ── processPaymentAPI ──');
+  console.log('[CAAR] URL:      POST ' + API_BASE + '/api/roadside/pay/' + qId);
+  console.log('[CAAR] Token:    ' + token.substring(0, 20) + '…');
+  console.log('[CAAR] Quote ID:', qId);
+
+  try {
+    var response = await fetch(API_BASE + '/api/roadside/pay/' + qId, {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({})   // no document upload in this flow
+    });
+
+    var data = await response.json();
+    console.log('[CAAR] Pay response (HTTP ' + response.status + '):', data);
+
+    if (!response.ok) {
+      var errMsg = data.error || 'Payment failed (HTTP ' + response.status + ')';
+      showPayError(errMsg);
+      return null;
+    }
+
+    console.log('[CAAR] Payment processed successfully:', {
+      policy_reference: data.policy_reference,
+      contract_id:      data.contract_id,
+      start_date:       data.start_date,
+      end_date:         data.end_date,
+      amount_paid:      data.amount_paid
+    });
+
+    // Clean up localStorage tokens after successful payment
+    localStorage.removeItem('caar_quote_id');
+    localStorage.removeItem('caar_auth_token');
+
+    return data;
+
+  } catch (err) {
+    console.error('[CAAR] Network error in processPaymentAPI:', err);
+    showPayError('Network error during payment: ' + err.message);
+    return null;
+  }
+}
+
+/* ============================================================
+   ─────────────────────────────────────────────────────────
+   ORCHESTRATOR 1: submitAndProceed()
+   Called by the "Pay with CIB" button in the review view.
+   FIX: replaces the old inline goToStep(3) call.
+   Flow: validate → POST quote → POST confirm → show step 3
+   ─────────────────────────────────────────────────────────
+   ============================================================ */
+async function submitAndProceed() {
+  // Validate consent checkboxes
+  if (!document.getElementById('confirm-info').checked) {
+    alert('Please confirm that all information is correct.');
+    return;
+  }
+  if (!document.getElementById('confirm-terms').checked) {
+    alert('Please accept the general terms and conditions.');
+    return;
+  }
+
+  hideApiError();
+  setButtonLoading('btn-pay-cib', true, 'Creating quote…');
+
+  console.log('[CAAR] ── submitAndProceed ──');
+
+  // Step A: Create quote
+  var quoteOk = await submitQuoteToAPI();
+  if (!quoteOk) {
+    setButtonLoading('btn-pay-cib', false);
+    return;
+  }
+
+  setButtonLoading('btn-pay-cib', true, 'Confirming quote…');
+
+  // Step B: Confirm quote (pending → confirmed)
+  var confirmOk = await confirmQuoteAPI();
+  if (!confirmOk) {
+    setButtonLoading('btn-pay-cib', false);
+    return;
+  }
+
+  setButtonLoading('btn-pay-cib', false);
+
+  console.log('[CAAR] Quote created & confirmed — moving to payment step');
+
+  // Step C: Move to payment UI
+  populatePayment();
+  document.getElementById('form-step-2').classList.add('hidden');
+  currentStep = 3;
+  document.getElementById('form-step-3').classList.remove('hidden');
+
+  for (var i = 1; i <= 4; i++) {
+    var ind = document.getElementById('step-indicator-' + i);
+    ind.classList.remove('active', 'done');
+    if (i < 3)      ind.classList.add('done');
+    else if (i === 3) ind.classList.add('active');
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================================
+   ─────────────────────────────────────────────────────────
+   ORCHESTRATOR 2: validateAndPay()
+   Called by the "Validate Payment" button in step 3.
+   FIX: replaces the old validatePayment() which only did
+        client-side card validation then faked confirmation.
+   Flow: validate card → POST pay → populate confirmation → step 4
+   ─────────────────────────────────────────────────────────
+   ============================================================ */
+async function validateAndPay() {
+  // Validate card fields first (client-side)
   var card  = document.getElementById('card_number').value.replace(/\s/g, '');
   var cvv   = document.getElementById('cvv2').value.trim();
   var month = document.getElementById('expiry_month').value;
@@ -902,11 +1247,48 @@ function validatePayment() {
   if (!year)            { alert('Please select an expiry year.'); return; }
   if (!name)            { alert('Please enter the cardholder name.'); return; }
 
+  console.log('[CAAR] ── validateAndPay ──');
+  console.log('[CAAR] Card validated (client-side) — calling payment API…');
+
+  hidePayError();
+  setButtonLoading('btn-validate-pay', true, 'Processing payment…');
   clearInterval(countdownTimer);
-  populateConfirmation();
-  goToStep(4);
+
+  // Call the real payment API
+  var result = await processPaymentAPI();
+
+  setButtonLoading('btn-validate-pay', false);
+
+  if (!result) {
+    // Error already shown by processPaymentAPI()
+    return;
+  }
+
+  // Store policy data for confirmation page
+  policyData = result;
+  localStorage.setItem('caar_policy_ref', result.policy_reference || '');
+
+  // Populate confirmation screen with real API data
+  populateConfirmation(result);
+
+  // Move to step 4
+  document.getElementById('form-step-3').classList.add('hidden');
+  currentStep = 4;
+  document.getElementById('form-step-4').classList.remove('hidden');
+
+  for (var i = 1; i <= 4; i++) {
+    var ind = document.getElementById('step-indicator-' + i);
+    ind.classList.remove('active', 'done');
+    if (i < 4)      ind.classList.add('done');
+    else if (i === 4) ind.classList.add('active');
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+/* ============================================================
+   PAYMENT FORM HELPERS
+   ============================================================ */
 function resetPaymentForm() {
   ['card_number', 'cvv2', 'cardholder_name'].forEach(function(id) {
     var el = document.getElementById(id);
@@ -916,6 +1298,7 @@ function resetPaymentForm() {
     var el = document.getElementById(id);
     if (el) el.selectedIndex = 0;
   });
+  hidePayError();
 }
 
 function formatCardNumber(input) {
@@ -925,17 +1308,48 @@ function formatCardNumber(input) {
 
 /* ============================================================
    POPULATE CONFIRMATION (Step 4)
+   FIX: Now accepts real API response data.
+        Falls back to generated values if called without data.
    ============================================================ */
-function populateConfirmation() {
-  var ref    = generatePolicyRef();
-  var startD = getStartDate();
-  var endD   = getEndDate();
+function populateConfirmation(apiData) {
+  if (apiData) {
+    // Use real data from the API
+    var startFormatted = apiData.start_date
+      ? apiData.start_date.split('-').reverse().join('/') : formatDate(getStartDate());
+    var endFormatted = apiData.end_date
+      ? apiData.end_date.split('-').reverse().join('/') : formatDate(getEndDate());
 
-  document.getElementById('confirm-policy-ref').textContent = ref;
-  document.getElementById('confirm-dates').textContent      =
-    'Issued: ' + formatDate(startD) + ' · Valid until: ' + formatDate(endD);
-  document.getElementById('confirm-amount').textContent = formatDZD(selectedPrice);
-  document.getElementById('confirm-plan').textContent   = selectedPlan || '—';
+    document.getElementById('confirm-policy-ref').textContent = apiData.policy_reference || '—';
+    document.getElementById('confirm-dates').textContent =
+      'Issued: ' + startFormatted + ' · Valid until: ' + endFormatted;
+    document.getElementById('confirm-amount').textContent =
+      apiData.amount_paid ? formatDZD(apiData.amount_paid) : formatDZD(selectedPrice);
+
+    console.log('[CAAR] Confirmation populated with API data:', {
+      policy_reference: apiData.policy_reference,
+      start_date:       apiData.start_date,
+      end_date:         apiData.end_date,
+      amount_paid:      apiData.amount_paid,
+      contract_id:      apiData.contract_id
+    });
+
+  } else {
+    // Fallback: generate client-side reference
+    var ref    = 'RSA-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.random().toString(36).substr(2,4).toUpperCase();
+    var startD = getStartDate();
+    var endD   = getEndDate();
+
+    document.getElementById('confirm-policy-ref').textContent = ref;
+    document.getElementById('confirm-dates').textContent =
+      'Issued: ' + formatDate(startD) + ' · Valid until: ' + formatDate(endD);
+    document.getElementById('confirm-amount').textContent = formatDZD(selectedPrice);
+
+    console.warn('[CAAR] populateConfirmation called without API data — using fallback values');
+  }
+
+  document.getElementById('confirm-plan').textContent =
+    (policyData && localStorage.getItem('caar_plan_name')) ||
+    selectedPlan || '—';
 }
 
 function downloadCertificate() {
@@ -943,9 +1357,10 @@ function downloadCertificate() {
 }
 
 /* ============================================================
-   INIT — pre-select Plus plan
+   INIT — pre-select Plus plan (plan_id = 2)
    ============================================================ */
-selectPlan('Plus', 7900);
+console.log('[CAAR] roads.html loaded — initialising with Plus plan');
+selectPlan('Plus', 7900, 2);
 </script>
 
 <!-- main.js LAST — handles header injection, search, language, mobile nav -->

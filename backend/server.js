@@ -1,10 +1,18 @@
 const express = require('express');
-require('./db'); // Initialize the MySQL pool on startup
+const cors = require('cors');
+require('./db');
 
 const authRoutes     = require('./routes/auth');
 const roadsideRoutes = require('./routes/roadsideRoutes');
 
 const app = express();
+
+// ── CORS (VERY IMPORTANT) ───────────────────────────────────
+app.use(cors({
+  origin: ['http://127.0.0.1:5500', 'http://localhost:5500'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // ── Middleware ──────────────────────────────────────────────
 app.use(express.json());
