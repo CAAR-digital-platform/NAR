@@ -1,23 +1,26 @@
-const express = require("express");
-const authRoutes = require("./routes/auth");
-const assuranceRoutes = require("./routes/assurance");
+const express = require('express');
+require('./db'); // Initialize the MySQL pool on startup
 
-// Connexion MySQL (importée ici pour être initialisée au démarrage)
-require("./db");
+const authRoutes     = require('./routes/auth');
+const roadsideRoutes = require('./routes/roadsideRoutes');
 
 const app = express();
 
+// ── Middleware ──────────────────────────────────────────────
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/assurances", assuranceRoutes); // ✅ DÉPLACÉ ici, avant app.listen()
+// ── Routes ─────────────────────────────────────────────────
+app.use('/api/auth',     authRoutes);
+app.use('/api/roadside', roadsideRoutes);
 
-app.get("/", (req, res) => {
-    res.json({ message: "Backend running ✅" });
+// Health check
+app.get('/', (req, res) => {
+  res.json({ message: 'CAAR backend running ✅' });
 });
 
-// Démarrage du serveur
-app.listen(3000, () => {
-    console.log("🚀 Server running on port 3000");
+// ── Start server ───────────────────────────────────────────
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });

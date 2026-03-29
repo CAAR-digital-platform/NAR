@@ -1,29 +1,38 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
-const SECRET_KEY = "SECRET_KEY_CAAR"; // ⚠️ À déplacer dans un .env plus tard
+const SECRET_KEY = process.env.JWT_SECRET || 'SECRET_KEY_CAAR';
 
-const authMiddleware = (req, res, next) => {
+/**
+ * Verifies the JWT in the Authorization header.
+ * On success, attaches `req.user = { id, email, role }` for downstream use.
+ * On failure, returns 401.
+ */
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization;
 
-    // Vérification de la présence du header Authorization
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).json({ error: "Accès refusé : token manquant" });
-    }
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Access denied: no token provided' });
+  }
 
-    // Extraction du token (format attendu : "Bearer TOKEN")
-    const token = authHeader.split(" ")[1];
-    if (!token) {
-        return res.status(401).json({ error: "Accès refusé : format token invalide" });
-    }
+  // Expected format: "Bearer <token>"
+  const parts = authHeader.split(' ');
+  if (parts.length !== 2 || parts[0] !== 'Bearer') {
+    return res.status(401).json({ error: 'Access denied: malformed token format' });
+  }
 
-    // Vérification et décodage du token
-    try {
-        const decoded = jwt.verify(token, SECRET_KEY);
-        req.user = decoded; // { id, email, role }
-        next();
-    } catch (error) {
-        res.status(401).json({ error: "Token invalide ou expiré" });
-    }
-};
+  const token = parts[1];
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = decoded; // { id, email, role, iat, exp }
+    next();
+  } catch (err) {
+    const message =
+      err.name === 'TokenExpiredError'
+        ? 'Token expired — please log in again'
+        : 'Invalid token';
+    return res.status(401).json({ error: message });
+  }
+}
 
 module.exports = authMiddleware;

@@ -1,18 +1,25 @@
-const roleMiddleware = (requiredRole) => {
-    return (req, res, next) => {
+/**
+ * Factory that returns a middleware enforcing a required role.
+ * Must be used AFTER authMiddleware (req.user must exist).
+ *
+ * Usage:
+ *   router.get('/admin', authMiddleware, requireRole('admin'), handler)
+ *   router.get('/agents', authMiddleware, requireRole('admin', 'agent'), handler)
+ */
+function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized: user not identified' });
+    }
 
-        // S'assurer que authMiddleware a bien été appelé avant
-        if (!req.user) {
-            return res.status(401).json({ error: "Non autorisé : utilisateur non identifié" });
-        }
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        error: `Forbidden: requires role '${roles.join(' or ')}'`,
+      });
+    }
 
-        // Vérification du rôle
-        if (req.user.role !== requiredRole) {
-            return res.status(403).json({ error: `Accès interdit : rôle '${requiredRole}' requis` });
-        }
+    next();
+  };
+}
 
-        next();
-    };
-};
-
-module.exports = roleMiddleware;
+module.exports = requireRole;
