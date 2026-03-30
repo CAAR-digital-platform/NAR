@@ -90,14 +90,16 @@
   }
 
   async function loadStats() {
-    try {
-      const res = await fetch("/api/admin/stats", { headers: { Authorization: `Bearer ${token}` } });
-      const data = await res.json();
-      document.getElementById("statTotal").textContent = data.totalUsers;
-      document.getElementById("statAdmins").textContent = data.admins;
-      document.getElementById("statUsers").textContent = data.regularUsers;
-    } catch (e) { console.error(e); }
-  }
+  try {
+    const res  = await fetch('http://localhost:3000/api/dashboard/stats', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    document.getElementById('statTotal').textContent  = data.total_clients;
+    document.getElementById('statAdmins').textContent = data.total_contracts;
+    document.getElementById('statUsers').textContent  = data.total_claims;
+  } catch (e) { console.error(e); }
+}
 
   async function loadUsers() {
     try {
