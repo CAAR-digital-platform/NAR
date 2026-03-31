@@ -1130,27 +1130,45 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ── Populate wilaya / city dropdowns dynamically from real data ── */
-    var wilayas = [], cities = [];
-    AGENCIES.forEach(function(ag){
-      if(ag.wilaya && wilayas.indexOf(ag.wilaya)===-1) wilayas.push(ag.wilaya);
-      if(ag.city   && cities.indexOf(ag.city)===-1)   cities.push(ag.city);
-    });
-    wilayas.sort(); cities.sort();
-    var fdmWilaya = document.getElementById('fdm-wilaya');
-    if(fdmWilaya){
-      fdmWilaya.innerHTML = '<div class="fd-item fd-item-all active" onclick="setFilter(\'wilaya\',\'\',this)">All Wilayas</div>';
-      wilayas.forEach(function(w){
-        fdmWilaya.innerHTML += '<div class="fd-item" onclick="setFilter(\'wilaya\',\''+w+'\',this)">'+w+'</div>';
-      });
-    }
-    var fdmCity = document.getElementById('fdm-city');
-    if(fdmCity){
-      fdmCity.innerHTML = '<div class="fd-item fd-item-all active" onclick="setFilter(\'city\',\'\',this)">All Cities</div>';
-      cities.forEach(function(c){
-        fdmCity.innerHTML += '<div class="fd-item" onclick="setFilter(\'city\',\''+c+'\',this)">'+c+'</div>';
-      });
-    }
+   const LOCATION_DATA = {
+  "Alger": ["Alger Centre", "Bab Ezzouar", "Kouba", "Cheraga", "Baraki"],
+  "Oran": ["Oran Centre", "Es Senia", "Bir El Djir"],
+  "Constantine": ["Constantine Centre", "El Khroub"],
+  "Annaba": ["Annaba Centre", "El Bouni"],
+  "Blida": ["Blida Centre", "Boufarik"],
+  "Setif": ["Setif Centre", "El Eulma"],
+  "Tipaza": ["Tipaza", "Kolea"],
+  "Boumerdes": ["Boumerdes", "Boudouaou"],
+  "Tizi Ouzou": ["Tizi Ouzou Centre", "Draa Ben Khedda"]
+};
 
+/* Populate Wilaya dropdown */
+var fdmWilaya = document.getElementById('fdm-wilaya');
+if (fdmWilaya) {
+  fdmWilaya.innerHTML = '<div class="fd-item fd-item-all active" onclick="setFilter(\'wilaya\',\'\',this)">All Wilayas</div>';
+
+  Object.keys(LOCATION_DATA).forEach(function(w) {
+    fdmWilaya.innerHTML += '<div class="fd-item" onclick="selectWilaya(\'' + w + '\', this)">' + w + '</div>';
+  });
+}
+
+/* Populate City dropdown based on Wilaya */
+window.selectWilaya = function(wilaya, el) {
+  setFilter('wilaya', wilaya, el);
+
+  var fdmCity = document.getElementById('fdm-city');
+  if (!fdmCity) return;
+
+  fdmCity.innerHTML = '<div class="fd-item fd-item-all active" onclick="setFilter(\'city\',\'\',this)">All Cities</div>';
+
+  if (LOCATION_DATA[wilaya]) {
+    LOCATION_DATA[wilaya].forEach(function(city) {
+      fdmCity.innerHTML += '<div class="fd-item" onclick="setFilter(\'city\',\'' + city + '\',this)">' + city + '</div>';
+    });
+  }
+
+  document.getElementById('fdlbl-city').textContent = "City";
+};
     function renderCards(list) {
       var container=document.getElementById('filterCardList');
       var noRes=document.getElementById('filterNoResults');
@@ -1197,8 +1215,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function applyFilters(){
       var result=AGENCIES.filter(function(ag){
-        if(activeFilters.wilaya&&ag.wilaya!==activeFilters.wilaya) return false;
-        if(activeFilters.city&&ag.city!==activeFilters.city) return false;
+        function normalize(str){
+  return (str || '')
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+if(activeFilters.wilaya && normalize(ag.wilaya) !== normalize(activeFilters.wilaya)) return false;
+if(activeFilters.city && normalize(ag.city) !== normalize(activeFilters.city)) return false;
         if(activeFilters.type&&ag.type!==activeFilters.type) return false;
         if(activeFilters.service&&(!ag.services||ag.services.indexOf(activeFilters.service)===-1)) return false;
         if(activeFilters.search){ var q=norm(activeFilters.search); if(!norm(ag.name).includes(q)&&!norm(ag.city).includes(q)&&!norm(ag.wilaya).includes(q)) return false; }
