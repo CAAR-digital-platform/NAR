@@ -1,20 +1,15 @@
 /**
- * network-map.js
+ * network-map.js  — FIXED VERSION
  *
- * Extracted from main.js for clarity.
- * Include AFTER leaflet.min.js on network.html:
- *   <script src="network-map.js"></script>
- *
- * What changed vs the old embedded version:
- *  1. Wilaya and city dropdowns are loaded from /api/agencies/wilayas
- *     and /api/agencies/cities/:id — never hardcoded.
- *  2. Filtering now calls /api/agencies/filter?... so the SQL does
- *     the filtering correctly (no more JS string comparison bugs).
- *  3. Nearest agency calls /api/agencies/nearest?lat=&lng= — the
- *     Haversine SQL on the server is both correct and fast.
- *  4. Services array on each agency is already split by the API.
- *  5. The sidebar list and map markers stay in sync via a single
- *     renderAgencies() function that is the only writer.
+ * Bug fixes applied:
+ *   1. City dropdown now resets correctly when wilaya changes or is cleared.
+ *   2. City label resets to "City" when wilaya is deselected.
+ *   3. "Business" service tag removed — not a valid DB SET value, returns 0.
+ *   4. Search input is debounced (300ms) to avoid hammering the API.
+ *   5. resetFilters() now also clears the city menu and resets all labels.
+ *   6. applyFilter for 'wilaya_id' resets city menu + city label atomically.
+ *   7. flyTo correctly guards against missing marker without crashing.
+ *   8. loadCities called with wilaya id='' now shows empty/reset city menu.
  */
 
 const BASE_API = 'http://localhost:3000/api';
@@ -23,12 +18,13 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!document.getElementById('filterMap')) return;
 
   // ── State ──────────────────────────────────────────────────────────────────
-  let AGENCIES       = [];   // currently rendered set
-  let ALL_AGENCIES   = [];   // full unfiltered set (cached on first load)
+  let AGENCIES       = [];
+  let ALL_AGENCIES   = [];
   let heroMap        = null;
   let filterMap      = null;
-  const markerMap    = {};   // agencyId → Leaflet marker
+  const markerMap    = {};
   let activeFilters  = { wilaya_id: '', city_id: '', type: '', service: '', search: '' };
+  let searchTimer    = null;
 
   // ── Icons ──────────────────────────────────────────────────────────────────
   function makeIcon(active) {
@@ -37,16 +33,18 @@ document.addEventListener('DOMContentLoaded', function () {
     return L.divIcon({
       className: '',
       html: `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-        <path d="M${cx} 0C${cx*.45} 0 0 ${cx*.45} 0 ${cx}C0 ${cx*1.75} ${cx} ${h} ${cx} ${h}
-                 S${w} ${cx*1.75} ${w} ${cx}C${w} ${cx*.45} ${cx*1.55} 0 ${cx} 0Z"
+        <path d="M${cx} 0C${cx * .45} 0 0 ${cx * .45} 0 ${cx}
+                 C0 ${cx * 1.75} ${cx} ${h} ${cx} ${h}
+                 S${w} ${cx * 1.75} ${w} ${cx}
+                 C${w} ${cx * .45} ${cx * 1.55} 0 ${cx} 0Z"
               fill="${fill}"/>
-        <circle cx="${cx}" cy="${cx}" r="${w*.3}" fill="white"/>
-        <text x="${cx}" y="${cx + w*.14}" text-anchor="middle"
-              font-size="${w*.28}" font-weight="800" fill="${fill}"
+        <circle cx="${cx}" cy="${cx}" r="${w * .3}" fill="white"/>
+        <text x="${cx}" y="${cx + w * .14}" text-anchor="middle"
+              font-size="${w * .28}" font-weight="800" fill="${fill}"
               font-family="DM Sans,sans-serif">C</text>
       </svg>`,
-      iconSize: [w, h],
-      iconAnchor: [cx, h],
+      iconSize:    [w, h],
+      iconAnchor:  [cx, h],
       popupAnchor: [0, -(h + 4)],
     });
   }
@@ -84,14 +82,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const countEl   = document.getElementById('filterCountNum');
 
     if (countEl) countEl.textContent = list.length;
+    if (noRes)   noRes.classList.toggle('show', list.length === 0);
 
-    // Show/hide "no results"
-    if (noRes) noRes.classList.toggle('show', list.length === 0);
-
-    // ── Sidebar cards ────────────────────────────────────────────────────────
     if (container) {
-      const visSet = new Set(list.map(a => a.id));
-
       container.innerHTML = list.map(ag => `
         <div class="filter-card" data-id="${ag.id}">
           <div class="fc-header">
@@ -112,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>`
       ).join('');
 
-      // Attach events
       container.querySelectorAll('.filter-card').forEach(card => {
         const id = parseInt(card.getAttribute('data-id'), 10);
         card.addEventListener('click', () => flyTo(id));
@@ -128,17 +120,16 @@ document.addEventListener('DOMContentLoaded', function () {
           );
         });
       });
+    }
 
-      // ── Sync map markers ────────────────────────────────────────────────────
-      if (filterMap) {
-        Object.entries(markerMap).forEach(([mid, marker]) => {
-          if (visSet.has(parseInt(mid, 10))) {
-            if (!filterMap.hasLayer(marker)) marker.addTo(filterMap);
-          } else {
-            if (filterMap.hasLayer(marker)) filterMap.removeLayer(marker);
-          }
-        });
-      }
+    // Sync map markers visibility
+    if (filterMap) {
+      const visSet = new Set(list.map(a => a.id));
+      Object.entries(markerMap).forEach(([mid, marker]) => {
+        const inSet = visSet.has(parseInt(mid, 10));
+        if (inSet  && !filterMap.hasLayer(marker)) marker.addTo(filterMap);
+        if (!inSet &&  filterMap.hasLayer(marker)) filterMap.removeLayer(marker);
+      });
     }
   }
 
@@ -149,7 +140,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     filterMap.flyTo([ag.latitude, ag.longitude], 15, { animate: true, duration: 1.2 });
 
-    Object.entries(markerMap).forEach(([mid, m]) => m.setIcon(makeIcon(false)));
+    // Reset all icons then highlight the chosen one
+    Object.values(markerMap).forEach(m => m.setIcon(makeIcon(false)));
     const m = markerMap[id];
     if (m) {
       m.setIcon(makeIcon(true));
@@ -165,17 +157,18 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   window.caarFlyTo = flyTo;
 
-  // ── Build filter maps after load ─────────────────────────────────────────
+  // ── Init maps ─────────────────────────────────────────────────────────────
   function initMaps() {
     if (typeof L === 'undefined') { setTimeout(initMaps, 300); return; }
 
     // Hero mini-map
     const heroEl = document.getElementById('heroMap');
     if (heroEl) {
-      heroMap = L.map('heroMap', { center: [28.0339, 1.6596], zoom: 5,
-        scrollWheelZoom: false, attributionControl: false });
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 })
-       .addTo(heroMap);
+      heroMap = L.map('heroMap', {
+        center: [28.0339, 1.6596], zoom: 5,
+        scrollWheelZoom: false, attributionControl: false,
+      });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(heroMap);
       const dot = L.divIcon({
         className: '',
         html: '<svg width="10" height="10"><circle cx="5" cy="5" r="4.5" fill="#E8761E" stroke="white" stroke-width="1"/></svg>',
@@ -191,8 +184,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Main filter map
     const filterEl = document.getElementById('filterMap');
     if (filterEl) {
-      filterMap = L.map('filterMap', { center: [28.0339, 1.6596], zoom: 5,
-        scrollWheelZoom: true });
+      filterMap = L.map('filterMap', {
+        center: [28.0339, 1.6596], zoom: 5,
+        scrollWheelZoom: true,
+      });
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19, attribution: '© OpenStreetMap',
       }).addTo(filterMap);
@@ -222,13 +217,16 @@ document.addEventListener('DOMContentLoaded', function () {
   // ── Load wilayas for dropdown ─────────────────────────────────────────────
   async function loadWilayas() {
     try {
-      const res      = await fetch(`${BASE_API}/agencies/wilayas`);
-      const wilayas  = await res.json();
-      const menuEl   = document.getElementById('fdm-wilaya');
+      const res     = await fetch(`${BASE_API}/agencies/wilayas`);
+      const wilayas = await res.json();
+      const menuEl  = document.getElementById('fdm-wilaya');
       if (!menuEl) return;
 
       menuEl.innerHTML = `
-        <div class="fd-item active" onclick="applyFilter('wilaya_id','',this,'Wilaya')">All Wilayas</div>
+        <div class="fd-item active"
+          onclick="applyFilter('wilaya_id','',this,'Wilaya')">
+          All Wilayas
+        </div>
         ${wilayas
           .filter(w => w.agency_count > 0)
           .map(w => `
@@ -243,14 +241,33 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ── Load cities for a wilaya ──────────────────────────────────────────────
+  // FIX: when wilayaId is empty/falsy, reset the city menu back to "All Cities"
   window.loadCities = async function (wilayaId) {
-    const menuEl = document.getElementById('fdm-city');
+    const menuEl  = document.getElementById('fdm-city');
+    const labelEl = document.getElementById('fdlbl-city');
     if (!menuEl) return;
+
+    // Reset label whenever wilaya changes
+    if (labelEl) labelEl.textContent = 'City';
+
+    if (!wilayaId) {
+      // Wilaya cleared — show just a reset option
+      menuEl.innerHTML = `
+        <div class="fd-item active"
+          onclick="applyFilter('city_id','',this,'City')">
+          All Cities
+        </div>`;
+      return;
+    }
+
     try {
       const res    = await fetch(`${BASE_API}/agencies/cities/${wilayaId}`);
       const cities = await res.json();
       menuEl.innerHTML = `
-        <div class="fd-item active" onclick="applyFilter('city_id','',this,'City')">All Cities</div>
+        <div class="fd-item active"
+          onclick="applyFilter('city_id','',this,'City')">
+          All Cities
+        </div>
         ${cities
           .filter(c => c.agency_count > 0)
           .map(c => `
@@ -268,18 +285,24 @@ document.addEventListener('DOMContentLoaded', function () {
   window.applyFilter = async function (key, value, el, labelText) {
     activeFilters[key] = value;
 
-    // Reset city when wilaya changes
-    if (key === 'wilaya_id') activeFilters.city_id = '';
+    // FIX: when wilaya changes, reset city filter state AND city dropdown label
+    if (key === 'wilaya_id') {
+      activeFilters.city_id = '';
+      const cityLabel = document.getElementById('fdlbl-city');
+      if (cityLabel) cityLabel.textContent = 'City';
+      // If wilaya was cleared, also reset city menu
+      if (!value) loadCities(null);
+    }
 
     const labelEl = document.getElementById(`fdlbl-${key}`);
-    if (labelEl) labelEl.textContent = labelText || key;
+    if (labelEl) labelEl.textContent = labelText || (key.charAt(0).toUpperCase() + key.slice(1));
 
-    // Mark active item
+    // Mark active item in this dropdown
     const menu = document.getElementById(`fdm-${key}`);
     if (menu) menu.querySelectorAll('.fd-item').forEach(i => i.classList.remove('active'));
-    if (el) el.classList.add('active');
+    if (el)   el.classList.add('active');
 
-    // Close dropdown
+    // Close this dropdown
     const drop = document.getElementById(`fd-${key}`);
     if (drop) drop.classList.remove('open');
 
@@ -294,16 +317,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (activeFilters.service)   params.set('service',    activeFilters.service);
 
     try {
-      const url  = `${BASE_API}/agencies/filter?${params}`;
-      const res  = await fetch(url);
+      const res  = await fetch(`${BASE_API}/agencies/filter?${params}`);
       let   list = await res.json();
 
-      // Apply client-side search (name/city/wilaya text search)
+      // Client-side name/city/wilaya search
       if (activeFilters.search) {
         const q = normalize(activeFilters.search);
         list = list.filter(ag =>
-          normalize(ag.name).includes(q) ||
-          normalize(ag.city).includes(q) ||
+          normalize(ag.name).includes(q)   ||
+          normalize(ag.city).includes(q)   ||
           normalize(ag.wilaya).includes(q)
         );
       }
@@ -319,50 +341,81 @@ document.addEventListener('DOMContentLoaded', function () {
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
   }
 
-  // ── Type / service filters (client-side selectors in HTML use these) ──────
+  // ── Type / service filter (called from HTML onclick) ──────────────────────
   window.setFilter = function (key, val, el) {
-    applyFilter(key, val, el, val || (key.charAt(0).toUpperCase() + key.slice(1)));
+    const label = val || (key.charAt(0).toUpperCase() + key.slice(1));
+    applyFilter(key, val, el, label);
   };
 
-  // ── Name search ───────────────────────────────────────────────────────────
+  // ── Name search — debounced 300ms to avoid hammering the API ─────────────
+  // FIX: was calling fetchFiltered on every keystroke with no debounce
   window.setSearchFilter = function (val) {
-    activeFilters.search = val ? normalize(val) : '';
     const clrBtn = document.getElementById('fdSearchClear');
-    if (clrBtn) clrBtn.style.display = activeFilters.search ? 'block' : 'none';
-    fetchFiltered();
+    if (clrBtn) clrBtn.style.display = val ? 'block' : 'none';
+
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      activeFilters.search = val ? normalize(val) : '';
+      fetchFiltered();
+    }, 300);
   };
 
   window.clearNameSearch = function () {
     const inp = document.getElementById('fdSearchInput');
     if (inp) inp.value = '';
-    activeFilters.search = '';
     const clrBtn = document.getElementById('fdSearchClear');
     if (clrBtn) clrBtn.style.display = 'none';
+    activeFilters.search = '';
+    clearTimeout(searchTimer);
     fetchFiltered();
   };
 
-  // ── Reset all ─────────────────────────────────────────────────────────────
+  // ── Reset all filters ─────────────────────────────────────────────────────
+  // FIX: now resets city menu and all labels correctly
   window.resetFilters = function () {
     activeFilters = { wilaya_id: '', city_id: '', type: '', service: '', search: '' };
+    clearTimeout(searchTimer);
 
-    const inp = document.getElementById('fdSearchInput');
-    if (inp) inp.value = '';
+    const searchInp = document.getElementById('fdSearchInput');
+    if (searchInp) searchInp.value = '';
+    const clrBtn = document.getElementById('fdSearchClear');
+    if (clrBtn) clrBtn.style.display = 'none';
 
-    ['wilaya', 'city', 'type', 'service'].forEach(k => {
-      const lbl = document.getElementById(`fdlbl-${k}`);
-      if (lbl) lbl.textContent = k.charAt(0).toUpperCase() + k.slice(1);
-      const drop = document.getElementById(`fd-${k}`);
+    // Reset all dropdown labels
+    [
+      ['wilaya', 'Wilaya'],
+      ['city',   'City'],
+      ['type',   'Agency Type'],
+      ['service','Services'],
+    ].forEach(([key, label]) => {
+      const lbl = document.getElementById(`fdlbl-${key}`);
+      if (lbl) lbl.textContent = label;
+      const drop = document.getElementById(`fd-${key}`);
       if (drop) drop.classList.remove('open');
+      // Reset active state in menu items
+      const menu = document.getElementById(`fdm-${key}`);
+      if (menu) {
+        menu.querySelectorAll('.fd-item').forEach(i => i.classList.remove('active'));
+        const first = menu.querySelector('.fd-item');
+        if (first) first.classList.add('active');
+      }
     });
 
+    // Reset city menu to blank (will be populated when a wilaya is selected)
+    loadCities(null);
+
     renderAgencies(ALL_AGENCIES);
-    if (filterMap) filterMap.flyTo([28.0339, 1.6596], 5, { animate: true, duration: 1 });
-    Object.values(markerMap).forEach(m => m.setIcon(makeIcon(false)));
+
+    if (filterMap) {
+      filterMap.flyTo([28.0339, 1.6596], 5, { animate: true, duration: 1 });
+      Object.values(markerMap).forEach(m => m.setIcon(makeIcon(false)));
+    }
   };
 
   // ── Dropdown toggle ───────────────────────────────────────────────────────
   window.toggleDrop = function (id) {
-    ['fd-wilaya', 'fd-city', 'fd-type', 'fd-service'].forEach(d => {
+    const allDrops = ['fd-wilaya', 'fd-city', 'fd-type', 'fd-service'];
+    allDrops.forEach(d => {
       const el = document.getElementById(d);
       if (el && d !== id) el.classList.remove('open');
     });
@@ -379,31 +432,37 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ── Hero search autocomplete ───────────────────────────────────────────────
-  let autoItems = [];
+  let autoItems  = [];
+  let autoTimer  = null;
 
   window.onSearchInput = function (val) {
     const clrBtn = document.getElementById('sClear');
     if (clrBtn) clrBtn.classList.toggle('vis', val.length > 0);
 
-    const q = normalize(val);
-    if (q.length < 2) { closeAuto(); return; }
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(() => {
+      const q = normalize(val);
+      if (q.length < 2) { closeAuto(); return; }
 
-    autoItems = ALL_AGENCIES.filter(ag =>
-      normalize(ag.city).includes(q) ||
-      normalize(ag.wilaya).includes(q) ||
-      normalize(ag.name).includes(q)
-    ).slice(0, 6);
+      autoItems = ALL_AGENCIES.filter(ag =>
+        normalize(ag.city).includes(q)   ||
+        normalize(ag.wilaya).includes(q) ||
+        normalize(ag.name).includes(q)
+      ).slice(0, 6);
 
-    renderAuto(autoItems);
+      renderAuto(autoItems);
+    }, 200);
   };
 
-  window.onSearchKey  = e => { if (e.key === 'Escape') closeAuto(); };
-  window.clearSearch  = function () {
+  window.onSearchKey = e => { if (e.key === 'Escape') closeAuto(); };
+
+  window.clearSearch = function () {
     const inp = document.getElementById('mapSearch');
     if (inp) inp.value = '';
     document.getElementById('sClear')?.classList.remove('vis');
     closeAuto();
-    heroMap?.flyTo([28.0339, 1.6596], 5, { animate: true, duration: 1.5 });
+    clearTimeout(autoTimer);
+    if (heroMap) heroMap.flyTo([28.0339, 1.6596], 5, { animate: true, duration: 1.5 });
   };
 
   function renderAuto(items) {
@@ -457,7 +516,6 @@ document.addEventListener('DOMContentLoaded', function () {
           const res = await fetch(`${BASE_API}/agencies/nearest?lat=${lat}&lng=${lng}`);
           if (!res.ok) throw new Error('Not found');
           const nearest = await res.json();
-
           document.getElementById('filterSection')?.scrollIntoView({ behavior: 'smooth' });
           setTimeout(() => flyTo(nearest.id), 600);
         } catch {
@@ -485,10 +543,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // ── Bootstrap: load agencies + geography + init maps ─────────────────────
+  // ── Bootstrap ─────────────────────────────────────────────────────────────
   (async function bootstrap() {
     try {
-      const res  = await fetch(`${BASE_API}/agencies`);
+      const res = await fetch(`${BASE_API}/agencies`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       ALL_AGENCIES = await res.json();
     } catch (err) {

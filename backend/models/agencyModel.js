@@ -1,16 +1,14 @@
 /**
  * models/agencyModel.js
  *
- * All agency queries.  Uses the normalized schema:
+ * All agency queries. Uses the normalized schema:
  *   agencies → cities → wilayas
  *
- * Key change from v1:
- *   - NO more string-based wilaya/city on the agencies table.
- *     We JOIN to cities and wilayas for consistent names.
- *   - services is a MySQL SET column; it arrives as a plain
- *     comma-separated string which we split in the API layer.
- *   - Nearest-agency uses the Haversine approximation in SQL
- *     (fast enough for Algeria's ~46 agencies; no PostGIS needed).
+ * BUG FIXES applied in this version:
+ *   1. getNearestAgency: Haversine params were [lat, lat, lng] — WRONG.
+ *      Fixed to [lat, lng, lat] matching the SQL placeholders.
+ *   2. getFilteredAgencies: missing opening_hours, fax, email in SELECT.
+ *      Added for consistency with getAllAgencies.
  */
 
 const pool = require('../db');
@@ -44,11 +42,6 @@ const BASE_SELECT = `
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. GET ALL AGENCIES (for map load)
 // ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Return every active agency with coordinates.
- * Used by GET /api/agencies
- */
 async function getAllAgencies() {
   const [rows] = await pool.execute(
     `${BASE_SELECT} ORDER BY w.name_fr, c.name_fr, a.agency_code`
@@ -59,16 +52,6 @@ async function getAllAgencies() {
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. GET FILTERED AGENCIES
 // ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Filter agencies by any combination of:
- *   wilaya_id, city_id, agency_type, service (one service tag)
- *
- * All params are optional.  Passed as an object:
- *   { wilaya_id, city_id, type, service }
- *
- * Used by GET /api/agencies?wilaya_id=5&type=Main+Agency
- */
 async function getFilteredAgencies({ wilaya_id, city_id, type, service } = {}) {
   const conditions = ['a.is_active = 1'];
   const params = [];
@@ -96,9 +79,11 @@ async function getFilteredAgencies({ wilaya_id, city_id, type, service } = {}) {
 
   const whereClause = conditions.join(' AND ');
 
+  // FIX: added fax, email, opening_hours — consistent with BASE_SELECT
   const [rows] = await pool.execute(
     `SELECT
        a.id, a.agency_code, a.name, a.address, a.phone,
+       a.fax, a.email,
        a.agency_type AS type, a.services, a.opening_hours,
        w.id AS wilaya_id, w.name_fr AS wilaya,
        c.id AS city_id, c.name_fr  AS city,
@@ -116,19 +101,22 @@ async function getFilteredAgencies({ wilaya_id, city_id, type, service } = {}) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. NEAREST AGENCY
+// 3. NEAREST AGENCY  ← BUG FIX: parameter order was [lat, lat, lng]
 // ─────────────────────────────────────────────────────────────────────────────
-
 /**
- * Find the closest active agency to (lat, lng) using the Haversine formula.
+ * Haversine formula in SQL:
+ *   6371 * ACOS(
+ *     COS(RADIANS(userLat))  * COS(RADIANS(a.latitude))
+ *   * COS(RADIANS(a.longitude) - RADIANS(userLng))   ← lng is the 2nd ?
+ *   + SIN(RADIANS(userLat))  * SIN(RADIANS(a.latitude))  ← lat is the 3rd ?
+ *   )
  *
- * optionally filter to agencies that handle a specific service
- * (e.g. 'Claims' when auto-assigning a claim).
- *
- * Returns a single agency row + distance_km, or null.
+ * Correct binding order: [lat, lng, lat]
+ * Previous (broken) order was: [lat, lat, lng]
  */
 async function getNearestAgency(lat, lng, service = null) {
-  const params = [lat, lat, lng];
+  // Correct order: placeholder 1 = lat (outer COS), 2 = lng (longitude diff), 3 = lat (SIN)
+  const params = [lat, lng, lat];
 
   let serviceClause = '';
   if (service) {
@@ -139,15 +127,17 @@ async function getNearestAgency(lat, lng, service = null) {
   const [rows] = await pool.execute(
     `SELECT
        a.id, a.agency_code, a.name, a.address, a.phone,
+       a.fax, a.email,
        a.agency_type AS type, a.services, a.opening_hours,
-       w.name_fr AS wilaya, c.name_fr AS city,
+       w.id AS wilaya_id, w.name_fr AS wilaya,
+       c.id AS city_id, c.name_fr  AS city,
        CAST(a.latitude  AS DOUBLE) AS latitude,
        CAST(a.longitude AS DOUBLE) AS longitude,
        (
          6371 * ACOS(
-           COS(RADIANS(?)) * COS(RADIANS(a.latitude)) *
-           COS(RADIANS(a.longitude) - RADIANS(?)) +
-           SIN(RADIANS(?)) * SIN(RADIANS(a.latitude))
+           COS(RADIANS(?)) * COS(RADIANS(a.latitude))
+         * COS(RADIANS(a.longitude) - RADIANS(?))
+         + SIN(RADIANS(?)) * SIN(RADIANS(a.latitude))
          )
        ) AS distance_km
      FROM agencies a
@@ -166,7 +156,6 @@ async function getNearestAgency(lat, lng, service = null) {
 // ─────────────────────────────────────────────────────────────────────────────
 // 4. GET ONE AGENCY BY ID
 // ─────────────────────────────────────────────────────────────────────────────
-
 async function getAgencyById(id) {
   const [rows] = await pool.execute(
     `${BASE_SELECT} AND a.id = ?`,
@@ -178,7 +167,6 @@ async function getAgencyById(id) {
 // ─────────────────────────────────────────────────────────────────────────────
 // 5. GET ALL WILAYAS (for filter dropdown)
 // ─────────────────────────────────────────────────────────────────────────────
-
 async function getWilayas() {
   const [rows] = await pool.execute(
     `SELECT w.id, w.code, w.name_fr AS name,
@@ -186,6 +174,7 @@ async function getWilayas() {
      FROM wilayas w
      LEFT JOIN agencies a ON a.wilaya_id = w.id AND a.is_active = 1
      GROUP BY w.id
+     HAVING agency_count > 0
      ORDER BY w.name_fr`
   );
   return rows;
@@ -194,7 +183,6 @@ async function getWilayas() {
 // ─────────────────────────────────────────────────────────────────────────────
 // 6. GET CITIES FOR A WILAYA
 // ─────────────────────────────────────────────────────────────────────────────
-
 async function getCitiesByWilaya(wilayaId) {
   const [rows] = await pool.execute(
     `SELECT c.id, c.name_fr AS name,
@@ -203,6 +191,7 @@ async function getCitiesByWilaya(wilayaId) {
      LEFT JOIN agencies a ON a.city_id = c.id AND a.is_active = 1
      WHERE c.wilaya_id = ?
      GROUP BY c.id
+     HAVING agency_count > 0
      ORDER BY c.name_fr`,
     [parseInt(wilayaId, 10)]
   );
