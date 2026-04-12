@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CAAR — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --hdr-orange: #E8761E;
+      --btn-radius: 8px;
+      --white: #ffffff;
+      --dark: #1a1a1a;
+      --gray: #888;
+      --border: #e8e0d8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f9f6f2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 600px 400px at 20% 20%, rgba(232,118,30,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 500px at 80% 80%, rgba(232,118,30,0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .login-card {
+      position: relative;
+      z-index: 1;
+      background: #fff;
+      border-radius: 20px;
+      padding: 48px 44px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.09), 0 4px 16px rgba(232,118,30,0.08);
+      border: 1px solid #f0ece6;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeInUp 0.5s ease forwards;
+    }
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+    .login-logo img { height: 64px; object-fit: contain; }
+    .login-logo-fallback {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--hdr-orange);
+    }
+
+    .login-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--dark);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .login-subtitle {
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--gray);
+      margin-bottom: 32px;
+    }
+
+    .login-field { margin-bottom: 18px; }
+    .login-field label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 7px;
+    }
+    .login-input-wrap { position: relative; }
+    .login-input-wrap > svg:first-child {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: #bbb;
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+    .login-input-wrap:focus-within > svg:first-child { color: var(--hdr-orange); }
+
+    .login-input {
+      width: 100%;
+      padding: 12px 14px 12px 42px;
+      border: 2px solid var(--border);
+      border-radius: var(--btn-radius);
+      font-size: 0.92rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--dark);
+      background: #fdfcfb;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .login-input:focus {
+      border-color: var(--hdr-orange);
+      box-shadow: 0 0 0 3px rgba(232,118,30,0.12);
+      background: #fff;
+    }
+    .login-input.has-icon-right { padding-right: 42px; }
+
+    .toggle-pw {
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; color: #bbb; padding: 0;
+      display: flex; align-items: center;
+      transition: color 0.2s;
+    }
+    .toggle-pw:hover { color: var(--hdr-orange); }
+
+    .login-field-error {
+      display: none;
+      font-size: 0.72rem;
+      color: #e53e3e;
+      margin-top: 5px;
+      font-weight: 500;
+      align-items: center;
+      gap: 4px;
+    }
+    .login-field-error.visible { display: flex; }
+    .login-field-error::before { content: "✕"; font-size: 0.68rem; }
+    .login-input.field-error {
+      border-color: #e53e3e !important;
+      box-shadow: 0 0 0 3px rgba(229,62,62,0.1) !important;
+    }
+
+    .login-error-msg {
+      display: none;
+      background: #fff5f5;
+      border: 1px solid #fed7d7;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: #c0392b;
+      font-weight: 500;
+      margin-bottom: 18px;
+      align-items: center;
+      gap: 8px;
+    }
+    .login-error-msg.visible { display: flex; }
+
+    .btn-login-submit {
+      width: 100%;
+      padding: 13px;
+      background: var(--hdr-orange);
+      border: 2px solid var(--hdr-orange);
+      border-radius: var(--btn-radius);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      position: relative;
+      margin-top: 6px;
+    }
+    .btn-login-submit:hover:not(:disabled) {
+      background: #e06d00;
+      border-color: #e06d00;
+      transform: translateY(-1px);
+    }
+    .btn-login-submit:disabled { opacity: 0.75; cursor: wait; }
+    .btn-login-submit.loading::after {
+      content: '';
+      position: absolute;
+      right: 18px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+    .login-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0 20px;
+      color: #ccc; font-size: 0.78rem;
+    }
+    .login-divider::before, .login-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .login-back {
+      display: block; text-align: center;
+      font-size: 0.82rem; color: var(--gray);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .login-back:hover { color: var(--hdr-orange); }
+    .login-back span  { color: var(--hdr-orange); font-weight: 600; }
+
+    .login-hint {
+      margin-top: 24px;
+      background: #f9f6f2;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.75rem;
+      color: #999;
+      border: 1px dashed #e8e0d8;
+    }
+    .login-hint strong { color: var(--hdr-orange); display: block; margin-bottom: 6px; }
+    .login-hint code {
+      background: #eee; padding: 1px 5px;
+      border-radius: 4px; font-size: 0.72rem;
+    }
+    .login-hint-row { margin-bottom: 3px; }
+
+    @media (max-width: 500px) {
+      .login-card { padding: 36px 24px; margin: 16px; }
+      .login-title { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+
+  <!-- Logo -->
+  <div class="login-logo">
+    <img src="img/grand_logo.png" alt="CAAR"
+         onerror="this.style.display='none'; document.querySelector('.login-logo-fallback').style.display='block'"/>
+    <span class="login-logo-fallback" style="display:none;">CAAR</span>
+  </div>
+
+  <h1 class="login-title">Login</h1>
+  <p class="login-subtitle">Access your account</p>
+
+  <!-- Erreur globale -->
+  <div class="login-error-msg" id="globalError">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <span id="globalErrorText">Email ou mot de passe invalide.</span>
+  </div>
+
+  <form id="loginForm" novalidate>
+
+    <!-- Email -->
+    <div class="login-field">
+      <label for="loginEmail">Adresse email</label>
+      <div class="login-input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        <input type="email" id="loginEmail" class="login-input"
+               placeholder="vous@exemple.com" autocomplete="email" required/>
+      </div>
+      <div class="login-field-error" id="err-email">Veuillez entrer une adresse email valide.</div>
+    </div>
+
+    <!-- Password -->
+    <div class="login-field">
+      <label for="loginPassword">Mot de passe</label>
+      <div class="login-input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <input type="password" id="loginPassword" class="login-input has-icon-right"
+               placeholder="••••••••" autocomplete="current-password" required/>
+        <button type="button" class="toggle-pw" id="togglePw" aria-label="Afficher le mot de passe">
+          <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="login-field-error" id="err-password">Veuillez entrer votre mot de passe.</div>
+    </div>
+
+    <button type="submit" class="btn-login-submit" id="submitBtn">Login</button>
+
+  </form>
+
+  <div class="login-divider">ou</div>
+
+<a href="register.html" class="btn-login-submit" 
+   style="display:block; text-align:center; text-decoration:none; background:transparent; color:var(--hdr-orange); border:2px solid var(--hdr-orange); margin-bottom:12px;">
+  Créer un compte
+</a>
+
+<a href="index.html" class="login-back">← Retour au <span>site CAAR</span></a>
+
+  <!-- Hint test -->
+  <div class="login-hint">
+    <strong>🧪 Mode test</strong>
+    <div class="login-hint-row"><code>admin@caar.dz</code> → rôle <b>admin</b> → <code>/admin-dashboard</code></div>
+    <div class="login-hint-row"><code>expert@caar.dz</code> → rôle <b>expert</b> → <code>/expert-dashboard</code></div>
+    <div class="login-hint-row"><code>client@caar.dz</code> → rôle <b>client</b> → <code>/client-dashboard</code></div>
+  </div>
+
+</div>
+
+<script>
+
+/* ══════════════════════════════════════
+   TOGGLE PASSWORD
+══════════════════════════════════════ */
+document.getElementById('togglePw').addEventListener('click', function () {
+  const input = document.getElementById('loginPassword');
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  this.innerHTML = isHidden
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/>
+       </svg>`
+    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+       </svg>`;
+});
+
+/* ══════════════════════════════════════
+   VALIDATION HELPERS
+══════════════════════════════════════ */
+function setFieldError(inputId, errorId, show) {
+  document.getElementById(inputId).classList.toggle('field-error', show);
+  document.getElementById(errorId).classList.toggle('visible', show);
+}
+function showGlobalError(msg) {
+  document.getElementById('globalErrorText').textContent = msg;
+  document.getElementById('globalError').classList.add('visible');
+}
+function hideGlobalError() {
+  document.getElementById('globalError').classList.remove('visible');
+}
+
+document.getElementById('loginEmail').addEventListener('input', () => {
+  setFieldError('loginEmail', 'err-email', false);
+  hideGlobalError();
+});
+document.getElementById('loginPassword').addEventListener('input', () => {
+  setFieldError('loginPassword', 'err-password', false);
+  hideGlobalError();
+});
+
+/* ══════════════════════════════════════
+   RÔLE SELON EMAIL
+══════════════════════════════════════ */
+function getRoleFromEmail(email) {
+  const e = email.toLowerCase();
+  if (e.includes('admin'))  return 'admin';
+  if (e.includes('expert')) return 'expert';
+  return 'client';
+}
+
+/* ══════════════════════════════════════
+   SUBMIT
+══════════════════════════════════════ */
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  hideGlobalError();
+
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const btn      = document.getElementById('submitBtn');
+
+  /* Validation */
+  let hasError = false;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    setFieldError('loginEmail', 'err-email', true);
+    hasError = true;
+  }
+  if (!password) {
+    setFieldError('loginPassword', 'err-password', true);
+    hasError = true;
+  }
+  if (hasError) return;
+
+  /* Loading */
+  btn.disabled = true;
+  btn.textContent = 'Logging in...';
+  btn.classList.add('loading');
+
+  /* Simulation délai API */
+  await new Promise(r => setTimeout(r, 1000));
+
+  /* Créer et stocker l'utilisateur */
+  const role = getRoleFromEmail(email);
+  const user = {
+    name: email.split('@')[0],
+    role: role
+  };
+
+  /* ✅ Compatible avec renderUserState() du header */
+  localStorage.setItem('user', JSON.stringify(user));
+
+  /* Redirection */
+  window.location.href = 'index.html';
+});
+
+</script>
+</body>
+</html>

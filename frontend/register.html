@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CAAR — Créer un compte</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --orange: #E8761E;
+      --orange-dark: #e06d00;
+      --radius: 8px;
+      --dark: #1a1a1a;
+      --gray: #888;
+      --border: #e8e0d8;
+      --error: #e53e3e;
+      --success: #38a169;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f9f6f2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 600px 400px at 15% 15%, rgba(232,118,30,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 500px at 85% 85%, rgba(232,118,30,0.05) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── Card ── */
+    .reg-card {
+      position: relative; z-index: 1;
+      background: #fff;
+      border-radius: 20px;
+      padding: 44px 40px;
+      width: 100%; max-width: 480px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.09), 0 4px 16px rgba(232,118,30,0.08);
+      border: 1px solid #f0ece6;
+      opacity: 0; transform: translateY(24px);
+      animation: fadeUp 0.5s ease forwards;
+    }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Logo ── */
+    .reg-logo {
+      display: flex; justify-content: center;
+      margin-bottom: 24px;
+    }
+    .reg-logo img { height: 58px; object-fit: contain; }
+    .reg-logo-fallback {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem; font-weight: 700; color: var(--orange);
+      display: none;
+    }
+
+    /* ── Titre ── */
+    .reg-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem; font-weight: 700;
+      color: var(--dark); text-align: center; margin-bottom: 4px;
+    }
+    .reg-subtitle {
+      text-align: center; font-size: 0.85rem;
+      color: var(--gray); margin-bottom: 28px;
+    }
+
+    /* ── Champs ── */
+    .reg-field { margin-bottom: 16px; }
+    .reg-field label {
+      display: block; font-size: 0.8rem; font-weight: 600;
+      color: var(--dark); margin-bottom: 6px;
+    }
+    .reg-input-wrap { position: relative; }
+    .reg-input-wrap > svg.field-icon {
+      position: absolute; left: 13px; top: 50%;
+      transform: translateY(-50%);
+      color: #bbb; pointer-events: none;
+      transition: color 0.2s;
+    }
+    .reg-input-wrap:focus-within > svg.field-icon { color: var(--orange); }
+
+    .reg-input {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.9rem; font-family: 'DM Sans', sans-serif;
+      color: var(--dark); background: #fdfcfb; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .reg-input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(232,118,30,0.12);
+      background: #fff;
+    }
+    .reg-input.has-pw-toggle { padding-right: 42px; }
+    .reg-input.field-error {
+      border-color: var(--error) !important;
+      box-shadow: 0 0 0 3px rgba(229,62,62,0.1) !important;
+    }
+    .reg-input.field-ok { border-color: var(--success) !important; }
+
+    /* ── Toggle password ── */
+    .toggle-pw {
+      position: absolute; right: 13px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: #bbb; display: flex; align-items: center;
+      transition: color 0.2s; padding: 0;
+    }
+    .toggle-pw:hover { color: var(--orange); }
+
+    /* ── Erreurs ── */
+    .reg-field-error {
+      display: none; font-size: 0.71rem; color: var(--error);
+      margin-top: 4px; font-weight: 500; align-items: center; gap: 4px;
+    }
+    .reg-field-error.visible { display: flex; }
+    .reg-field-error::before { content: "✕"; font-size: 0.65rem; }
+
+    /* ── 2 colonnes ── */
+    .reg-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+
+    /* ── Bouton submit ── */
+    .btn-reg {
+      width: 100%; padding: 13px;
+      background: var(--orange); border: 2px solid var(--orange);
+      border-radius: var(--radius);
+      color: #fff; font-size: 0.95rem; font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: background 0.2s, transform 0.15s;
+      position: relative; margin-top: 8px;
+    }
+    .btn-reg:hover:not(:disabled) {
+      background: var(--orange-dark); border-color: var(--orange-dark);
+      transform: translateY(-1px);
+    }
+    .btn-reg:disabled { opacity: 0.75; cursor: wait; }
+    .btn-reg.loading::after {
+      content: ''; position: absolute;
+      right: 18px; top: 50%; transform: translateY(-50%);
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+    /* ── Succès ── */
+    .reg-success {
+      display: none;
+      background: #f0fff4; border: 1px solid #9ae6b4;
+      border-radius: 10px; padding: 14px 16px;
+      font-size: 0.85rem; color: #276749;
+      align-items: center; gap: 10px;
+      margin-top: 16px; font-weight: 500;
+    }
+    .reg-success.visible { display: flex; }
+
+    /* ── Lien login ── */
+    .reg-login-link {
+      display: block; text-align: center;
+      font-size: 0.82rem; color: var(--gray);
+      text-decoration: none; margin-top: 20px;
+      transition: color 0.2s;
+    }
+    .reg-login-link:hover { color: var(--orange); }
+    .reg-login-link span { color: var(--orange); font-weight: 600; }
+
+    /* ── Responsive ── */
+    @media (max-width: 500px) {
+      .reg-card { padding: 32px 20px; }
+      .reg-row  { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="reg-card">
+
+  <!-- Logo -->
+  <div class="reg-logo">
+    <img src="img/grand_logo.png" alt="CAAR"
+         onerror="this.style.display='none';document.querySelector('.reg-logo-fallback').style.display='block'"/>
+    <span class="reg-logo-fallback">CAAR</span>
+  </div>
+
+  <!-- Titre -->
+  <h1 class="reg-title">Créer un compte</h1>
+  <p class="reg-subtitle">Remplissez vos informations pour accéder à votre espace client</p>
+
+  <!-- Formulaire -->
+  <form id="regForm" novalidate>
+
+    <!-- Nom complet -->
+    <div class="reg-field">
+      <label for="regName">Nom complet</label>
+      <div class="reg-input-wrap">
+        <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        <input type="text" id="regName" class="reg-input"
+               placeholder="ex : Ahmed Benali" autocomplete="name"/>
+      </div>
+      <div class="reg-field-error" id="err-name">Minimum 3 caractères requis.</div>
+    </div>
+
+    <!-- Email -->
+    <div class="reg-field">
+      <label for="regEmail">Adresse email</label>
+      <div class="reg-input-wrap">
+        <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        <input type="email" id="regEmail" class="reg-input"
+               placeholder="vous@exemple.com" autocomplete="email"/>
+      </div>
+      <div class="reg-field-error" id="err-email">Adresse email invalide.</div>
+    </div>
+
+    <!-- Téléphone + Date naissance -->
+    <div class="reg-row">
+      <div class="reg-field">
+        <label for="regPhone">Téléphone</label>
+        <div class="reg-input-wrap">
+          <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          <input type="tel" id="regPhone" class="reg-input"
+                 placeholder="+213 6XX XXX XXX" autocomplete="tel"/>
+        </div>
+        <div class="reg-field-error" id="err-phone">Numéro invalide.</div>
+      </div>
+
+      <div class="reg-field">
+        <label for="regDob">Date de naissance</label>
+        <div class="reg-input-wrap">
+          <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <input type="date" id="regDob" class="reg-input"/>
+        </div>
+        <div class="reg-field-error" id="err-dob">Vous devez avoir au moins 18 ans.</div>
+      </div>
+    </div>
+
+    <!-- Mot de passe -->
+    <div class="reg-field">
+      <label for="regPassword">Mot de passe</label>
+      <div class="reg-input-wrap">
+        <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <input type="password" id="regPassword" class="reg-input has-pw-toggle"
+               placeholder="Minimum 6 caractères" autocomplete="new-password"/>
+        <button type="button" class="toggle-pw" id="togglePw" aria-label="Afficher">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="reg-field-error" id="err-password">Minimum 6 caractères requis.</div>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" class="btn-reg" id="submitBtn">Créer mon compte</button>
+
+  </form>
+
+  <!-- Message succès -->
+  <div class="reg-success" id="successMsg">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    Compte créé avec succès ! Redirection en cours...
+  </div>
+
+  <!-- Lien login -->
+  <a href="login.html" class="reg-login-link">Déjà un compte ? <span>Se connecter</span></a>
+
+</div>
+
+<script>
+
+/* ── Toggle password ── */
+document.getElementById('togglePw').addEventListener('click', function () {
+  const inp = document.getElementById('regPassword');
+  const hidden = inp.type === 'password';
+  inp.type = hidden ? 'text' : 'password';
+  this.innerHTML = hidden
+    ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/>
+       </svg>`
+    : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+       </svg>`;
+});
+
+/* ── Validation helpers ── */
+function setErr(inputId, errId, show) {
+  document.getElementById(inputId).classList.toggle('field-error', show);
+  document.getElementById(inputId).classList.toggle('field-ok', !show);
+  document.getElementById(errId).classList.toggle('visible', show);
+}
+
+function isAdult(dob) {
+  if (!dob) return false;
+  const today = new Date();
+  const birth = new Date(dob);
+  const age   = today.getFullYear() - birth.getFullYear();
+  const m     = today.getMonth() - birth.getMonth();
+  return age > 18 || (age === 18 && m >= 0);
+}
+
+/* ── Live clear erreurs ── */
+['regName','regEmail','regPhone','regDob','regPassword'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    document.getElementById(id).classList.remove('field-error');
+    const errMap = {
+      regName: 'err-name', regEmail: 'err-email',
+      regPhone: 'err-phone', regDob: 'err-dob', regPassword: 'err-password'
+    };
+    document.getElementById(errMap[id])?.classList.remove('visible');
+  });
+});
+
+/* ── Submit ── */
+document.getElementById('regForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const name     = document.getElementById('regName').value.trim();
+  const email    = document.getElementById('regEmail').value.trim();
+  const phone    = document.getElementById('regPhone').value.trim();
+  const dob      = document.getElementById('regDob').value;
+  const password = document.getElementById('regPassword').value;
+
+  let hasError = false;
+
+  if (name.length < 3)                                { setErr('regName',     'err-name',     true); hasError = true; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))     { setErr('regEmail',    'err-email',    true); hasError = true; }
+  if (!/^[0-9\s+\-()]{8,15}$/.test(phone))           { setErr('regPhone',    'err-phone',    true); hasError = true; }
+  if (!isAdult(dob))                                  { setErr('regDob',      'err-dob',      true); hasError = true; }
+  if (password.length < 6)                            { setErr('regPassword', 'err-password', true); hasError = true; }
+
+  if (hasError) return;
+
+  /* ── Loading ── */
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Création en cours...';
+  btn.classList.add('loading');
+
+  await new Promise(r => setTimeout(r, 1000));
+
+  /* ── Créer utilisateur (role toujours "client" pour l'inscription) ── */
+  const user = {
+    name: name,
+    role: 'client'
+  };
+
+  /* ── Stocker dans localStorage — compatible avec renderUserState() ── */
+  localStorage.setItem('user', JSON.stringify(user));
+
+  /* ── Afficher succès ── */
+  btn.disabled = false;
+  btn.textContent = '✓ Compte créé !';
+  btn.classList.remove('loading');
+  document.getElementById('successMsg').classList.add('visible');
+
+  /* ── Redirection vers login après 1.5s ── */
+  setTimeout(() => {
+    window.location.href = 'login.html';
+  }, 1500);
+});
+
+</script>
+</body>
+</html>

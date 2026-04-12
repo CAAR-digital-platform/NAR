@@ -47,7 +47,6 @@
     .cf-textarea.field-ok {
       border-color: #38a169 !important;
     }
-
     /* ── Character counter ── */
     .cf-char-count {
       font-size: 0.68rem;
@@ -98,6 +97,30 @@
       <div class="top-row">
         <a href="network.html" class="btn-top">Find Agency</a>
         <a href="contact.html" class="btn-top">Contact Us</a>
+        <a href="login.html" class="btn-top" id="loginBtn">Login</a>
+
+  <div class="user-menu" id="userMenu" style="display:none;">
+    <button class="user-trigger" id="userTrigger">
+      <div class="user-avatar" id="userAvatar"></div>
+      <span class="user-name" id="userName"></span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="user-dropdown" id="userDropdown">
+      <div class="user-dropdown-header">
+        <span id="dropUserName"></span>
+        <span class="user-role-badge" id="dropUserRole"></span>
+      </div>
+      <hr class="user-dropdown-divider"/>
+      <a class="user-dropdown-item" id="dashboardLink">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <button class="user-dropdown-item user-logout" id="logoutBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+    </div>
+  </div>
       </div>
       <hr class="divider"/>
       <div class="bottom-row">
@@ -181,231 +204,205 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 
-/* ═══════════════════════════════════════
-   UTILS
-═══════════════════════════════════════ */
+// Au chargement, lire le localStorage
+const savedUser = localStorage.getItem('user');
+if (savedUser) currentUser = JSON.parse(savedUser);
+/* ══════════════════════════════════════
+   ÉTAT UTILISATEUR SIMULÉ
+   Change role en : "admin" | "expert" | "client" | null
+══════════════════════════════════════ */
+let currentUser = { name: "John Doe", role: "admin" };
+// let currentUser = null; // ← décommenter pour tester déconnecté
+
+const DASHBOARD_ROUTES = {
+  admin:  '/admin-dashboard',
+  expert: '/expert-dashboard',
+  client: '/client-dashboard',
+};
+
+/* ── Rendu de l'état ── */
+function renderUserState() {
+  const loginBtn   = document.getElementById('loginBtn');
+  const userMenu   = document.getElementById('userMenu');
+  const userAvatar = document.getElementById('userAvatar');
+  const userName   = document.getElementById('userName');
+  const dropName   = document.getElementById('dropUserName');
+  const dropRole   = document.getElementById('dropUserRole');
+  const dashLink   = document.getElementById('dashboardLink');
+
+  if (currentUser) {
+    loginBtn.style.display = 'none';
+    userMenu.style.display = 'block';
+    const initials = currentUser.name.split(' ').map(w => w[0]).join('').toUpperCase();
+    userAvatar.textContent = initials;
+    userName.textContent   = currentUser.name.split(' ')[0];
+    dropName.textContent   = currentUser.name;
+    dropRole.textContent   = currentUser.role;
+    dashLink.href          = DASHBOARD_ROUTES[currentUser.role] || '/dashboard';
+  } else {
+    loginBtn.style.display = 'inline-block';
+    userMenu.style.display = 'none';
+  }
+}
+
+/* ── Toggle dropdown ── */
+function initUserMenu() {
+  const trigger   = document.getElementById('userTrigger');
+  const menu      = document.getElementById('userMenu');
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (!trigger) return;
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.classList.toggle('open');
+  });
+
+  document.addEventListener('click', () => menu.classList.remove('open'));
+
+  logoutBtn.addEventListener('click', () => {
+    currentUser = null;
+    menu.classList.remove('open');
+    renderUserState();
+  });
+}
+
+/* ══════════════════════════════════════
+   MOBILE NAV
+══════════════════════════════════════ */
+function toggleMobileMenu() {
+  document.getElementById('mobileNav').classList.toggle('open');
+  document.getElementById('mobileNavOverlay').classList.toggle('open');
+}
+
+/* ══════════════════════════════════════
+   SEARCH BAR
+══════════════════════════════════════ */
+function initSearch() {
+  const searchBtn = document.getElementById('searchBtn');
+  const searchBar = document.getElementById('searchBar');
+  if (!searchBtn || !searchBar) return;
+
+  searchBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    searchBar.classList.toggle('open');
+    if (searchBar.classList.contains('open')) {
+      setTimeout(() => searchBar.querySelector('.search-input')?.focus(), 100);
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!searchBar.contains(e.target) && !searchBtn.contains(e.target)) {
+      searchBar.classList.remove('open');
+    }
+  });
+}
+
+/* ══════════════════════════════════════
+   MAP
+══════════════════════════════════════ */
+function initMap() {
+  const mapEl = document.getElementById('hqMap');
+  if (!mapEl || typeof L === 'undefined') return;
+  const HQ = { lat: 36.767043, lng: 3.052792 };
+  const map = L.map('hqMap', { center: [HQ.lat, HQ.lng], zoom: 16, scrollWheelZoom: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  L.marker([HQ.lat, HQ.lng]).addTo(map).bindPopup("CAAR Headquarters").openPopup();
+}
+
+/* ══════════════════════════════════════
+   LANG SWITCHER
+══════════════════════════════════════ */
+function initLang() {
+  document.querySelectorAll('.lang-menu li').forEach(item => {
+    item.addEventListener('click', function () {
+      document.getElementById('currentLang').textContent = this.getAttribute('data-lang');
+    });
+  });
+}
+
+/* ══════════════════════════════════════
+   VALIDATION FORM (contact.html)
+══════════════════════════════════════ */
 function showError(inputId, errorId) {
   const input = document.getElementById(inputId);
   const errEl = document.getElementById(errorId);
-  if (input) {
-    input.classList.add('field-error');
-    input.classList.remove('field-ok');
-  }
+  if (input) { input.classList.add('field-error'); input.classList.remove('field-ok'); }
   if (errEl) errEl.classList.add('visible');
 }
-
 function clearError(inputId, errorId) {
   const input = document.getElementById(inputId);
   const errEl = document.getElementById(errorId);
-  if (input) {
-    input.classList.remove('field-error');
-    input.classList.add('field-ok');
-  }
+  if (input) { input.classList.remove('field-error'); input.classList.add('field-ok'); }
   if (errEl) errEl.classList.remove('visible');
 }
-
-function liveValidate(inputId, errorId, validatorFn) {
-  const el = document.getElementById(inputId);
-  if (!el) return;
-
-  el.addEventListener('input', () => {
-    if (validatorFn(el.value.trim())) {
-      clearError(inputId, errorId);
-    }
-  });
-
-  el.addEventListener('blur', () => {
-    if (el.value.trim() && !validatorFn(el.value.trim())) {
-      showError(inputId, errorId);
-    } else if (el.value.trim()) {
-      clearError(inputId, errorId);
-    }
-  });
-}
-
-/* ═══════════════════════════════════════
-   CHAR COUNTER
-═══════════════════════════════════════ */
-function updateCharCount(textarea) {
-  const count = textarea.value.length;
-  const max = parseInt(textarea.getAttribute('maxlength')) || 2000;
-  const display = document.getElementById('cfCharCount');
-  if (!display) return;
-
-  display.textContent = `${count} / ${max}`;
-  display.className = 'cf-char-count';
-
-  if (count > max * 0.9) display.classList.add('warn');
-  if (count >= max) {
-    display.classList.remove('warn');
-    display.classList.add('over');
-  }
-}
-
-/* ═══════════════════════════════════════
-   VALIDATION RULES
-═══════════════════════════════════════ */
 const RULES = {
   subject: v => v.length > 0,
-  name: v => /^[\p{L}0-9\s'\-]{3,100}$/u.test(v),
-  email: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
-  phone: v => v === '' || /^[0-9\s+\-()]{8,20}$/.test(v),
+  name:    v => /^[\p{L}0-9\s'\-]{3,100}$/u.test(v),
+  email:   v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+  phone:   v => v === '' || /^[0-9\s+\-()]{8,20}$/.test(v),
   message: v => v.length >= 10 && v.length <= 2000,
 };
-
-/* ═══════════════════════════════════════
-   INIT
-═══════════════════════════════════════ */
-
-document.addEventListener('DOMContentLoaded', () => {
-
-  const searchBtn   = document.getElementById('searchBtn');
-  const searchClose = document.getElementById('searchClose');
-  const searchBar   = document.getElementById('searchBar');
-
-  // ouvrir
-  searchBtn.onclick = () => {
-    searchBar.classList.add('open');
-  };
-
-  // fermer avec X
-  searchClose.onclick = (e) => {
-    e.stopPropagation(); // 🔥 évite conflit
-    searchBar.classList.remove('open');
-  };
-
-});
-document.addEventListener('click', function (e) {
-  const searchBar = document.getElementById('searchBar');
-  const searchBtn = document.getElementById('searchBtn');
-
-  if (!searchBar || !searchBtn) return;
-
-  if (!searchBar.contains(e.target) && !searchBtn.contains(e.target)) {
-    searchBar.classList.remove('open');
-  }
-});
-  /* MAP SAFE INIT */
-  const mapEl = document.getElementById('hqMap');
-  if (mapEl) {
-    const HQ = { lat: 36.767043, lng: 3.052792 };
-
-    const map = L.map('hqMap', {
-      center: [HQ.lat, HQ.lng],
-      zoom: 16,
-      scrollWheelZoom: false
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
-      .addTo(map);
-
-    L.marker([HQ.lat, HQ.lng]).addTo(map)
-      .bindPopup("CAAR Headquarters")
-      .openPopup();
-  }
-
-
-
-/* ═══════════════════════════════════════
-   SUBMIT FORM
-═══════════════════════════════════════ */
+function updateCharCount(textarea) {
+  const count = textarea.value.length;
+  const max   = parseInt(textarea.getAttribute('maxlength')) || 2000;
+  const display = document.getElementById('cfCharCount');
+  if (!display) return;
+  display.textContent = `${count} / ${max}`;
+  display.className = 'cf-char-count';
+  if (count > max * 0.9) display.classList.add('warn');
+  if (count >= max) { display.classList.remove('warn'); display.classList.add('over'); }
+}
 async function submitForm() {
-
-  const subject = document.getElementById('cfSubject').value;
-  const name = document.getElementById('cfName').value.trim();
-  const email = document.getElementById('cfEmail').value.trim();
-  const phone = document.getElementById('cfPhone').value.trim();
-  const message = document.getElementById('cfMessage').value.trim();
-  const consent = document.getElementById('cfConsent').checked;
-  const robot = document.getElementById('cfRobot').checked;
+  const subject = document.getElementById('cfSubject')?.value;
+  const name    = document.getElementById('cfName')?.value.trim();
+  const email   = document.getElementById('cfEmail')?.value.trim();
+  const phone   = document.getElementById('cfPhone')?.value.trim();
+  const message = document.getElementById('cfMessage')?.value.trim();
+  const consent = document.getElementById('cfConsent')?.checked;
+  const robot   = document.getElementById('cfRobot')?.checked;
+  if (!subject) return;
 
   let hasError = false;
-
-  if (!RULES.subject(subject)) { showError('cfSubject','err-subject'); hasError = true; }
-  if (!RULES.name(name)) { showError('cfName','err-name'); hasError = true; }
-  if (!RULES.email(email)) { showError('cfEmail','err-email'); hasError = true; }
-  if (phone && !RULES.phone(phone)) { showError('cfPhone','err-phone'); hasError = true; }
-  if (!RULES.message(message)) { showError('cfMessage','err-message'); hasError = true; }
-
-  if (!consent) {
-    document.getElementById('err-consent')?.classList.add('visible');
-    hasError = true;
-  }
-
-  if (!robot) {
-    document.getElementById('cfRobotWrap')?.classList.add('robot-error');
-    hasError = true;
-  }
-
+  if (!RULES.subject(subject))        { showError('cfSubject','err-subject'); hasError = true; }
+  if (!RULES.name(name))              { showError('cfName','err-name');       hasError = true; }
+  if (!RULES.email(email))            { showError('cfEmail','err-email');     hasError = true; }
+  if (phone && !RULES.phone(phone))   { showError('cfPhone','err-phone');     hasError = true; }
+  if (!RULES.message(message))        { showError('cfMessage','err-message'); hasError = true; }
+  if (!consent) { document.getElementById('err-consent')?.classList.add('visible'); hasError = true; }
+  if (!robot)   { document.getElementById('cfRobotWrap')?.classList.add('robot-error'); hasError = true; }
   if (hasError) return;
 
   const btn = document.getElementById('sendBtn');
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
-  }
-
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
   try {
     const res = await fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ subject, name, email, phone, message })
     });
-
     if (!res.ok) throw new Error('Server error');
-
     alert('Message sent successfully!');
-
   } catch (err) {
     alert('Server error. Try again later.');
   } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = 'Send my request';
-    }
+    if (btn) { btn.disabled = false; btn.textContent = 'Send my request'; }
   }
 }
 
-document.querySelectorAll('.lang-menu li').forEach(item => {
-  item.addEventListener('click', function () {
-    const lang = this.getAttribute('data-lang');
-
-    // change affichage EN -> FR -> AR
-    document.getElementById('currentLang').textContent = lang;
-
-    // ici tu peux ajouter la vraie logique de traduction plus tard
-    console.log("Langue choisie :", lang);
-  });
+/* ══════════════════════════════════════
+   INIT GLOBAL
+══════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  renderUserState();
+  initUserMenu();
+  initSearch();
+  initMap();
+  initLang();
 });
-/* ===== FIX ABSOLU SEARCH BAR ===== */
-(function () {
 
-  const searchBtn = document.getElementById('searchBtn');
-  const searchBar = document.getElementById('searchBar');
-
-  if (!searchBtn || !searchBar) return;
-
-  // TOGGLE (ouvre / ferme)
-  searchBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    searchBar.classList.toggle('open');
-  });
-
-  // fermer si clic dehors
-  document.addEventListener('click', function (e) {
-    if (!searchBar.contains(e.target) && !searchBtn.contains(e.target)) {
-      searchBar.classList.remove('open');
-    }
-  });
-
-})();
-searchBtn.addEventListener('click', function () {
-  searchBar.classList.add('open');
-  setTimeout(() => {
-    document.querySelector('.search-input').focus();
-  }, 100);
-});
 </script>
+
+
 <style>
 
   /* Container */
@@ -484,6 +481,238 @@ searchBtn.addEventListener('click', function () {
   border: 2px solid #E8761E;
   font-size: 0.95rem;
   outline: none;
+}
+
+/* ── User Menu Wrapper ── */
+.user-menu {
+  position: relative;
+}
+
+/* ── Trigger button ── */
+.user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--hdr-orange);
+  border: 2px solid var(--hdr-orange);
+  border-radius: var(--btn-radius);
+  padding: 9px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  transition: background .2s, transform .15s;
+  white-space: nowrap;
+}
+.user-trigger:hover {
+  background: #e06d00;
+  border-color: #e06d00;
+  transform: translateY(-1px);
+}
+.user-trigger svg {
+  transition: transform .25s ease;
+  flex-shrink: 0;
+}
+.user-menu.open .user-trigger svg {
+  transform: rotate(180deg);
+}
+
+/* ── Avatar circle ── */
+.user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+
+/* ── Dropdown ── */
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: #fff;
+  border-radius: 12px;
+  min-width: 200px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.13);
+  border: 1px solid #f0ece6;
+  padding: 6px 0;
+  z-index: 9999;
+
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+}
+.user-menu.open .user-dropdown {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Dropdown header (nom + rôle) ── */
+.user-dropdown-header {
+  padding: 12px 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.user-dropdown-header span:first-child {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.user-role-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #fff5e6;
+  color: var(--hdr-orange);
+  width: fit-content;
+}
+
+/* ── Divider ── */
+.user-dropdown-divider {
+  border: none;
+  border-top: 1px solid #f0ece6;
+  margin: 4px 0;
+}
+
+/* ── Items ── */
+.user-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+.user-dropdown-item:hover {
+  background: #fff8f2;
+  color: var(--hdr-orange);
+}
+.user-dropdown-item svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ── Logout ── */
+.user-logout {
+  color: #c0392b;
+}
+.user-logout:hover {
+  background: #fff5f5;
+  color: #c0392b;
+}
+.user-logout svg {
+  stroke: #c0392b;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .user-trigger .user-name { display: none; }
+  .user-dropdown { right: -8px; min-width: 180px; }
+}
+
+.user-menu { position: relative; }
+
+.user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--hdr-orange);
+  border: 2px solid var(--hdr-orange);
+  border-radius: var(--btn-radius);
+  padding: 9px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  transition: background .2s, transform .15s;
+  white-space: nowrap;
+}
+.user-trigger:hover { background: #e06d00; border-color: #e06d00; transform: translateY(-1px); }
+.user-trigger svg   { transition: transform .25s ease; flex-shrink: 0; }
+.user-menu.open .user-trigger svg { transform: rotate(180deg); }
+
+.user-avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px); right: 0;
+  background: #fff;
+  border-radius: 12px;
+  min-width: 200px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.13);
+  border: 1px solid #f0ece6;
+  padding: 6px 0;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+}
+.user-menu.open .user-dropdown { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+.user-dropdown-header { padding: 12px 16px 10px; display: flex; flex-direction: column; gap: 4px; }
+.user-dropdown-header span:first-child { font-size: 0.88rem; font-weight: 700; color: #1a1a1a; }
+
+.user-role-badge {
+  font-size: 0.7rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .5px;
+  padding: 2px 8px; border-radius: 20px;
+  background: #fff5e6; color: var(--hdr-orange);
+  width: fit-content;
+}
+
+.user-dropdown-divider { border: none; border-top: 1px solid #f0ece6; margin: 4px 0; }
+
+.user-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  font-size: 0.84rem; font-weight: 600; color: #333;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  text-decoration: none;
+  background: none; border: none;
+  width: 100%; text-align: left;
+}
+.user-dropdown-item:hover { background: #fff8f2; color: var(--hdr-orange); }
+.user-dropdown-item svg  { flex-shrink: 0; opacity: 0.7; }
+
+.user-logout { color: #c0392b; }
+.user-logout:hover { background: #fff5f5; color: #c0392b; }
+.user-logout svg { stroke: #c0392b; }
+
+@media (max-width: 768px) {
+  .user-trigger .user-name { display: none; }
+  .user-dropdown { right: -8px; min-width: 180px; }
 }
 /* ==========================================================================
    HEADER.CSS — Navigation desktop + mobile drawer
@@ -815,6 +1044,8 @@ searchBtn.addEventListener('click', function () {
 @media (max-width: 480px) {
   .logo-img { width: 48px; height: 48px; }
 }
+
+
 </style>
 </body>
 </html>
