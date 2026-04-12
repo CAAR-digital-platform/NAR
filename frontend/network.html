@@ -9,9 +9,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
   <link rel="stylesheet" href="main.css"/>
   <link rel="stylesheet" href="components/header-extras.css"/>
+ 
 </head>
 <body class="network-page">
 
+  
 <!-- ══ HEADER — loaded dynamically by main.js ══ -->
 <div id="site-header"></div>
 
@@ -68,15 +70,13 @@
 </section>
 
 
-<!-- ══ SECTION 2 — FILTERS + AGENCY LIST + MAP ══ -->
+<!-- ══ SECTION 2 — FILTERS + AGENCY LIST + BIG MAP ══ -->
 <section class="filter-section" id="filterSection">
 
   <div class="filter-bar-row">
 
-    <!-- Name search -->
     <div class="fd-search-wrap">
-      <svg viewBox="0 0 24 24" class="fd-search-ico" stroke="#999" fill="none"
-           stroke-width="2" stroke-linecap="round">
+      <svg viewBox="0 0 24 24" class="fd-search-ico" stroke="#999" fill="none" stroke-width="2" stroke-linecap="round">
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
       <input class="fd-search-input" id="fdSearchInput" type="text"
@@ -85,62 +85,52 @@
       <button class="fd-search-clear" id="fdSearchClear" onclick="clearNameSearch()">✕</button>
     </div>
 
-    <!-- Wilaya filter — populated dynamically by network-map.js -->
     <div class="filter-dropdown" id="fd-wilaya">
       <button class="fd-btn" onclick="toggleDrop('fd-wilaya')">
         <span id="fdlbl-wilaya">Wilaya</span>
         <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
       </button>
-      <div class="fd-menu" id="fdm-wilaya">
-        <!-- populated by loadWilayas() -->
-      </div>
+      <div class="fd-menu" id="fdm-wilaya"></div>
     </div>
 
-    <!-- City filter — populated dynamically when a wilaya is selected -->
     <div class="filter-dropdown" id="fd-city">
       <button class="fd-btn" onclick="toggleDrop('fd-city')">
         <span id="fdlbl-city">City</span>
         <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
       </button>
-      <div class="fd-menu" id="fdm-city">
-        <div class="fd-item active"
-          onclick="applyFilter('city_id','',this,'City')">All Cities</div>
-      </div>
+      <div class="fd-menu" id="fdm-city"></div>
     </div>
 
-    <!-- Agency Type filter -->
     <div class="filter-dropdown" id="fd-type">
       <button class="fd-btn" onclick="toggleDrop('fd-type')">
-        <span id="fdlbl-type">Type</span>
+        <span id="fdlbl-type">Agency Type</span>
         <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
       </button>
       <div class="fd-menu" id="fdm-type">
-        <div class="fd-item active" onclick="setFilter('type','',this,'Type')">All Types</div>
-        <div class="fd-item" onclick="setFilter('type','Main Agency',this,'Main Agency')">🏢 Main Agency</div>
-        <div class="fd-item" onclick="setFilter('type','Regional Office',this,'Regional Office')">🏬 Regional Office</div>
-        <div class="fd-item" onclick="setFilter('type','Sub Agency',this,'Sub Agency')">🏪 Sub Agency</div>
-        <div class="fd-item" onclick="setFilter('type','Agency',this,'Agency')">📍 Agency</div>
-        <div class="fd-item" onclick="setFilter('type','Claims Center',this,'Claims Center')">🗂 Claims Center</div>
-        <div class="fd-item" onclick="setFilter('type','Headquarters',this,'Headquarters')">⭐ Headquarters</div>
+        <div class="fd-item fd-item-all active" onclick="setFilter('type','',this)">All Types</div>
+        <div class="fd-item" onclick="setFilter('type','Main Agency',this)">🏢 Main Agency</div>
+        <div class="fd-item" onclick="setFilter('type','Regional Office',this)">🏬 Regional Office</div>
+        <div class="fd-item" onclick="setFilter('type','Sub Agency',this)">🏪 Sub Agency</div>
+        <div class="fd-item" onclick="setFilter('type','Agency',this)">📍 Agency</div>
+        <div class="fd-item" onclick="setFilter('type','Claims Center',this)">🗂 Claims Center</div>
+        <div class="fd-item" onclick="setFilter('type','Headquarters',this)">⭐ Headquarters</div>
       </div>
     </div>
 
-    <!-- Service filter
-         FIX: removed 'Business' — not a valid SET value in the DB.
-         Valid values: Auto, Habitation, Transport, Industrial, Agricultural, Claims -->
     <div class="filter-dropdown" id="fd-service">
       <button class="fd-btn" onclick="toggleDrop('fd-service')">
-        <span id="fdlbl-service">Service</span>
+        <span id="fdlbl-service">Services</span>
         <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
       </button>
       <div class="fd-menu" id="fdm-service">
-        <div class="fd-item active" onclick="setFilter('service','',this,'Service')">All Services</div>
-        <div class="fd-item" onclick="setFilter('service','Auto',this,'Auto')">🚗 Auto Insurance</div>
-        <div class="fd-item" onclick="setFilter('service','Habitation',this,'Habitation')">🏠 Habitation</div>
-        <div class="fd-item" onclick="setFilter('service','Transport',this,'Transport')">🚢 Transport</div>
-        <div class="fd-item" onclick="setFilter('service','Industrial',this,'Industrial')">🏭 Industrial</div>
-        <div class="fd-item" onclick="setFilter('service','Agricultural',this,'Agricultural')">🌾 Agricultural</div>
-        <div class="fd-item" onclick="setFilter('service','Claims',this,'Claims')">🗂 Claims Processing</div>
+        <div class="fd-item fd-item-all active" onclick="setFilter('service','',this)">All Services</div>
+        <div class="fd-item" onclick="setFilter('service','Auto',this)">🚗 Auto Insurance</div>
+        <div class="fd-item" onclick="setFilter('service','Habitation',this)">🏠 Habitation</div>
+        <div class="fd-item" onclick="setFilter('service','Business',this)">💼 Business Insurance</div>
+        <div class="fd-item" onclick="setFilter('service','Transport',this)">🚢 Transport</div>
+        <div class="fd-item" onclick="setFilter('service','Industrial',this)">🏭 Industrial</div>
+        <div class="fd-item" onclick="setFilter('service','Agricultural',this)">🌾 Agricultural</div>
+        <div class="fd-item" onclick="setFilter('service','Claims',this)">🗂 Claims Processing</div>
       </div>
     </div>
 
@@ -152,11 +142,9 @@
   <div class="filter-grid">
     <div class="filter-left">
       <div class="filter-count-bar">
-        Showing <strong id="filterCountNum">—</strong> agencies
+        Showing <strong id="filterCountNum">39</strong> agencies
       </div>
-      <div class="filter-card-list" id="filterCardList">
-        <!-- Cards rendered by network-map.js -->
-      </div>
+      <div class="filter-card-list" id="filterCardList"></div>
       <div class="filter-no-results" id="filterNoResults">
         😕 No agencies match your filters.<br>
         <small>Try resetting or changing your selection.</small>
@@ -168,15 +156,9 @@
     </div>
   </div>
 
-  <div style="padding:16px 24px;background:#fafafa;border-top:1px solid var(--border);
-              display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-    <span style="font-size:0.82rem;color:#666;">
-      Can't find what you need? Our team is here to help.
-    </span>
-    <a href="contact.html"
-       style="font-size:0.78rem;font-weight:700;color:var(--hdr-orange);text-decoration:none;
-              border:1.5px solid var(--hdr-orange);padding:6px 16px;border-radius:20px;
-              transition:all 0.2s;"
+  <div style="padding:16px 24px;background:#fafafa;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <span style="font-size:0.82rem;color:#666;">Can't find what you need? Our team is here to help.</span>
+    <a href="contact.html" style="font-size:0.78rem;font-weight:700;color:var(--hdr-orange);text-decoration:none;border:1.5px solid var(--hdr-orange);padding:6px 16px;border-radius:20px;transition:all 0.2s;"
        onmouseover="this.style.background='var(--hdr-orange)';this.style.color='#fff';"
        onmouseout="this.style.background='transparent';this.style.color='var(--hdr-orange)';">
       Send us a message →
@@ -243,9 +225,12 @@
 <!-- Footer dynamique -->
 <div id="site-footer"></div>
 
-<!-- ══ SCRIPTS ══ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="main.js"></script>
-<script src="network-map.js"></script>
+
+<!-- ══ SCRIPTS ══ -->
+<!-- main.js handles: header injection, search toggle, language switcher, mobile nav -->
+<script src="js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
 </body>
 </html>
