@@ -5,7 +5,7 @@ require('./db');
 // ── Route imports ──────────────────────────────────────────────────────────
 const authRoutes        = require('./routes/auth');
 const roadsideRoutes    = require('./routes/roadsideRoutes');
-const dashboardRoutes   = require('./routes/dashboardRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 const messageRoutes     = require('./routes/messageRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
 const claimsRoutes      = require('./routes/claimsRoutes');
@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 // ── Routes ─────────────────────────────────────────────────────────────────
 app.use('/api/auth',         authRoutes);
 app.use('/api/roadside',     roadsideRoutes);
-app.use('/api/dashboard',    dashboardRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/messages',     messageRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/claims',       claimsRoutes);
