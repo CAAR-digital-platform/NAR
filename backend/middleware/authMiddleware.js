@@ -1,30 +1,25 @@
 const jwt = require('jsonwebtoken');
 
-const SECRET_KEY = process.env.JWT_SECRET || 'SECRET_KEY_CAAR';
+const SECRET_KEY = process.env.JWT_SECRET;
+if (!SECRET_KEY) {
+  throw new Error('FATAL: JWT_SECRET environment variable is not set.');
+}
 
-/**
- * Verifies the JWT in the Authorization header.
- * On success, attaches `req.user = { id, email, role }` for downstream use.
- * On failure, returns 401.
- */
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
-
   if (!authHeader) {
     return res.status(401).json({ error: 'Access denied: no token provided' });
   }
 
-  // Expected format: "Bearer <token>"
   const parts = authHeader.split(' ');
   if (parts.length !== 2 || parts[0] !== 'Bearer') {
     return res.status(401).json({ error: 'Access denied: malformed token format' });
   }
 
   const token = parts[1];
-
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded; // { id, email, role, iat, exp }
+    req.user = decoded;
     next();
   } catch (err) {
     const message =

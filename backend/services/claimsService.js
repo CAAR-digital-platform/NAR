@@ -1,18 +1,15 @@
 /**
  * services/claimsService.js
  *
- * Key improvements over v1:
- *  - When a claim is created, the nearest agency that handles
- *    'Claims' is found automatically and stored on the claim.
- *  - Admin can assign an expert (moves status to expert_assigned).
- *  - Status machine is enforced — only valid transitions allowed.
+ * Business logic only. All SQL goes through claimsModel.
+ * No pool references here.
  */
 
-const pool        = require('../db');
+const pool        = require('../db');   // only for getConnection() — transactions
 const claimsModel = require('../models/claimsModel');
 const agencyModel = require('../models/agencyModel');
 
-// ─── Status machine ───────────────────────────────────────────────────────────
+// ─── Status machine ──────────────────────────────────────────────────────────
 const VALID_TRANSITIONS = {
   pending:         ['under_review', 'rejected'],
   under_review:    ['expert_assigned', 'rejected'],
@@ -26,77 +23,66 @@ const VALID_TRANSITIONS = {
 // 1. CREATE CLAIM — client
 // ─────────────────────────────────────────────────────────────────────────────
 
-/**
- * Creates a claim.
- * - Verifies contract ownership.
- * - Auto-assigns nearest Claims-capable agency using incident location.
- * - If no coordinates provided, falls back to the client's home wilaya centroid.
- *
- * @param {object} data  { contract_id, description, claim_date,
- *                         incident_location?, incident_lat?, incident_lng?,
- *                         incident_wilaya_id? }
- * @param {number} authUserId
- */
 async function createClaim(
-  { contract_id, description, claim_date, incident_location,
-    incident_lat, incident_lng, incident_wilaya_id },
+  { contract_id, description, claim_date,
+    incident_location, incident_lat, incident_lng, incident_wilaya_id },
   authUserId
 ) {
-  // ── Validation ──────────────────────────────────────────────────────────────
+  // Validation
   const missing = [];
-  if (!contract_id)  missing.push('contract_id');
-  if (!description)  missing.push('description');
-  if (!claim_date)   missing.push('claim_date');
-  if (missing.length > 0) {
+  if (!contract_id) missing.push('contract_id');
+  if (!description) missing.push('description');
+  if (!claim_date)  missing.push('claim_date');
+  if (missing.length) {
     const err = new Error(`Missing required fields: ${missing.join(', ')}`);
-    err.status = 400;
-    throw err;
+    err.status = 400; throw err;
   }
 
   const contractIdNum = parseInt(contract_id, 10);
   if (isNaN(contractIdNum) || contractIdNum < 1) {
     const err = new Error('contract_id must be a positive integer');
-    err.status = 400;
-    throw err;
+    err.status = 400; throw err;
   }
 
   if (description.trim().length < 10) {
     const err = new Error('Description must be at least 10 characters');
-    err.status = 400;
-    throw err;
+    err.status = 400; throw err;
   }
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(claim_date)) {
     const err = new Error('claim_date must be YYYY-MM-DD');
-    err.status = 400;
-    throw err;
+    err.status = 400; throw err;
   }
 
-  // ── Ownership check ──────────────────────────────────────────────────────────
-  const contract = await claimsModel.getContractByIdAndUserId(contractIdNum, authUserId);
+  // Ownership check — also validates contract is active
+  // Returns { id: contractId, client_id } or null
+  const contract = await claimsModel.getActiveContractByIdAndUserId(
+    contractIdNum,
+    authUserId
+  );
   if (!contract) {
-    const err = new Error('Contract not found or does not belong to your account');
-    err.status = 403;
-    throw err;
+    const err = new Error(
+      'Contract not found, does not belong to your account, or is not active'
+    );
+    err.status = 403; throw err;
   }
 
-  // ── Find nearest agency automatically ────────────────────────────────────────
+  // Auto-assign nearest Claims-capable agency from incident coordinates
   let nearestAgencyId = null;
   const lat = parseFloat(incident_lat);
   const lng = parseFloat(incident_lng);
-
   if (!isNaN(lat) && !isNaN(lng)) {
     try {
-      const nearestAgency = await agencyModel.getNearestAgency(lat, lng, 'Claims');
-      if (nearestAgency) nearestAgencyId = nearestAgency.id;
+      const nearest = await agencyModel.getNearestAgency(lat, lng, 'Claims');
+      if (nearest) nearestAgencyId = nearest.id;
     } catch {
-      // Non-fatal — claim still created without agency assignment
+      // non-fatal — claim still created without agency
     }
   }
 
-  // ── Insert ────────────────────────────────────────────────────────────────────
   const claimId = await claimsModel.createClaim({
     contract_id:        contractIdNum,
+    client_id:          contract.client_id,   // FIX: resolved from contract row
     agency_id:          nearestAgencyId,
     description:        description.trim(),
     claim_date,
@@ -107,6 +93,7 @@ async function createClaim(
   return {
     claim_id:    claimId,
     contract_id: contractIdNum,
+    client_id:   contract.client_id,
     agency_id:   nearestAgencyId,
     status:      'pending',
     claim_date,
@@ -122,7 +109,25 @@ async function listAllClaims() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. UPDATE CLAIM STATUS — admin
+// 3. LIST MY CLAIMS — client
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function listMyClaims(authUserId) {
+  // Resolve client_id from user_id
+  const pool_ = require('../db');
+  const [rows] = await pool_.execute(
+    'SELECT id FROM clients WHERE user_id = ?',
+    [authUserId]
+  );
+  if (!rows.length) {
+    const err = new Error('Client profile not found');
+    err.status = 404; throw err;
+  }
+  return claimsModel.getClaimsByClientId(rows[0].id);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 4. UPDATE CLAIM STATUS — admin
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function updateClaimStatus(claimId, status) {
@@ -135,14 +140,13 @@ async function updateClaimStatus(claimId, status) {
     const err = new Error('Claim not found'); err.status = 404; throw err;
   }
 
-  const allowed = VALID_TRANSITIONS[claim.status];
-  if (!allowed || !allowed.includes(status)) {
+  const allowed = VALID_TRANSITIONS[claim.status] || [];
+  if (!allowed.includes(status)) {
     const err = new Error(
       `Cannot transition from '${claim.status}' to '${status}'. ` +
-      `Allowed: ${(VALID_TRANSITIONS[claim.status] || []).join(', ') || 'none'}`
+      `Allowed: ${allowed.join(', ') || 'none'}`
     );
-    err.status = 409;
-    throw err;
+    err.status = 409; throw err;
   }
 
   await claimsModel.updateClaimStatus(claimId, status);
@@ -150,14 +154,9 @@ async function updateClaimStatus(claimId, status) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. ASSIGN EXPERT — admin
+// 5. ASSIGN EXPERT — admin
 // ─────────────────────────────────────────────────────────────────────────────
 
-/**
- * Assign an expert to a claim.
- * Moves status: under_review → expert_assigned.
- * Both writes are atomic inside a transaction.
- */
 async function assignExpert(claimId, expertId) {
   const claim = await claimsModel.getClaimById(claimId);
   if (!claim) {
@@ -166,39 +165,31 @@ async function assignExpert(claimId, expertId) {
 
   if (!['pending', 'under_review'].includes(claim.status)) {
     const err = new Error(
-      `Expert can only be assigned when claim is pending or under_review (current: ${claim.status})`
+      `Expert can only be assigned when claim is pending or under_review ` +
+      `(current: ${claim.status})`
     );
-    err.status = 409;
-    throw err;
+    err.status = 409; throw err;
   }
 
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
 
-    await conn.execute(
-      'UPDATE claims SET expert_id = ?, status = ? WHERE id = ?',
-      [expertId, 'expert_assigned', claimId]
-    );
-
-    // Mark expert as unavailable (optional: depends on business rules)
-    await conn.execute(
-      'UPDATE experts SET is_available = 0 WHERE id = ?',
-      [expertId]
-    );
+    // FIX: use model method — no raw SQL in service
+    await claimsModel.assignExpertTx(conn, claimId, expertId);
+    await claimsModel.setExpertAvailabilityTx(conn, expertId, false);
 
     await conn.commit();
     return { claim_id: claimId, expert_id: expertId, status: 'expert_assigned' };
   } catch (err) {
-    await conn.rollback();
-    throw err;
+    await conn.rollback(); throw err;
   } finally {
     conn.release();
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5. CREATE EXPERT REPORT — expert
+// 6. CREATE EXPERT REPORT — expert
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function createExpertReport(
@@ -210,50 +201,54 @@ async function createExpertReport(
   if (!report)                 missing.push('report');
   if (estimated_damage == null) missing.push('estimated_damage');
   if (!report_date)            missing.push('report_date');
-  if (missing.length > 0) {
+  if (missing.length) {
     const err = new Error(`Missing required fields: ${missing.join(', ')}`);
-    err.status = 400;
-    throw err;
+    err.status = 400; throw err;
   }
 
   const claimIdNum = parseInt(claim_id, 10);
   const damageNum  = parseFloat(estimated_damage);
 
   if (isNaN(claimIdNum) || claimIdNum < 1) {
-    const err = new Error('claim_id must be a positive integer'); err.status = 400; throw err;
+    const err = new Error('claim_id must be a positive integer');
+    err.status = 400; throw err;
   }
   if (isNaN(damageNum) || damageNum < 0) {
-    const err = new Error('estimated_damage must be a non-negative number'); err.status = 400; throw err;
+    const err = new Error('estimated_damage must be a non-negative number');
+    err.status = 400; throw err;
   }
   if (report.trim().length < 10) {
-    const err = new Error('report must be at least 10 characters'); err.status = 400; throw err;
+    const err = new Error('report must be at least 10 characters');
+    err.status = 400; throw err;
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(report_date)) {
-    const err = new Error('report_date must be YYYY-MM-DD'); err.status = 400; throw err;
+    const err = new Error('report_date must be YYYY-MM-DD');
+    err.status = 400; throw err;
   }
 
   const expert = await claimsModel.getExpertByUserId(authUserId);
   if (!expert) {
-    const err = new Error('No expert profile for your account'); err.status = 403; throw err;
+    const err = new Error('No expert profile for your account');
+    err.status = 403; throw err;
   }
 
   const claim = await claimsModel.getClaimById(claimIdNum);
   if (!claim) {
     const err = new Error('Claim not found'); err.status = 404; throw err;
   }
-
-  // Expert must be the assigned one
   if (claim.expert_id !== expert.id) {
-    const err = new Error('You are not assigned to this claim'); err.status = 403; throw err;
+    const err = new Error('You are not assigned to this claim');
+    err.status = 403; throw err;
   }
-
-  if (claim.status === 'closed' || claim.status === 'rejected') {
-    const err = new Error(`Cannot report on a ${claim.status} claim`); err.status = 409; throw err;
+  if (['closed', 'rejected'].includes(claim.status)) {
+    const err = new Error(`Cannot report on a ${claim.status} claim`);
+    err.status = 409; throw err;
   }
 
   const existing = await claimsModel.getReportByClaimId(claimIdNum);
   if (existing) {
-    const err = new Error('An expert report already exists for this claim'); err.status = 409; throw err;
+    const err = new Error('An expert report already exists for this claim');
+    err.status = 409; throw err;
   }
 
   const conn = await pool.getConnection();
@@ -271,11 +266,8 @@ async function createExpertReport(
 
     await claimsModel.updateClaimStatusTx(conn, claimIdNum, 'reported');
 
-    // Free the expert
-    await conn.execute(
-      'UPDATE experts SET is_available = 1 WHERE id = ?',
-      [expert.id]
-    );
+    // FIX: use model method — no raw pool call here
+    await claimsModel.setExpertAvailabilityTx(conn, expert.id, true);
 
     await conn.commit();
 
@@ -289,15 +281,14 @@ async function createExpertReport(
       claim_status:     'reported',
     };
   } catch (err) {
-    await conn.rollback();
-    throw err;
+    await conn.rollback(); throw err;
   } finally {
     conn.release();
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. LIST EXPERT REPORTS — admin
+// 7. LIST EXPERT REPORTS — admin
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function listAllExpertReports() {
@@ -307,6 +298,7 @@ async function listAllExpertReports() {
 module.exports = {
   createClaim,
   listAllClaims,
+  listMyClaims,
   updateClaimStatus,
   assignExpert,
   createExpertReport,

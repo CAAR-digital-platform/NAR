@@ -1,9 +1,8 @@
 /**
  * models/claimsModel.js
  *
- * Pure SQL layer for the Claims module.
+ * All SQL for Claims, ExpertReports, and Expert availability.
  * Functions that run inside a transaction receive a `conn` argument.
- * Functions that run outside use the shared `pool` directly.
  */
 
 const pool = require('../db');
@@ -13,59 +12,101 @@ const pool = require('../db');
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Insert a new claim.
- * Status is always forced to 'pending' at creation — never trusted from input.
- * Returns the new claim's id.
+ * Insert a new claim with ALL schema columns.
+ * client_id is resolved in the service from the contract and stored
+ * directly on the claim row for fast ownership lookups.
  */
-async function createClaim({ contract_id, description, claim_date }) {
+async function createClaim({
+  contract_id,
+  client_id,
+  agency_id,
+  description,
+  claim_date,
+  incident_location,
+  incident_wilaya_id,
+}) {
   const [result] = await pool.execute(
-    `INSERT INTO claims (contract_id, description, status, claim_date)
-     VALUES (?, ?, 'pending', ?)`,
-    [contract_id, description, claim_date]
+    `INSERT INTO claims
+       (contract_id, client_id, agency_id, description, status, claim_date,
+        incident_location, incident_wilaya_id)
+     VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)`,
+    [
+      contract_id,
+      client_id,
+      agency_id          || null,
+      description,
+      claim_date,
+      incident_location  || null,
+      incident_wilaya_id ? parseInt(incident_wilaya_id, 10) : null,
+    ]
   );
   return result.insertId;
 }
 
 /**
- * Fetch all claims joined with contract → client → user
- * so the admin sees the client's full name alongside each claim.
+ * All claims for admin — joins to resolve client name.
  */
 async function getAllClaims() {
   const [rows] = await pool.execute(
     `SELECT
-       cl.id            AS claim_id,
+       cl.id              AS claim_id,
        cl.contract_id,
+       cl.client_id,
+       cl.agency_id,
+       cl.expert_id,
        cl.description,
        cl.status,
        cl.claim_date,
+       cl.incident_location,
+       cl.incident_wilaya_id,
+       cl.rejection_reason,
        CONCAT(u.first_name, ' ', u.last_name) AS client_name,
-       u.email          AS client_email
+       u.email            AS client_email
      FROM claims cl
-     JOIN contracts  co ON co.id      = cl.contract_id
-     JOIN clients    c  ON c.id       = co.client_id
-     JOIN users      u  ON u.id       = c.user_id
+     JOIN clients   c  ON c.id  = cl.client_id
+     JOIN users     u  ON u.id  = c.user_id
      ORDER BY cl.claim_date DESC`
   );
   return rows;
 }
 
 /**
- * Fetch a single claim by its id.
- * Used for ownership checks and status updates.
+ * Claims that belong to a specific client (for the client dashboard).
  */
-async function getClaimById(claimId) {
+async function getClaimsByClientId(clientId) {
   const [rows] = await pool.execute(
     `SELECT
-       cl.id            AS claim_id,
+       cl.id              AS claim_id,
        cl.contract_id,
        cl.description,
        cl.status,
        cl.claim_date,
-       co.client_id,
+       cl.incident_location,
+       cl.rejection_reason
+     FROM claims cl
+     WHERE cl.client_id = ?
+     ORDER BY cl.claim_date DESC`,
+    [clientId]
+  );
+  return rows;
+}
+
+/**
+ * Single claim by id — includes client_id and user_id for ownership checks.
+ */
+async function getClaimById(claimId) {
+  const [rows] = await pool.execute(
+    `SELECT
+       cl.id              AS claim_id,
+       cl.contract_id,
+       cl.client_id,
+       cl.expert_id,
+       cl.description,
+       cl.status,
+       cl.claim_date,
        c.user_id
      FROM claims     cl
-     JOIN contracts  co ON co.id = cl.contract_id
-     JOIN clients    c  ON c.id  = co.client_id
+     JOIN clients    c  ON c.id  = cl.client_id
      WHERE cl.id = ?`,
     [claimId]
   );
@@ -73,7 +114,7 @@ async function getClaimById(claimId) {
 }
 
 /**
- * Update a claim's status (outside a transaction).
+ * Update status (outside transaction — admin status machine).
  */
 async function updateClaimStatus(claimId, status) {
   await pool.execute(
@@ -83,9 +124,7 @@ async function updateClaimStatus(claimId, status) {
 }
 
 /**
- * Update a claim's status inside a transaction.
- * Used when the status change must be atomic with another write
- * (e.g. inserting an expert report).
+ * Update status inside a transaction.
  */
 async function updateClaimStatusTx(conn, claimId, status) {
   await conn.execute(
@@ -95,16 +134,27 @@ async function updateClaimStatusTx(conn, claimId, status) {
 }
 
 /**
- * Verify that a contract belongs to the authenticated client.
- * Returns the contract row or null.
+ * Assign expert + set status inside a transaction.
  */
-async function getContractByIdAndUserId(contractId, userId) {
+async function assignExpertTx(conn, claimId, expertId) {
+  await conn.execute(
+    'UPDATE claims SET expert_id = ?, status = ? WHERE id = ?',
+    [expertId, 'expert_assigned', claimId]
+  );
+}
+
+/**
+ * Verify that a contract belongs to the authenticated user
+ * AND is active (prevents claims on expired contracts).
+ * Returns { id, client_id } or null.
+ */
+async function getActiveContractByIdAndUserId(contractId, userId) {
   const [rows] = await pool.execute(
-    `SELECT co.id
+    `SELECT co.id, c.id AS client_id
      FROM contracts co
      JOIN clients   c  ON c.id  = co.client_id
      JOIN users     u  ON u.id  = c.user_id
-     WHERE co.id = ? AND u.id = ?`,
+     WHERE co.id = ? AND u.id = ? AND co.status = 'active'`,
     [contractId, userId]
   );
   return rows[0] || null;
@@ -114,26 +164,19 @@ async function getContractByIdAndUserId(contractId, userId) {
 // EXPERT REPORTS
 // ─────────────────────────────────────────────────────────────────────────────
 
-/**
- * Insert a new expert report inside a transaction.
- * Returns the new report's id.
- */
 async function createExpertReport(
   conn,
-  { claim_id, expert_id, report, estimated_damage, report_date }
+  { claim_id, expert_id, report, estimated_damage, report_date, conclusion }
 ) {
   const [result] = await conn.execute(
     `INSERT INTO expert_reports
-       (claim_id, expert_id, report, estimated_damage, report_date)
-     VALUES (?, ?, ?, ?, ?)`,
-    [claim_id, expert_id, report, estimated_damage, report_date]
+       (claim_id, expert_id, report, estimated_damage, report_date, conclusion)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [claim_id, expert_id, report, estimated_damage, report_date, conclusion || null]
   );
   return result.insertId;
 }
 
-/**
- * Fetch all expert reports with claim and expert info (admin view).
- */
 async function getAllExpertReports() {
   const [rows] = await pool.execute(
     `SELECT
@@ -142,6 +185,7 @@ async function getAllExpertReports() {
        er.report,
        er.estimated_damage,
        er.report_date,
+       er.conclusion,
        cl.status          AS claim_status,
        cl.description     AS claim_description,
        CONCAT(u.first_name, ' ', u.last_name) AS expert_name,
@@ -155,10 +199,6 @@ async function getAllExpertReports() {
   return rows;
 }
 
-/**
- * Fetch the expert profile linked to a user_id.
- * Returns { id } (the experts.id PK) or null.
- */
 async function getExpertByUserId(userId) {
   const [rows] = await pool.execute(
     'SELECT id FROM experts WHERE user_id = ?',
@@ -167,10 +207,6 @@ async function getExpertByUserId(userId) {
   return rows[0] || null;
 }
 
-/**
- * Check whether an expert report already exists for a given claim.
- * Prevents duplicate reports on the same claim.
- */
 async function getReportByClaimId(claimId) {
   const [rows] = await pool.execute(
     'SELECT id FROM expert_reports WHERE claim_id = ?',
@@ -179,17 +215,32 @@ async function getReportByClaimId(claimId) {
   return rows[0] || null;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// EXPERT AVAILABILITY  (was raw SQL in claimsService — now lives here)
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function setExpertAvailabilityTx(conn, expertId, isAvailable) {
+  await conn.execute(
+    'UPDATE experts SET is_available = ? WHERE id = ?',
+    [isAvailable ? 1 : 0, expertId]
+  );
+}
+
 module.exports = {
   // claims
   createClaim,
   getAllClaims,
+  getClaimsByClientId,
   getClaimById,
   updateClaimStatus,
   updateClaimStatusTx,
-  getContractByIdAndUserId,
+  assignExpertTx,
+  getActiveContractByIdAndUserId,
   // expert reports
   createExpertReport,
   getAllExpertReports,
   getExpertByUserId,
   getReportByClaimId,
+  // expert availability
+  setExpertAvailabilityTx,
 };

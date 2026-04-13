@@ -1,7 +1,7 @@
 const express = require('express');
 const cors    = require('cors');
+require('dotenv').config({ path: '../.env' });
 require('./db');
-
 // ── Route imports ──────────────────────────────────────────────────────────
 const authRoutes        = require('./routes/auth');
 const roadsideRoutes    = require('./routes/roadsideRoutes');

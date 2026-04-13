@@ -1,8 +1,8 @@
 const pool = require('../db');
+const crypto = require('crypto');
 
 /**
  * Find a user by their email address.
- * Returns the full row (including password_hash) — callers must not expose it.
  */
 async function findByEmail(email) {
   const [rows] = await pool.query(
@@ -13,8 +13,7 @@ async function findByEmail(email) {
 }
 
 /**
- * Find a user by their id.
- * Excludes the password_hash for safety.
+ * Find a user by their id (no password_hash).
  */
 async function findById(id) {
   const [rows] = await pool.query(
@@ -27,7 +26,6 @@ async function findById(id) {
 
 /**
  * Insert a new user row.
- * Returns the insertId of the new record.
  */
 async function createUser({ first_name, last_name, email, password_hash, phone, role }) {
   const [result] = await pool.query(
@@ -38,4 +36,20 @@ async function createUser({ first_name, last_name, email, password_hash, phone, 
   return result.insertId;
 }
 
-module.exports = { findByEmail, findById, createUser };
+/**
+ * Insert a client profile row for a newly registered user.
+ * Generates a unique insurance number: CAAR-YYYYMMDD-XXXX
+ */
+async function createClient(userId) {
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const rand = crypto.randomBytes(3).toString('hex').toUpperCase().slice(0, 4);
+  const insurance_number = `CAAR-${date}-${rand}`;
+
+  const [result] = await pool.query(
+    'INSERT INTO clients (user_id, insurance_number) VALUES (?, ?)',
+    [userId, insurance_number]
+  );
+  return result.insertId;
+}
+
+module.exports = { findByEmail, findById, createUser, createClient };
