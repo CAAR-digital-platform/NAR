@@ -1,0 +1,736 @@
+/* ==========================================================================
+   DASHBOARD.CSS — Client Dashboard Layout
+   Add this import at the top of main.css:
+   @import './dashboard.css';
+   Or link separately: <link rel="stylesheet" href="dashboard.css"/>
+
+   Uses only variables already defined in main.css:
+   --orange, --orange-dark, --orange-lt, --orange-bg, --hdr-orange,
+   --dark, --dark-alt, --gray, --border, --white, --warm-bg, --bg,
+   --font-serif, --font-sans, --btn-radius
+   ========================================================================== */
+
+/* ==========================================================================
+   1. DASHBOARD LAYOUT ROOT
+   ========================================================================== */
+
+.dashboard-root {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: var(--font-sans);
+}
+
+/* ==========================================================================
+   2. SIDEBAR
+   ========================================================================== */
+
+.dash-sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background:#3F3F3F;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 200;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
+  transition: transform 0.3s ease;
+}
+
+/* ── Logo block ── */
+.dash-sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.dash-sidebar__logo img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 4px;
+}
+
+.dash-sidebar__logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dash-sidebar__logo-name {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+.dash-sidebar__logo-sub {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--orange);
+  opacity: 0.9;
+}
+
+/* ── User mini-card ── */
+.dash-sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  margin: 16px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.dash-sidebar__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+
+.dash-sidebar__user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-sidebar__user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.dash-sidebar__user-role {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--orange);
+  display: block;
+  margin-top: 1px;
+}
+
+/* ── Navigation label ── */
+.dash-sidebar__nav-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: rgba(255, 255, 255, 0.28);
+  padding: 0 24px;
+  margin-bottom: 6px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+/* ── Nav list ── */
+.dash-sidebar__nav {
+  flex: 1;
+  padding: 0 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dash-sidebar__nav::-webkit-scrollbar { width: 3px; }
+.dash-sidebar__nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+/* ── Nav item ── */
+.dash-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-sans);
+  transition: background 0.18s, color 0.18s;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.dash-nav-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+}
+
+.dash-nav-item.active {
+  background: rgba(232, 118, 30, 0.18);
+  color: var(--orange);
+  border: 1px solid rgba(232, 118, 30, 0.2);
+}
+
+.dash-nav-item.active .dash-nav-item__icon {
+  color: var(--orange);
+}
+
+.dash-nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  background: var(--orange);
+  border-radius: 0 3px 3px 0;
+}
+
+/* ── Nav icon ── */
+.dash-nav-item__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-nav-item__icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dash-nav-item:hover .dash-nav-item__icon {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Badge ── */
+.dash-nav-item__badge {
+  margin-left: auto;
+  background: var(--orange);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Bottom area ── */
+.dash-sidebar__bottom {
+  padding: 16px 12px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.dash-sidebar__help {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+
+.dash-sidebar__help:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.dash-sidebar__help svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   3. MAIN WRAPPER (everything right of sidebar)
+   ========================================================================== */
+
+.dash-main {
+  margin-left: 260px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ==========================================================================
+   4. TOP BAR
+   ========================================================================== */
+
+.dash-topbar {
+  height: 68px;
+  background: var(--white);
+  border-bottom: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+/* ── Page title area ── */
+.dash-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Mobile hamburger (hidden on desktop) ── */
+.dash-topbar__hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: var(--dark);
+  transition: background 0.18s;
+  flex-shrink: 0;
+}
+
+.dash-topbar__hamburger:hover { background: var(--bg); }
+
+.dash-topbar__hamburger svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* ── Page icon ── */
+.dash-topbar__page-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--orange-lt);
+  border: 1.5px solid rgba(232, 118, 30, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dash-topbar__page-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--orange);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.dash-topbar__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.dash-topbar__title {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-topbar__breadcrumb {
+  font-size: 0.68rem;
+  color: var(--gray);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-topbar__breadcrumb span {
+  color: var(--orange);
+}
+
+/* ── Right side controls ── */
+.dash-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Notification bell ── */
+.dash-topbar__btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background 0.18s, border-color 0.18s;
+  flex-shrink: 0;
+  text-decoration: none;
+  color: var(--dark);
+}
+
+.dash-topbar__btn:hover {
+  background: var(--orange-lt);
+  border-color: rgba(232, 118, 30, 0.3);
+  color: var(--orange);
+}
+
+.dash-topbar__btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.dash-topbar__btn-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  background: var(--orange);
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+}
+
+/* ── User avatar ── */
+.dash-topbar__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 8px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+  flex-shrink: 0;
+  text-decoration: none;
+  color: var(--dark);
+}
+
+.dash-topbar__user:hover {
+  background: var(--orange-lt);
+  border-color: rgba(232, 118, 30, 0.3);
+}
+
+.dash-topbar__user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dash-topbar__user-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dark);
+  white-space: nowrap;
+}
+
+.dash-topbar__user-chevron {
+  width: 12px;
+  height: 12px;
+  stroke: var(--gray);
+  fill: none;
+  stroke-width: 2.5;
+  flex-shrink: 0;
+}
+
+/* ── Return / Back button ── */
+.dash-topbar__return {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--btn-radius);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dark);
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+  flex-shrink: 0;
+}
+
+.dash-topbar__return:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: var(--orange-lt);
+}
+
+.dash-topbar__return svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.5;
+  flex-shrink: 0;
+}
+
+/* ── Logout button ── */
+.dash-topbar__logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  background: var(--dark);
+  border: 2px solid var(--dark);
+  border-radius: var(--btn-radius);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-decoration: none;
+  transition: background 0.18s, border-color 0.18s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.dash-topbar__logout:hover {
+  background: #c53030;
+  border-color: #c53030;
+  transform: translateY(-1px);
+}
+
+.dash-topbar__logout svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.5;
+  flex-shrink: 0;
+}
+
+/* ── Divider between return and logout ── */
+.dash-topbar__divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   5. CONTENT AREA
+   ========================================================================== */
+
+.dash-content {
+  flex: 1;
+  padding: 32px 32px 48px;
+  max-width: 1400px;
+  width: 100%;
+}
+
+/* ── Content header ── */
+.dash-content__header {
+  margin-bottom: 28px;
+}
+
+.dash-content__header-title {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 5px;
+}
+
+.dash-content__header-sub {
+  font-size: 0.85rem;
+  color: var(--gray);
+  line-height: 1.55;
+}
+
+/* ── Empty state placeholder ── */
+.dash-empty-state {
+  background: var(--white);
+  border: 1.5px dashed var(--border);
+  border-radius: 16px;
+  padding: 80px 40px;
+  text-align: center;
+  color: var(--gray);
+}
+
+.dash-empty-state__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--orange-lt);
+  border: 1.5px solid rgba(232, 118, 30, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+}
+
+.dash-empty-state__icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--orange);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.dash-empty-state__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 8px;
+}
+
+.dash-empty-state__text {
+  font-size: 0.84rem;
+  color: var(--gray);
+  line-height: 1.6;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   6. SIDEBAR OVERLAY (mobile)
+   ========================================================================== */
+
+.dash-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 199;
+  cursor: pointer;
+}
+
+.dash-sidebar-overlay.show { display: block; }
+
+/* ==========================================================================
+   7. RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .dash-topbar__user-name { display: none; }
+  .dash-topbar { padding: 0 20px; }
+  .dash-content { padding: 24px 20px 40px; }
+}
+
+@media (max-width: 768px) {
+  .dash-sidebar {
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+
+  .dash-sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .dash-main {
+    margin-left: 0;
+  }
+
+  .dash-topbar__hamburger {
+    display: flex;
+  }
+
+  .dash-topbar__title {
+    font-size: 0.95rem;
+  }
+
+  .dash-topbar__breadcrumb {
+    display: none;
+  }
+
+  .dash-topbar__return span {
+    display: none;
+  }
+
+  .dash-topbar__logout span {
+    display: none;
+  }
+
+  .dash-content {
+    padding: 20px 16px 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dash-topbar {
+    padding: 0 14px;
+    gap: 8px;
+  }
+
+  .dash-topbar__right {
+    gap: 6px;
+  }
+
+  .dash-topbar__btn {
+    width: 34px;
+    height: 34px;
+  }
+}
