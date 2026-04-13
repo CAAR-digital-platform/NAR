@@ -10,7 +10,29 @@
 
 </head>
 <body>
-
+<!-- Claim Detail Panel Overlay -->
+<div class="claim-panel-overlay" id="claimPanelOverlay" onclick="closeClaimPanel()"></div>
+ 
+<!-- Claim Detail Panel -->
+<div class="claim-detail-panel" id="claimDetailPanel">
+  <div class="cdp-header">
+    <div class="cdp-header-left">
+      <div class="cdp-title" id="cdpTitle">Claim Details</div>
+      <div class="cdp-subtitle" id="cdpSubtitle">Reference — —</div>
+    </div>
+    <button class="btn-close-panel" onclick="closeClaimPanel()" aria-label="Close">✕</button>
+  </div>
+ 
+  <div class="cdp-body" id="cdpBody">
+    <!-- Populated by JS -->
+  </div>
+ 
+  <div class="cdp-footer">
+    <button class="btn-cdp-secondary" onclick="closeClaimPanel()">Close</button>
+    <button class="btn-cdp-primary" onclick="alert('Document upload coming soon.')">📎 Attach Document</button>
+  </div>
+</div>
+ 
 <div class="dash-sidebar-overlay" id="dashSidebarOverlay" onclick="closeSidebar()"></div>
 
 <div class="dashboard-root">
@@ -337,92 +359,304 @@
       </div><!-- /dashboard-section -->
 
 
-      <!-- ══════════════════════════════════════
-           SECTION: MY CLAIMS
-      ══════════════════════════════════════════ -->
-      <div class="dash-section" id="claims-section">
-
-        <div class="dash-content__header">
-          <h1 class="dash-content__header-title">My Claims</h1>
-          <p class="dash-content__header-sub">Track the status of your insurance claims and submit new ones.</p>
-        </div>
-
-        <div style="margin-bottom: 18px;">
-          <a href="#" class="btn-qa-primary" onclick="alert('New claim form — coming soon.'); return false;">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Submit New Claim
-          </a>
-        </div>
-
-        <div class="claims-table">
-          <div class="claims-table-header">
-            <div class="ct-title">All Claims</div>
-            <div style="font-size:.72rem;color:var(--gray);">3 records</div>
-          </div>
-          <div class="table-wrap">
-            <table class="dash-table">
-              <thead>
-                <tr>
-                  <th>Reference</th>
-                  <th>Type</th>
-                  <th>Description</th>
-                  <th>Date Filed</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>CLM-2026-031</strong></td>
-                  <td>Auto Insurance</td>
-                  <td>Rear collision on RN01 near Blida</td>
-                  <td>11 Apr 2026</td>
-                  <td><span class="claim-status-badge csb--under-review">Under Review</span></td>
-                </tr>
-                <tr>
-                  <td><strong>CLM-2026-019</strong></td>
-                  <td>Roadside Assistance</td>
-                  <td>Engine failure, requested towing</td>
-                  <td>22 Feb 2026</td>
-                  <td><span class="claim-status-badge csb--pending">Pending</span></td>
-                </tr>
-                <tr>
-                  <td><strong>CLM-2026-028</strong></td>
-                  <td>Home Insurance</td>
-                  <td>Water damage from burst pipe</td>
-                  <td>18 Jan 2026</td>
-                  <td><span class="claim-status-badge csb--closed">Closed</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </div><!-- /claims-section -->
+<div class="dash-section" id="claims-section">
+ 
+  <div class="dash-content__header">
+    <h1 class="dash-content__header-title">My Claims</h1>
+    <p class="dash-content__header-sub">Track your insurance claims, check statuses, and manage documents. Click any row to view full details.</p>
+  </div>
+ 
+  <!-- Controls bar -->
+  <div class="claims-controls-bar">
+    <div class="claims-controls-left">
+      <span class="claims-filter-label">Filter by:</span>
+      <select class="claims-filter-select" id="claimsFilterSelect" onchange="filterClaims(this.value)">
+        <option value="all">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="under_review">Under Review</option>
+        <option value="expert_assigned">Expert Assigned</option>
+        <option value="approved">Approved / Closed</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <span class="claims-result-count" id="claimsResultCount">
+        Showing <strong id="claimsCountNum">—</strong> claims
+      </span>
+    </div>
+    <button class="btn-new-claim" onclick="alert('New claim form — submit via your nearest agency or online portal.')">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Claim
+    </button>
+  </div>
+ 
+  <!-- Table card -->
+  <div class="claims-table-card">
+    <div class="claims-table-scroll">
+      <table class="claims-tbl" id="claimsTable">
+        <thead>
+          <tr>
+            <th>Claim ID</th>
+            <th>Date Filed</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="claimsTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+ 
+    <!-- Empty state (hidden when rows exist) -->
+    <div class="claims-empty" id="claimsEmpty" style="display:none;">
+      <div class="claims-empty-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div class="claims-empty-title">No claims found</div>
+      <div class="claims-empty-sub">No claims match the selected filter.</div>
+    </div>
+  </div>
+ 
+</div><!-- /claims-section -->
 
 
       <!-- ══════════════════════════════════════
            SECTION: ROADSIDE
       ══════════════════════════════════════════ -->
-      <div class="dash-section" id="roadside-section">
-
-        <div class="dash-content__header">
-          <h1 class="dash-content__header-title">Roadside Assistance</h1>
-          <p class="dash-content__header-sub">Request assistance or manage your existing plan.</p>
-        </div>
-
-        <div class="section-placeholder">
-          <div class="sp-icon">
+ 
+<div class="dash-section" id="roadside-section">
+ 
+  <div class="dash-content__header">
+    <h1 class="dash-content__header-title">Request Roadside Assistance</h1>
+    <p class="dash-content__header-sub">Fill in the form below and our team will dispatch assistance as fast as possible.</p>
+  </div>
+ 
+  <!-- Emergency alert -->
+  <div class="roadside-alert">
+    <div class="roadside-alert-icon">🆘</div>
+    <div class="roadside-alert-text">
+      <div class="roadside-alert-title">Emergency? Call us first!</div>
+      <div class="roadside-alert-sub">
+        For immediate roadside danger, call our 24/7 hotline directly.
+        <span class="roadside-alert-phone">📞 +213 (0)21 63 20 72</span>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="roadside-request-wrap">
+ 
+    <!-- Left: form -->
+    <div>
+      <div class="roadside-form-card">
+        <div class="roadside-form-header">
+          <div class="roadside-form-header-icon">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
           </div>
-          <div class="sp-title">Request Roadside Assistance</div>
-          <div class="sp-text">You have an active Roadside Assistance plan. Use the link below to submit a new assistance request through the online form.</div>
-          <a href="roads.html" class="btn-qa-primary" style="display:inline-flex;">
-            <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            Go to Request Form
-          </a>
+          <div>
+            <div class="roadside-form-header-title">Assistance Request Form</div>
+            <div class="roadside-form-header-sub">Response time: under 45 minutes</div>
+          </div>
         </div>
-
-      </div><!-- /roadside-section -->
+ 
+        <!-- Form body -->
+        <div class="roadside-form-body" id="roadsideFormBody">
+ 
+          <!-- Problem type -->
+          <div class="rf-group-title">Type of Problem</div>
+          <div class="rf-problem-chips" id="rfProblemChips">
+            <div class="rf-problem-chip" onclick="selectProblemChip(this, 'Breakdown')" data-value="Breakdown">
+              <span class="chip-icon">⚙️</span> Breakdown
+            </div>
+            <div class="rf-problem-chip" onclick="selectProblemChip(this, 'Flat Tyre')" data-value="Flat Tyre">
+              <span class="chip-icon">🔧</span> Flat Tyre
+            </div>
+            <div class="rf-problem-chip" onclick="selectProblemChip(this, 'Battery Dead')" data-value="Battery Dead">
+              <span class="chip-icon">🔋</span> Battery Dead
+            </div>
+            <div class="rf-problem-chip" onclick="selectProblemChip(this, 'Accident')" data-value="Accident">
+              <span class="chip-icon">🚨</span> Accident
+            </div>
+            <div class="rf-problem-chip" onclick="selectProblemChip(this, 'Locked Out')" data-value="Locked Out">
+              <span class="chip-icon">🔑</span> Locked Out
+            </div>
+            <div class="rf-problem-chip" onclick="selectProblemChip(this, 'Out of Fuel')" data-value="Out of Fuel">
+              <span class="chip-icon">⛽</span> Out of Fuel
+            </div>
+            <div class="rf-problem-chip" onclick="selectProblemChip(this, 'Other')" data-value="Other">
+              <span class="chip-icon">❓</span> Other
+            </div>
+          </div>
+          <input type="hidden" id="rfProblemType" value=""/>
+ 
+          <!-- Vehicle info -->
+          <div class="rf-group-title">Vehicle Information</div>
+          <div class="rf-grid">
+            <div class="rf-field">
+              <label for="rfLicensePlate">License Plate <span class="req">*</span></label>
+              <input type="text" class="rf-input" id="rfLicensePlate" placeholder="e.g. 12345-16-001"/>
+            </div>
+            <div class="rf-field">
+              <label for="rfBrand">Brand / Model</label>
+              <input type="text" class="rf-input" id="rfBrand" placeholder="e.g. Renault Clio"/>
+            </div>
+          </div>
+ 
+          <!-- Contract ref -->
+          <div class="rf-grid">
+            <div class="rf-field rf-full">
+              <label for="rfContractRef">Policy / Contract Reference</label>
+              <input type="text" class="rf-input" id="rfContractRef" placeholder="e.g. RSA-20260310-0024" value="RSA-20260310-0024"/>
+            </div>
+          </div>
+ 
+          <!-- Location -->
+          <div class="rf-group-title">Your Location</div>
+          <div class="rf-grid">
+            <div class="rf-field">
+              <label for="rfWilaya">Wilaya <span class="req">*</span></label>
+              <select class="rf-select" id="rfWilaya">
+                <option value="">Select wilaya…</option>
+                <option value="16">16 — Alger</option>
+                <option value="09">09 — Blida</option>
+                <option value="02">02 — Chlef</option>
+                <option value="05">05 — Batna</option>
+                <option value="25">25 — Constantine</option>
+                <option value="31">31 — Oran</option>
+                <option value="06">06 — Béjaïa</option>
+                <option value="23">23 — Annaba</option>
+                <option value="19">19 — Sétif</option>
+                <option value="15">15 — Tizi Ouzou</option>
+                <option value="30">30 — Ouargla</option>
+                <option value="07">07 — Biskra</option>
+              </select>
+            </div>
+            <div class="rf-field">
+              <label for="rfCity">Nearest City / Area</label>
+              <input type="text" class="rf-input" id="rfCity" placeholder="e.g. Bab El Oued"/>
+            </div>
+          </div>
+ 
+          <div class="rf-grid">
+            <div class="rf-field rf-full">
+              <label for="rfAddress">Street / Landmark <span class="req">*</span></label>
+              <input type="text" class="rf-input" id="rfAddress" placeholder="Nearest landmark or road name…"/>
+            </div>
+          </div>
+ 
+          <!-- Problem description -->
+          <div class="rf-group-title">Problem Description</div>
+          <div class="rf-field">
+            <label for="rfDescription">Describe the issue <span class="req">*</span></label>
+            <textarea class="rf-textarea" id="rfDescription" placeholder="Briefly describe what happened and the current state of your vehicle…"></textarea>
+          </div>
+ 
+          <!-- Phone -->
+          <div class="rf-group-title">Contact</div>
+          <div class="rf-grid">
+            <div class="rf-field">
+              <label for="rfPhone">Your Phone <span class="req">*</span></label>
+              <input type="tel" class="rf-input" id="rfPhone" placeholder="05XX XX XX XX"/>
+            </div>
+            <div class="rf-field">
+              <label for="rfPassengers">Number of Passengers</label>
+              <select class="rf-select" id="rfPassengers">
+                <option value="0">Driver only</option>
+                <option value="1">1 passenger</option>
+                <option value="2">2 passengers</option>
+                <option value="3">3 passengers</option>
+                <option value="4+">4 or more</option>
+              </select>
+            </div>
+          </div>
+ 
+          <!-- Submit -->
+          <button class="btn-roadside-submit" id="btnRoadsideSubmit" onclick="submitRoadsideRequest()">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7"/><path d="M1 12s4-8 11-8 11 8 11 8"/></svg>
+            Send Assistance Request
+          </button>
+ 
+        </div><!-- /roadsideFormBody -->
+ 
+        <!-- Success state -->
+        <div class="roadside-success" id="roadsideSuccess">
+          <div class="roadside-success-icon">✓</div>
+          <div class="roadside-success-title">Request Sent!</div>
+          <div class="roadside-success-sub">
+            Our team has received your request and will contact you within <strong>15 minutes</strong>.
+            A technician will be dispatched to your location.
+          </div>
+          <div class="roadside-success-ref" id="rsRequestRef">REF — —</div>
+          <div class="roadside-success-actions">
+            <button class="btn-rs-success-primary" onclick="alert('Certificate will be sent by SMS and email.')">
+              📲 Track My Request
+            </button>
+            <button class="btn-rs-success-secondary" onclick="resetRoadsideForm()">
+              Submit Another
+            </button>
+          </div>
+        </div>
+ 
+      </div><!-- /roadside-form-card -->
+    </div><!-- /left -->
+ 
+    <!-- Right sidebar -->
+    <div class="roadside-sidebar">
+ 
+      <!-- Your active plan -->
+      <div class="roadside-info-card">
+        <div class="roadside-info-card-header">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Your Active Plan
+        </div>
+        <div class="roadside-info-card-body">
+          <div class="rdinfo-row">
+            <span class="rdinfo-icon">🎫</span>
+            <div class="rdinfo-content">
+              <div class="rdinfo-label">Policy</div>
+              <div class="rdinfo-value">RSA-20260310-0024</div>
+            </div>
+          </div>
+          <div class="rdinfo-row">
+            <span class="rdinfo-icon">⭐</span>
+            <div class="rdinfo-content">
+              <div class="rdinfo-label">Plan</div>
+              <div class="rdinfo-value">Plus — 150 km towing</div>
+            </div>
+          </div>
+          <div class="rdinfo-row">
+            <span class="rdinfo-icon">📅</span>
+            <div class="rdinfo-content">
+              <div class="rdinfo-label">Valid until</div>
+              <div class="rdinfo-value">09 Mar 2027</div>
+            </div>
+          </div>
+          <div class="rdinfo-row">
+            <span class="rdinfo-icon">🔄</span>
+            <div class="rdinfo-content">
+              <div class="rdinfo-label">Interventions remaining</div>
+              <div class="rdinfo-value">2 of 3 this year</div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Tips -->
+      <div class="roadside-tips-card">
+        <div class="roadside-tips-title">⚠️ Safety reminders</div>
+        <ul class="roadside-tips-list">
+          <li>Turn on hazard lights immediately</li>
+          <li>Move the vehicle off the road if safe</li>
+          <li>Place warning triangle 50m behind</li>
+          <li>Stay behind barriers, not on the road</li>
+          <li>Keep passengers away from traffic</li>
+        </ul>
+      </div>
+ 
+    </div><!-- /sidebar -->
+ 
+  </div><!-- /roadside-request-wrap -->
+ 
+</div><!-- /roadside-section -->
 
 
       <!-- ══════════════════════════════════════
@@ -690,6 +924,298 @@ function closeSidebar() {
   document.getElementById('dashSidebarOverlay').classList.remove('show');
   document.body.style.overflow = '';
 }
+/* ============================================================
+   MOCK DATA — Claims
+   ============================================================ */
+var MOCK_CLAIMS = [
+  {
+    id: 'CLM-2026-031',
+    date: '11 Apr 2026',
+    type: 'Auto Insurance',
+    status: 'under_review',
+    statusLabel: 'Under Review',
+    contract: 'CATNAT-2026-0071',
+    description: 'Rear collision on RN01 near Blida. Other driver failed to stop at traffic light. Vehicle rear bumper and trunk damaged.',
+    agency: 'Agency 203 — Belouizded',
+    expert: 'Not yet assigned',
+    amount: '—',
+    timeline: [
+      { event: 'Claim submitted', date: '11 Apr 2026', done: true },
+      { event: 'Initial review started', date: '12 Apr 2026', done: true },
+      { event: 'Expert assignment', date: 'Pending', done: false, current: true },
+      { event: 'Expert report submitted', date: '—', done: false },
+      { event: 'Claim resolved', date: '—', done: false }
+    ]
+  },
+  {
+    id: 'CLM-2026-019',
+    date: '22 Feb 2026',
+    type: 'Roadside Assistance',
+    status: 'pending',
+    statusLabel: 'Pending',
+    contract: 'RSA-20260310-0024',
+    description: 'Engine failure on highway. Vehicle unable to start. Requested towing to nearest garage.',
+    agency: 'Agency 212 — Baraki',
+    expert: 'N/A',
+    amount: '—',
+    timeline: [
+      { event: 'Claim submitted', date: '22 Feb 2026', done: true },
+      { event: 'Awaiting review', date: 'Pending', done: false, current: true },
+      { event: 'Resolution', date: '—', done: false }
+    ]
+  },
+  {
+    id: 'CLM-2026-028',
+    date: '18 Jan 2026',
+    type: 'Home Insurance',
+    status: 'approved',
+    statusLabel: 'Closed',
+    contract: 'CATNAT-2025-0041',
+    description: 'Water damage from burst pipe in bathroom. Flooring and walls in bathroom and hallway affected.',
+    agency: 'Agency 602 — Alger Centre',
+    expert: 'Mr. K. Hadj Ali',
+    amount: '145,000 DZD',
+    timeline: [
+      { event: 'Claim submitted', date: '18 Jan 2026', done: true },
+      { event: 'Expert assigned', date: '20 Jan 2026', done: true },
+      { event: 'Expert inspection', date: '23 Jan 2026', done: true },
+      { event: 'Report submitted', date: '28 Jan 2026', done: true },
+      { event: 'Claim resolved & paid', date: '02 Feb 2026', done: true }
+    ]
+  },
+  {
+    id: 'CLM-2025-094',
+    date: '10 Sep 2025',
+    type: 'Auto Insurance',
+    status: 'rejected',
+    statusLabel: 'Rejected',
+    contract: 'CATNAT-2025-0041',
+    description: 'Windshield crack — claim rejected as damage pre-dates the current policy start date.',
+    agency: 'Agency 213 — Hussein-Dey',
+    expert: 'N/A',
+    amount: '0 DZD',
+    timeline: [
+      { event: 'Claim submitted', date: '10 Sep 2025', done: true },
+      { event: 'Review started', date: '11 Sep 2025', done: true },
+      { event: 'Claim rejected', date: '15 Sep 2025', done: true }
+    ]
+  },
+  {
+    id: 'CLM-2025-067',
+    date: '05 Jun 2025',
+    type: 'Home Insurance',
+    status: 'approved',
+    statusLabel: 'Closed',
+    contract: 'CATNAT-2025-0041',
+    description: 'Storm damage — roof tiles displaced during hailstorm. Partial ceiling damage in bedroom.',
+    agency: 'Agency 602 — Alger Centre',
+    expert: 'Mr. B. Messaoudi',
+    amount: '320,000 DZD',
+    timeline: [
+      { event: 'Claim submitted', date: '05 Jun 2025', done: true },
+      { event: 'Expert dispatched', date: '07 Jun 2025', done: true },
+      { event: 'Expert report received', date: '12 Jun 2025', done: true },
+      { event: 'Compensation paid', date: '20 Jun 2025', done: true }
+    ]
+  }
+];
+ 
+var filteredClaims = MOCK_CLAIMS.slice();
+ 
+/* ── Status config ── */
+var STATUS_CONFIG = {
+  pending:         { class: 'status-badge--pending',         label: 'Pending' },
+  under_review:    { class: 'status-badge--under-review',    label: 'Under Review' },
+  expert_assigned: { class: 'status-badge--expert-assigned', label: 'Expert Assigned' },
+  approved:        { class: 'status-badge--approved',        label: 'Closed' },
+  rejected:        { class: 'status-badge--rejected',        label: 'Rejected' }
+};
+ 
+/* ── Render claims table ── */
+function renderClaimsTable(claims) {
+  var tbody    = document.getElementById('claimsTableBody');
+  var emptyEl  = document.getElementById('claimsEmpty');
+  var countEl  = document.getElementById('claimsCountNum');
+ 
+  if (countEl) countEl.textContent = claims.length;
+ 
+  if (!claims.length) {
+    tbody.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  emptyEl.style.display = 'none';
+ 
+  tbody.innerHTML = claims.map(function(c) {
+    var sc = STATUS_CONFIG[c.status] || { class: 'status-badge--pending', label: c.status };
+    return '<tr onclick="openClaimPanel(\'' + c.id + '\')" title="Click to view details">' +
+      '<td><span class="claim-id-cell">' + c.id + '</span></td>' +
+      '<td>' + c.date + '</td>' +
+      '<td><span class="type-chip">' + c.type + '</span></td>' +
+      '<td><span class="status-badge ' + sc.class + '">' + c.statusLabel + '</span></td>' +
+      '<td>' +
+        '<button class="btn-claim-view" onclick="event.stopPropagation();openClaimPanel(\'' + c.id + '\')">' +
+          '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+          ' View' +
+        '</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+ 
+/* ── Filter ── */
+function filterClaims(status) {
+  if (status === 'all') {
+    filteredClaims = MOCK_CLAIMS.slice();
+  } else {
+    filteredClaims = MOCK_CLAIMS.filter(function(c) { return c.status === status; });
+  }
+  renderClaimsTable(filteredClaims);
+}
+ 
+/* ── Open claim detail panel ── */
+function openClaimPanel(claimId) {
+  var claim = MOCK_CLAIMS.find(function(c) { return c.id === claimId; });
+  if (!claim) return;
+ 
+  var sc = STATUS_CONFIG[claim.status] || { class: 'status-badge--pending', label: claim.status };
+ 
+  // Update header
+  document.getElementById('cdpTitle').textContent    = claim.id;
+  document.getElementById('cdpSubtitle').textContent = claim.type + ' — ' + claim.date;
+ 
+  // Build body HTML
+  var timelineHtml = claim.timeline.map(function(t) {
+    var dotClass = t.done
+      ? 'cdp-timeline-dot--done'
+      : (t.current ? 'cdp-timeline-dot--current' : 'cdp-timeline-dot--pending');
+    var symbol = t.done ? '✓' : (t.current ? '…' : '');
+    return '<div class="cdp-timeline-item">' +
+      '<div class="cdp-timeline-dot ' + dotClass + '">' + symbol + '</div>' +
+      '<div class="cdp-timeline-content">' +
+        '<div class="cdp-timeline-event">' + t.event + '</div>' +
+        '<div class="cdp-timeline-date">' + t.date + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+ 
+  document.getElementById('cdpBody').innerHTML =
+    '<div class="cdp-section">' +
+      '<div class="cdp-section-title">Claim Info</div>' +
+      '<div class="cdp-info-grid">' +
+        '<div class="cdp-info-item"><div class="cdp-info-label">Status</div><div class="cdp-info-value"><span class="status-badge ' + sc.class + '">' + claim.statusLabel + '</span></div></div>' +
+        '<div class="cdp-info-item"><div class="cdp-info-label">Date Filed</div><div class="cdp-info-value">' + claim.date + '</div></div>' +
+        '<div class="cdp-info-item"><div class="cdp-info-label">Type</div><div class="cdp-info-value">' + claim.type + '</div></div>' +
+        '<div class="cdp-info-item"><div class="cdp-info-label">Contract</div><div class="cdp-info-value">' + claim.contract + '</div></div>' +
+        '<div class="cdp-info-item"><div class="cdp-info-label">Handling Agency</div><div class="cdp-info-value">' + claim.agency + '</div></div>' +
+        '<div class="cdp-info-item"><div class="cdp-info-label">Expert</div><div class="cdp-info-value">' + claim.expert + '</div></div>' +
+        (claim.amount !== '—' ? '<div class="cdp-info-item"><div class="cdp-info-label">Compensation</div><div class="cdp-info-value" style="color:var(--orange);font-weight:800;">' + claim.amount + '</div></div><div></div>' : '') +
+      '</div>' +
+    '</div>' +
+    '<div class="cdp-section">' +
+      '<div class="cdp-section-title">Description</div>' +
+      '<div class="cdp-description">' + claim.description + '</div>' +
+    '</div>' +
+    '<div class="cdp-section">' +
+      '<div class="cdp-section-title">Progress</div>' +
+      '<div class="cdp-timeline">' + timelineHtml + '</div>' +
+    '</div>';
+ 
+  // Open panel
+  document.getElementById('claimPanelOverlay').classList.add('open');
+  document.getElementById('claimDetailPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+ 
+  // Highlight selected row
+  document.querySelectorAll('.claims-tbl tbody tr').forEach(function(tr) {
+    tr.classList.remove('row-selected');
+    if (tr.textContent.includes(claimId)) tr.classList.add('row-selected');
+  });
+}
+ 
+function closeClaimPanel() {
+  document.getElementById('claimPanelOverlay').classList.remove('open');
+  document.getElementById('claimDetailPanel').classList.remove('open');
+  document.body.style.overflow = '';
+  document.querySelectorAll('.claims-tbl tbody tr').forEach(function(tr) { tr.classList.remove('row-selected'); });
+}
+ 
+// Init claims
+renderClaimsTable(MOCK_CLAIMS);
+ 
+ 
+/* ============================================================
+   ROADSIDE REQUEST — JS
+   ============================================================ */
+var selectedProblemType = '';
+ 
+function selectProblemChip(el, value) {
+  document.querySelectorAll('.rf-problem-chip').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedProblemType = value;
+  document.getElementById('rfProblemType').value = value;
+}
+ 
+function submitRoadsideRequest() {
+  // Validation
+  var plate   = document.getElementById('rfLicensePlate').value.trim();
+  var wilaya  = document.getElementById('rfWilaya').value;
+  var address = document.getElementById('rfAddress').value.trim();
+  var desc    = document.getElementById('rfDescription').value.trim();
+  var phone   = document.getElementById('rfPhone').value.trim();
+ 
+  if (!selectedProblemType) { alert('Please select the type of problem.'); return; }
+  if (!plate)   { alert('Please enter your license plate.'); document.getElementById('rfLicensePlate').focus(); return; }
+  if (!wilaya)  { alert('Please select your wilaya.'); document.getElementById('rfWilaya').focus(); return; }
+  if (!address) { alert('Please enter your location.'); document.getElementById('rfAddress').focus(); return; }
+  if (!desc)    { alert('Please describe the problem.'); document.getElementById('rfDescription').focus(); return; }
+  if (!phone)   { alert('Please enter your phone number.'); document.getElementById('rfPhone').focus(); return; }
+ 
+  // Loading state
+  var btn = document.getElementById('btnRoadsideSubmit');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = 'Sending…';
+ 
+  // Simulate API call
+  setTimeout(function() {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+ 
+    // Generate reference
+    var ref = 'RSA-REQ-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' +
+              Math.random().toString(36).substr(2,4).toUpperCase();
+    document.getElementById('rsRequestRef').textContent = ref;
+ 
+    // Show success
+    document.getElementById('roadsideFormBody').style.display = 'none';
+    var success = document.getElementById('roadsideSuccess');
+    success.style.display = 'block';
+    success.classList.add('show');
+  }, 1400);
+}
+ 
+function resetRoadsideForm() {
+  // Reset fields
+  ['rfLicensePlate','rfBrand','rfAddress','rfDescription','rfPhone','rfCity']
+    .forEach(function(id) { var el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('rfContractRef').value = 'RSA-20260310-0024';
+  document.getElementById('rfWilaya').selectedIndex = 0;
+  document.getElementById('rfPassengers').selectedIndex = 0;
+  selectedProblemType = '';
+  document.querySelectorAll('.rf-problem-chip').forEach(function(c) { c.classList.remove('selected'); });
+ 
+  // Show form, hide success
+  document.getElementById('roadsideFormBody').style.display = '';
+  var success = document.getElementById('roadsideSuccess');
+  success.style.display = 'none';
+  success.classList.remove('show');
+}
+ 
+// ESC key closes claim panel
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeClaimPanel();
+});
 </script>
 
 </body>
