@@ -50,10 +50,15 @@ function _clearAuth() {
     localStorage.removeItem(k);
   });
 } 
-
 function renderAuthHeader() {
+  /*
+    Delegates entirely to Header controller.
+    NO cloneNode. NO replaceChild. NO direct DOM mutation here.
+    Header.init() is called by main.js after header HTML is injected.
+    Subsequent re-renders (e.g. after login/logout) call Header.render().
+  */
   if (!window.__caarHeaderReady) {
-    console.log('[CAAR] header not ready yet');
+    _log('renderAuthHeader: header not ready yet — Header.init() will call render()');
     return;
   }
 
@@ -62,7 +67,6 @@ function renderAuthHeader() {
     window.Header.render(payload);
   }
 }
-
 
 /* ─── logout ───────────────────────────────────────────────── */
 function logout() {

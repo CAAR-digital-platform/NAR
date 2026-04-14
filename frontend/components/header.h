@@ -476,9 +476,6 @@ document.addEventListener('DOMContentLoaded', () => {
   transition: transform .25s ease;
   flex-shrink: 0;
 }
-.user-menu.open .user-trigger svg {
-  transform: rotate(180deg);
-}
 
 /* ── Avatar circle ── */
 .user-avatar {
@@ -514,7 +511,15 @@ document.addEventListener('DOMContentLoaded', () => {
   pointer-events: none;
   transition: opacity .22s ease, transform .22s ease;
 }
-.user-menu.open .user-dropdown {
+.user-dropdown {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+/* This is the ONLY rule that makes dropdown visible */
+.user-dropdown.open {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -641,7 +646,7 @@ document.addEventListener('DOMContentLoaded', () => {
   pointer-events: none;
   transition: opacity .22s ease, transform .22s ease;
 }
-.user-menu.open .user-dropdown { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
 
 .user-dropdown-header { padding: 12px 16px 10px; display: flex; flex-direction: column; gap: 4px; }
 .user-dropdown-header span:first-child { font-size: 0.88rem; font-weight: 700; color: #1a1a1a; }
