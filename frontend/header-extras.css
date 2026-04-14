@@ -1,34 +1,36 @@
 /* ============================================================
-   header-extras.css
-   Barre de recherche animée + dropdown langue
-   Liez ce fichier dans TOUTES vos pages HTML :
-   <link rel="stylesheet" href="header-extras.css"/>
+   header-extras.css  —  Header animation & transition states
+   ─────────────────────────────────────────────────────────────
+   PURPOSE: Animation/transition states ONLY for the header's
+            interactive components (search bar, dropdowns).
+
+   STRUCTURE rules (display, position, min-width, background,
+   padding, etc.) live in main.css under the HEADER section.
+
+   Load order: main.css → header-extras.css
+   (main.css also @imports this file at line 1.)
    ============================================================ */
 
-/* ── BARRE DE RECHERCHE ── */
-.search-bar {
-  display: flex !important;
-  align-items: center;
-  gap: 12px;
-  padding: 0 40px;
-  background: #ffffff;
-  border-top: 1.5px solid #e8e0d8;
 
-  /* État caché */
+/* ==========================================================================
+   SEARCH BAR — animation states
+   ========================================================================== */
+
+/* Hidden / closed state (default) */
+.search-bar {
   max-height: 0;
   opacity: 0;
   transform: translateY(-10px);
   pointer-events: none;
   overflow: hidden;
-
   transition:
     max-height  0.32s ease,
     opacity     0.28s ease,
     transform   0.28s ease,
-    padding     0.28s ease,
-    border-color 0.2s ease;
+    padding     0.28s ease;
 }
 
+/* Visible / open state (toggled by header-controller.js) */
 .search-bar.open {
   max-height: 76px;
   opacity: 1;
@@ -37,138 +39,51 @@
   padding: 14px 40px;
 }
 
+/* Search input — focus ring transition only */
 .hdr-search-input {
-  flex: 1;
-  padding: 12px 22px;
-  border: 1.5px solid #E8761E;
-  border-radius: 50px;
-  font-size: 0.92rem;
-  font-family: 'DM Sans', system-ui, sans-serif;
-  background: #f8f5f0;
-  outline: none;
-  color: #1c1c1c;
-  box-shadow: none;
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.hdr-search-input:focus {
-  box-shadow: 0 0 0 3px rgba(232, 118, 30, 0.15);
-  border-color: #c96000;
-}
-
-.hdr-search-input::placeholder {
-  color: #bbb;
-  font-style: italic;
-}
-
+/* Close button — hover transition only */
 .search-close-hdr {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.15rem;
-  color: #aaa;
-  padding: 7px 9px;
-  border-radius: 50%;
-  line-height: 1;
-  flex-shrink: 0;
   transition: background 0.18s ease, color 0.18s ease;
-  font-family: inherit;
 }
 
-.search-close-hdr:hover {
-  background: #f0ece6;
-  color: #333;
-}
 
-/* ── DROPDOWN LANGUE ── */
-.lang-dropdown {
-  position: relative;
-}
+/* ==========================================================================
+   LANGUAGE DROPDOWN — animation states
+   ========================================================================== */
 
-.lang-toggle-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-}
-
+/* Chevron rotation on open */
 .lang-toggle-btn svg {
   transition: transform 0.22s ease;
 }
-
 .lang-dropdown.lang-open .lang-toggle-btn svg {
   transform: rotate(180deg);
 }
 
+/* Hidden / closed state (default) */
 .lang-dropdown-menu {
-  /* Reset display:none si main.css l'a défini */
-  display: block !important;
-
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  background: #ffffff;
-  border: 1px solid #e8e0d8;
-  border-radius: 10px;
-  min-width: 160px;
-  box-shadow:
-    0 4px 6px rgba(0,0,0,0.04),
-    0 10px 28px rgba(0,0,0,0.10);
-  list-style: none;
-  padding: 5px 0;
-  z-index: 1050;
-
-  /* État caché */
   opacity: 0;
   transform: translateY(-8px);
   pointer-events: none;
-
-  transition:
-    opacity   0.22s ease,
-    transform 0.22s ease;
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
+/* Visible / open state (toggled by header-controller.js) */
 .lang-dropdown-menu.show {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
-.lang-dropdown-menu li {
-  list-style: none;
-}
 
-.lang-dropdown-menu li a {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 15px;
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: #1c1c1c;
-  text-decoration: none;
-  transition: background 0.15s ease, color 0.15s ease;
-  cursor: pointer;
-}
+/* ==========================================================================
+   RESPONSIVE — animation padding adjustment only
+   ========================================================================== */
 
-.lang-dropdown-menu li a:hover {
-  background: #fff5e6;
-  color: #F57C00;
-}
-
-/* Séparateur optionnel entre items */
-.lang-dropdown-menu li + li {
-  border-top: 1px solid #f5f0ea;
-}
-
-/* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   .search-bar.open {
     padding: 12px 16px;
-  }
-
-  .lang-dropdown-menu {
-    right: -10px;
-    min-width: 140px;
   }
 }

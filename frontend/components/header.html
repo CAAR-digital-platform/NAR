@@ -5,83 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR &mdash; Contact Us</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
-  <link rel="stylesheet" href="css/contact.css"/>
+  <link rel="stylesheet" href="main.css"/> 
+  <link rel="stylesheet" href="header-extras.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-
-  <!-- ════════════════════════════════════════════
-       INLINE VALIDATION STYLES (added on top of contact.css)
-       ════════════════════════════════════════════ -->
-  <style>
-    /* ── Field error state ── */
-    .cf-input.field-error,
-    .cf-select.field-error,
-    .cf-textarea.field-error {
-      border-color: #e53e3e !important;
-      box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.12) !important;
-    }
-
-    /* ── Inline error message under each field ── */
-    .cf-field-error {
-      display: none;
-      font-size: 0.72rem;
-      color: #e53e3e;
-      margin-top: 5px;
-      font-weight: 500;
-      display: none;
-      align-items: center;
-      gap: 4px;
-    }
-    .cf-field-error.visible {
-      display: flex;
-    }
-    .cf-field-error::before {
-      content: "✕";
-      font-size: 0.68rem;
-      flex-shrink: 0;
-    }
-
-    /* ── Field success state ── */
-    .cf-input.field-ok,
-    .cf-select.field-ok,
-    .cf-textarea.field-ok {
-      border-color: #38a169 !important;
-    }
-    /* ── Character counter ── */
-    .cf-char-count {
-      font-size: 0.68rem;
-      color: #aaa;
-      text-align: right;
-      margin-top: 3px;
-    }
-    .cf-char-count.warn { color: var(--hdr-orange); }
-    .cf-char-count.over { color: #e53e3e; }
-
-    /* ── Robot checkbox error ── */
-    .cf-robot.robot-error {
-      border-color: #e53e3e !important;
-      background: #fff5f5;
-    }
-
-    /* ── Send button loading state ── */
-    .btn-send.loading {
-      opacity: 0.7;
-      cursor: wait;
-      position: relative;
-    }
-    .btn-send.loading::after {
-      content: '';
-      position: absolute;
-      right: 18px; top: 50%;
-      transform: translateY(-50%);
-      width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
-  </style>
 </head>
 <body>
 
