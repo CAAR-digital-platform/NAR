@@ -364,16 +364,27 @@ window.closeClaimPanel = function () {
    NEW CLAIM MODAL
    ============================================================ */
 window.openNewClaimModalGeneric = async function () {
-  if (!ALL_CONTRACTS.length) {
-    let result;
-    try {
-      result = await apiRequest('/api/contracts/my');
-      ALL_CONTRACTS = (result.ok && result.data.contracts) ? result.data.contracts : [];
-    } catch (e) { ALL_CONTRACTS = []; }
+  let result;
+
+  try {
+    result = await apiRequest('/api/contracts/my');
+    ALL_CONTRACTS = (result.ok && result.data.contracts) ? result.data.contracts : [];
+  } catch (e) {
+    ALL_CONTRACTS = [];
   }
+
   const active = ALL_CONTRACTS.filter(c => c.status === 'active');
-  if (!active.length) { showToast('You have no active contracts. Please subscribe first.', 'error'); return; }
-  if (active.length === 1) { openNewClaimModal(active[0].contract_id, active[0].policy_reference); return; }
+
+  if (!active.length) {
+    showToast('You have no active contracts. Please subscribe first.', 'error');
+    return;
+  }
+
+  if (active.length === 1) {
+    openNewClaimModal(active[0].contract_id, active[0].policy_reference);
+    return;
+  }
+
   openNewClaimModal(null, null, active);
 };
 
@@ -400,7 +411,7 @@ window.openNewClaimModal = function (contractId, policyRef, contractList) {
           + ' (expires ' + (c.end_date ? new Date(c.end_date).toLocaleDateString('en-GB') : '') + ')'
           + '</option>').join('');
 
-  if (contractId) select.value = contractId;
+  if (contractId) select.value = String(contractId);
 
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';

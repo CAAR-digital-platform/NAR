@@ -713,6 +713,7 @@
 
       <!-- SECTION: PROFILE ────────────────────────────────────────────── -->
       <div class="dash-section" id="profile-section">
+        <div id="profileApiMsg" style="display:none;margin-bottom:12px;"></div>
         <div class="dash-content__header">
           <h1 class="dash-content__header-title">My Profile</h1>
           <p class="dash-content__header-sub">Manage your personal information and account settings.</p>
@@ -825,5 +826,9 @@
 
 <!-- 4. Page-specific script (if any) -->
 <script src="dashboard.js"></script>  <!-- dashboard pages only -->
+<div id="claimsApiMsg" style="display:none;margin-bottom:12px;"></div>
+<script src="js/api.js"></script>
+<script src="js/dashboard-client-api.js"></script>
+<script src="js/profile-api.js"></script>
 </body>
 </html>

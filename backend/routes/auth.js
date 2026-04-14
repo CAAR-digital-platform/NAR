@@ -21,5 +21,17 @@ router.post('/login', authController.login);
 // Header: Authorization: Bearer <token>
 // Returns the profile of the currently logged-in user
 router.get('/me', authMiddleware, authController.getMe);
-
+// PUT /api/auth/profile
+router.put('/profile', authMiddleware, async (req, res) => {
+  const { first_name, last_name, phone } = req.body;
+  try {
+    await pool.execute(
+      'UPDATE users SET first_name=?, last_name=?, phone=? WHERE id=?',
+      [first_name, last_name, phone || null, req.user.id]
+    );
+    res.json({ message: 'Profile updated' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;

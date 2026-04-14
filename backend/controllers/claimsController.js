@@ -5,26 +5,44 @@
 
 const claimsService = require('../services/claimsService');
 
-// ─── POST /api/claims — client ────────────────────────────────────────────────
+
+// ─── POST /api/claims — client ─────────────────────────────
 async function createClaim(req, res) {
   const {
-    contract_id, description, claim_date,
-    incident_location, incident_lat, incident_lng, incident_wilaya_id,
+    contract_id,
+    description,
+    claim_date,
+    incident_location,
+    incident_lat,
+    incident_lng,
+    incident_wilaya_id,
   } = req.body;
 
   try {
     const result = await claimsService.createClaim(
-      { contract_id, description, claim_date,
-        incident_location, incident_lat, incident_lng, incident_wilaya_id },
+      {
+        contract_id,
+        description,
+        claim_date,
+        incident_location,
+        incident_lat,
+        incident_lng,
+        incident_wilaya_id,
+      },
       req.user.id
     );
-    return res.status(201).json({ message: 'Claim submitted successfully', ...result });
+
+    return res.status(201).json({
+      message: 'Claim submitted successfully',
+      ...result,
+    });
   } catch (err) {
     return res.status(err.status || 500).json({ error: err.message });
   }
 }
 
-// ─── GET /api/claims/my — client ─────────────────────────────────────────────
+
+// ─── GET /api/claims/my — client ───────────────────────────
 async function listMyClaims(req, res) {
   try {
     const claims = await claimsService.listMyClaims(req.user.id);
@@ -34,7 +52,8 @@ async function listMyClaims(req, res) {
   }
 }
 
-// ─── GET /api/claims — admin ──────────────────────────────────────────────────
+
+// ─── GET /api/claims — admin ───────────────────────────────
 async function listClaims(req, res) {
   try {
     const claims = await claimsService.listAllClaims();
@@ -44,47 +63,65 @@ async function listClaims(req, res) {
   }
 }
 
-// ─── PUT /api/claims/:id/status — admin ──────────────────────────────────────
+
+// ─── PUT /api/claims/:id/status — admin ────────────────────
 async function updateClaimStatus(req, res) {
   const claimId = parseInt(req.params.id, 10);
+
   if (isNaN(claimId) || claimId < 1) {
     return res.status(400).json({ error: 'Claim id must be a positive integer' });
   }
+
   const { status } = req.body;
+
   try {
     const result = await claimsService.updateClaimStatus(claimId, status);
-    return res.status(200).json({ message: 'Claim status updated successfully', ...result });
+    return res.status(200).json({
+      message: 'Claim status updated successfully',
+      ...result,
+    });
   } catch (err) {
     return res.status(err.status || 500).json({ error: err.message });
   }
 }
 
-// ─── POST /api/claims/:id/assign-expert — admin ───────────────────────────────
+
+// ─── POST /api/claims/:id/assign-expert — admin ────────────
 async function assignExpert(req, res) {
   const claimId = parseInt(req.params.id, 10);
+
   if (isNaN(claimId) || claimId < 1) {
     return res.status(400).json({ error: 'Claim id must be a positive integer' });
   }
+
   const expertId = parseInt(req.body.expert_id, 10);
+
   if (isNaN(expertId) || expertId < 1) {
     return res.status(400).json({ error: 'expert_id must be a positive integer' });
   }
+
   try {
     const result = await claimsService.assignExpert(claimId, expertId);
-    return res.status(200).json({ message: 'Expert assigned successfully', ...result });
+    return res.status(200).json({
+      message: 'Expert assigned successfully',
+      ...result,
+    });
   } catch (err) {
     return res.status(err.status || 500).json({ error: err.message });
   }
 }
 
-// ─── POST /api/claims/expert-reports — expert ────────────────────────────────
+
+// ─── POST /api/claims/expert-reports — expert ──────────────
 async function createExpertReport(req, res) {
   const { claim_id, report, estimated_damage, report_date, conclusion } = req.body;
+
   try {
     const result = await claimsService.createExpertReport(
       { claim_id, report, estimated_damage, report_date, conclusion },
       req.user.id
     );
+
     return res.status(201).json({
       message: 'Expert report submitted. Claim status updated to reported.',
       ...result,
@@ -94,7 +131,8 @@ async function createExpertReport(req, res) {
   }
 }
 
-// ─── GET /api/claims/expert-reports — admin ───────────────────────────────────
+
+// ─── GET /api/claims/expert-reports — admin ────────────────
 async function listExpertReports(req, res) {
   try {
     const reports = await claimsService.listAllExpertReports();
@@ -104,6 +142,8 @@ async function listExpertReports(req, res) {
   }
 }
 
+
+// ─── EXPORT ────────────────────────────────────────────────
 module.exports = {
   createClaim,
   listMyClaims,
