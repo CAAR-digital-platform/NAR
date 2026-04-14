@@ -1323,12 +1323,11 @@ selectPlan('Plus', 7900, 2);
 
 <!-- main.js LAST — handles header injection, search, language, mobile nav -->
  <!-- 1. State engine — must be FIRST -->
+
 <script src="app-state.js"></script>
-
-<!-- 2. Backward-compat wrapper -->
 <script src="auth.js"></script>
-
-<!-- 3. Header + global utilities -->
+<script src="header-controller.js"></script>
 <script src="main.js"></script>
+
 </body>
 </html>

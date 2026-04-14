@@ -117,13 +117,19 @@ const Header = (() => {
     }
 
     /* Authenticated */
-    loginBtn.style.display = 'none';
-    userMenu.style.display = 'block';
+   const dashboardBtn = document.getElementById('dashboardBtn');
 
-    const name = user.first_name
-      ? (user.first_name + ' ' + (user.last_name || '')).trim()
-      : (user.email || 'User');
+if (!user) {
+  loginBtn.style.display = 'inline-flex';
+  userMenu.style.display = 'none';
+  if (dashboardBtn) dashboardBtn.style.display = 'none';
+  return;
+}
 
+loginBtn.style.display = 'none';
+userMenu.style.display = 'block';
+if (dashboardBtn) dashboardBtn.style.display = 'inline-flex';
+   const name = user.first_name || user.email.split('@')[0];
     const initials = _buildInitials(name);
     const role     = user.role || 'client';
     const dashHref = (window.DASHBOARD_MAP && window.DASHBOARD_MAP[role])

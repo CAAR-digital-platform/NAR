@@ -7,6 +7,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="main.css"/>
   <link rel="stylesheet" href="dashboard.css"/>
+  <link rel="stylesheet" href="main.css"/>
+<link rel="stylesheet" href="header-extras.css"/>
+</head>
+<body>
+
+  <!-- HEADER — injecté automatiquement -->
+  <div id="site-header"></div>
   <style>
     /* ── New Claim Modal ──────────────────────────────────── */
     .nc-modal-overlay {
@@ -826,13 +833,10 @@
   });
 </script>
 
-<!-- 1. State engine — must be FIRST -->
+ <div id="site-footer"></div>
 <script src="app-state.js"></script>
-
-<!-- 2. Backward-compat wrapper -->
 <script src="auth.js"></script>
-
-<!-- 3. Header + global utilities -->
+<script src="header-controller.js"></script>
 <script src="main.js"></script>
 
 <!-- 4. Page-specific script (if any) -->

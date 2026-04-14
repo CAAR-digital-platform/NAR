@@ -23,6 +23,9 @@
       <div class="top-row">
         <a href="network.html" class="btn-top">Find Agency</a>
         <a href="contact.html" class="btn-top">Contact Us</a>
+        <a href="client-dashboard.html" class="btn-top" id="dashboardBtn" style="display:none;">
+    Dashboard
+  </a>
         <a href="login.html" class="btn-top" id="loginBtn">Login</a>
 
   <div class="user-menu" id="userMenu" style="display:none;">
@@ -37,10 +40,6 @@
         <span class="user-role-badge" id="dropUserRole"></span>
       </div>
       <hr class="user-dropdown-divider"/>
-      <a class="user-dropdown-item" id="dashboardLink">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        Dashboard
-      </a>
       <button class="user-dropdown-item user-logout" id="logoutBtn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Logout
@@ -84,15 +83,18 @@
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </button>
-          <div class="lang-dropdown">
-  <button class="icon-btn lang-btn">
+         <div class="lang-dropdown" id="langDropdown">
+  <button class="icon-btn lang-toggle-btn" id="langToggleBtn">
     <span id="currentLang">EN</span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
   </button>
 
-  <ul class="lang-menu">
-    <li data-lang="FR">Français</li>
-    <li data-lang="EN">English</li>
-    <li data-lang="AR">عربي</li>
+  <ul class="lang-dropdown-menu" id="langDropdownMenu">
+    <li data-lang="FR"><a href="#">Français</a></li>
+    <li data-lang="EN"><a href="#">English</a></li>
+    <li data-lang="AR"><a href="#">عربي</a></li>
   </ul>
 </div>
         </div>
@@ -100,7 +102,12 @@
     </div>
   </div>
   <div class="search-bar" id="searchBar">
-  <input type="text" placeholder="Search CAAR..." class="search-input" autofocus/>
+  <input 
+  type="text"
+  id="searchInput"
+  class="hdr-search-input"
+  placeholder="Search CAAR..."
+/>
 </div>
 </header>
 
@@ -130,15 +137,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 
-// Au chargement, lire le localStorage
-const savedUser = localStorage.getItem('user');
-if (savedUser) currentUser = JSON.parse(savedUser);
+const currentUser = JSON.parse(localStorage.getItem('user')) || null;
 /* ══════════════════════════════════════
    ÉTAT UTILISATEUR SIMULÉ
    Change role en : "admin" | "expert" | "client" | null
 ══════════════════════════════════════ */
-let currentUser = { name: "John Doe", role: "admin" };
-// let currentUser = null; // ← décommenter pour tester déconnecté
 
 const DASHBOARD_ROUTES = {
   admin:  '/admin-dashboard',
@@ -162,30 +165,6 @@ function toggleMobileMenu() {
   document.getElementById('mobileNav').classList.toggle('open');
   document.getElementById('mobileNavOverlay').classList.toggle('open');
 }
-
-/* ══════════════════════════════════════
-   SEARCH BAR
-══════════════════════════════════════ */
-function initSearch() {
-  const searchBtn = document.getElementById('searchBtn');
-  const searchBar = document.getElementById('searchBar');
-  if (!searchBtn || !searchBar) return;
-
-  searchBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    searchBar.classList.toggle('open');
-    if (searchBar.classList.contains('open')) {
-      setTimeout(() => searchBar.querySelector('.search-input')?.focus(), 100);
-    }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!searchBar.contains(e.target) && !searchBtn.contains(e.target)) {
-      searchBar.classList.remove('open');
-    }
-  });
-}
-
 /* ══════════════════════════════════════
    MAP
 ══════════════════════════════════════ */
@@ -197,18 +176,6 @@ function initMap() {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
   L.marker([HQ.lat, HQ.lng]).addTo(map).bindPopup("CAAR Headquarters").openPopup();
 }
-
-/* ══════════════════════════════════════
-   LANG SWITCHER
-══════════════════════════════════════ */
-function initLang() {
-  document.querySelectorAll('.lang-menu li').forEach(item => {
-    item.addEventListener('click', function () {
-      document.getElementById('currentLang').textContent = this.getAttribute('data-lang');
-    });
-  });
-}
-
 /* ══════════════════════════════════════
    VALIDATION FORM (contact.html)
 ══════════════════════════════════════ */
@@ -284,9 +251,7 @@ async function submitForm() {
 document.addEventListener('DOMContentLoaded', () => {
   renderUserState();
   initUserMenu();
-  initSearch();
   initMap();
-  initLang();
 });
 
 </script>
