@@ -125,7 +125,7 @@ textarea     { font-family: var(--font-sans); }
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: #000;
+ background: #3F3F3F !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
@@ -178,10 +178,10 @@ textarea     { font-family: var(--font-sans); }
   flex: 1;
 }
 
-.top-divider, .divider {
-  border-top-color: rgba(255,255,255,0.1);
+.top-divider,
+.divider {
+  display: none !important;
 }
-
 
 /* ── Top CTA buttons ────────────────────────────────────────────────────── */
 
@@ -259,8 +259,8 @@ textarea     { font-family: var(--font-sans); }
   position: absolute;
   top: calc(100% + 2px);
   left: 0;
- background: #111;
- border-color: rgba(255,255,255,0.1);
+ background: #2b2b2b !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
   border: 1px solid var(--border);
   border-radius: 8px;
   min-width: 200px;
@@ -276,15 +276,16 @@ textarea     { font-family: var(--font-sans); }
   display: block;
   padding: 11px 20px;
   font-size: 13px;
-  color:  rgba(255,255,255,0.8);
-  border-bottom-color: rgba(255,255,255,0.06);
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
   text-transform: uppercase;
   letter-spacing: .3px;
   border-bottom: 1px solid #f0f0f0;
   transition: background .15s, color .15s;
 }
 .dropdown-menu li:last-child a { border-bottom: none; }
-.dropdown-menu li a:hover      { background: #1a1a1a; color: var(--hdr-orange); }
+.dropdown-menu li a:hover      {  background: #3F3F3F !important;
+  color: #F57C00 !important; }
 
 
 /* ── Nav icon buttons ───────────────────────────────────────────────────── */
@@ -299,7 +300,7 @@ textarea     { font-family: var(--font-sans); }
   background: none;
   border: none;
   cursor: pointer;
-  display: flex;
+   display: flex !important;
   align-items: center;
   gap: 5px;
   padding: 6px 8px;
@@ -444,8 +445,8 @@ textarea     { font-family: var(--font-sans); }
   align-items: center;
   gap: 12px;
   padding: 0 40px;
-  background:#111;
-  border-top: 1.5px solid #e8e0d8;
+   background: #3F3F3F !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-top-color: rgba(255,255,255,0.1);
 }
 
@@ -484,8 +485,14 @@ textarea     { font-family: var(--font-sans); }
 /* ── Language dropdown — structure ──────────────────────────────────────── */
 /* (animation states in header-extras.css) */
 
-.lang-dropdown       { position: relative; }
-.lang-toggle-btn     { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.lang-dropdown       { display: inline-flex !important;
+  align-items: center !important;
+}
+ 
+.lang-toggle-btn {
+  display: flex !important;
+}
+ 
 
 /* display:block is required so opacity-based animation works */
 .lang-dropdown-menu {
@@ -493,12 +500,13 @@ textarea     { font-family: var(--font-sans); }
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: #fff;
+  background:#3F3F3F !important;
   border-radius: 10px;
   min-width: 160px;
   padding: 6px 0;
   list-style: none;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10);
+ border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
   z-index: 9999;
 }
 
@@ -509,12 +517,14 @@ textarea     { font-family: var(--font-sans); }
   padding: 9px 15px;
   font-size: .84rem;
   font-weight: 600;
-  color: #1c1c1c;
+  color:rgba(255, 255, 255, 0.82) !important;
   text-decoration: none;
   transition: background .15s, color .15s;
 }
-.lang-dropdown-menu li a:hover { background: #fff5e6; color: #F57C00; }
-.lang-dropdown-menu li + li    { border-top: 1px solid #f5f0ea; }
+.lang-dropdown-menu li a:hover { background: #2b2b2b !important;
+  color: #F57C00 !important;
+}
+.lang-dropdown-menu li + li    { border-top: 1px solid rgba(255, 255, 255, 0.09) !important; }
 
 
 /* ── Mobile menu button (hidden on desktop) ─────────────────────────────── */
@@ -640,7 +650,10 @@ textarea     { font-family: var(--font-sans); }
 }
 
 @media (max-width: 480px) {
-  .logo-img { width: 48px; height: 48px; }
+  .logo-img {
+  width: 72px !important;
+  height: 72px !important;
+}
 }
 /* ==========================================================================
    3. UTILITAIRES GLOBAUX
