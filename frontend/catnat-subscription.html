@@ -44,66 +44,33 @@
   <div class="catnat-form-container">
 
     <!-- ======================================================
-         STEP 1 — QUOTE (Property Details + Plan Selection)
+         STEP 1 — QUOTE (Property Details)
     ====================================================== -->
     <div class="catnat-step" id="form-step-1">
       <div class="form-header">
         <h2>Property Details</h2>
-        <p>Fill in your property information and choose your coverage plan.</p>
+        <p>Fill in your property information to get your CATNAT coverage quote.</p>
       </div>
 
       <div class="form-grid">
-        <!-- Wilaya -->
+
+        <!-- Wilaya — populated dynamically by dropdowns.js -->
         <div class="form-group">
           <label for="wilaya">Wilaya <span class="req">*</span></label>
           <div class="select-wrap">
             <select id="wilaya" name="wilaya">
-              <option value="16">16 _ ALGER</option>
-              <option value="01">01 _ Adrar</option><option value="02">02 _ Chlef</option>
-              <option value="03">03 _ Laghouat</option><option value="04">04 _ Oum El Bouaghi</option>
-              <option value="05">05 _ Batna</option><option value="06">06 _ Béjaïa</option>
-              <option value="07">07 _ Biskra</option><option value="08">08 _ Béchar</option>
-              <option value="09">09 _ Blida</option><option value="10">10 _ Bouira</option>
-              <option value="11">11 _ Tamanrasset</option><option value="12">12 _ Tébessa</option>
-              <option value="13">13 _ Tlemcen</option><option value="14">14 _ Tiaret</option>
-              <option value="15">15 _ Tizi Ouzou</option><option value="17">17 _ Djelfa</option>
-              <option value="18">18 _ Jijel</option><option value="19">19 _ Sétif</option>
-              <option value="20">20 _ Saïda</option><option value="21">21 _ Skikda</option>
-              <option value="22">22 _ Sidi Bel Abbès</option><option value="23">23 _ Annaba</option>
-              <option value="24">24 _ Guelma</option><option value="25">25 _ Constantine</option>
-              <option value="26">26 _ Médéa</option><option value="27">27 _ Mostaganem</option>
-              <option value="28">28 _ M'Sila</option><option value="29">29 _ Mascara</option>
-              <option value="30">30 _ Ouargla</option><option value="31">31 _ Oran</option>
-              <option value="32">32 _ El Bayadh</option><option value="33">33 _ Illizi</option>
-              <option value="34">34 _ Bordj Bou Arréridj</option><option value="35">35 _ Boumerdès</option>
-              <option value="36">36 _ El Tarf</option><option value="37">37 _ Tindouf</option>
-              <option value="38">38 _ Tissemsilt</option><option value="39">39 _ El Oued</option>
-              <option value="40">40 _ Khenchela</option><option value="41">41 _ Souk Ahras</option>
-              <option value="42">42 _ Tipaza</option><option value="43">43 _ Mila</option>
-              <option value="44">44 _ Aïn Defla</option><option value="45">45 _ Naâma</option>
-              <option value="46">46 _ Aïn Témouchent</option><option value="47">47 _ Ghardaïa</option>
-              <option value="48">48 _ Relizane</option>
+              <option value="">Loading…</option>
             </select>
             <svg class="select-arrow" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
           </div>
         </div>
 
-        <!-- Municipality -->
+        <!-- Municipality — disabled until wilaya selected, populated by dropdowns.js -->
         <div class="form-group">
           <label for="municipality">Municipality <span class="req">*</span></label>
           <div class="select-wrap">
-            <select id="municipality" name="municipality">
-              <option value="alger_zone3">ALGER _ Zone 3</option>
-              <option value="alger_zone1">ALGER _ Zone 1</option>
-              <option value="alger_zone2">ALGER _ Zone 2</option>
-              <option value="alger_zone4">ALGER _ Zone 4</option>
-              <option value="bab_el_oued">Bab El Oued</option>
-              <option value="hussein_dey">Hussein Dey</option>
-              <option value="el_harrach">El Harrach</option>
-              <option value="kouba">Kouba</option>
-              <option value="bir_mourad_rais">Bir Mourad Raïs</option>
-              <option value="cheraga">Chéraga</option>
-              <option value="ben_aknoun">Ben Aknoun</option>
+            <select id="municipality" name="municipality" disabled>
+              <option value="">Select Wilaya first</option>
             </select>
             <svg class="select-arrow" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
           </div>
@@ -115,8 +82,8 @@
           <div class="input-spin-wrap">
             <input type="number" id="year_construction" placeholder="e.g. 2005" min="1900" max="2026"/>
             <div class="spin-btns">
-              <button type="button" onclick="spinUp('year_construction',1)">&#8963;</button>
-              <button type="button" onclick="spinDown('year_construction',1)">&#8964;</button>
+              <button type="button" id="spin-year-up">&#8963;</button>
+              <button type="button" id="spin-year-down">&#8964;</button>
             </div>
           </div>
         </div>
@@ -127,8 +94,8 @@
           <div class="input-spin-wrap">
             <input type="number" id="built_area" placeholder="e.g. 120" min="1"/>
             <div class="spin-btns">
-              <button type="button" onclick="spinUp('built_area',10)">&#8963;</button>
-              <button type="button" onclick="spinDown('built_area',10)">&#8964;</button>
+              <button type="button" id="spin-area-up">&#8963;</button>
+              <button type="button" id="spin-area-down">&#8964;</button>
             </div>
           </div>
         </div>
@@ -154,7 +121,7 @@
         <div class="form-group">
           <label for="construction_type">Type of Construction <span class="req">*</span></label>
           <div class="select-wrap">
-            <select id="construction_type" name="construction_type" onchange="onConstructionTypeChange()">
+            <select id="construction_type" name="construction_type">
               <option value="Individual Home">Individual Home</option>
               <option value="Apartment / Building">Apartment / Building</option>
               <option value="Villa">Villa</option>
@@ -171,8 +138,8 @@
           <div class="input-spin-wrap">
             <input type="number" id="declared_value" placeholder="e.g. 5 000 000" min="0" step="100000"/>
             <div class="spin-btns">
-              <button type="button" onclick="spinUp('declared_value',100000)">&#8963;</button>
-              <button type="button" onclick="spinDown('declared_value',100000)">&#8964;</button>
+              <button type="button" id="spin-dvalue-up">&#8963;</button>
+              <button type="button" id="spin-dvalue-down">&#8964;</button>
             </div>
           </div>
         </div>
@@ -189,6 +156,7 @@
             <svg class="select-arrow" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
           </div>
         </div>
+
       </div><!-- /form-grid -->
 
       <!-- YES / NO QUESTIONS -->
@@ -196,22 +164,22 @@
         <div class="yn-row">
           <span class="yn-label">Is any part rented for commercial / industrial use?</span>
           <div class="yn-toggle" id="yn-commercial">
-            <button class="yn-btn yn-no active" onclick="setYN('commercial','no')">NO</button>
-            <button class="yn-btn yn-yes"        onclick="setYN('commercial','yes')">YES</button>
+            <button class="yn-btn yn-no active" data-yn="commercial" data-val="no">NO</button>
+            <button class="yn-btn yn-yes"        data-yn="commercial" data-val="yes">YES</button>
           </div>
         </div>
         <div class="yn-row">
           <span class="yn-label">Is the property attested by a notarial deed?</span>
           <div class="yn-toggle" id="yn-notarial">
-            <button class="yn-btn yn-no active" onclick="setYN('notarial','no')">NO</button>
-            <button class="yn-btn yn-yes"        onclick="setYN('notarial','yes')">YES</button>
+            <button class="yn-btn yn-no active" data-yn="notarial" data-val="no">NO</button>
+            <button class="yn-btn yn-yes"        data-yn="notarial" data-val="yes">YES</button>
           </div>
         </div>
         <div class="yn-row">
           <span class="yn-label">Is the construction compliant with seismic regulations?</span>
           <div class="yn-toggle" id="yn-seismic">
-            <button class="yn-btn yn-no active" onclick="setYN('seismic','no')">NO</button>
-            <button class="yn-btn yn-yes"        onclick="setYN('seismic','yes')">YES</button>
+            <button class="yn-btn yn-no active" data-yn="seismic" data-val="no">NO</button>
+            <button class="yn-btn yn-yes"        data-yn="seismic" data-val="yes">YES</button>
           </div>
         </div>
       </div>
@@ -233,7 +201,7 @@
               <span class="coverage-name">Floods &amp; Mudflows</span>
             </div>
             <div class="coverage-item-right">
-              <button class="add-btn" id="btn-floods" onclick="toggleCoverage('floods',this)">+ Add</button>
+              <button class="add-btn" id="btn-floods">+ Add</button>
             </div>
           </div>
           <div class="coverage-item">
@@ -242,7 +210,7 @@
               <span class="coverage-name">Storms &amp; High Winds</span>
             </div>
             <div class="coverage-item-right">
-              <button class="add-btn" id="btn-storms" onclick="toggleCoverage('storms',this)">+ Add</button>
+              <button class="add-btn" id="btn-storms">+ Add</button>
             </div>
           </div>
           <div class="coverage-item">
@@ -251,13 +219,32 @@
               <span class="coverage-name">Ground Movements</span>
             </div>
             <div class="coverage-item-right">
-              <button class="add-btn" id="btn-ground" onclick="toggleCoverage('ground',this)">+ Add</button>
+              <button class="add-btn" id="btn-ground">+ Add</button>
             </div>
           </div>
         </div>
       </div>
 
-     <div class="premium-consent-row">
+      <!-- PREMIUM DISPLAY -->
+      <div class="premium-bar">
+        <div class="premium-row">
+          <span class="premium-label">Base Premium</span>
+          <span class="premium-value" id="premium-base">0.00 DZD</span>
+        </div>
+        <div class="premium-row">
+          <span class="premium-label">Adjustments</span>
+          <span class="premium-value" id="premium-adjust">0.00 DZD</span>
+        </div>
+        <div class="premium-row">
+          <span class="premium-label">Taxes &amp; Fees</span>
+          <span class="premium-value" id="premium-tax">0.00 DZD</span>
+        </div>
+        <div class="premium-divider"></div>
+        <div class="premium-row premium-total-row">
+          <span class="premium-total-label">Total to Pay</span>
+          <span class="premium-total-value" id="premium-total">0.00 DZD</span>
+        </div>
+        <div class="premium-consent-row">
           <input type="checkbox" id="terms-consent"/>
           <label for="terms-consent">
             I accept the <a href="#">general terms and conditions</a> of CATNAT insurance
@@ -270,17 +257,20 @@
 
       <div class="form-nav-btns">
         <a href="Online_subscription.html" class="btn-back-products">
-          ← Back to Products
+          &#8592; Back to Products
         </a>
         <button id="btn-continue-step1" class="btn-continue" type="button">
-          Continue to Subscription →
+          Continue to Subscription &#8594;
         </button>
       </div>
 
+    </div><!-- /form-step-1 -->
+
+
     <!-- ======================================================
          STEP 2 — SUBSCRIPTION (client info + agency)
-         NOTE: review sub-view removed entirely. Flow goes
-         directly to submitAndProceed() → Step 3.
+         Wilaya values are read from AppState (set in Step 1).
+         No duplicate wilaya selects here.
     ====================================================== -->
     <div class="catnat-step hidden" id="form-step-2">
 
@@ -322,18 +312,7 @@
                 <label for="address">Address <span class="req">*</span></label>
                 <input type="text" id="address" placeholder="Full address"/>
               </div>
-              <div class="form-group">
-                <label for="policy_wilaya">Wilaya <span class="req">*</span></label>
-                <div class="select-wrap">
-                  <select id="policy_wilaya">
-                    <option value="16">16 _ ALGER</option>
-                    <option value="09">09 _ BLIDA</option>
-                    <option value="25">25 _ CONSTANTINE</option>
-                    <option value="31">31 _ ORAN</option>
-                  </select>
-                  <svg class="select-arrow" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
-                </div>
-              </div>
+              <!-- Wilaya display (read-only, mirrors Step 1 #wilaya via AppState) -->
               <div class="form-group">
                 <label for="city">City <span class="req">*</span></label>
                 <input type="text" id="city" placeholder="City"/>
@@ -371,34 +350,10 @@
                 <label for="property_address">Property Address <span class="req">*</span></label>
                 <input type="text" id="property_address" placeholder="Street address of the insured property"/>
               </div>
-              <div class="form-group">
-                <label for="property_wilaya">Wilaya <span class="req">*</span></label>
-                <div class="select-wrap">
-                  <select id="property_wilaya">
-                    <option value="16">16 _ ALGER</option>
-                    <option value="09">09 _ BLIDA</option>
-                    <option value="14">14 _ TIARET</option>
-                    <option value="25">25 _ CONSTANTINE</option>
-                    <option value="31">31 _ ORAN</option>
-                  </select>
-                  <svg class="select-arrow" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
-                </div>
-              </div>
+              <!-- Property city field — wilaya is reused from AppState (Step 1 #wilaya) -->
               <div class="form-group">
                 <label for="property_city">City <span class="req">*</span></label>
                 <input type="text" id="property_city" placeholder="City / Zone"/>
-              </div>
-              <div class="form-group">
-                <label for="postal_code">Postal Code</label>
-                <div class="select-wrap">
-                  <select id="postal_code">
-                    <option value="16000">16000</option>
-                    <option value="02215">02215</option>
-                    <option value="25000">25000</option>
-                    <option value="14431">14431</option>
-                  </select>
-                  <svg class="select-arrow" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
-                </div>
               </div>
             </div>
           </div>
@@ -474,13 +429,19 @@
             </ul>
           </div>
 
-          <!-- Error container for step 2 -->
+          <!-- API error container (Step 2) -->
+          <div id="api-error-msg" style="display:none;background:#fff0f0;border:1px solid #e53e3e;
+            border-radius:8px;padding:12px 16px;margin-bottom:12px;font-size:0.82rem;
+            color:#c53030;font-weight:600;"></div>
+
+          <!-- Legacy error container kept for backward compat -->
           <div id="catnat-error-step2" style="display:none;"></div>
 
           <div class="form-nav-btns" style="flex-direction:column;">
             <button id="btn-back-step2" class="btn-back-products" type="button" style="width:100%;justify-content:center;">
               &#8592; Back to Quote
             </button>
+            <!-- onclick removed — listener attached in catnat-arch.js -->
             <button id="btn-pay-cib" type="button" class="btn-continue" style="width:100%;justify-content:center;">
               Continue to Payment &#8594;
             </button>
@@ -525,7 +486,7 @@
           <div class="payment-form-card">
             <div class="form-group form-group-full">
               <label for="card_number">Your CIB Card Number <span class="req">*</span></label>
-              <input type="text" id="card_number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)"/>
+              <input type="text" id="card_number" placeholder="1234 5678 9012 3456" maxlength="19" id="card-number-input"/>
             </div>
             <div class="form-group">
               <label for="cvv2">CVV2 <span class="req">*</span></label>
@@ -561,14 +522,17 @@
               <label for="cardholder_name">Cardholder Name <span class="req">*</span></label>
               <input type="text" id="cardholder_name" placeholder="Name as on card"/>
             </div>
-          </div>
 
-          <!-- Error container for payment step -->
-          <div id="pay-error-msg" style="display:none;background:#fff0f0;border:1px solid #e53e3e;border-radius:8px;padding:10px 14px;margin:8px 14px;font-size:0.82rem;color:#c53030;font-weight:600;"></div>
+            <!-- Payment error container (Step 3) -->
+            <div id="pay-error-msg" style="display:none;background:#fff0f0;border:1px solid #e53e3e;
+              border-radius:8px;padding:12px 16px;margin:8px 14px;font-size:0.82rem;
+              color:#c53030;font-weight:600;"></div>
+          </div>
 
           <div class="payment-actions">
             <button type="button" class="btn-cancel-payment" id="btn-cancel-payment">&#x2715; Cancel</button>
             <button type="button" class="btn-reset-payment"  id="btn-reset-payment">&#8635; Reset</button>
+            <!-- onclick removed — listener attached in catnat-arch.js -->
             <button type="button" class="btn-validate-payment" id="btn-validate-pay">&#10003; Validate Payment</button>
           </div>
 
@@ -620,8 +584,8 @@
 
           <div class="success-actions">
             <a href="client-dashboard.html" class="success-btn primary">Go to My Space &#8594;</a>
-            <button type="button" class="success-btn" onclick="downloadCertificate()">&#128196; Download Certificate</button>
-            <button type="button" class="success-btn" onclick="window.print()">&#128424; Print</button>
+            <button type="button" class="success-btn" id="btn-download-cert">&#128196; Download Certificate</button>
+            <button type="button" class="success-btn" id="btn-print">&#128424; Print</button>
           </div>
         </div>
 
@@ -655,23 +619,26 @@
 
   </div><!-- /catnat-form-container -->
 </div><!-- /catnat-page -->
+
 <div id="contractModal" class="modal hidden">
   <div class="modal-content">
     <h2>Payment Successful</h2>
     <p>Your policy reference:</p>
     <strong id="modalPolicyRef"></strong>
-
-    <button onclick="closeModal()">Close</button>
+    <button id="btn-close-modal">Close</button>
   </div>
 </div>
+
   <!-- FOOTER — injected automatically -->
   <div id="site-footer"></div>
 
+<!-- Script order: state → auth → header → main → dropdowns → app logic -->
 <script src="app-state.js"></script>
 <script src="auth.js"></script>
 <script src="header-controller.js"></script>
-<script src="main.js"></script>
-<script src="js/catnat-arch.js"></script>
 
+<script src="js/dropdown.js"></script>
+<script src="js/catnat-arch.js"></script>
+<script src="main.js"></script>
 </body>
 </html>

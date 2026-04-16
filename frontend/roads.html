@@ -9,7 +9,6 @@
 </head>
 <body>
 
-
 <div id="site-header"></div>
 
 <!-- ===== ROADSIDE ASSISTANCE PAGE ===== -->
@@ -17,7 +16,7 @@
 
   <!-- STEP BAR -->
   <div class="step-bar">
-    <div class="step-bar-brand">          Roadside Assistance &mdash; Subscription Form</div>
+    <div class="step-bar-brand">Roadside Assistance &mdash; Subscription Form</div>
     <div class="step-bar-steps">
       <div class="step active" id="step-indicator-1">
         <div class="step-circle">1</div>
@@ -56,14 +55,14 @@
         <!-- License Plate -->
         <div class="form-group">
           <label for="license_plate">License Plate <span class="req">*</span></label>
-          <input type="text" id="license_plate" placeholder="e.g. 12345-16-001" oninput="updateSummary()"/>
+          <input type="text" id="license_plate" placeholder="e.g. 12345-16-001"/>
         </div>
 
         <!-- Vehicle Brand -->
         <div class="form-group">
           <label for="vehicle_brand">Vehicle Brand <span class="req">*</span></label>
           <div class="select-wrap">
-            <select id="vehicle_brand" onchange="updateSummary()">
+            <select id="vehicle_brand">
               <option value="">Select brand</option>
               <option>Renault</option>
               <option>Peugeot</option>
@@ -93,14 +92,14 @@
         <!-- Vehicle Model -->
         <div class="form-group">
           <label for="vehicle_model">Vehicle Model <span class="req">*</span></label>
-          <input type="text" id="vehicle_model" placeholder="e.g. Clio, 208, Corsa" oninput="updateSummary()"/>
+          <input type="text" id="vehicle_model" placeholder="e.g. Clio, 208, Corsa"/>
         </div>
 
         <!-- Year of Manufacture -->
         <div class="form-group">
           <label for="vehicle_year">Year of Manufacture <span class="req">*</span></label>
           <div class="select-wrap">
-            <select id="vehicle_year" onchange="updateSummary()">
+            <select id="vehicle_year">
               <option value="">Select year</option>
               <script>for(var y=2025;y>=1990;y--) document.write('<option value="'+y+'">'+y+'</option>')</script>
             </select>
@@ -108,40 +107,17 @@
           </div>
         </div>
 
-        <!-- Wilaya -->
+        <!-- Wilaya — populated dynamically by dropdowns.js -->
         <div class="form-group form-group-full">
           <label for="wilaya">Wilaya of Registration <span class="req">*</span></label>
           <div class="select-wrap">
-            <select id="wilaya" onchange="updateSummary()">
-              <option value="16">16 _ ALGER</option>
-              <option value="01">01 _ Adrar</option><option value="02">02 _ Chlef</option>
-              <option value="03">03 _ Laghouat</option><option value="04">04 _ Oum El Bouaghi</option>
-              <option value="05">05 _ Batna</option><option value="06">06 _ Béjaïa</option>
-              <option value="07">07 _ Biskra</option><option value="08">08 _ Béchar</option>
-              <option value="09">09 _ Blida</option><option value="10">10 _ Bouira</option>
-              <option value="11">11 _ Tamanrasset</option><option value="12">12 _ Tébessa</option>
-              <option value="13">13 _ Tlemcen</option><option value="14">14 _ Tiaret</option>
-              <option value="15">15 _ Tizi Ouzou</option><option value="17">17 _ Djelfa</option>
-              <option value="18">18 _ Jijel</option><option value="19">19 _ Sétif</option>
-              <option value="20">20 _ Saïda</option><option value="21">21 _ Skikda</option>
-              <option value="22">22 _ Sidi Bel Abbès</option><option value="23">23 _ Annaba</option>
-              <option value="24">24 _ Guelma</option><option value="25">25 _ Constantine</option>
-              <option value="26">26 _ Médéa</option><option value="27">27 _ Mostaganem</option>
-              <option value="28">28 _ M'Sila</option><option value="29">29 _ Mascara</option>
-              <option value="30">30 _ Ouargla</option><option value="31">31 _ Oran</option>
-              <option value="32">32 _ El Bayadh</option><option value="33">33 _ Illizi</option>
-              <option value="34">34 _ Bordj Bou Arréridj</option><option value="35">35 _ Boumerdès</option>
-              <option value="36">36 _ El Tarf</option><option value="37">37 _ Tindouf</option>
-              <option value="38">38 _ Tissemsilt</option><option value="39">39 _ El Oued</option>
-              <option value="40">40 _ Khenchela</option><option value="41">41 _ Souk Ahras</option>
-              <option value="42">42 _ Tipaza</option><option value="43">43 _ Mila</option>
-              <option value="44">44 _ Aïn Defla</option><option value="45">45 _ Naâma</option>
-              <option value="46">46 _ Aïn Témouchent</option><option value="47">47 _ Ghardaïa</option>
-              <option value="48">48 _ Relizane</option>
+            <select id="wilaya">
+              <option value="">Loading…</option>
             </select>
             <svg class="select-arrow" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
           </div>
         </div>
+
       </div><!-- /form-grid -->
 
       <!-- CHOOSE ASSISTANCE PLAN -->
@@ -150,7 +126,7 @@
         <div class="plan-cards">
 
           <!-- Basic -->
-          <div class="plan-card" id="plan-basic" data-plan-id="" onclick="selectPlan('Basic', 4900, 1)">
+          <div class="plan-card" id="plan-basic" data-plan-id="" data-plan-name="Basic" data-plan-price="4900" data-plan-index="1">
             <input type="radio" name="plan" value="Basic" class="plan-radio"/>
             <span class="plan-badge-selected">&#10003; Selected</span>
             <div class="plan-name">Basic</div>
@@ -165,7 +141,7 @@
           </div>
 
           <!-- Plus -->
-          <div class="plan-card popular" id="plan-plus" data-plan-id="" onclick="selectPlan('Plus', 7900, 2)">
+          <div class="plan-card popular" id="plan-plus" data-plan-id="" data-plan-name="Plus" data-plan-price="7900" data-plan-index="2">
             <span class="plan-popular-badge">&#11088; Most Popular</span>
             <input type="radio" name="plan" value="Plus" class="plan-radio"/>
             <span class="plan-badge-selected">&#10003; Selected</span>
@@ -182,7 +158,7 @@
           </div>
 
           <!-- Premium -->
-          <div class="plan-card" id="plan-premium" data-plan-id="" onclick="selectPlan('Premium', 11500, 3)">
+          <div class="plan-card" id="plan-premium" data-plan-id="" data-plan-name="Premium" data-plan-price="11500" data-plan-index="3">
             <input type="radio" name="plan" value="Premium" class="plan-radio"/>
             <span class="plan-badge-selected">&#10003; Selected</span>
             <div class="plan-name">Premium</div>
@@ -226,9 +202,15 @@
         </div>
       </div>
 
+      <!-- API error container (Step 1) -->
+      <div id="api-error-msg" style="display:none;background:#fff0f0;border:1px solid #e53e3e;
+        border-radius:8px;padding:12px 16px;margin-bottom:12px;font-size:0.82rem;
+        color:#c53030;font-weight:600;"></div>
+
       <div class="form-nav-btns">
         <a href="Online_subscription.html" class="btn-back-products">&#8592; Back to Products</a>
-        <button class="btn-continue" type="button" onclick="goToStep(2)">Continue to Subscription &#8594;</button>
+        <!-- onclick removed — listener attached in roads-arch-v2.js -->
+        <button class="btn-continue" type="button" id="btn-continue-step1">Continue to Subscription &#8594;</button>
       </div>
     </div><!-- /form-step-1 -->
 
@@ -238,7 +220,6 @@
     ====================================================== -->
     <div class="road-step hidden" id="form-step-2">
 
-      <!-- SUB-VIEW A: Subscription Form -->
       <div id="subscription-form-view">
         <div class="subscription-layout">
 
@@ -307,46 +288,42 @@
               <hr class="summary-divider"/>
               <div class="summary-total"><span>Total to Pay</span><strong id="s2-total">0.00 DZD</strong></div>
             </div>
-<div class="form-nav-btns" style="flex-direction:column; gap:12px;">
 
-  <button class="btn-back-products"
-          type="button"
-          onclick="goToStep(1)"
-          style="width:100%;justify-content:center;">
-    &#8592; Back to Quote
-  </button>
+            <div class="form-nav-btns" style="flex-direction:column; gap:12px;">
 
-  <!-- CHECKBOX GROUP -->
-  <div class="consent-group" style="font-size:0.85rem; line-height:1.4;">
+              <button class="btn-back-products" type="button" id="btn-back-step2"
+                      style="width:100%;justify-content:center;">
+                &#8592; Back to Quote
+              </button>
 
-    <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer;">
-      <input type="checkbox" id="confirm-info" style="margin-top:3px;">
-      <span>I confirm that all information provided is correct.</span>
-    </label>
+              <!-- CHECKBOX GROUP -->
+              <div class="consent-group" style="font-size:0.85rem; line-height:1.4;">
+                <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer;">
+                  <input type="checkbox" id="confirm-info" style="margin-top:3px;">
+                  <span>I confirm that all information provided is correct.</span>
+                </label>
+                <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer;">
+                  <input type="checkbox" id="confirm-terms" style="margin-top:3px;">
+                  <span>I accept the <a href="#">general terms and conditions</a>.</span>
+                </label>
+              </div>
 
-    <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer;">
-      <input type="checkbox" id="confirm-terms" style="margin-top:3px;">
-      <span>I accept the <a href="#">general terms and conditions</a>.</span>
-    </label>
+              <!-- onclick removed — listener attached in roads-arch-v2.js -->
+              <button id="btn-pay-cib" class="btn-continue" type="button"
+                      style="width:100%;justify-content:center;">
+                Continue to Payment &#8594;
+              </button>
 
-  </div>
-<button id="btn-pay-cib"
-        class="btn-continue"
-        type="button"
-        onclick="submitAndProceed()"
-        style="width:100%;justify-content:center;">
-  Continue to Payment →
-</button>
-</div> <!-- form-nav-btns -->
+            </div><!-- /form-nav-btns -->
 
-</div> <!-- subscription-right -->
+          </div><!-- /subscription-right -->
 
-</div> <!-- subscription-layout -->
+        </div><!-- /subscription-layout -->
+      </div><!-- /subscription-form-view -->
 
-</div> <!-- subscription-form-view -->
+    </div><!-- /form-step-2 -->
 
-</div> <!-- form-step-2 -->
-     
+
     <!-- ======================================================
          STEP 3 — PAYMENT (CIB Gateway)
     ====================================================== -->
@@ -380,7 +357,7 @@
           <div class="payment-form-card">
             <div class="form-group form-group-full">
               <label for="card_number">Your CIB Card Number <span class="req">*</span></label>
-              <input type="text" id="card_number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)"/>
+              <input type="text" id="card_number" placeholder="1234 5678 9012 3456" maxlength="19"/>
             </div>
             <div class="form-group">
               <label for="cvv2">CVV2 <span class="req">*</span></label>
@@ -418,16 +395,17 @@
             </div>
           </div>
 
-          <!-- Payment API error display -->
-          <div id="pay-error-msg" style="display:none; background:#fff0f0; border:1px solid #e53e3e; border-radius:8px; padding:12px 16px; margin:10px 14px; font-size:0.82rem; color:#c53030;">
+          <!-- Payment error container (Step 3) -->
+          <div id="pay-error-msg" style="display:none;background:#fff0f0;border:1px solid #e53e3e;
+            border-radius:8px;padding:10px 14px;margin:8px 14px;font-size:0.82rem;color:#c53030;">
             <strong>Payment Error:</strong> <span id="pay-error-text"></span>
           </div>
 
           <div class="payment-actions">
-            <button type="button" class="btn-cancel-payment" onclick="goToStep(2)">&#x2715; Cancel</button>
-            <button type="button" class="btn-reset-payment" onclick="resetPaymentForm()">&#8635; Reset</button>
-            <!-- FIX: this now calls validateAndPay() instead of validatePayment() -->
-            <button type="button" class="btn-validate-payment" id="btn-validate-pay" onclick="validateAndPay()">&#10003; Validate Payment</button>
+            <button type="button" class="btn-cancel-payment" id="btn-cancel-payment">&#x2715; Cancel</button>
+            <button type="button" class="btn-reset-payment" id="btn-reset-payment">&#8635; Reset</button>
+            <!-- onclick removed — listener attached in roads-arch-v2.js -->
+            <button type="button" class="btn-validate-payment" id="btn-validate-pay">&#10003; Validate Payment</button>
           </div>
 
           <div class="payment-footer-bar">
@@ -482,8 +460,8 @@
 
           <div class="success-actions">
             <a href="client-dashboard.html" class="success-btn primary">Go to My Space &#8594;</a>
-            <button type="button" class="success-btn" onclick="downloadCertificate()">&#128196; Download Certificate</button>
-            <button type="button" class="success-btn" onclick="window.print()">&#128424; Print</button>
+            <button type="button" class="success-btn" id="btn-download-cert">&#128196; Download Certificate</button>
+            <button type="button" class="success-btn" id="btn-print">&#128424; Print</button>
           </div>
         </div>
 
@@ -523,17 +501,19 @@
     <h2>Payment Successful</h2>
     <p>Your policy reference:</p>
     <strong id="modalPolicyRef"></strong>
-
-    <button onclick="closeModal()">Close</button>
+    <button id="btn-close-modal">Close</button>
   </div>
 </div>
+
 <div id="site-footer"></div>
+
+<!-- Script order: state → auth → header → main → dropdowns → app logic -->
 <script src="app-state.js"></script>
 <script src="auth.js"></script>
 <script src="header-controller.js"></script>
 <script src="main.js"></script>
+<script src="js/dropdown.js"></script>
 <script src="js/roads-arch-v2.js"></script>
-
 
 </body>
 </html>

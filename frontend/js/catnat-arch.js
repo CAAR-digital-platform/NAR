@@ -1,60 +1,78 @@
-/**
- * catnat-arch.js  —  CATNAT Subscription Flow v1.1 (FIXED)
- *
- * FIXES APPLIED:
- *   1. Removed plan dependency from AppState and validation
- *   2. submitAndProceed: correct quote → confirm flow with proper ownership
- *   3. validateAndPay: double-click guard (window.__paying)
- *   4. Step 4 UI: populated from real API response stored in AppState
- *   5. Fixed audit_log column names (table_name/record_id)
- */
-
 'use strict';
 
-const CATNAT_API = 'http://localhost:3000/api';
+/**
+ * catnat-arch.js — CATNAT subscription flow (refactored)
+ *
+ * Changes vs previous version:
+ *  - Plan selection UI completely removed
+ *  - Premium calculated by backend only; result displayed client-side
+ *  - Wilaya/city dropdowns loaded dynamically via dropdowns.js
+ *  - All fetch() calls carry Authorization header from localStorage
+ *  - Double-submit guard: window.__catnatProcessing
+ *  - Global processing flag released in finally blocks
+ */
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   1. APP STATE — single source of truth
-   ═══════════════════════════════════════════════════════════════════════════ */
+const CATNAT_API = (typeof window.CAAR_API !== 'undefined')
+  ? window.CAAR_API
+  : 'http://localhost:3000';
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTH HELPER
+   ═══════════════════════════════════════════════════════════════ */
+function _getToken() {
+  return localStorage.getItem('caar_quote_token')
+      || localStorage.getItem('token')
+      || null;
+}
+
+function _authHeaders() {
+  const h = { 'Content-Type': 'application/json' };
+  const t = _getToken();
+  if (t) h['Authorization'] = 'Bearer ' + t;
+  return h;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   APP STATE
+   ═══════════════════════════════════════════════════════════════ */
 const AppState = (() => {
-  const KEY = 'caar_catnat_v1';
+  const KEY = 'caar_catnat_v2';
 
   const DEFAULTS = () => ({
-    step:     1,
-    // FIX: plan removed — backend calculates premium from property data
+    step: 1,
     property: {
       construction_type: '',
-      usage_type:        '',
-      built_area:        '',
-      num_floors:        '',
+      usage_type: '',
+      built_area: '',
+      num_floors: '',
       year_construction: '',
-      declared_value:    '',
-      wilaya_id:         '',
-      city_id:           '',
+      declared_value: '',
+      wilaya_id: '',
+      city_id: '',
       is_seismic_compliant: false,
-      has_notarial_deed:    false,
-      is_commercial:        false,
-      extra_coverages:      [],
+      has_notarial_deed: false,
+      is_commercial: false,
+      extra_coverages: [],
     },
     client: {
-      title:         'Mr',
-      first_name:    '',
-      last_name:     '',
-      email:         '',
+      title: 'Mr',
+      first_name: '',
+      last_name: '',
+      email: '',
       email_confirm: '',
-      phone:         '',
-      address:       '',
-      city:          '',
-      wilaya_id:     '',
+      phone: '',
+      address: '',
+      city: '',
+      wilaya_id: '',
     },
-    agency_id:        null,
-    quoteId:          null,
-    token:            null,
-    // FIX: store real API response for Step 4
+    agency_id: null,
+    quoteId: null,
+    token: null,
+    estimated_amount: 0,
     policy_reference: null,
-    start_date:       null,
-    end_date:         null,
-    amount_paid:      null,
+    start_date: null,
+    end_date: null,
+    amount_paid: null,
   });
 
   let _s = DEFAULTS();
@@ -71,11 +89,10 @@ const AppState = (() => {
       } catch (_) {}
       return this;
     },
-
     set(path, value) {
       const parts = path.split('.');
       if (parts.length === 1) {
-        _s[path] = (typeof value === 'object' && value !== null && !Array.isArray(value))
+        _s[path] = (value !== null && typeof value === 'object' && !Array.isArray(value))
           ? Object.assign({}, _s[path] || {}, value)
           : value;
       } else {
@@ -84,237 +101,163 @@ const AppState = (() => {
       }
       _persist();
     },
-
     get(key) { return key ? _s[key] : _s; },
-
     clear() {
       _s = DEFAULTS();
       localStorage.removeItem(KEY);
-      ['caar_catnat_quote_id', 'token', 'caar_auth_token'].forEach(k => localStorage.removeItem(k));
+      localStorage.removeItem('caar_catnat_quote_id');
     },
   };
 })();
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   2. UI HELPERS
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   UI HELPERS
+   ═══════════════════════════════════════════════════════════════ */
 const UI = {
-  el:    id  => document.getElementById(id),
-  val:   id  => { const e = document.getElementById(id); return e ? e.value.trim() : ''; },
-  selText: id => {
-    const e = document.getElementById(id);
-    return (e && e.options && e.selectedIndex >= 0) ? e.options[e.selectedIndex].text : '';
-  },
-  txt: (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; },
-
-  fmtDZD: n =>
-    Number(n).toLocaleString('fr-DZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' DZD',
-
-  fmtDate: iso => {
+  el:    (id) => document.getElementById(id),
+  val:   (id) => { const e = document.getElementById(id); return e ? e.value.trim() : ''; },
+  txt:   (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; },
+  fmtDZD: (n) => Number(n).toLocaleString('fr-DZ', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2,
+  }) + ' DZD',
+  fmtDate: (iso) => {
     if (!iso) return '—';
     const [y, m, d] = iso.split('-');
-    return `${d}/${m}/${y}`;
+    return d + '/' + m + '/' + y;
   },
-
-  showError(containerId, msg) {
-    const el = document.getElementById(containerId);
+  showError(id, msg) {
+    const el = document.getElementById(id);
     if (!el) return;
     el.textContent = msg;
-    el.style.cssText = [
-      'display:block', 'background:#fff0f0', 'border:1px solid #e53e3e',
-      'border-radius:8px', 'padding:12px 16px', 'color:#c53030',
-      'font-size:0.82rem', 'font-weight:600', 'margin-bottom:12px',
-    ].join(';');
+    el.style.cssText = 'display:block;background:#fff0f0;border:1px solid #e53e3e;' +
+      'border-radius:8px;padding:12px 16px;color:#c53030;font-size:0.82rem;' +
+      'font-weight:600;margin-bottom:12px;';
     console.error('[CATNAT] Error:', msg);
   },
-
-  hideError(containerId) {
-    const el = document.getElementById(containerId);
+  hideError(id) {
+    const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   },
-
   btnLoad(id, label) {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-    btn.disabled = true;
-    btn._v1_orig  = btn.innerHTML;
-    btn.innerHTML = `⏳ ${label || 'Processing…'}`;
+    const b = document.getElementById(id);
+    if (!b) return;
+    b.disabled = true;
+    b._orig = b.innerHTML;
+    b.innerHTML = '⏳ ' + (label || 'Processing…');
   },
-
   btnReset(id) {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-    btn.disabled = false;
-    if (btn._v1_orig) btn.innerHTML = btn._v1_orig;
+    const b = document.getElementById(id);
+    if (!b) return;
+    b.disabled = false;
+    if (b._orig) b.innerHTML = b._orig;
   },
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   3. YN STATE  (seismic / notarial / commercial toggles)
-   ═══════════════════════════════════════════════════════════════════════════ */
-const _ynState   = { commercial: 'no', notarial: 'no', seismic: 'no' };
-const _coverages = { floods: false, storms: false, ground: false };
+/* ═══════════════════════════════════════════════════════════════
+   YES/NO TOGGLES + EXTRA COVERAGES
+   ═══════════════════════════════════════════════════════════════ */
+const _yn = { commercial: 'no', notarial: 'no', seismic: 'no' };
+const _cov = { floods: false, storms: false, ground: false };
 
 window.setYN = function (key, val) {
-  _ynState[key] = val;
-  const wrap = UI.el(`yn-${key}`);
+  _yn[key] = val;
+  const wrap = UI.el('yn-' + key);
   if (!wrap) return;
-  wrap.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('active'));
-  const t = wrap.querySelector(`.yn-${val}`);
+  wrap.querySelectorAll('.yn-btn').forEach((b) => b.classList.remove('active'));
+  const t = wrap.querySelector('.yn-' + val);
   if (t) t.classList.add('active');
-  _updatePremiumDisplay();
+   calculatePremium();
 };
 
 window.toggleCoverage = function (key, btn) {
-  _coverages[key] = !_coverages[key];
-  if (_coverages[key]) { btn.innerHTML = '&#10003; Added'; btn.classList.add('added'); }
-  else                 { btn.textContent = '+ Add';         btn.classList.remove('added'); }
-  snapshotProperty();
-  _updatePremiumDisplay();
+  _cov[key] = !_cov[key];
+  btn.innerHTML = _cov[key] ? '&#10003; Added' : '+ Add';
+  btn.classList.toggle('added', _cov[key]);
+  calculatePremium();
 };
 
-window.spinUp = function (id, step) {
-  const e = UI.el(id);
-  if (e) { e.value = (parseFloat(e.value) || 0) + step; _updatePremiumDisplay(); }
-};
-window.spinDown = function (id, step) {
-  const e = UI.el(id);
-  if (e) { e.value = Math.max(parseFloat(e.min) || 0, (parseFloat(e.value) || 0) - step); _updatePremiumDisplay(); }
-};
+window.spinUp   = (id, step) => { const e = UI.el(id); if (e) e.value = (parseFloat(e.value) || 0) + step; };
+window.spinDown = (id, step) => { const e = UI.el(id); if (e) e.value = Math.max(parseFloat(e.min) || 0, (parseFloat(e.value) || 0) - step); };
+window.onConstructionTypeChange = () => {};
 
-window.onConstructionTypeChange = () => _updatePremiumDisplay();
-window.onWilayaChange           = () => {};
-window.calculatePremium         = () => _updatePremiumDisplay();
+/* ═══════════════════════════════════════════════════════════════
+   AGENCIES (step 2 agency dropdown)
+   ═══════════════════════════════════════════════════════════════ */
+let _agencies = [];
 
-window.updateAgencyList = () => {};
-window.updateAgencyCard = () => {};
-
-/* ── Premium display — client-side estimate only (backend is authoritative) ── */
-function _updatePremiumDisplay() {
-  const value = parseFloat(UI.val('declared_value')) || 0;
-  if (value <= 0) {
-    UI.txt('net-premium', '0.00 DZD');
-    UI.txt('tax-fees',    '0.00 DZD');
-    UI.txt('total-pay',   '0.00 DZD');
-    return;
-  }
-
-  let base = value * 0.0004;
-  if (UI.val('construction_type') === 'Villa') base *= 1.2;
-  if (_ynState.seismic    === 'no')  base *= 1.3;
-  if (_ynState.commercial === 'yes') base *= 1.25;
-
-  if (_coverages.floods) base += 2000;
-  if (_coverages.storms) base += 1500;
-  if (_coverages.ground) base += 1800;
-
-  const tax   = base * 0.19;
-  const total = base + tax;
-  UI.txt('net-premium', UI.fmtDZD(base));
-  UI.txt('tax-fees',    UI.fmtDZD(tax));
-  UI.txt('total-pay',   UI.fmtDZD(total));
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   4. AGENCIES — dynamic loading
-   ═══════════════════════════════════════════════════════════════════════════ */
-let _allAgencies = [];
-
-async function loadAgencies() {
+async function _loadAgencies() {
   try {
-    const url = `${CATNAT_API}/agencies/filter?service=Habitation`;
-    const res  = await fetch(url);
-    _allAgencies = res.ok ? await res.json() : [];
-
-    if (!_allAgencies.length) {
-      const fallback = await fetch(`${CATNAT_API}/agencies`);
-      if (fallback.ok) _allAgencies = await fallback.json();
+    let res = await fetch(CATNAT_API + '/api/agencies/filter?service=Habitation');
+    let list = res.ok ? await res.json() : [];
+    if (!list.length) {
+      res = await fetch(CATNAT_API + '/api/agencies');
+      list = res.ok ? await res.json() : [];
     }
-
-    console.log('[CATNAT] Agencies loaded:', _allAgencies.length);
-    _populateWilayaFilter();
-    _populateAgencySelect(_allAgencies);
+    _agencies = list;
+    _buildWilayaFilter();
+    _buildAgencySelect(_agencies);
   } catch (err) {
-    console.warn('[CATNAT] Agency load failed:', err.message);
+    console.warn('[CATNAT] agencies load failed:', err.message);
   }
 }
 
-function _populateWilayaFilter() {
-  const select = UI.el('agency_wilaya');
-  if (!select) return;
-
-  const wilayaMap = new Map();
-  _allAgencies.forEach(ag => {
-    if (!wilayaMap.has(ag.wilaya_id)) {
-      wilayaMap.set(ag.wilaya_id, ag.wilaya || `Wilaya ${ag.wilaya_id}`);
-    }
+function _buildWilayaFilter() {
+  const sel = UI.el('agency_wilaya');
+  if (!sel) return;
+  const seen = new Map();
+  _agencies.forEach((ag) => {
+    if (!seen.has(ag.wilaya_id)) seen.set(ag.wilaya_id, ag.wilaya || ('Wilaya ' + ag.wilaya_id));
   });
-
-  select.innerHTML = '<option value="">All Wilayas</option>' +
-    [...wilayaMap.entries()]
-      .sort((a, b) => (a[1] < b[1] ? -1 : 1))
-      .map(([id, name]) => `<option value="${id}">${name}</option>`)
-      .join('');
-
-  select.addEventListener('change', function () {
+  sel.innerHTML = '<option value="">All Wilayas</option>' +
+    [...seen.entries()].sort((a, b) => a[1] < b[1] ? -1 : 1)
+      .map(([id, name]) => '<option value="' + id + '">' + name + '</option>').join('');
+  sel.onchange = function ()  {
     const wid = parseInt(this.value, 10);
-    const filtered = wid
-      ? _allAgencies.filter(ag => ag.wilaya_id === wid)
-      : _allAgencies;
-    _populateAgencySelect(filtered);
-  });
+    _buildAgencySelect(wid ? _agencies.filter((ag) => ag.wilaya_id === wid) : _agencies);
+  };
 }
 
-function _populateAgencySelect(list) {
-  const select = UI.el('agency');
-  if (!select) return;
-
-  select.innerHTML = '<option value="">— Select agency —</option>' +
-    list.map(ag =>
-      `<option value="${ag.id}">${ag.agency_code} — ${ag.city}, ${ag.wilaya}</option>`
+function _buildAgencySelect(list) {
+  const sel = UI.el('agency');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Select agency —</option>' +
+    list.map((ag) =>
+      '<option value="' + ag.id + '">' + ag.agency_code + ' — ' + ag.city + ', ' + ag.wilaya + '</option>'
     ).join('');
-
-  select.addEventListener('change', function () {
+ sel.onchange = function (){
     AppState.set('agency_id', this.value ? parseInt(this.value, 10) : null);
-    const ag = list.find(a => a.id === parseInt(this.value, 10));
-    _updateAgencyCard(ag);
-  });
+    const ag = list.find((a) => a.id === parseInt(this.value, 10));
+    if (ag) {
+      UI.txt('agency-card-name', 'Agency ' + ag.agency_code + ' — ' + ag.city);
+      UI.txt('agency-card-addr', ag.address || '');
+      UI.txt('agency-card-phone', ag.phone || '—');
+      UI.txt('agency-card-fax', ag.fax ? 'Fax: ' + ag.fax : '');
+    }
+  };
 }
 
-function _updateAgencyCard(ag) {
-  if (!ag) return;
-  UI.txt('agency-card-name',  `Agency ${ag.agency_code} — ${ag.city}`);
-  UI.txt('agency-card-addr',  ag.address || '');
-  UI.txt('agency-card-phone', ag.phone   || '—');
-  UI.txt('agency-card-fax',   ag.fax ? `Fax: ${ag.fax}` : '');
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   5. FIELD PERSISTENCE
-   ═══════════════════════════════════════════════════════════════════════════ */
-function snapshotProperty() {
-  const extraCoverages = [];
-  if (_coverages.floods) extraCoverages.push('floods');
-  if (_coverages.storms) extraCoverages.push('storms');
-  if (_coverages.ground) extraCoverages.push('ground');
-
+/* ═══════════════════════════════════════════════════════════════
+   FIELD PERSISTENCE
+   ═══════════════════════════════════════════════════════════════ */
+function _snapshotProperty() {
+  const extras = Object.keys(_cov).filter((k) => _cov[k]);
   AppState.set('property', {
-    construction_type:    UI.val('construction_type') || UI.selText('construction_type') || 'Individual Home',
-    usage_type:           UI.val('usage_type')        || UI.selText('usage_type')        || 'Personal',
+    construction_type:    UI.val('construction_type') || 'Individual Home',
+    usage_type:           UI.val('usage_type')        || 'Personal',
     built_area:           UI.val('built_area'),
-    num_floors:           UI.val('num_floors')        || null,
+    num_floors:           UI.val('num_floors') || null,
     year_construction:    UI.val('year_construction'),
     declared_value:       UI.val('declared_value'),
-    wilaya_id:            UI.val('wilaya')            || null,
-    city_id:              null,
-    is_seismic_compliant: _ynState.seismic    === 'yes',
-    has_notarial_deed:    _ynState.notarial   === 'yes',
-    is_commercial:        _ynState.commercial === 'yes',
-    extra_coverages:      extraCoverages,
+    wilaya_id:            UI.val('wilaya')     || null,
+    city_id:              UI.val('municipality') || null,
+    is_seismic_compliant: _yn.seismic    === 'yes',
+    has_notarial_deed:    _yn.notarial   === 'yes',
+    is_commercial:        _yn.commercial === 'yes',
+    extra_coverages:      extras,
   });
 }
 
-function snapshotClient() {
+function _snapshotClient() {
   AppState.set('client', {
     title:         UI.val('title'),
     first_name:    UI.val('first_name'),
@@ -324,54 +267,44 @@ function snapshotClient() {
     phone:         UI.val('mobile_1'),
     address:       UI.val('address'),
     city:          UI.val('city'),
-    wilaya_id:     UI.val('policy_wilaya') || null,
+    wilaya_id: UI.val('wilaya') || null,
   });
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   6. VALIDATION
-   ═══════════════════════════════════════════════════════════════════════════ */
-function validateStep1() {
-  const year     = parseInt(UI.val('year_construction'), 10);
-  const area     = parseFloat(UI.val('built_area'));
-  const declared = parseFloat(UI.val('declared_value'));
-  const curYear  = new Date().getFullYear();
+/* ═══════════════════════════════════════════════════════════════
+   VALIDATION
+   ═══════════════════════════════════════════════════════════════ */
+function _validateStep1() {
+  const year    = parseInt(UI.val('year_construction'), 10);
+  const area    = parseFloat(UI.val('built_area'));
+  const value   = parseFloat(UI.val('declared_value'));
+  const curYear = new Date().getFullYear();
 
   if (!year || year < 1900 || year > curYear) {
-    UI.showError('catnat-error-step1', `Year of construction must be between 1900 and ${curYear}.`);
+    UI.showError('catnat-error-step1', 'Year of construction must be between 1900 and ' + curYear + '.');
     return false;
   }
   if (!area || area <= 0) {
     UI.showError('catnat-error-step1', 'Please enter the total built area.');
     return false;
   }
-  if (!declared || declared <= 0) {
+  if (!value || value <= 0) {
     UI.showError('catnat-error-step1', 'Please enter the declared value.');
     return false;
   }
-
-  // FIX: no plan required — backend computes premium
   const terms = UI.el('terms-consent');
   if (!terms || !terms.checked) {
     UI.showError('catnat-error-step1', 'Please accept the general terms and conditions.');
     return false;
   }
-
   UI.hideError('catnat-error-step1');
   return true;
 }
 
-function validateStep2() {
+function _validateStep2() {
   const c = AppState.get('client');
-
-  if (!c.first_name || !c.first_name.trim()) {
-    UI.showError('catnat-error-step2', 'Please enter your first name.');
-    return false;
-  }
-  if (!c.last_name || !c.last_name.trim()) {
-    UI.showError('catnat-error-step2', 'Please enter your last name.');
-    return false;
-  }
+  if (!c.first_name) { UI.showError('catnat-error-step2', 'Please enter your first name.'); return false; }
+  if (!c.last_name)  { UI.showError('catnat-error-step2', 'Please enter your last name.');  return false; }
   if (!c.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email)) {
     UI.showError('catnat-error-step2', 'Please enter a valid email address.');
     return false;
@@ -380,16 +313,12 @@ function validateStep2() {
     UI.showError('catnat-error-step2', 'Email addresses do not match.');
     return false;
   }
-  if (!c.phone) {
-    UI.showError('catnat-error-step2', 'Please enter your phone number.');
-    return false;
-  }
-
+  if (!c.phone) { UI.showError('catnat-error-step2', 'Please enter your phone number.'); return false; }
   UI.hideError('catnat-error-step2');
   return true;
 }
 
-function validateCardFields() {
+function _validateCard() {
   const card  = (UI.val('card_number') || '').replace(/\s/g, '');
   const cvv   = UI.val('cvv2');
   const month = (UI.el('expiry_month') || {}).value;
@@ -400,20 +329,19 @@ function validateCardFields() {
   if (cvv.length   < 3) { UI.showError('pay-error-msg', 'Please enter a valid 3-digit CVV2.');         return false; }
   if (!month || !year)  { UI.showError('pay-error-msg', 'Please select the card expiry date.');         return false; }
   if (!name)            { UI.showError('pay-error-msg', 'Please enter the cardholder name.');           return false; }
-
   return true;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   7. STEP NAVIGATION
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   STEP NAVIGATION
+   ═══════════════════════════════════════════════════════════════ */
 let _currentStep    = 1;
 let _countdownTimer = null;
 
 function _goToStep(n) {
   if (n < 1 || n > 4) return;
-  const from = UI.el(`form-step-${_currentStep}`);
-  const to   = UI.el(`form-step-${n}`);
+  const from = UI.el('form-step-' + _currentStep);
+  const to   = UI.el('form-step-' + n);
   if (!to) return;
   if (from) from.classList.add('hidden');
   _currentStep = n;
@@ -421,102 +349,115 @@ function _goToStep(n) {
   AppState.set('step', n);
 
   for (let i = 1; i <= 4; i++) {
-    const ind = UI.el(`step-indicator-${i}`);
+    const ind = UI.el('step-indicator-' + i);
     if (!ind) continue;
     ind.classList.remove('active', 'done');
-    if (i < n)        ind.classList.add('done');
+    if (i < n)       ind.classList.add('done');
     else if (i === n) ind.classList.add('active');
   }
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-window.goToStep = function goToStep(n) {
+window.goToStep = function (n) {
   if (n === 2) {
-    snapshotProperty();
-    if (!validateStep1()) return;
+    _snapshotProperty();
+    if (!_validateStep1()) return;
+    _populateStep2Summary();
     _goToStep(2);
     return;
   }
   if (n === 1) { _goToStep(1); return; }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   8. PAYMENT PAGE POPULATION
-   ═══════════════════════════════════════════════════════════════════════════ */
-function _populatePaymentPage(estimatedAmount) {
-  // Use the real amount returned by the API
-  const amount = estimatedAmount || 0;
+/* ═══════════════════════════════════════════════════════════════
+   SUMMARY POPULATION
+   ═══════════════════════════════════════════════════════════════ */
+function _populateStep2Summary() {
+  const s = AppState.get();
+  const p = s.property;
+  UI.txt('sum-constr',  p.construction_type || '—');
+  UI.txt('sum-usage',   p.usage_type        || '—');
+  UI.txt('sum-area',    p.built_area ? p.built_area + ' m²' : '—');
+  UI.txt('sum-year',    p.year_construction || '—');
+  UI.txt('sum-dvalue',  p.declared_value ? UI.fmtDZD(parseFloat(p.declared_value)) : '—');
+  const now = new Date();
+  const end = new Date(now);
+  end.setFullYear(end.getFullYear() + 1);
+  end.setDate(end.getDate() - 1);
+  const fmt = (d) => d.toISOString().slice(0, 10).split('-').reverse().join('/');
+  UI.txt('sum-start', fmt(now));
+  UI.txt('sum-end',   fmt(end));
+
+  /* Premium display will be populated after API response */
+  UI.txt('sum-net',   '—');
+  UI.txt('sum-tax',   '—');
+  UI.txt('sum-total', '—');
+
+  /* Guarantees */
+  const gList = UI.el('guarantees-list');
+  if (gList) {
+    const items = ['Earthquakes'];
+    if (_cov.floods) items.push('Floods & Mudflows');
+    if (_cov.storms) items.push('Storms & High Winds');
+    if (_cov.ground) items.push('Ground Movements');
+    gList.innerHTML = items.map((i) => '<li>' + i + '</li>').join('');
+  }
+}
+
+function _populatePaymentPage(amount) {
   UI.txt('pay-amount', UI.fmtDZD(amount));
   UI.txt('pay-ref', 'New Contract — CATNAT');
   _startCountdown(300);
 }
 
-/* ── FIX: Step 4 populated from real API data stored in AppState ── */
-function _populateConfirmation(apiData) {
-  if (apiData) {
-    // Store in AppState for persistence
-    AppState.set('policy_reference', apiData.policy_reference || '—');
-    AppState.set('start_date',       apiData.start_date       || null);
-    AppState.set('end_date',         apiData.end_date         || null);
-    AppState.set('amount_paid',      apiData.amount_paid      || 0);
-
-    console.log('[CATNAT] Confirmation received:', apiData.policy_reference);
+function _populateConfirmation(data) {
+  if (data) {
+    AppState.set('policy_reference', data.policy_reference || '—');
+    AppState.set('start_date',       data.start_date       || null);
+    AppState.set('end_date',         data.end_date         || null);
+    AppState.set('amount_paid',      data.amount_paid      || 0);
   }
-
-  // Populate UI from AppState (works even if called again after page transition)
   const s = AppState.get();
   UI.txt('confirm-policy-ref', s.policy_reference || '—');
   UI.txt('confirm-dates',
-    `Issued: ${UI.fmtDate(s.start_date)} · Valid until: ${UI.fmtDate(s.end_date)}`);
+    'Issued: ' + UI.fmtDate(s.start_date) + ' · Valid until: ' + UI.fmtDate(s.end_date));
   UI.txt('confirm-amount', UI.fmtDZD(s.amount_paid || 0));
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   9. COUNTDOWN
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   COUNTDOWN
+   ═══════════════════════════════════════════════════════════════ */
 function _startCountdown(seconds) {
   clearInterval(_countdownTimer);
-  let remaining = seconds;
-
-  function tick() {
-    const m  = Math.floor(remaining / 60);
-    const s  = remaining % 60;
+  let r = seconds;
+  const tick = () => {
     const el = UI.el('countdown');
-    if (el) el.textContent = `${m}:${String(s).padStart(2, '0')}`;
-    if (remaining <= 0) clearInterval(_countdownTimer);
-    remaining--;
-  }
-
+    if (el) el.textContent = Math.floor(r / 60) + ':' + String(r % 60).padStart(2, '0');
+    if (r-- <= 0) clearInterval(_countdownTimer);
+  };
   tick();
   _countdownTimer = setInterval(tick, 1000);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   10. MAIN FLOW ORCHESTRATORS
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   MAIN FLOW
+   ═══════════════════════════════════════════════════════════════ */
 
 /**
  * submitAndProceed — Step 2 → Step 3
- *
- * FIX: correct flow:
- *   1. Snapshot client + property data
- *   2. POST /api/catnat/quote  → get quoteId + token
- *   3. POST /api/catnat/confirm/:quoteId (with Bearer token)
- *   4. Store token in localStorage for payment step
- *   5. Go to step 3
+ * POST /api/catnat/quote  → auto-confirm → go to payment
  */
-window.submitAndProceed = async function submitAndProceed() {
-  snapshotProperty();
-  snapshotClient();
+window.submitAndProceed = async function () {
+  if (window.__catnatProcessing) return;
+
+  _snapshotProperty();
+  _snapshotClient();
 
   UI.hideError('catnat-error-step2');
-
-  if (!validateStep2()) return;
+  if (!_validateStep2()) return;
 
   const s = AppState.get();
 
-  // Build API payload — no plan_id, backend computes premium
   const payload = {
     first_name:           s.client.first_name.trim(),
     last_name:            s.client.last_name.trim(),
@@ -524,26 +465,26 @@ window.submitAndProceed = async function submitAndProceed() {
     phone:                s.client.phone ? s.client.phone.trim() : null,
     construction_type:    s.property.construction_type  || 'Individual Home',
     usage_type:           s.property.usage_type         || 'Personal',
-    built_area:           parseFloat(s.property.built_area)          || 0,
-    num_floors:           s.property.num_floors                       || null,
-    year_construction:    parseInt(s.property.year_construction, 10)  || 0,
-    declared_value:       parseFloat(s.property.declared_value)       || 0,
+    built_area:           parseFloat(s.property.built_area)         || 0,
+    num_floors:           s.property.num_floors                     || null,
+    year_construction:    parseInt(s.property.year_construction, 10) || 0,
+    declared_value:       parseFloat(s.property.declared_value)      || 0,
     address:              s.client.address   || null,
     wilaya_id:            s.property.wilaya_id ? parseInt(s.property.wilaya_id, 10) : null,
     city_id:              s.property.city_id  ? parseInt(s.property.city_id,    10) : null,
     is_seismic_compliant: !!s.property.is_seismic_compliant,
     has_notarial_deed:    !!s.property.has_notarial_deed,
     is_commercial:        !!s.property.is_commercial,
-    extra_coverages:      Array.isArray(s.property.extra_coverages) ? s.property.extra_coverages : [],
+    extra_coverages:      Array.isArray(s.property.extra_coverages)
+      ? s.property.extra_coverages : [],
   };
 
-  console.log('[CATNAT] Quote payload:', payload);
-
+  window.__catnatProcessing = true;
   UI.btnLoad('btn-pay-cib', 'Creating quote…');
 
   try {
-    // ── 1. Create quote ──────────────────────────────────────────────────────
-    const quoteRes  = await fetch(`${CATNAT_API}/catnat/quote`, {
+    /* 1. Create quote */
+    const quoteRes  = await fetch(CATNAT_API + '/api/catnat/quote', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(payload),
@@ -551,212 +492,266 @@ window.submitAndProceed = async function submitAndProceed() {
     const quoteData = await quoteRes.json();
 
     if (!quoteRes.ok) {
-      UI.btnReset('btn-pay-cib');
-      UI.showError('catnat-error-step2', quoteData.error || `Quote failed (HTTP ${quoteRes.status})`);
-      console.error('[CATNAT] Quote error:', quoteData);
+      UI.showError('catnat-error-step2', quoteData.error || 'Quote failed (HTTP ' + quoteRes.status + ')');
       return;
     }
 
-    console.log('[CATNAT] Quote created:', quoteData.quote_id, 'amount:', quoteData.estimated_amount);
+    AppState.set('quoteId',           quoteData.quote_id);
+    AppState.set('estimated_amount',  quoteData.estimated_amount);
+    AppState.set('token',             quoteData.token);
 
-    // Store session data
-    AppState.set('quoteId', quoteData.quote_id);
-    AppState.set('token',   quoteData.token);
-  localStorage.setItem('caar_auth_token', quoteData.token);
+    localStorage.setItem('caar_quote_token', quoteData.token);
     localStorage.setItem('caar_catnat_quote_id', String(quoteData.quote_id));
 
-    // ── 2. Confirm quote immediately ─────────────────────────────────────────
+    /* Update summary with real backend amount */
+    const gross = quoteData.estimated_amount;
+    const net   = gross / 1.19;
+    const tax   = gross - net;
+    UI.txt('sum-net',   UI.fmtDZD(net));
+    UI.txt('sum-tax',   UI.fmtDZD(tax));
+    UI.txt('sum-total', UI.fmtDZD(gross));
+
+    /* 2. Confirm quote */
     UI.btnLoad('btn-pay-cib', 'Confirming…');
 
-    const confirmRes  = await fetch(`${CATNAT_API}/catnat/confirm/${quoteData.quote_id}`, {
-      method:  'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': `Bearer ${quoteData.token}`,
-      },
-    });
+    const confirmRes  = await fetch(
+      CATNAT_API + '/api/catnat/confirm/' + quoteData.quote_id, {
+        method:  'POST',
+        headers: _authHeaders(),
+      });
     const confirmData = await confirmRes.json();
 
     if (!confirmRes.ok) {
-      UI.btnReset('btn-pay-cib');
       UI.showError('catnat-error-step2',
-        confirmData.error || `Confirmation failed (HTTP ${confirmRes.status})`);
-      console.error('[CATNAT] Confirm error:', confirmData);
+        confirmData.error || 'Confirmation failed (HTTP ' + confirmRes.status + ')');
       return;
     }
 
-    console.log('[CATNAT] Quote confirmed:', quoteData.quote_id);
-
-    UI.btnReset('btn-pay-cib');
     _populatePaymentPage(quoteData.estimated_amount);
     _goToStep(3);
 
   } catch (err) {
+    UI.showError('catnat-error-step2', 'Network error — ' + err.message);
+    console.error('[CATNAT] submitAndProceed:', err);
+  } finally {
+    window.__catnatProcessing = false;
     UI.btnReset('btn-pay-cib');
-    UI.showError('catnat-error-step2', 'Network error — please check your connection.');
-    console.error('[CATNAT] submitAndProceed network error:', err);
   }
 };
 
 /**
  * validateAndPay — Step 3 → Step 4
- *
- * FIX: double-click guard via window.__paying
- * FIX: populates Step 4 with real API data
+ * POST /api/catnat/pay/:quoteId
  */
-window.validateAndPay = async function validateAndPay() {
-  // FIX: double-click guard
-  if (window.__paying) return;
-
-  if (!validateCardFields()) return;
+window.validateAndPay = async function () {
+  if (window.__catnatProcessing) return;
+  if (!_validateCard()) return;
 
   UI.hideError('pay-error-msg');
   clearInterval(_countdownTimer);
 
   const { quoteId, token } = AppState.get();
-
   if (!quoteId || !token) {
-    UI.showError('pay-error-msg', 'Session expired — please go back to Step 1 and start again.');
+    UI.showError('pay-error-msg', 'Session expired — please start again from Step 1.');
     return;
   }
 
-  // FIX: set guard before async operation
-  window.__paying = true;
+  window.__catnatProcessing = true;
   UI.btnLoad('btn-validate-pay', 'Processing payment…');
 
   try {
-    const res  = await fetch(`${CATNAT_API}/catnat/pay/${quoteId}`, {
+    const res  = await fetch(CATNAT_API + '/api/catnat/pay/' + quoteId, {
       method:  'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({}),
+      headers: _authHeaders(),
+      body:    JSON.stringify({}),
     });
     const data = await res.json();
 
     if (!res.ok) {
-      UI.showError('pay-error-msg', data.error || `Payment failed (HTTP ${res.status})`);
-      console.error('[CATNAT] Payment error:', data);
+      UI.showError('pay-error-msg', data.error || 'Payment failed (HTTP ' + res.status + ')');
       return;
     }
 
-    console.log('[CATNAT] Payment processed:', data.policy_reference);
-    UI.btnReset('btn-validate-pay');
-
-    // FIX: populate Step 4 from REAL API response
     _populateConfirmation(data);
-    document.getElementById('modalPolicyRef').textContent =
-  data.policy_reference;
-
-document.getElementById('contractModal').classList.remove('hidden');
+    _goToStep(4);
 
   } catch (err) {
-    UI.showError('pay-error-msg', 'Payment error — please try again.');
-    console.error('[CATNAT] validateAndPay error:', err);
-    UI.btnReset('btn-validate-pay');
+    UI.showError('pay-error-msg', 'Payment error — ' + err.message);
+    console.error('[CATNAT] validateAndPay:', err);
   } finally {
-    // FIX: always release the guard
-    window.__paying = false;
+    window.__catnatProcessing = false;
+    UI.btnReset('btn-validate-pay');
   }
 };
-function closeModal() {
-  document.getElementById('contractModal').classList.add('hidden');
-}
-/* ═══════════════════════════════════════════════════════════════════════════
-   11. PAYMENT FORM HELPERS
-   ═══════════════════════════════════════════════════════════════════════════ */
-window.formatCardNumber = function (input) {
+
+/* ═══════════════════════════════════════════════════════════════
+   PAYMENT HELPERS
+   ═══════════════════════════════════════════════════════════════ */
+window.formatCardNumber = (input) => {
   const v = (input.value || '').replace(/\D/g, '').slice(0, 16);
   input.value = (v.match(/.{1,4}/g) || []).join(' ');
 };
 
-window.resetPaymentForm = function () {
-  ['card_number', 'cvv2', 'cardholder_name'].forEach(id => {
+window.resetPaymentForm = () => {
+  ['card_number', 'cvv2', 'cardholder_name'].forEach((id) => {
     const el = UI.el(id); if (el) el.value = '';
   });
-  ['expiry_month', 'expiry_year'].forEach(id => {
+  ['expiry_month', 'expiry_year'].forEach((id) => {
     const el = UI.el(id); if (el) el.selectedIndex = 0;
   });
   UI.hideError('pay-error-msg');
 };
 
-window.downloadCertificate = function () {
-  alert('Your CATNAT certificate will be sent to your email address shortly.');
+window.downloadCertificate = () => {
+  alert('Your CATNAT certificate will be sent to your email shortly.');
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   12. EVENT LISTENERS
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   EVENT WIRING
+   ═══════════════════════════════════════════════════════════════ */
 function _attachListeners() {
-  // Step 1: recalculate estimate on any field change
-  ['built_area', 'declared_value', 'year_construction'].forEach(id => {
-    const el = UI.el(id);
-    if (el) el.addEventListener('input', _updatePremiumDisplay);
+  const s1btn = UI.el('btn-continue-step1');
+  if (s1btn) s1btn.addEventListener('click', () => window.goToStep(2));
+
+  const s2back = UI.el('btn-back-step2');
+  if (s2back) s2back.addEventListener('click', () => window.goToStep(1));
+
+  const payCib = UI.el('btn-pay-cib');
+  if (payCib) payCib.addEventListener('click', window.submitAndProceed);
+
+  const payBtn = UI.el('btn-validate-pay');
+  if (payBtn) payBtn.addEventListener('click', window.validateAndPay);
+
+  const cancelPay = UI.el('btn-cancel-payment');
+  if (cancelPay) cancelPay.addEventListener('click', () => window.goToStep(2));
+
+  const resetPay = UI.el('btn-reset-payment');
+  if (resetPay) resetPay.addEventListener('click', window.resetPaymentForm);
+  document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const id = this.id;
+
+      if (id.includes('floods')) toggleCoverage('floods', this);
+      if (id.includes('storms')) toggleCoverage('storms', this);
+      if (id.includes('ground')) toggleCoverage('ground', this);
+    });
   });
-  ['construction_type', 'usage_type', 'wilaya'].forEach(id => {
-    const el = UI.el(id);
-    if (el) el.addEventListener('change', _updatePremiumDisplay);
+document.querySelectorAll('.yn-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const key = this.dataset.yn;
+    const val = this.dataset.val;
+
+    setYN(key, val);
   });
+});
+// ===== 🔥 PREMIUM LIVE UPDATE =====
 
-  // Step 1 → 2
-  const btnContinueStep1 = UI.el('btn-continue-step1');
-  if (btnContinueStep1) {
-    btnContinueStep1.addEventListener('click', () => window.goToStep(2));
-  }
-
-  // Step 2: back
-  const btnBackStep2 = UI.el('btn-back-step2');
-  if (btnBackStep2) {
-    btnBackStep2.addEventListener('click', () => window.goToStep(1));
-  }
-
-  // Step 2 → 3
-  const btnPayCib = UI.el('btn-pay-cib');
-  if (btnPayCib) {
-    btnPayCib.addEventListener('click', window.submitAndProceed);
-  }
-
-  // Step 3: payment
-  const btnValidatePay = UI.el('btn-validate-pay');
-  if (btnValidatePay) {
-    btnValidatePay.addEventListener('click', window.validateAndPay);
-  }
-
-  const btnCancelPay = UI.el('btn-cancel-payment');
-  if (btnCancelPay) {
-    btnCancelPay.addEventListener('click', () => window.goToStep(2));
-  }
-
-  const btnResetPay = UI.el('btn-reset-payment');
-  if (btnResetPay) {
-    btnResetPay.addEventListener('click', window.resetPaymentForm);
-  }
+// Declared value
+const declared = UI.el('declared_value');
+if (declared) {
+  declared.addEventListener('input', function () {
+    AppState.set('property.declared_value', Number(this.value) || 0);
+    calculatePremium();
+  });
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   13. BOOT
-   ═══════════════════════════════════════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', async function boot() {
-  console.log('[CATNAT] catnat-arch.js v1.1 — booting');
+// Built area
+const area = UI.el('built_area');
+if (area) {
+  area.addEventListener('input', function () {
+    AppState.set('property.built_area', Number(this.value) || 0);
+    calculatePremium();
+  });
+}
 
- // DO NOT clear auth — only reset CATNAT flow
-AppState.hydrate();
+// Wilaya
+const wilaya = UI.el('wilaya');
+if (wilaya) {
+  wilaya.addEventListener('change', function () {
+    AppState.set('property.wilaya_id', this.value);
+    calculatePremium();
+  });
+}
 
-  // Load agencies in parallel
-  await loadAgencies();
+// Construction type
+const construction = UI.el('construction_type');
+if (construction) {
+  construction.addEventListener('change', function () {
+    AppState.set('property.construction_type', this.value);
+    calculatePremium();
+  });
+}
+}
 
-  // Wire event listeners
+
+/* ═══════════════════════════════════════════════════════════════
+   BOOT
+   ═══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', async function () {
+  AppState.hydrate();
+
+  /* Agency list */
+  await _loadAgencies();
+
+  /* Wire buttons */
   _attachListeners();
 
-  // Re-apply goToStep override after main.js
-  window.goToStep = function goToStep(n) {
-    if (n === 2) { snapshotProperty(); if (!validateStep1()) return; _goToStep(2); return; }
-    if (n === 1) { _goToStep(1); return; }
-  };
+  /* Override goToStep after all other scripts */
+  setTimeout(function () {
+    window.goToStep = function (n) {
+      if (n === 2) { _snapshotProperty(); if (!_validateStep1()) return; _populateStep2Summary(); _goToStep(2); return; }
+      if (n === 1) { _goToStep(1); return; }
+    };
+  }, 0);
 
-  _updatePremiumDisplay();
+  /* Reset and start at step 1 */
+ // optional reset — not destructive
+localStorage.removeItem('caar_catnat_v2');
   _goToStep(1);
 
-  console.log('[CATNAT] Boot complete.');
+  window.__catnatProcessing = false;
+  console.log('[CATNAT] catnat-arch.js (refactored) booted.');
 });
+document.addEventListener('DOMContentLoaded', () => {
+  loadWilayas('wilaya', {
+    placeholder: 'Select Wilaya',
+    onChange: (id) => {
+      loadCities(id, 'municipality', {
+        placeholder: 'Select Municipality'
+      });
+    }
+  });
+});
+function calculatePremium() {
+  const declared = Number(UI.val('declared_value'));
+  const area = Number(UI.val('built_area'));
+  const wilaya = UI.val('wilaya');
+  const construction = UI.val('construction_type');
+
+  if (!declared || !area) return;
+
+  let base = declared * 0.001;
+  let adjustments = 0;
+
+  // Wilaya risk
+  if (wilaya == 16) adjustments += base * 0.10;
+
+  // Construction type
+  if (construction === 'old') adjustments += base * 0.15;
+
+  // Commercial
+  if (_yn.commercial === 'yes') adjustments += base * 0.20;
+
+  // Coverages
+  if (_cov.floods) adjustments += 500;
+  if (_cov.storms) adjustments += 400;
+  if (_cov.ground) adjustments += 600;
+
+  const tax = (base + adjustments) * 0.19;
+  const total = base + adjustments + tax;
+
+  UI.txt('premium-base', base.toFixed(2) + ' DZD');
+  UI.txt('premium-adjust', adjustments.toFixed(2) + ' DZD');
+  UI.txt('premium-tax', tax.toFixed(2) + ' DZD');
+  UI.txt('premium-total', total.toFixed(2) + ' DZD');
+}
