@@ -314,7 +314,33 @@ async function processPayment(quoteId, authenticatedUserId, documentData = null)
         file_type:   documentData.file_type || null,
       });
     }
+// 1. Get user email
+const [userRows] = await conn.execute(
+  `SELECT u.email, u.first_name, u.last_name
+   FROM clients c
+   JOIN users u ON c.user_id = u.id
+   WHERE c.id = ?`,
+  [quote.client_id]
+);
 
+const user = userRows[0];
+
+// 2. Generate PDF
+const pdfBuffer = await createContractPDF({
+  policy_reference,
+  client_name: `${user.first_name} ${user.last_name}`,
+  product_name: 'Roadside Assistance',
+  start_date,
+  end_date,
+  amount: quote.estimated_amount
+});
+
+// 3. Send email (DO NOT block payment)
+await sendContractEmail({
+  to: user.email,
+  pdfBuffer,
+  policy_reference
+});
     // 7. Notification for the user
     await m.createNotification(conn, {
       user_id: authenticatedUserId,

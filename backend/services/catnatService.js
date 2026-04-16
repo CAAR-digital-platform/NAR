@@ -5,7 +5,8 @@ const jwt     = require('jsonwebtoken');
 const crypto  = require('crypto');
 const pool    = require('../db');
 const m       = require('../models/catnatModel');
-
+const { createContractPDF } = require('../utils/pdfGenerator');
+const { sendContractEmail } = require('../utils/mailer');
 const SECRET_KEY = process.env.JWT_SECRET;
 if (!SECRET_KEY) throw new Error('FATAL: JWT_SECRET is not set.');
 
@@ -307,7 +308,33 @@ async function processPayment(quoteId, userId, documentData = null) {
         file_type:   documentData.file_type || null,
       });
     }
+// 1. Get user email
+const [userRows] = await conn.execute(
+  `SELECT u.email, u.first_name, u.last_name
+   FROM clients c
+   JOIN users u ON c.user_id = u.id
+   WHERE c.id = ?`,
+  [quote.client_id]
+);
 
+const user = userRows[0];
+
+// 2. Generate PDF
+const pdfBuffer = await createContractPDF({
+  policy_reference,
+  client_name: `${user.first_name} ${user.last_name}`,
+  product_name: 'CATNAT Insurance',
+  start_date,
+  end_date,
+  amount: quote.estimated_amount
+});
+
+// 3. Send email (DO NOT block payment)
+await sendContractEmail({
+  to: user.email,
+  pdfBuffer,
+  policy_reference
+});
     // Notification
     await conn.execute(
       `INSERT INTO notifications (user_id, title, message, type)

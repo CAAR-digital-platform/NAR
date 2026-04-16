@@ -753,13 +753,18 @@ window.validateAndPay = async function validateAndPay() {
     const result = await API.processPayment();
     UI.btnReset('btn-validate-pay');
     populateConfirmation(result);
-    _goToStep(4);
+   document.getElementById('modalPolicyRef').textContent =
+  data.policy_reference;
+
+document.getElementById('contractModal').classList.remove('hidden');
   } catch (err) {
     UI.btnReset('btn-validate-pay');
     UI.showPayError(err.message);
   }
 };
-
+function closeModal() {
+  document.getElementById('contractModal').classList.add('hidden');
+}
 /* Payment page helpers */
 window.formatCardNumber = function(input) {
   const v = (input.value || '').replace(/\D/g,'').slice(0,16);

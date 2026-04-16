@@ -257,81 +257,25 @@
         </div>
       </div>
 
-      <!-- PLAN SELECTION — populated dynamically by catnat-arch.js -->
-      <div class="plan-section">
-        <div class="plan-section-title">Choose Your Coverage Plan</div>
-        <div class="plan-cards">
-
-          <!-- Basique -->
-          <div class="plan-card" id="plan-basique" data-plan-id="" data-plan-price="" data-plan-name="">
-            <input type="radio" name="plan" value="Basique" class="plan-radio"/>
-            <span class="plan-badge-selected">&#10003; Selected</span>
-            <div class="plan-name">Basique</div>
-            <div class="plan-price">— DZD</div>
-            <div class="plan-price-sub">per year, taxes included</div>
-            <ul class="plan-features">
-              <li>Loading plan details…</li>
-            </ul>
-          </div>
-
-          <!-- Plus (default selection) -->
-          <div class="plan-card popular" id="plan-plus" data-plan-id="" data-plan-price="" data-plan-name="">
-            <span class="plan-popular-badge">&#11088; Most Popular</span>
-            <input type="radio" name="plan" value="Plus" class="plan-radio"/>
-            <span class="plan-badge-selected">&#10003; Selected</span>
-            <div class="plan-name">Plus</div>
-            <div class="plan-price">— DZD</div>
-            <div class="plan-price-sub">per year, taxes included</div>
-            <ul class="plan-features">
-              <li>Loading plan details…</li>
-            </ul>
-          </div>
-
-          <!-- Premium -->
-          <div class="plan-card" id="plan-premium" data-plan-id="" data-plan-price="" data-plan-name="">
-            <input type="radio" name="plan" value="Premium" class="plan-radio"/>
-            <span class="plan-badge-selected">&#10003; Selected</span>
-            <div class="plan-name">Premium</div>
-            <div class="plan-price">— DZD</div>
-            <div class="plan-price-sub">per year, taxes included</div>
-            <ul class="plan-features">
-              <li>Loading plan details…</li>
-            </ul>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- PREMIUM BAR -->
-      <div class="premium-bar">
-        <div class="premium-row">
-          <span class="premium-label">Net Premium (excl. tax)</span>
-          <span class="premium-value" id="net-premium">0.00 DZD</span>
-        </div>
-        <div class="premium-row">
-          <span class="premium-label">Taxes &amp; Management Fees (19%)</span>
-          <span class="premium-value" id="tax-fees">0.00 DZD</span>
-        </div>
-        <div class="premium-divider"></div>
-        <div class="premium-row premium-total-row">
-          <span class="premium-total-label">Total to Pay</span>
-          <span class="premium-total-value" id="total-pay">0.00 DZD</span>
-        </div>
-        <div class="premium-consent-row">
+     <div class="premium-consent-row">
           <input type="checkbox" id="terms-consent"/>
-          <label for="terms-consent">I accept the <a href="#">general terms and conditions</a> of CATNAT insurance</label>
+          <label for="terms-consent">
+            I accept the <a href="#">general terms and conditions</a> of CATNAT insurance
+          </label>
         </div>
       </div>
 
-      <!-- Error container for step 1 -->
+      <!-- Error -->
       <div id="catnat-error-step1" style="display:none;"></div>
 
       <div class="form-nav-btns">
-        <a href="Online_subscription.html" class="btn-back-products">&#8592; Back to Products</a>
-        <button id="btn-continue-step1" class="btn-continue" type="button">Continue to Subscription &#8594;</button>
+        <a href="Online_subscription.html" class="btn-back-products">
+          ← Back to Products
+        </a>
+        <button id="btn-continue-step1" class="btn-continue" type="button">
+          Continue to Subscription →
+        </button>
       </div>
-    </div><!-- /form-step-1 -->
-
 
     <!-- ======================================================
          STEP 2 — SUBSCRIPTION (client info + agency)
@@ -711,7 +655,15 @@
 
   </div><!-- /catnat-form-container -->
 </div><!-- /catnat-page -->
+<div id="contractModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Payment Successful</h2>
+    <p>Your policy reference:</p>
+    <strong id="modalPolicyRef"></strong>
 
+    <button onclick="closeModal()">Close</button>
+  </div>
+</div>
   <!-- FOOTER — injected automatically -->
   <div id="site-footer"></div>
 

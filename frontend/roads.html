@@ -10,7 +10,7 @@
 <body>
 
 
-
+<div id="site-header"></div>
 
 <!-- ===== ROADSIDE ASSISTANCE PAGE ===== -->
 <div class="road-page">
@@ -518,8 +518,16 @@
   </div><!-- /road-form-container -->
 </div><!-- /road-page -->
 
+<div id="contractModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Payment Successful</h2>
+    <p>Your policy reference:</p>
+    <strong id="modalPolicyRef"></strong>
 
-
+    <button onclick="closeModal()">Close</button>
+  </div>
+</div>
+<div id="site-footer"></div>
 <script src="app-state.js"></script>
 <script src="auth.js"></script>
 <script src="header-controller.js"></script>

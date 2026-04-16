@@ -562,7 +562,7 @@ window.submitAndProceed = async function submitAndProceed() {
     // Store session data
     AppState.set('quoteId', quoteData.quote_id);
     AppState.set('token',   quoteData.token);
-   localStorage.setItem('caar_auth_token', token);
+  localStorage.setItem('caar_auth_token', quoteData.token);
     localStorage.setItem('caar_catnat_quote_id', String(quoteData.quote_id));
 
     // ── 2. Confirm quote immediately ─────────────────────────────────────────
@@ -646,7 +646,10 @@ window.validateAndPay = async function validateAndPay() {
 
     // FIX: populate Step 4 from REAL API response
     _populateConfirmation(data);
-    _goToStep(4);
+    document.getElementById('modalPolicyRef').textContent =
+  data.policy_reference;
+
+document.getElementById('contractModal').classList.remove('hidden');
 
   } catch (err) {
     UI.showError('pay-error-msg', 'Payment error — please try again.');
@@ -657,7 +660,9 @@ window.validateAndPay = async function validateAndPay() {
     window.__paying = false;
   }
 };
-
+function closeModal() {
+  document.getElementById('contractModal').classList.add('hidden');
+}
 /* ═══════════════════════════════════════════════════════════════════════════
    11. PAYMENT FORM HELPERS
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -735,9 +740,8 @@ function _attachListeners() {
 document.addEventListener('DOMContentLoaded', async function boot() {
   console.log('[CATNAT] catnat-arch.js v1.1 — booting');
 
-  // Always start fresh — no stale state
-  AppState.clear();
-  AppState.hydrate();
+ // DO NOT clear auth — only reset CATNAT flow
+AppState.hydrate();
 
   // Load agencies in parallel
   await loadAgencies();
