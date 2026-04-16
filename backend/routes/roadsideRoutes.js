@@ -22,6 +22,7 @@ router.get('/requests/my', authMiddleware, requireRole('client'), ctrl.listMyRoa
 router.get('/requests', authMiddleware, requireRole('admin'), ctrl.listRoadsideRequests);
 router.post('/requests', authMiddleware, requireRole('client'), ctrl.createRoadsideRequest);
 router.patch('/requests/:id/status', authMiddleware, requireRole('admin'), ctrl.updateRoadsideRequestStatus);
+router.post('/', authMiddleware, requireRole('client'), ctrl.createRoadsideRequest);
 
 router.post('/quote', ctrl.createQuote);
 

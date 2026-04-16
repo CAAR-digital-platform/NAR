@@ -33,6 +33,7 @@ if (typeof window.apiRequest === 'undefined') {
 var ALL_CLAIMS          = [];
 var ALL_CONTRACTS       = [];
 var ALL_ROADSIDE        = [];
+var ALL_MESSAGES        = [];
 var _dashStats          = {};
 
 /* ── Status config ───────────────────────────────────────────── */
@@ -103,6 +104,8 @@ async function loadAllData() {
   renderRecentActivity();
   renderContextualNextStep();
   populateClaimModalContracts();
+  populateRoadsideContractSelect();
+  renderRoadsideRequests();
 }
 
 /* ============================================================
@@ -340,12 +343,12 @@ function renderRecentActivity() {
       '">' +
       '<div class="activity-dot ' + dotCls + '" style="font-size:.75rem;">' + item.icon + '</div>' +
       '<div class="activity-body" style="flex:1;">' +
-        '<div class="activity-body-title">' + item.title + '</div>' +
-        '<div class="activity-body-sub">' + item.sub + '</div>' +
+        '<div class="activity-body-title">' + escapeHTML(item.title) + '</div>' +
+        '<div class="activity-body-sub">' + escapeHTML(item.sub) + '</div>' +
       '</div>' +
       '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">' +
-        '<span class="status-badge ' + item.cls + '" style="font-size:.6rem;">' + item.status + '</span>' +
-        '<span class="activity-time">' + dateStr + '</span>' +
+        '<span class="status-badge ' + item.cls + '" style="font-size:.6rem;">' + escapeHTML(item.status) + '</span>' +
+        '<span class="activity-time">' + escapeHTML(dateStr) + '</span>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -455,6 +458,25 @@ function safeSetValue(id, value) {
   if (el && !el.value) el.value = value;
 }
 
+function escapeHTML(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    }[ch];
+  });
+}
+
+function formatDateTime(value) {
+  if (!value) return '';
+  var d = new Date(value);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-GB') + ' ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+
 /* ============================================================
    SPA NAVIGATION
    ============================================================ */
@@ -487,6 +509,8 @@ window.switchSection = function (key, _el) {
 
   if (key === 'claims')    loadClaims();
   if (key === 'contracts') loadContractsSection();
+  if (key === 'roadside')  loadRoadsideRequests();
+  if (key === 'messages')  loadMessages();
 };
 
 window.openSidebar = function () {
@@ -508,6 +532,7 @@ async function loadContractsSection() {
   var contracts = await loadContracts('contracts-cards-grid');
   ALL_CONTRACTS = contracts;
   populateClaimModalContracts();
+  populateRoadsideContractSelect();
   window.__openClaimForContract = function (contractId, policyRef) {
     openNewClaimModal(contractId, policyRef);
   };
@@ -532,6 +557,55 @@ function populateClaimModalContracts() {
         ' (expires ' + (c.end_date ? new Date(c.end_date).toLocaleDateString('en-GB') : '') + ')' +
         '</option>';
     }).join('');
+}
+
+function getActiveRoadsideContracts() {
+  return ALL_CONTRACTS.filter(function (c) {
+    return c.status === 'active' && /roadside assistance/i.test(c.product_name || '');
+  });
+}
+
+function populateRoadsideContractSelect() {
+  var select = document.getElementById('rfContractSelect');
+  if (!select) return;
+
+  var active = getActiveRoadsideContracts();
+  if (!active.length) {
+    select.innerHTML = '<option value="">No active roadside assistance contract found</option>';
+    syncRoadsideVehicleFields(null);
+    return;
+  }
+
+  select.innerHTML = active.map(function (c, idx) {
+    return '<option value="' + c.contract_id + '"' + (idx === 0 ? ' selected' : '') + '>' +
+      escapeHTML(c.policy_reference || '#' + c.contract_id) +
+      ' - ' + escapeHTML(c.product_name || 'Roadside Assistance') +
+      '</option>';
+  }).join('');
+
+  select.onchange = function () {
+    var contract = active.find(function (c) { return String(c.contract_id) === String(select.value); });
+    syncRoadsideVehicleFields(contract || null);
+  };
+
+  syncRoadsideVehicleFields(active[0]);
+}
+
+function syncRoadsideVehicleFields(contract) {
+  var plate = document.getElementById('rfLicensePlate');
+  var brand = document.getElementById('rfBrand');
+  if (!contract) {
+    if (plate) plate.value = '';
+    if (brand) brand.value = '';
+    return;
+  }
+
+  if (plate && contract.license_plate) {
+    plate.value = contract.license_plate;
+  }
+  if (brand && contract.vehicle_label) {
+    brand.value = contract.vehicle_label;
+  }
 }
 
 /* ============================================================
@@ -573,6 +647,7 @@ async function loadClaims() {
   // Refresh alerts on the dashboard section too
   renderAlertBanners();
   renderRecentActivity();
+  renderContextualNextStep();
 }
 
 function renderClaimsTable(claims) {
@@ -684,18 +759,18 @@ window.openClaimPanel = function (claimId) {
       '<div class="cdp-info-item"><div class="cdp-info-label">Date Filed</div>' +
         '<div class="cdp-info-value">' + (claim.claim_date ? new Date(claim.claim_date).toLocaleDateString('en-GB') : '—') + '</div></div>' +
       '<div class="cdp-info-item"><div class="cdp-info-label">Contract</div>' +
-        '<div class="cdp-info-value">#' + claim.contract_id + '</div></div>' +
+        '<div class="cdp-info-value">#' + escapeHTML(claim.contract_id) + '</div></div>' +
       '<div class="cdp-info-item"><div class="cdp-info-label">Location</div>' +
-        '<div class="cdp-info-value">' + (claim.incident_location || 'Not specified') + '</div></div>' +
+        '<div class="cdp-info-value">' + escapeHTML(claim.incident_location || 'Not specified') + '</div></div>' +
     '</div></div>' +
     // Description
     '<div class="cdp-section"><div class="cdp-section-title">Description</div>' +
-      '<div class="cdp-description">' + (claim.description || 'No description provided.') + '</div></div>' +
+      '<div class="cdp-description">' + escapeHTML(claim.description || 'No description provided.') + '</div></div>' +
     // Rejection reason
     (claim.rejection_reason ?
       '<div class="cdp-section"><div class="cdp-section-title">Rejection Reason</div>' +
       '<div class="cdp-description" style="border-color:#f43f5e;background:#fff1f2;color:#be123c;">' +
-      claim.rejection_reason + '</div></div>' : '') +
+      escapeHTML(claim.rejection_reason) + '</div></div>' : '') +
     // Mini timeline
     '<div class="cdp-section"><div class="cdp-section-title">Progress Timeline</div>' +
       '<div class="cdp-timeline">' + timelineHTML + '</div></div>' +
@@ -746,7 +821,10 @@ window.openNewClaimModalGeneric = async function () {
       var result = await apiRequest('/api/contracts/my');
       ALL_CONTRACTS = (result.ok && result.data.contracts) ? result.data.contracts : [];
       active = ALL_CONTRACTS.filter(function (c) { return c.status === 'active'; });
-    } catch (e) {}
+    } catch (e) {
+      showToast('Unable to load your contracts. Please try again.', 'error');
+      return;
+    }
   }
 
   if (!active.length) {
@@ -836,10 +914,11 @@ window.submitNewClaim = async function () {
 
   closeNewClaimModal();
   showToast('Claim #' + result.data.claim_id + ' submitted successfully!');
-  ALL_CLAIMS = [];
-  loadClaims();
+  await loadClaims();
   renderAlertBanners();
   renderRecentActivity();
+  renderContextualNextStep();
+  if (typeof window.refreshNotifications === 'function') window.refreshNotifications();
   submitBtn.disabled = false; submitBtn.textContent = 'Submit Claim';
 };
 
@@ -869,7 +948,59 @@ function showToast(msg, type) {
    ============================================================ */
 var selectedProblemType = '';
 
+async function loadRoadsideRequests() {
+  var list = document.getElementById('roadsideRequestsList');
+  if (list) {
+    list.innerHTML = '<div class="roadside-list-empty">Loading your requests...</div>';
+  }
+
+  var result;
+  try {
+    result = await apiRequest('/api/roadside/requests/my');
+  } catch (e) {
+    if (list) list.innerHTML = '<div class="roadside-list-empty" style="color:#c53030;">Network error while loading requests.</div>';
+    return;
+  }
+
+  if (!result.ok) {
+    if (list) list.innerHTML = '<div class="roadside-list-empty" style="color:#c53030;">Unable to load requests (HTTP ' + result.status + ').</div>';
+    return;
+  }
+
+  ALL_ROADSIDE = result.data.requests || [];
+  renderRoadsideRequests();
+  renderRecentActivity();
+  renderAlertBanners();
+}
+
+function renderRoadsideRequests() {
+  var list = document.getElementById('roadsideRequestsList');
+  if (!list) return;
+
+  if (!ALL_ROADSIDE.length) {
+    list.innerHTML = '<div class="roadside-list-empty">Your roadside requests will appear here after submission.</div>';
+    return;
+  }
+
+  list.innerHTML = ALL_ROADSIDE.map(function (r) {
+    var sc = ROADSIDE_STATUS[r.status] || { cls: 'status-badge--pending', label: r.status || 'Pending' };
+    var created = r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB') : '';
+    var vehicle = r.vehicle_label || r.license_plate || ('Contract #' + r.contract_id);
+    return '<div class="roadside-request-item">' +
+      '<div class="roadside-request-top">' +
+        '<div>' +
+          '<div class="roadside-request-ref">' + escapeHTML(r.request_reference || '#' + r.request_id) + '</div>' +
+          '<div class="roadside-request-meta">' + escapeHTML(created) + ' - ' + escapeHTML(vehicle) + '</div>' +
+        '</div>' +
+        '<span class="status-badge ' + sc.cls + '">' + escapeHTML(sc.label) + '</span>' +
+      '</div>' +
+      '<div class="roadside-request-desc">' + escapeHTML(r.problem_type || 'Assistance') + ' - ' + escapeHTML(r.location_address || r.city || '') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
 window.submitRoadsideRequest = async function () {
+  var contractId = (document.getElementById('rfContractSelect') || {}).value || '';
   var plate   = (document.getElementById('rfLicensePlate') || {}).value || '';
   var brand   = ((document.getElementById('rfBrand') || {}).value || '').trim();
   var wilaya  = (document.getElementById('rfWilaya') || {}).value || '';
@@ -879,6 +1010,7 @@ window.submitRoadsideRequest = async function () {
   var phone   = ((document.getElementById('rfPhone') || {}).value || '').trim();
 
   if (!selectedProblemType) { showToast('Please select the type of problem.', 'error'); return; }
+  if (!contractId) { showToast('Please select an active roadside assistance contract.', 'error'); return; }
   if (!plate)   { showToast('Please enter your license plate.', 'error'); return; }
   if (!wilaya)  { showToast('Please select your wilaya.', 'error'); return; }
   if (!address) { showToast('Please enter your location.', 'error'); return; }
@@ -898,11 +1030,18 @@ window.submitRoadsideRequest = async function () {
       return;
     }
 
-    var contract = activeRoadside[0];
+    var contract = activeRoadside.find(function (co) {
+      return String(co.contract_id) === String(contractId);
+    });
+    if (!contract) {
+      showToast('Selected roadside contract is not available.', 'error');
+      return;
+    }
+
     var result = await apiRequest('/api/roadside/requests', {
       method: 'POST',
       body: {
-        contract_id:      contract.contract_id,
+        contract_id:      parseInt(contract.contract_id, 10),
         problem_type:     selectedProblemType,
         description:      desc,
         phone:            phone,
@@ -927,9 +1066,24 @@ window.submitRoadsideRequest = async function () {
     if (success) { success.style.display = 'block'; success.classList.add('show'); }
 
     // Add to local list and refresh alerts
-    ALL_ROADSIDE.unshift({ request_id: result.data.request_id, request_reference: result.data.request_reference, status: 'pending', created_at: new Date().toISOString() });
+    ALL_ROADSIDE.unshift({
+      request_id: result.data.request_id,
+      request_reference: result.data.request_reference,
+      contract_id: contract.contract_id,
+      problem_type: selectedProblemType,
+      location_address: address,
+      city: city || null,
+      description: desc,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      license_plate: plate,
+      vehicle_label: brand || contract.vehicle_label || null,
+    });
+    renderRoadsideRequests();
     renderAlertBanners();
     renderRecentActivity();
+    renderContextualNextStep();
+    if (typeof window.refreshNotifications === 'function') window.refreshNotifications();
     showToast('Roadside request submitted successfully.');
 
   } catch (_) {
@@ -944,10 +1098,122 @@ window.resetRoadsideForm = function () {
     .forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ''; });
   selectedProblemType = '';
   document.querySelectorAll('.rf-problem-chip').forEach(function (c) { c.classList.remove('selected'); });
+  var problem = document.getElementById('rfProblemType');
+  if (problem) problem.value = '';
+  populateRoadsideContractSelect();
   var body = document.getElementById('roadsideFormBody');
   if (body) body.style.display = '';
   var success = document.getElementById('roadsideSuccess');
   if (success) { success.style.display = 'none'; success.classList.remove('show'); }
+};
+
+/* ============================================================
+   MESSAGES
+   ============================================================ */
+window.loadMessages = async function () {
+  var list = document.getElementById('messagesList');
+  if (!list) return;
+
+  list.innerHTML = '<div class="messages-empty">Loading your messages...</div>';
+
+  var result;
+  try {
+    result = await apiRequest('/api/messages/my');
+  } catch (e) {
+    list.innerHTML = '<div class="messages-empty" style="color:#c53030;">Network error while loading messages.</div>';
+    return;
+  }
+
+  if (!result.ok) {
+    list.innerHTML = '<div class="messages-empty" style="color:#c53030;">Unable to load messages (HTTP ' + result.status + ').</div>';
+    return;
+  }
+
+  ALL_MESSAGES = result.data.messages || [];
+  renderMessages();
+};
+
+function renderMessages() {
+  var list = document.getElementById('messagesList');
+  if (!list) return;
+
+  if (!ALL_MESSAGES.length) {
+    list.innerHTML = '<div class="messages-empty">No messages yet. Send your first message using the form.</div>';
+    return;
+  }
+
+  list.innerHTML = ALL_MESSAGES.map(function (m) {
+    var role = m.sender_role || 'client';
+    var status = m.status || 'new';
+    return '<article class="message-item">' +
+      '<div class="message-item-head">' +
+        '<div class="message-item-subject">' + escapeHTML(m.subject || 'Message') + '</div>' +
+        '<div class="message-item-date">' + escapeHTML(formatDateTime(m.created_at)) + '</div>' +
+      '</div>' +
+      '<div class="message-item-meta">' +
+        '<span class="message-role-chip">' + escapeHTML(role) + '</span>' +
+        '<span class="message-status-chip">' + escapeHTML(status) + '</span>' +
+      '</div>' +
+      '<div class="message-item-content">' + escapeHTML(m.content || m.message || '') + '</div>' +
+    '</article>';
+  }).join('');
+}
+
+window.submitDashboardMessage = async function () {
+  var subjectEl = document.getElementById('msgSubject');
+  var contentEl = document.getElementById('msgContent');
+  var submitBtn = document.getElementById('msgSubmitBtn');
+  var subject = (subjectEl ? subjectEl.value : '').trim();
+  var message = (contentEl ? contentEl.value : '').trim();
+
+  if (!subject) {
+    showToast('Please enter a message subject.', 'error');
+    return;
+  }
+  if (message.length < 10) {
+    showToast('Message must be at least 10 characters.', 'error');
+    return;
+  }
+
+  var user = JSON.parse(localStorage.getItem('user') || 'null') || _authUser || {};
+  var name = ((user.first_name || '') + ' ' + (user.last_name || '')).trim() || user.email || 'Client';
+  var email = user.email || '';
+  if (!email) {
+    showToast('Your account email is missing. Please refresh and sign in again.', 'error');
+    return;
+  }
+
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending...'; }
+
+  var result;
+  try {
+    result = await apiRequest('/api/messages', {
+      method: 'POST',
+      body: {
+        name: name,
+        email: email,
+        phone: user.phone || null,
+        subject: subject,
+        message: message,
+      },
+    });
+  } catch (e) {
+    showToast('Network error while sending your message.', 'error');
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message'; }
+    return;
+  }
+
+  if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message'; }
+
+  if (!result.ok) {
+    showToast((result.data && result.data.error) || 'Unable to send message.', 'error');
+    return;
+  }
+
+  if (subjectEl) subjectEl.value = '';
+  if (contentEl) contentEl.value = '';
+  showToast('Message sent successfully.');
+  await window.loadMessages();
 };
 
 /* ============================================================
@@ -963,11 +1229,17 @@ window.saveProfile = function () {
 };
 
 window.cancelProfile = function () {
-  var user = _authUser || {};
-  safeSetValue('pf-first', user.first_name || '');
-  safeSetValue('pf-last',  user.last_name  || '');
-  safeSetValue('pf-email', user.email      || '');
-  safeSetValue('pf-phone', user.phone      || '');
+  var user = JSON.parse(localStorage.getItem('user') || 'null') || _authUser || {};
+  var values = {
+    'pf-first': user.first_name || '',
+    'pf-last':  user.last_name  || '',
+    'pf-email': user.email      || '',
+    'pf-phone': user.phone      || '',
+  };
+  Object.keys(values).forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.value = values[id];
+  });
 };
 
 window.changePassword = function () {

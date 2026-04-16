@@ -4,7 +4,7 @@ const notificationService = require('./notificationService');
 
 const VALID_STATUSES = ['new', 'read', 'replied'];
 
-async function submitMessage({ name, email, subject, message, sender_user_id, sender_role }) {
+async function submitMessage({ name, email, phone, subject, message, sender_user_id, sender_role }) {
   const missing = [];
   if (!name) missing.push('name');
   if (!email) missing.push('email');
@@ -39,6 +39,7 @@ async function submitMessage({ name, email, subject, message, sender_user_id, se
   const newId = await messageModel.createMessage({
     name: name.trim(),
     email: email.trim().toLowerCase(),
+    phone: phone ? phone.trim() : null,
     subject: subject.trim(),
     message: message.trim(),
     sender_user_id: sender_user_id || null,

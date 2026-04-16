@@ -26,6 +26,7 @@ const contractsRoutes = require('./routes/contractsRoutes');
 const plansRoutes = require('./routes/plansRoutes');
 const catnatRoutes = require('./routes/catnatRoutes');
 const assuranceRoutes = require('./routes/assuranceRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/roadside', roadsideRoutes);
@@ -38,6 +39,7 @@ app.use('/api/contracts', contractsRoutes);
 app.use('/api/plans', plansRoutes);
 app.use('/api/catnat', catnatRoutes);
 app.use('/api/assurances', assuranceRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'CAAR backend running' });

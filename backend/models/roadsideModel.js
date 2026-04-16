@@ -306,10 +306,13 @@ async function getRoadsideRequestsByUserId(userId) {
        rr.description,
        rr.status,
        rr.created_at,
-       rr.updated_at
+       rr.updated_at,
+       v.license_plate,
+       CONCAT(v.brand, ' ', v.model) AS vehicle_label
      FROM roadside_requests rr
      JOIN clients c ON c.id = rr.client_id
      JOIN contracts co ON co.id = rr.contract_id
+     LEFT JOIN vehicles v ON v.id = co.vehicle_id
      WHERE c.user_id = ?
      ORDER BY rr.created_at DESC`,
     [userId]
@@ -338,11 +341,14 @@ async function getAllRoadsideRequests() {
        rr.description,
        rr.status,
        rr.created_at,
-       rr.updated_at
+       rr.updated_at,
+       v.license_plate,
+       CONCAT(v.brand, ' ', v.model) AS vehicle_label
      FROM roadside_requests rr
      JOIN clients c ON c.id = rr.client_id
      JOIN users u ON u.id = c.user_id
      JOIN contracts co ON co.id = rr.contract_id
+     LEFT JOIN vehicles v ON v.id = co.vehicle_id
      ORDER BY rr.created_at DESC`
   );
   return rows;

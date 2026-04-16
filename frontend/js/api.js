@@ -14,9 +14,19 @@ function getToken() {
 
 /* ── Core request helper ── */
 async function apiRequest(path, method, body) {
-  method = method || 'GET';
+  var requestOptions;
+  if (method && typeof method === 'object') {
+    requestOptions = method;
+    method = requestOptions.method || 'GET';
+    body = requestOptions.body;
+  } else {
+    requestOptions = {};
+    method = method || 'GET';
+  }
+
+  method = String(method).toUpperCase();
   var token = getToken();
-  var headers = { 'Content-Type': 'application/json' };
+  var headers = Object.assign({ 'Content-Type': 'application/json' }, requestOptions.headers || {});
   if (token) headers['Authorization'] = 'Bearer ' + token;
 
   var opts = { method: method, headers: headers };

@@ -88,4 +88,36 @@ async function updateProfile(userId, { first_name, last_name, email, phone }) {
   return userModel.findById(userId);
 }
 
-module.exports = { register, login, getMe, updateProfile };
+async function changePassword(userId, { current_password, new_password }) {
+  if (!current_password || !new_password) {
+    const err = new Error('current_password and new_password are required');
+    err.status = 400;
+    throw err;
+  }
+
+  if (new_password.length < 8) {
+    const err = new Error('New password must be at least 8 characters');
+    err.status = 400;
+    throw err;
+  }
+
+  const user = await userModel.findAuthById(userId);
+  if (!user) {
+    const err = new Error('User not found');
+    err.status = 404;
+    throw err;
+  }
+
+  const isMatch = await bcrypt.compare(current_password, user.password_hash);
+  if (!isMatch) {
+    const err = new Error('Current password is incorrect');
+    err.status = 400;
+    throw err;
+  }
+
+  const passwordHash = await bcrypt.hash(new_password, 12);
+  await userModel.updatePassword(userId, passwordHash);
+  return { user_id: userId };
+}
+
+module.exports = { register, login, getMe, updateProfile, changePassword };

@@ -21,6 +21,16 @@ async function findById(id) {
   return rows[0] || null;
 }
 
+async function findAuthById(id) {
+  const [rows] = await pool.query(
+    `SELECT id, email, password_hash
+     FROM users
+     WHERE id = ?`,
+    [id]
+  );
+  return rows[0] || null;
+}
+
 async function createUser({ first_name, last_name, email, password_hash, phone, role }) {
   const [result] = await pool.query(
     `INSERT INTO users (first_name, last_name, email, password_hash, phone, role)
@@ -47,10 +57,21 @@ async function updateProfile(userId, { first_name, last_name, email, phone }) {
   );
 }
 
+async function updatePassword(userId, passwordHash) {
+  await pool.query(
+    `UPDATE users
+     SET password_hash = ?
+     WHERE id = ?`,
+    [passwordHash, userId]
+  );
+}
+
 module.exports = {
   findByEmail,
   findById,
+  findAuthById,
   createUser,
   createClient,
   updateProfile,
+  updatePassword,
 };

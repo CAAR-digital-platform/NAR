@@ -219,6 +219,51 @@ async function messageReceived(conn, { message_id, sender_name, subject }) {
   }
 }
 
+async function listForUser(userId, limit = 25) {
+  const safeLimit = Math.max(1, Math.min(parseInt(limit, 10) || 25, 100));
+  const [rows] = await pool.execute(
+    `SELECT id, user_id, title, message, type, event_type, entity_type,
+            entity_id, is_read, created_at
+     FROM notifications
+     WHERE user_id = ?
+     ORDER BY created_at DESC, id DESC
+     LIMIT ${safeLimit}`,
+    [userId]
+  );
+  return rows.map(row => ({
+    ...row,
+    is_read: Boolean(row.is_read),
+  }));
+}
+
+async function markReadForUser(notificationId, userId) {
+  const [result] = await pool.execute(
+    `UPDATE notifications
+     SET is_read = 1
+     WHERE id = ? AND user_id = ?`,
+    [notificationId, userId]
+  );
+
+  if (result.affectedRows === 0) {
+    const err = new Error('Notification not found');
+    err.status = 404;
+    throw err;
+  }
+
+  return { notification_id: notificationId, is_read: true };
+}
+
+async function markAllReadForUser(userId) {
+  const [result] = await pool.execute(
+    `UPDATE notifications
+     SET is_read = 1
+     WHERE user_id = ? AND is_read = 0`,
+    [userId]
+  );
+
+  return { updated: result.affectedRows };
+}
+
 module.exports = {
   claimCreated,
   claimStatusUpdated,
@@ -227,4 +272,7 @@ module.exports = {
   roadsideRequestCreated,
   roadsideRequestStatusUpdated,
   messageReceived,
+  listForUser,
+  markReadForUser,
+  markAllReadForUser,
 };

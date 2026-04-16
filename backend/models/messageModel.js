@@ -5,12 +5,12 @@ const pool = require('../db');
  * sender_user_id and sender_role are optional — only set when a logged-in
  * user submits the form.
  */
-async function createMessage({ name, email, subject, message, sender_user_id, sender_role }) {
+async function createMessage({ name, email, phone, subject, message, sender_user_id, sender_role }) {
   const [result] = await pool.execute(
     `INSERT INTO contact_messages
-       (full_name, email, subject, message, status, sender_user_id, sender_role)
-     VALUES (?, ?, ?, ?, 'new', ?, ?)`,
-    [name, email, subject, message,
+       (full_name, email, phone, subject, message, status, sender_user_id, sender_role)
+     VALUES (?, ?, ?, ?, ?, 'new', ?, ?)`,
+    [name, email, phone || null, subject, message,
      sender_user_id || null,
      sender_role    || null]
   );
@@ -22,7 +22,7 @@ async function createMessage({ name, email, subject, message, sender_user_id, se
  */
 async function getAllMessages() {
   const [rows] = await pool.execute(
-    `SELECT id, full_name AS name, email, subject, message,
+    `SELECT id, full_name AS name, email, phone, subject, message,
             status, sender_user_id, sender_role, created_at
      FROM contact_messages
      ORDER BY created_at DESC`
@@ -35,8 +35,9 @@ async function getAllMessages() {
  */
 async function getMessagesByUserId(userId) {
   const [rows] = await pool.execute(
-    `SELECT id, full_name AS name, email, subject, message,
-            status, created_at
+    `SELECT id, full_name AS name, email, phone, subject,
+            message, message AS content, status,
+            sender_user_id, sender_role, created_at
      FROM contact_messages
      WHERE sender_user_id = ?
      ORDER BY created_at DESC`,
@@ -50,7 +51,7 @@ async function getMessagesByUserId(userId) {
  */
 async function getMessageById(id) {
   const [rows] = await pool.execute(
-    `SELECT id, full_name AS name, email, subject, message,
+    `SELECT id, full_name AS name, email, phone, subject, message,
             status, sender_user_id, sender_role, created_at
      FROM contact_messages
      WHERE id = ?`,

@@ -25,11 +25,14 @@ async function getContractsByUserId(userId) {
        co.premium_amount,
        p.name               AS product_name,
        p.insurance_type,
-       pl.name              AS plan_name
+       pl.name              AS plan_name,
+       v.license_plate,
+       CONCAT(v.brand, ' ', v.model) AS vehicle_label
      FROM contracts  co
      JOIN clients    c   ON c.id  = co.client_id
      JOIN products   p   ON p.id  = co.product_id
      LEFT JOIN plans pl  ON pl.id = co.plan_id
+     LEFT JOIN vehicles v ON v.id  = co.vehicle_id
      WHERE c.user_id = ?
      ORDER BY co.start_date DESC`,
     [userId]

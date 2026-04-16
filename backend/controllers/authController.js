@@ -91,4 +91,22 @@ async function updateProfile(req, res) {
   }
 }
 
-module.exports = { register, login, getMe, updateProfile };
+async function changePassword(req, res) {
+  const { current_password, new_password } = req.body;
+
+  try {
+    const result = await authService.changePassword(req.user.id, {
+      current_password,
+      new_password,
+    });
+
+    return res.status(200).json({
+      message: 'Password updated',
+      ...result,
+    });
+  } catch (err) {
+    return res.status(err.status || 500).json({ error: err.message });
+  }
+}
+
+module.exports = { register, login, getMe, updateProfile, changePassword };

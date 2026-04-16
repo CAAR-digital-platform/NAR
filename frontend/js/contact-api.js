@@ -52,6 +52,7 @@ async function submitContactAPI() {
   var result = await apiRequest('/api/messages', 'POST', {
     name: name,
     email: email,
+    phone: phone || null,
     subject: subject,
     message: message
   });

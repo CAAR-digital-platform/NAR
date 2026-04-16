@@ -211,7 +211,7 @@ async function loadContracts(gridId) {
       '<div class="cfc-footer">' +
       (a ? '<button class="cfc-btn-doc" onclick="window.__openClaimForContract(' + co.contract_id + ',\'' + (co.policy_reference || '') + '\')">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>File a Claim</button>' : '') +
-      '<button class="cfc-btn-sec" onclick="alert(\'Contact your agency to renew.\')">Renew</button>' +
+      '<button class="cfc-btn-sec" onclick="window.location.href=\'contact.html\'">Renew</button>' +
       '</div></div>'
     );
   }).join('');

@@ -217,7 +217,7 @@
   <div class="cdp-body" id="cdpBody"></div>
   <div class="cdp-footer">
     <button class="btn-cdp-secondary" id="cdpFooterClose">Close</button>
-    <button class="btn-cdp-primary" id="cdpAttachBtn">📎 Attach Document</button>
+    <button class="btn-cdp-primary" id="cdpAttachBtn">Contact Support</button>
   </div>
 </div>
 
@@ -579,6 +579,15 @@
                   <div class="rf-problem-chip" data-problem="Other"><span class="chip-icon">❓</span> Other</div>
                 </div>
                 <input type="hidden" id="rfProblemType" value=""/>
+                <div class="rf-group-title">Roadside Contract</div>
+                <div class="rf-grid">
+                  <div class="rf-field rf-full">
+                    <label for="rfContractSelect">Active roadside contract <span class="req">*</span></label>
+                    <select class="rf-select" id="rfContractSelect">
+                      <option value="">Loading roadside contracts...</option>
+                    </select>
+                  </div>
+                </div>
                 <div class="rf-group-title">Vehicle Information</div>
                 <div class="rf-grid">
                   <div class="rf-field"><label for="rfLicensePlate">License Plate <span class="req">*</span></label><input type="text" class="rf-input" id="rfLicensePlate" placeholder="e.g. 12345-16-001"/></div>
@@ -623,6 +632,17 @@
               </div>
             </div>
           </div>
+          <aside class="roadside-sidebar">
+            <div class="roadside-info-card">
+              <div class="roadside-info-card-header">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                My Roadside Requests
+              </div>
+              <div class="roadside-info-card-body" id="roadsideRequestsList">
+                <div class="roadside-list-empty">Loading your requests...</div>
+              </div>
+            </div>
+          </aside>
         </div>
       </div><!-- /roadside-section -->
 
@@ -630,13 +650,31 @@
       <div class="dash-section" id="messages-section">
         <div class="dash-content__header">
           <h1 class="dash-content__header-title">Messages</h1>
-          <p class="dash-content__header-sub">Your correspondence with CAAR advisors.</p>
+          <p class="dash-content__header-sub">Send a message to CAAR support and track your submitted requests.</p>
         </div>
-        <div class="section-placeholder">
-          <div class="sp-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-          <div class="sp-title">Messaging inbox</div>
-          <div class="sp-text">Full messaging functionality is coming soon.</div>
-          <span class="sp-badge">Coming Soon</span>
+        <div id="messagesApiMsg" style="display:none;margin-bottom:12px;"></div>
+        <div class="messages-layout">
+          <section class="message-compose-card">
+            <div class="message-card-title">New Message</div>
+            <div class="message-field">
+              <label for="msgSubject">Subject</label>
+              <input class="message-input" id="msgSubject" type="text" maxlength="200" placeholder="How can we help?"/>
+            </div>
+            <div class="message-field">
+              <label for="msgContent">Message</label>
+              <textarea class="message-textarea" id="msgContent" maxlength="2000" placeholder="Write your message to CAAR support..."></textarea>
+            </div>
+            <button class="message-submit-btn" id="msgSubmitBtn">Send Message</button>
+          </section>
+          <section class="messages-list-card">
+            <div class="messages-list-header">
+              <div class="message-card-title">My Messages</div>
+              <button class="messages-refresh-btn" id="messagesRefreshBtn">Refresh</button>
+            </div>
+            <div class="messages-list" id="messagesList">
+              <div class="messages-empty">Loading your messages...</div>
+            </div>
+          </section>
         </div>
       </div><!-- /messages-section -->
 
@@ -713,7 +751,6 @@
 <script src="main.js"></script>
 <script src="dashboard.js"></script>
 <script src="js/api.js"></script>
-<script src="js/dashboard-client-api.js"></script>
 <script src="js/profile-api.js"></script>
 
 <script>
@@ -724,6 +761,8 @@
   function qs(sel) { return document.querySelector(sel); }
 
   /* ─── A. Profile pre-fill ─────────────────────────────────── */
+  window.refreshNotifications = loadNotifications;
+
   document.addEventListener('DOMContentLoaded', function () {
     try {
       var u = JSON.parse(localStorage.getItem('user') || '{}');
@@ -770,6 +809,12 @@
     return new Date(d).toLocaleDateString('en-GB');
   }
 
+  function escapeHTML(value) {
+    return String(value == null ? '' : value).replace(/[<>&"]/g, function (c) {
+      return ({ '<':'&lt;', '>':'&gt;', '&':'&amp;', '"':'&quot;' })[c];
+    });
+  }
+
   function renderNotifications(items) {
     _notifications = Array.isArray(items) ? items : [];
     var list  = el('notifList');
@@ -784,7 +829,8 @@
       return '<li class="dtb-notif-item ' + (n.is_read ? '' : 'dtb-notif-item--unread') + '" data-id="' + n.id + '">' +
         '<div class="dtb-notif-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>' +
         '<div class="dtb-notif-body">' +
-          '<div class="dtb-notif-title">' + String(n.title||'Notification').replace(/[<>&"]/g, function(c){return({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]);}) + '</div>' +
+          '<div class="dtb-notif-title">' + escapeHTML(n.title || 'Notification') + '</div>' +
+          '<div class="dtb-notif-message">' + escapeHTML(n.message || '') + '</div>' +
           '<div class="dtb-notif-time">' + formatRelative(n.created_at) + '</div>' +
         '</div></li>';
     }).join('');
@@ -794,11 +840,18 @@
     var token = typeof getToken === 'function' ? getToken() : localStorage.getItem('token');
     if (!token) return;
     try {
-      var res = await fetch('http://localhost:3000/api/notifications', { headers: { Authorization: 'Bearer ' + token } });
-      if (!res.ok) { renderNotifications([]); return; }
-      var data = await res.json();
-      renderNotifications(data.notifications || data || []);
+      var result = await apiRequest('/api/notifications', 'GET');
+      if (!result.ok) { renderNotifications([]); return; }
+      renderNotifications(result.data.notifications || result.data || []);
     } catch { renderNotifications([]); }
+  }
+
+  async function markNotificationRead(id) {
+    if (!id) return;
+    var item = _notifications.find(function (n) { return String(n.id) === String(id); });
+    if (item) item.is_read = true;
+    renderNotifications(_notifications);
+    try { await apiRequest('/api/notifications/' + id + '/read', 'PATCH'); } catch (_) {}
   }
 
   function syncUserIdentity() {
@@ -822,10 +875,18 @@
   });
 
   var markAllRead = el('markAllRead');
-  if (markAllRead) markAllRead.addEventListener('click', function (e) {
+  if (markAllRead) markAllRead.addEventListener('click', async function (e) {
     e.stopPropagation();
     _notifications.forEach(function (n) { n.is_read = true; });
     renderNotifications(_notifications);
+    try { await apiRequest('/api/notifications/read-all', 'PATCH'); } catch (_) {}
+  });
+
+  var notifList = el('notifList');
+  if (notifList) notifList.addEventListener('click', function (e) {
+    var item = e.target.closest('.dtb-notif-item');
+    if (!item) return;
+    markNotificationRead(item.getAttribute('data-id'));
   });
 
   var userMenuBtn = el('userMenuBtn');
@@ -881,7 +942,7 @@
   var cdpFooterClose = el('cdpFooterClose');
   if (cdpFooterClose) cdpFooterClose.addEventListener('click', function () { if (typeof closeClaimPanel === 'function') closeClaimPanel(); });
   var cdpAttach = el('cdpAttachBtn');
-  if (cdpAttach) cdpAttach.addEventListener('click', function () { alert('Document upload will be available in a future update.'); });
+  if (cdpAttach) cdpAttach.addEventListener('click', function () { window.location.href = 'contact.html'; });
 
   /* ─── F. Quick-action buttons ────────────────────────────── */
   var qaNewClaim = el('qaNewClaim');
@@ -935,6 +996,16 @@
 
   var rsResetBtn = el('roadsideResetBtn');
   if (rsResetBtn) rsResetBtn.addEventListener('click', function () { if (typeof resetRoadsideForm === 'function') resetRoadsideForm(); });
+
+  var msgSubmitBtn = el('msgSubmitBtn');
+  if (msgSubmitBtn) msgSubmitBtn.addEventListener('click', function () {
+    if (typeof submitDashboardMessage === 'function') submitDashboardMessage();
+  });
+
+  var messagesRefreshBtn = el('messagesRefreshBtn');
+  if (messagesRefreshBtn) messagesRefreshBtn.addEventListener('click', function () {
+    if (typeof loadMessages === 'function') loadMessages();
+  });
 
   /* ─── I. Profile form buttons ─────────────────────────────── */
   var pfSave = el('pfSaveBtn');

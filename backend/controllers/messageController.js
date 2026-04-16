@@ -13,7 +13,7 @@ const messageService = require('../services/messageService');
  * The route is kept public — unauthenticated submissions still work.
  */
 async function submit(req, res) {
-  const { name, email, subject, message } = req.body;
+  const { name, email, phone, subject, message } = req.body;
 
   // Attach sender identity when the user is logged in
   const sender_user_id = req.user ? req.user.id   : null;
@@ -23,6 +23,7 @@ async function submit(req, res) {
     const result = await messageService.submitMessage({
       name,
       email,
+      phone,
       subject,
       message,
       sender_user_id,
