@@ -163,6 +163,7 @@ async function processPayment(req, res) {
     );
     return res.status(200).json(result);
   } catch (err) {
+     console.error('ROAD PAY ERROR:', err); // ADDed this line for debugging
     return res.status(err.status || 500).json({ error: err.message });
   }
 }

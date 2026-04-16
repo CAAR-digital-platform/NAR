@@ -15,7 +15,8 @@ const jwt    = require('jsonwebtoken');
 const crypto = require('crypto');
 const pool   = require('../db');
 const m      = require('../models/roadsideModel');
-
+const { createContractPDF } = require('../utils/pdfGenerator');
+const { sendContractEmail } = require('../utils/mailer');
 const SECRET_KEY = process.env.JWT_SECRET || 'SECRET_KEY_CAAR';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -314,40 +315,37 @@ async function processPayment(quoteId, authenticatedUserId, documentData = null)
         file_type:   documentData.file_type || null,
       });
     }
-// 1. Get user email
-const [userRows] = await conn.execute(
-  `SELECT u.email, u.first_name, u.last_name
-   FROM clients c
-   JOIN users u ON c.user_id = u.id
-   WHERE c.id = ?`,
-  [quote.client_id]
-);
+let user = null;
 
-const user = userRows[0];
+try {
+  const [userRows] = await conn.execute(
+    `SELECT u.email, u.first_name, u.last_name
+     FROM clients c
+     JOIN users u ON c.user_id = u.id
+     WHERE c.id = ?`,
+    [quote.client_id]
+  );
 
-// 2. Generate PDF
-const pdfBuffer = await createContractPDF({
-  policy_reference,
-  client_name: `${user.first_name} ${user.last_name}`,
-  product_name: 'Roadside Assistance',
-  start_date,
-  end_date,
-  amount: quote.estimated_amount
-});
+  user = userRows[0];
 
-// 3. Send email (DO NOT block payment)
-await sendContractEmail({
-  to: user.email,
-  pdfBuffer,
-  policy_reference
-});
-    // 7. Notification for the user
-    await m.createNotification(conn, {
-      user_id: authenticatedUserId,
-      title:   'Your Roadside Assistance contract is active',
-      message: `Your policy (${policy_reference}) has been created and is valid from ${start_date} to ${end_date}.`,
-      type:    'contract',
-    });
+  const pdfBuffer = await createContractPDF({
+    policy_reference,
+    client_name: `${user.first_name} ${user.last_name}`,
+    product_name: 'Roadside Assistance',
+    start_date,
+    end_date,
+    amount: quote.estimated_amount
+  });
+
+  sendContractEmail({
+    to: user.email,
+    pdfBuffer,
+    policy_reference
+  }).catch(err => console.error('Email failed:', err));
+
+} catch (e) {
+  console.warn('PDF/Email skipped:', e.message);
+}
 
     // 8. Audit log
     await m.createAuditLog(conn, {
