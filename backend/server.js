@@ -27,7 +27,7 @@ const claimsRoutes      = require('./routes/claimsRoutes');
 const agencyRoutes      = require('./routes/agencyRoutes');
 const contractsRoutes   = require('./routes/Contractsroutes');
 const plansRoutes       = require('./routes/plansRoutes');
-
+const catnatRoutes = require('./routes/catnatRoutes');
 // ── Routes ───────────────────────────────────────────────────
 app.use('/api/auth',         authRoutes);
 app.use('/api/roadside',     roadsideRoutes);
@@ -37,7 +37,8 @@ app.use('/api/applications', applicationRoutes);
 app.use('/api/claims',       claimsRoutes);
 app.use('/api/agencies',     agencyRoutes);
 app.use('/api/contracts',    contractsRoutes);
-app.use('/api/plans',        plansRoutes); // ✅ NOW CORRECT
+app.use('/api/plans',        plansRoutes);
+app.use('/api/catnat', catnatRoutes);
 
 // ── Health check ─────────────────────────────────────────────
 app.get('/', (req, res) => {
