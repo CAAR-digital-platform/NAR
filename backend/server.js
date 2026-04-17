@@ -27,7 +27,9 @@ const plansRoutes = require('./routes/plansRoutes');
 const catnatRoutes = require('./routes/catnatRoutes');
 const assuranceRoutes = require('./routes/assuranceRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const path = require('path');
 
+app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/api/auth', authRoutes);
 app.use('/api/roadside', roadsideRoutes);
 app.use('/api/dashboard', dashboardRoutes);
@@ -42,7 +44,7 @@ app.use('/api/assurances', assuranceRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 app.get('/', (req, res) => {
-  res.json({ message: 'CAAR backend running' });
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
