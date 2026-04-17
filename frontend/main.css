@@ -10,7 +10,7 @@
      4.  Boutons globaux
      5.  Formulaires globaux (inputs, selects, spinners, YN toggles)
      6.  États de succès / confirmation
-     7.  Breadcrumb
+    
      8.  Product layout (sidebar + panel)
      9.  Sections par page :
            9a. Page d'accueil (hero, products, why, network-news, cta)
@@ -984,21 +984,7 @@ textarea     { font-family: var(--font-sans); }
 .af-success-sub { font-size: .84rem; color: #555; line-height: 1.6; margin-bottom: 20px; }
 
 
-/* ==========================================================================
-   7. BREADCRUMB
-   ========================================================================== */
 
-.breadcrumb {
-  padding: 10px 7%;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 6px;
-  font-size: .78rem; color: var(--gray);
-}
-.breadcrumb a         { color: var(--gray); transition: color .2s; }
-.breadcrumb a:hover   { color: var(--orange); }
-.breadcrumb-sep       { color: #bbb; }
-.breadcrumb-cur       { color: var(--orange); font-weight: 600; }
 
 
 /* ==========================================================================

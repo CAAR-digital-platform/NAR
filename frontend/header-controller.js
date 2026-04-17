@@ -1,13 +1,14 @@
 'use strict';
 
 /* ============================================================
-   CAAR — header-controller.js  (v5 — hard auth state control)
+   CAAR — header-controller.js  (v6 — fixed active nav)
    ============================================================ */
 
 const Header = (() => {
 
   let _initialized = false;
 
+  // Maps each page filename (without .html) to a nav section key
   const PAGE_MAP = {
     'index':               'index',
     '':                    'index',
@@ -29,6 +30,16 @@ const Header = (() => {
     'article-business':    'news',
     'article-basics':      'news',
     'contact':             'contact',
+  };
+
+  // Maps nav section key to the href used in the nav link
+  const NAV_HREF_MAP = {
+    'index':    'index.html',
+    'products': 'products.html',
+    'company':  'company.html',
+    'network':  'network.html',
+    'news':     'news.html',
+    'contact':  'contact.html',
   };
 
   function _log(action, data) {
@@ -60,12 +71,11 @@ const Header = (() => {
     document.querySelectorAll('.dropdown.touch-open').forEach(dd => dd.classList.remove('touch-open'));
   }
 
-  /* ── FIX 5: Hard control of header auth state ─────────────────────────── */
   function render(user) {
     _log('render →', user ? user.email : 'guest');
 
-    const loginBtn    = document.getElementById('loginBtn');
-    const userMenu    = document.getElementById('userMenu');
+    const loginBtn     = document.getElementById('loginBtn');
+    const userMenu     = document.getElementById('userMenu');
     const dashboardBtn = document.getElementById('dashboardBtn');
 
     if (!loginBtn || !userMenu) {
@@ -73,20 +83,17 @@ const Header = (() => {
       return;
     }
 
-    /* ── FIX 5: Read directly from localStorage — single source of truth ── */
     const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
     const token      = localStorage.getItem('token');
     const activeUser = storedUser && token ? storedUser : null;
 
     if (!activeUser) {
-      /* Guest */
       loginBtn.style.display    = 'inline-flex';
       userMenu.style.display    = 'none';
       if (dashboardBtn) dashboardBtn.style.display = 'none';
       return;
     }
 
-    /* Authenticated */
     loginBtn.style.display    = 'none';
     userMenu.style.display    = 'block';
     if (dashboardBtn) dashboardBtn.style.display = 'inline-flex';
@@ -108,13 +115,37 @@ const Header = (() => {
     _log('render: authenticated', { name, initials, role, dashHref });
   }
 
+  /* ── Active nav — matches current page to the correct nav link ── */
   function _setActiveNav() {
-    const file = window.location.pathname.split('/').pop().replace('.html', '') || '';
-    const page = PAGE_MAP[file] || '';
-    if (!page) return;
-    document.querySelectorAll('[data-page]').forEach(el => {
-      el.classList.toggle('active', el.getAttribute('data-page') === page);
+    // Get current filename without extension
+    const rawFile = window.location.pathname.split('/').pop() || '';
+    const file    = rawFile.replace('.html', '') || 'index';
+    const section = PAGE_MAP[file] || '';
+
+    if (!section) return;
+
+    // The href that corresponds to this section
+    const targetHref = NAV_HREF_MAP[section];
+    if (!targetHref) return;
+
+    // Find the nav link whose href matches the section's main page
+    document.querySelectorAll('.nav-links .nav-link').forEach(link => {
+      const href = link.getAttribute('href') || '';
+      // Match by the target href for this section
+      const isActive = href === targetHref ||
+                       href.endsWith('/' + targetHref) ||
+                       (section === 'index' && (href === 'index.html' || href === '/' || href === ''));
+
+      if (isActive) {
+        link.classList.add('active');
+        link.style.color = 'var(--hdr-orange)';
+      } else {
+        link.classList.remove('active');
+        link.style.color = '';
+      }
     });
+
+    _log('_setActiveNav: section=', section, 'targetHref=', targetHref);
   }
 
   function bindEvents() {
@@ -244,7 +275,6 @@ const Header = (() => {
 
   function init() {
     _log('init: starting');
-    /* FIX 5: always read from localStorage, ignore passed-in user arg */
     const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
     const token      = localStorage.getItem('token');
     const user       = (storedUser && token) ? storedUser : null;
