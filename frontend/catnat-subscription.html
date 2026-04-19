@@ -635,6 +635,17 @@
 <!-- Script order: state → auth → header → main → dropdowns → app logic -->
 <script src="app-state.js"></script>
 <script src="auth.js"></script>
+<script src="js/access-guard.js"></script>
+<script>
+  (function () {
+    if (!window.CAARAccessGate) return;
+    window.__caarBlockedPage = !window.CAARAccessGate.guardPage({
+      target: 'catnat-subscription.html',
+      reason: 'product_auth_required',
+      autoRedirect: false,
+    });
+  })();
+</script>
 <script src="header-controller.js"></script>
 
 <script src="js/dropdown.js"></script>

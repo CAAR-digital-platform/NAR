@@ -33,6 +33,12 @@ async function login({ email, password }) {
     throw err;
   }
 
+  if (!user.is_active) {
+    const err = new Error('Your account is deactivated. Please contact support.');
+    err.status = 403;
+    throw err;
+  }
+
   const isMatch = await bcrypt.compare(password, user.password_hash);
   if (!isMatch) {
     const err = new Error('Invalid email or password');

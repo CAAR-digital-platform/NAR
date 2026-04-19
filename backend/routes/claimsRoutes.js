@@ -43,6 +43,20 @@ router.get('/expert-reports',
   ctrl.listExpertReports
 );
 
+// GET /api/claims/expert/my-assignments
+router.get('/expert/my-assignments',
+  authMiddleware,
+  requireRole('expert'),
+  ctrl.listAssignedClaims
+);
+
+// PATCH /api/claims/expert/availability
+router.patch('/expert/availability',
+  authMiddleware,
+  requireRole('expert'),
+  ctrl.updateExpertAvailability
+);
+
 // ── Root claim routes ──────────────────────────────────────────────────────
 
 // POST /api/claims

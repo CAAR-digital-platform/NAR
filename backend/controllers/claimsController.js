@@ -142,6 +142,36 @@ async function listExpertReports(req, res) {
   }
 }
 
+// ─── GET /api/claims/expert/my-assignments — expert ──────────────────────
+async function listAssignedClaims(req, res) {
+  try {
+    const result = await claimsService.listAssignedClaims(req.user.id);
+    return res.status(200).json({
+      count: result.claims.length,
+      expert: result.expert,
+      claims: result.claims,
+    });
+  } catch (err) {
+    return res.status(err.status || 500).json({ error: err.message });
+  }
+}
+
+// ─── PATCH /api/claims/expert/availability — expert ──────────────────────
+async function updateExpertAvailability(req, res) {
+  try {
+    const result = await claimsService.updateExpertAvailability(
+      req.user.id,
+      req.body.is_available
+    );
+    return res.status(200).json({
+      message: 'Availability updated successfully',
+      ...result,
+    });
+  } catch (err) {
+    return res.status(err.status || 500).json({ error: err.message });
+  }
+}
+
 
 // ─── EXPORT ────────────────────────────────────────────────
 module.exports = {
@@ -152,4 +182,6 @@ module.exports = {
   assignExpert,
   createExpertReport,
   listExpertReports,
+  listAssignedClaims,
+  updateExpertAvailability,
 };

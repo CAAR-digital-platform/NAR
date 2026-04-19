@@ -892,6 +892,7 @@ async function _loadLocationDropdowns() {
 document.addEventListener('DOMContentLoaded', async function () {
   // 1. Restore any persisted state
   AppState.hydrate();
+  if (window.__caarBlockedPage) return;
 
   // 2. Load agencies for step 2 dropdown
   await _loadAgencies();

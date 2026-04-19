@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CAAR — Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --orange: #E8761E;
+      --orange-dark: #c9601a;
+      --bg: #f7f3ee;
+      --card: #ffffff;
+      --ink: #1d1d1d;
+      --muted: #6d6d6d;
+      --line: #e8dfd5;
+      --ok: #1f8f4d;
+      --warn: #c47a00;
+      --danger: #c0392b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at 85% 8%, #ffe8d0 0, transparent 26%), var(--bg);
+    }
+    .wrap { max-width: 1360px; margin: 0 auto; padding: 22px 20px 28px; }
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .brand h1 {
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.58rem;
+    }
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+    .top-actions { display: flex; gap: 8px; }
+    .btn {
+      border: 0;
+      border-radius: 9px;
+      font-weight: 700;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: .82rem;
+    }
+    .btn-orange { background: var(--orange); color: #fff; }
+    .btn-orange:hover { background: var(--orange-dark); }
+    .btn-light { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 13px;
+      min-height: 86px;
+    }
+    .stat .label { font-size: .73rem; color: var(--muted); }
+    .stat .val { margin-top: 6px; font-size: 1.22rem; font-weight: 800; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .panel-head {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .panel-head h2 {
+      margin: 0;
+      font-size: .95rem;
+      font-weight: 800;
+    }
+    .panel-body {
+      max-height: 360px;
+      overflow: auto;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      text-align: left;
+      padding: 9px 10px;
+      border-bottom: 1px solid #f2ece5;
+      font-size: .78rem;
+      vertical-align: top;
+    }
+    th { background: #fcfaf7; position: sticky; top: 0; z-index: 1; }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: .7rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+      text-transform: capitalize;
+    }
+    .status.pending, .status.new { color: var(--warn); background: #fff7e6; border-color: #ffe0aa; }
+    .status.reviewed, .status.under_review, .status.expert_assigned, .status.dispatched { color: #1f5ea8; background: #eef5ff; border-color: #cde0ff; }
+    .status.accepted, .status.active, .status.completed, .status.approved { color: var(--ok); background: #eaf9f0; border-color: #c5f0d5; }
+    .status.rejected, .status.closed, .status.inactive { color: var(--danger); background: #fff0ef; border-color: #ffd4d0; }
+
+    select, input[type="number"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 7px 8px;
+      font-family: inherit;
+      font-size: .75rem;
+      background: #fff;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .tiny-btn {
+      border: 0;
+      border-radius: 7px;
+      font-weight: 700;
+      font-size: .7rem;
+      padding: 6px 8px;
+      cursor: pointer;
+      background: #202020;
+      color: #fff;
+    }
+
+    .api-msg {
+      display: none;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: .8rem;
+      font-weight: 600;
+    }
+    .api-msg.ok { display:block; background: #ecfaf2; color: #1d7a44; border: 1px solid #c9eed8; }
+    .api-msg.err { display:block; background: #fff1f0; color: #b63b2d; border: 1px solid #ffd2ce; }
+
+    @media (max-width: 1200px) {
+      .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .top { flex-direction: column; align-items: flex-start; }
+      .top-actions { width: 100%; }
+      .top-actions .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <h1>Admin Command Center</h1>
+        <p>Claims, experts, communications, applications, roadside and user controls in one place.</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-light" id="adminRefresh">Refresh</button>
+        <button class="btn btn-light" id="goHome">Public Site</button>
+        <button class="btn btn-orange" id="adminLogout">Logout</button>
+      </div>
+    </div>
+
+    <div class="api-msg" id="adminApiMsg"></div>
+
+    <section class="stats">
+      <article class="stat"><div class="label">Clients</div><div class="val" id="sClients">-</div></article>
+      <article class="stat"><div class="label">Contracts</div><div class="val" id="sContracts">-</div></article>
+      <article class="stat"><div class="label">Claims</div><div class="val" id="sClaims">-</div></article>
+      <article class="stat"><div class="label">Payments</div><div class="val" id="sPayments">-</div></article>
+      <article class="stat"><div class="label">Messages</div><div class="val" id="sMessages">-</div></article>
+      <article class="stat"><div class="label">Applications</div><div class="val" id="sApplications">-</div></article>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <div class="panel-head"><h2>Claims Lifecycle</h2></div>
+        <div class="panel-body">
+          <table>
+            <thead><tr><th>ID</th><th>Client</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="claimsTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><h2>Expert Reports</h2></div>
+        <div class="panel-body">
+          <table>
+            <thead><tr><th>Claim</th><th>Expert</th><th>Damage</th><th>Conclusion</th></tr></thead>
+            <tbody id="reportsTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><h2>Messages Inbox</h2></div>
+        <div class="panel-body">
+          <table>
+            <thead><tr><th>From</th><th>Subject</th><th>Status</th><th>Update</th></tr></thead>
+            <tbody id="messagesTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><h2>Job Applications</h2></div>
+        <div class="panel-body">
+          <table>
+            <thead><tr><th>Name</th><th>Position</th><th>Status</th><th>Update</th></tr></thead>
+            <tbody id="applicationsTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><h2>Roadside Requests</h2></div>
+        <div class="panel-body">
+          <table>
+            <thead><tr><th>Reference</th><th>Type</th><th>Status</th><th>Update</th></tr></thead>
+            <tbody id="roadsideTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><h2>User Management</h2></div>
+        <div class="panel-body">
+          <table>
+            <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <script src="app-state.js"></script>
+  <script src="auth.js"></script>
+  <script src="js/admin-dashboard.js"></script>
+</body>
+</html>

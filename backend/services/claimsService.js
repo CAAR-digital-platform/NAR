@@ -305,6 +305,51 @@ async function listAllExpertReports() {
   return claimsModel.getAllExpertReports();
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 8. LIST ASSIGNED CLAIMS — expert
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function listAssignedClaims(authUserId) {
+  const expert = await claimsModel.getExpertByUserId(authUserId);
+  if (!expert) {
+    const err = new Error('No expert profile for your account');
+    err.status = 403;
+    throw err;
+  }
+
+  const claims = await claimsModel.getAssignedClaimsByExpertId(expert.id);
+  return {
+    expert,
+    claims,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 9. UPDATE EXPERT AVAILABILITY — expert
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function updateExpertAvailability(authUserId, isAvailable) {
+  if (typeof isAvailable !== 'boolean') {
+    const err = new Error('is_available must be boolean');
+    err.status = 400;
+    throw err;
+  }
+
+  const expert = await claimsModel.getExpertByUserId(authUserId);
+  if (!expert) {
+    const err = new Error('No expert profile for your account');
+    err.status = 403;
+    throw err;
+  }
+
+  await claimsModel.updateExpertAvailability(expert.id, isAvailable);
+
+  return {
+    expert_id: expert.id,
+    is_available: isAvailable,
+  };
+}
+
 module.exports = {
   createClaim,
   listAllClaims,
@@ -313,4 +358,6 @@ module.exports = {
   assignExpert,
   createExpertReport,
   listAllExpertReports,
+  listAssignedClaims,
+  updateExpertAvailability,
 };
