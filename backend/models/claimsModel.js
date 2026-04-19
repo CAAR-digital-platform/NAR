@@ -201,10 +201,44 @@ async function getAllExpertReports() {
 
 async function getExpertByUserId(userId) {
   const [rows] = await pool.execute(
-    'SELECT id FROM experts WHERE user_id = ?',
+    `SELECT ex.id, ex.user_id, ex.specialization, ex.agency_id, ex.wilaya_id, ex.is_available,
+            ag.name AS agency_name, w.name_fr AS wilaya_name
+     FROM experts ex
+     LEFT JOIN agencies ag ON ag.id = ex.agency_id
+     LEFT JOIN wilayas w ON w.id = ex.wilaya_id
+     WHERE ex.user_id = ?`,
     [userId]
   );
   return rows[0] || null;
+}
+
+async function getAssignedClaimsByExpertId(expertId) {
+  const [rows] = await pool.execute(
+    `SELECT
+       cl.id AS claim_id,
+       cl.contract_id,
+       cl.description,
+       cl.status,
+       cl.claim_date,
+       cl.incident_location,
+       CONCAT(u.first_name, ' ', u.last_name) AS client_name,
+       u.email AS client_email
+     FROM claims cl
+     JOIN clients c ON c.id = cl.client_id
+     JOIN users u ON u.id = c.user_id
+     WHERE cl.expert_id = ?
+     ORDER BY cl.claim_date DESC, cl.id DESC`,
+    [expertId]
+  );
+  return rows;
+}
+
+async function updateExpertAvailability(expertId, isAvailable) {
+  const [result] = await pool.execute(
+    'UPDATE experts SET is_available = ? WHERE id = ?',
+    [isAvailable ? 1 : 0, expertId]
+  );
+  return result.affectedRows;
 }
 
 async function getReportByClaimId(claimId) {
@@ -241,6 +275,8 @@ module.exports = {
   getAllExpertReports,
   getExpertByUserId,
   getReportByClaimId,
+  getAssignedClaimsByExpertId,
+  updateExpertAvailability,
   // expert availability
   setExpertAvailabilityTx,
 };

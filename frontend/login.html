@@ -250,6 +250,10 @@
 
   <h1 class="login-title">Login</h1>
   <p class="login-subtitle">Access your account</p>
+  <div id="authNotice" class="login-hint" style="display:none;margin-top:-12px;margin-bottom:18px;">
+    <strong>Protected product</strong>
+    <div id="authNoticeText" class="login-hint-row"></div>
+  </div>
 
   <!-- Erreur globale -->
   <div class="login-error-msg" id="globalError">
@@ -351,6 +355,34 @@ document.getElementById('loginPassword').addEventListener('input', () => {
   hideGlobalError();
 });
 
+function getSafeReturnTo() {
+  const params = new URLSearchParams(window.location.search);
+  const raw = (params.get('returnTo') || '').trim();
+  if (!raw) return null;
+
+  // Block external redirects and keep only local html targets.
+  if (raw.includes('://') || raw.startsWith('//') || raw.startsWith('javascript:')) return null;
+  if (!/^[A-Za-z0-9._\/-]+(\?[A-Za-z0-9._~=&%-]*)?$/.test(raw)) return null;
+  if (!raw.endsWith('.html') && !raw.includes('.html?')) return null;
+
+  return raw;
+}
+
+function showAuthNotice() {
+  const params = new URLSearchParams(window.location.search);
+  const reason = params.get('reason');
+  const box = document.getElementById('authNotice');
+  const text = document.getElementById('authNoticeText');
+  if (!box || !text) return;
+
+  if (reason === 'product_auth_required') {
+    text.textContent = 'Please login to access CATNAT and Roadside subscription forms.';
+    box.style.display = 'block';
+  }
+}
+
+showAuthNotice();
+
 /* ══════════════════════════════════════
    SUBMIT
 ══════════════════════════════════════ */
@@ -393,13 +425,22 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     // Keep legacy key so dashboard.js guard still works during transition
     localStorage.setItem('caar_auth_token', data.token);
 
-    // Redirect by role
+    // Redirect by role and resume intended destination when safe.
     const map = {
       client: 'client-dashboard.html',
       admin:  'admin-dashboard.html',
       expert: 'expert-dashboard.html'
     };
-    window.location.href = map[data.user.role] || 'client-dashboard.html';
+
+    const roleHome = map[data.user.role] || 'client-dashboard.html';
+    const returnTo = getSafeReturnTo();
+    const canUseReturnTo = !!returnTo && (
+      data.user.role === 'client' ||
+      (data.user.role === 'admin' && returnTo.startsWith('admin-dashboard.html')) ||
+      (data.user.role === 'expert' && returnTo.startsWith('expert-dashboard.html'))
+    );
+
+    window.location.href = canUseReturnTo ? returnTo : roleHome;
 
   } catch (err) {
     showGlobalError('Server error. Please try again later.');

@@ -13,12 +13,31 @@ async function findByEmail(email) {
 
 async function findById(id) {
   const [rows] = await pool.query(
-    `SELECT id, first_name, last_name, email, phone, role, created_at
+    `SELECT id, first_name, last_name, email, phone, role, is_active, created_at
      FROM users
      WHERE id = ?`,
     [id]
   );
   return rows[0] || null;
+}
+
+async function listForAdmin() {
+  const [rows] = await pool.query(
+    `SELECT id, first_name, last_name, email, phone, role, is_active, created_at
+     FROM users
+     ORDER BY created_at DESC`
+  );
+  return rows;
+}
+
+async function updateActiveStatus(userId, isActive) {
+  const [result] = await pool.query(
+    `UPDATE users
+     SET is_active = ?
+     WHERE id = ?`,
+    [isActive ? 1 : 0, userId]
+  );
+  return result.affectedRows;
 }
 
 async function findAuthById(id) {
@@ -74,4 +93,6 @@ module.exports = {
   createClient,
   updateProfile,
   updatePassword,
+  listForAdmin,
+  updateActiveStatus,
 };

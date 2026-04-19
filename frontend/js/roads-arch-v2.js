@@ -745,6 +745,8 @@ async function _loadWilayaDropdown() {
    BOOT
    ═══════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async function () {
+  if (window.__caarBlockedPage) return;
+
   // 1. Always start fresh (clear any stale roads state)
   AppState.clear();
 

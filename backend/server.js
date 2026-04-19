@@ -27,6 +27,7 @@ const plansRoutes = require('./routes/plansRoutes');
 const catnatRoutes = require('./routes/catnatRoutes');
 const assuranceRoutes = require('./routes/assuranceRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const path = require('path');
 
 app.use(express.static(path.join(__dirname, '../frontend')));
@@ -42,6 +43,7 @@ app.use('/api/plans', plansRoutes);
 app.use('/api/catnat', catnatRoutes);
 app.use('/api/assurances', assuranceRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
