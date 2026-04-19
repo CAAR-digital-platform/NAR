@@ -261,10 +261,23 @@ const Header = (() => {
       langMenu.querySelectorAll('[data-lang]').forEach(link => {
         link.addEventListener('click', e => {
           e.preventDefault();
-          if (currentLang) currentLang.textContent = link.getAttribute('data-lang');
+          var selectedLang = link.getAttribute('data-lang');
+          if (selectedLang && window.Language && typeof window.Language.setLanguage === 'function') {
+            window.Language.setLanguage(selectedLang);
+          } else if (currentLang) {
+            currentLang.textContent = selectedLang;
+          }
           langMenu.classList.remove('show');
           if (langDrop) langDrop.classList.remove('lang-open');
         });
+      });
+
+      document.addEventListener('click', e => {
+        if (!langDrop || !langMenu) return;
+        if (!langDrop.contains(e.target)) {
+          langMenu.classList.remove('show');
+          langDrop.classList.remove('lang-open');
+        }
       });
     }
 

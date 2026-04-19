@@ -44,6 +44,22 @@
     return p.slice(0, p.lastIndexOf('/') + 1);
   }
 
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      script.onload = function () { resolve(); };
+      script.onerror = function () { reject(new Error('Failed to load ' + src)); };
+      document.head.appendChild(script);
+    });
+  }
+
+  function loadLanguageAssets(base) {
+    return loadScript(base + 'translations.js')
+      .then(function () { return loadScript(base + 'lang.js'); });
+  }
+
   /* ── Load an HTML component into a DOM element ── */
   function loadComponent(id, url, callback) {
     var el = document.getElementById(id);
@@ -82,6 +98,10 @@
         } else {
           console.error('[CAAR] Header controller not found. Check script load order.');
         }
+
+        if (window.Language && typeof window.Language.init === 'function') {
+          window.Language.init();
+        }
       });
     }
 
@@ -92,9 +112,19 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
+    document.addEventListener('DOMContentLoaded', function () {
+      var base = resolveBase();
+      loadLanguageAssets(base).then(boot).catch(function (err) {
+        console.warn('[CAAR] Language assets failed to load:', err.message);
+        boot();
+      });
+    });
   } else {
-    boot();
+    var base = resolveBase();
+    loadLanguageAssets(base).then(boot).catch(function (err) {
+      console.warn('[CAAR] Language assets failed to load:', err.message);
+      boot();
+    });
   }
 
 })();
@@ -174,6 +204,7 @@
     '  color:#1c1c1c; text-decoration:none;',
     '  transition:background .15s, color .15s;',
     '}',
+    '.lang-dropdown-menu li.active a { background:#f7e5d1; color:#d55c00; }',
     '.lang-dropdown-menu li a:hover { background:#fff5e6; color:#F57C00; }',
     '.lang-toggle-btn svg { transition:transform .2s ease; }',
     '.lang-dropdown.lang-open .lang-toggle-btn svg { transform:rotate(180deg); }',

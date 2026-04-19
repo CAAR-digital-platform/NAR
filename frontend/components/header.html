@@ -24,12 +24,12 @@
     </div>
     <div class="right-side">
       <div class="top-row">
-        <a href="network.html" class="btn-top">Find Agency</a>
-        <a href="contact.html" class="btn-top">Contact Us</a>
-        <a href="client-dashboard.html" class="btn-top" id="dashboardBtn" style="display:none;">
+        <a href="network.html" class="btn-top" data-i18n="header.find_agency">Find Agency</a>
+        <a href="contact.html" class="btn-top" data-i18n="header.contact_us">Contact Us</a>
+        <a href="client-dashboard.html" class="btn-top" id="dashboardBtn" style="display:none;" data-i18n="header.dashboard">
           Dashboard
         </a>
-        <a href="login.html" class="btn-top" id="loginBtn">Login</a>
+        <a href="login.html" class="btn-top" id="loginBtn" data-i18n="header.login">Login</a>
 
         <div class="user-menu" id="userMenu" style="display:none;">
           <button class="user-trigger" id="userTrigger">
@@ -43,7 +43,7 @@
               <span class="user-role-badge" id="dropUserRole"></span>
             </div>
             <hr class="user-dropdown-divider"/>
-            <button class="user-dropdown-item user-logout" id="logoutBtn">
+            <button class="user-dropdown-item user-logout" id="logoutBtn" data-i18n="header.logout">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               Logout
             </button>
@@ -53,27 +53,27 @@
       <hr class="divider"/>
       <div class="bottom-row">
         <ul class="nav-links">
-          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="index.html" class="nav-link" data-i18n="header.home">Home</a></li>
           <li class="dropdown">
-            <a href="products.html" class="nav-link">Products <span class="arrow">▾</span></a>
+            <a href="products.html" class="nav-link"><span data-i18n="header.products">Products</span> <span class="arrow">▾</span></a>
             <ul class="dropdown-menu">
-              <li><a href="individual-risks.html">Individual Risks</a></li>
-              <li><a href="auto-insurance.html">Auto Insurance</a></li>
-              <li><a href="transport-insurance.html">Transport Insurance</a></li>
-              <li><a href="technical-risks.html">Technical Risks</a></li>
-              <li><a href="industrial-risks.html">Industrial Risks</a></li>
+              <li><a href="individual-risks.html" data-i18n="header.product_individual">Individual Risks</a></li>
+              <li><a href="auto-insurance.html" data-i18n="header.product_auto">Auto Insurance</a></li>
+              <li><a href="transport-insurance.html" data-i18n="header.product_transport">Transport Insurance</a></li>
+              <li><a href="technical-risks.html" data-i18n="header.product_technical">Technical Risks</a></li>
+              <li><a href="industrial-risks.html" data-i18n="header.product_industrial">Industrial Risks</a></li>
             </ul>
           </li>
           <li class="dropdown">
-            <a href="company.html" class="nav-link">Company <span class="arrow">▾</span></a>
+            <a href="company.html" class="nav-link"><span data-i18n="header.company">Company</span> <span class="arrow">▾</span></a>
             <ul class="dropdown-menu">
-              <li><a href="company.html">About Us</a></li>
-              <li><a href="company-careers.html">Careers</a></li>
+              <li><a href="company.html" data-i18n="header.about_us">About Us</a></li>
+              <li><a href="company-careers.html" data-i18n="header.careers">Careers</a></li>
             </ul>
           </li>
-          <li><a href="network.html" class="nav-link">Network</a></li>
-          <li><a href="news.html" class="nav-link">News</a></li>
-          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li><a href="network.html" class="nav-link" data-i18n="header.network">Network</a></li>
+          <li><a href="news.html" class="nav-link" data-i18n="header.news">News</a></li>
+          <li><a href="contact.html" class="nav-link" data-i18n="header.contact">Contact</a></li>
         </ul>
         <div class="nav-icons">
           <!--
@@ -115,6 +115,7 @@
       id="searchInput"
       class="hdr-search-input"
       placeholder="Search CAAR..."
+      data-i18n-placeholder="header.search_placeholder"
     />
   </div>
 </header>
@@ -124,15 +125,24 @@
 <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
 <nav class="mobile-nav" id="mobileNav" aria-hidden="true">
   <div class="mobile-nav-header">
-    <span class="mobile-nav-title">Menu</span>
+    <span class="mobile-nav-title" data-i18n="header.menu">Menu</span>
     <button id="mobileNavClose" class="mobile-nav-close" aria-label="Close menu">✕</button>
   </div>
+<<<<<<< HEAD
+  <a href="index.html" data-i18n="header.home">Home</a>
+  <a href="products.html" data-i18n="header.products">Products</a>
+  <a href="company.html" data-i18n="header.company">Company</a>
+  <a href="network.html" data-i18n="header.network">Network</a>
+  <a href="news.html" data-i18n="header.news">News</a>
+  <a href="contact.html" data-i18n="header.contact">Contact</a>
+=======
  <a href="index.html">Home</a>
 <a href="products.html">Products</a>
 <a href="company.html">Company</a>
 <a href="network.html">Network</a>
 <a href="news.html">News</a>
 <a href="contact.html">Contact</a>
+>>>>>>> af36cae9be18375877c22f516d64ccadd2dc0ae2
   <div class="mobile-nav-btns">
     <a href="network.html" class="btn-top">Find Agency</a>
     <a href="contact.html" class="btn-top">Contact Us</a>
