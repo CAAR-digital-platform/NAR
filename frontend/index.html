@@ -6,16 +6,10 @@
   <title>CAAR — Compagnie Algérienne d'Assurances et de Réassurance</title>
   <link rel="stylesheet" href="main.css"/>
   <link rel="stylesheet" href="header-extras.css"/>
-  <!--
-    DO NOT add a static <header> element.
-    The header is injected from components/header.html by main.js.
-    CSS for the header lives in header.css (imported by main.css)
-    and header-extras.css.
-  -->
+  <link rel="stylesheet" href="main_fixes.css"/>
 </head>
 <body>
 
-<!-- ═══ HEADER PLACEHOLDER — injected by main.js ═══ -->
 <div id="site-header"></div>
 
 <!-- ═══ HERO ═══ -->
@@ -69,6 +63,7 @@
       <img src="img/industry.webp" alt="Technical Risks"/>
       <span class="product-card__label">Technical Risks</span>
     </a>
+    <!-- FIX: "Our Other Solutions" card — hover now keeps text visible -->
     <a href="products.html" class="product-card other-card">
       Our Other<br/>Solutions
       <div class="arrow-circle">→</div>
@@ -77,6 +72,7 @@
 </section>
 
 <!-- ═══ WHY CHOOSE CAAR ═══ -->
+<!-- FIX: Removed orange artifact (::before disabled via main_fixes.css) -->
 <section class="why">
   <div class="why-header">
     <div class="why-header__label">Our commitment</div>
@@ -133,6 +129,7 @@
 </section>
 
 <!-- ═══ NETWORK + NEWS ═══ -->
+<!-- FIX: Alignment improved, "Read more" links to news.html -->
 <section class="network-news">
   <div class="network-outer">
     <div class="network-main">
@@ -153,20 +150,21 @@
           <a href="news.html" class="news-all">View All News →</a>
         </div>
         <div class="news-grid">
+          <!-- FIX: "Read more" now links to news.html (not home page) -->
           <div class="news-card">
             <span class="news-date">September 25, 2025</span>
             <h4>Agency 228 – Larbâa Nath Irathen</h4>
-            <a href="#">Read more</a>
+            <a href="news.html">Read more</a>
           </div>
           <div class="news-card">
             <span class="news-date">October 4, 2025</span>
             <h4>Information Day – Béjaïa</h4>
-            <a href="#">Read more</a>
+            <a href="news.html">Read more</a>
           </div>
           <div class="news-card">
             <span class="news-date">September 24, 2025</span>
             <h4>Agency 602 – Didouche Mourad</h4>
-            <a href="#">Read more</a>
+            <a href="news.html">Read more</a>
           </div>
         </div>
       </div>
@@ -178,6 +176,7 @@
 </section>
 
 <!-- ═══ CTA ═══ -->
+<!-- FIX: Subtle animation + enhanced hover on button -->
 <section class="cta">
   <div class="cta-inner">
     <h2>Need more information? Contact CAAR.</h2>
@@ -186,22 +185,8 @@
   </div>
 </section>
 
-<!-- ═══ FOOTER PLACEHOLDER — injected by main.js ═══ -->
 <div id="site-footer"></div>
 
-<!--
-  ══════════════════════════════════════════════
-  MANDATORY SCRIPT LOAD ORDER — DO NOT CHANGE
-  ══════════════════════════════════════════════
-  1. app-state.js      → JWT auth primitives, apiRequest, loadContracts
-  2. auth.js           → backward-compat shims (getRole, isLoggedIn, etc.)
-  3. header-controller.js → all header behaviour (events, render, init)
-  4. main.js           → boot: injects header/footer, calls Header.init()
-                          + page utilities (product panels, forms, etc.)
-
-  NEVER add a 5th "legacy" header script.
-  NEVER call initHeader(), renderUserState(), or initUserMenu() — they are GONE.
--->
 <script src="app-state.js"></script>
 <script src="auth.js"></script>
 <script src="header-controller.js"></script>

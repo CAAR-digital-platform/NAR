@@ -3,16 +3,19 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CAAR &mdash; Contact Us</title>
+  <title>CAAR &mdash; Header Component</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="main.css"/> 
+  <link rel="stylesheet" href="main.css"/>
   <link rel="stylesheet" href="header-extras.css"/>
+  <link rel="stylesheet" href="main_fixes.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 </head>
 <body>
 
 <!-- ════════════════════════════════════════════
-     HEADER  (unchanged from your original)
+     HEADER
+     FIX: hamburger + search icon now hidden on desktop
+     They are shown only via @media (max-width: 768px) in main_fixes.css
 ════════════════════════════════════════════ -->
 <header class="header">
   <div class="header-inner">
@@ -24,28 +27,28 @@
         <a href="network.html" class="btn-top">Find Agency</a>
         <a href="contact.html" class="btn-top">Contact Us</a>
         <a href="client-dashboard.html" class="btn-top" id="dashboardBtn" style="display:none;">
-    Dashboard
-  </a>
+          Dashboard
+        </a>
         <a href="login.html" class="btn-top" id="loginBtn">Login</a>
 
-  <div class="user-menu" id="userMenu" style="display:none;">
-    <button class="user-trigger" id="userTrigger">
-      <div class="user-avatar" id="userAvatar"></div>
-      <span class="user-name" id="userName"></span>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-    <div class="user-dropdown" id="userDropdown">
-      <div class="user-dropdown-header">
-        <span id="dropUserName"></span>
-        <span class="user-role-badge" id="dropUserRole"></span>
-      </div>
-      <hr class="user-dropdown-divider"/>
-      <button class="user-dropdown-item user-logout" id="logoutBtn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Logout
-      </button>
-    </div>
-  </div>
+        <div class="user-menu" id="userMenu" style="display:none;">
+          <button class="user-trigger" id="userTrigger">
+            <div class="user-avatar" id="userAvatar"></div>
+            <span class="user-name" id="userName"></span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <span id="dropUserName"></span>
+              <span class="user-role-badge" id="dropUserRole"></span>
+            </div>
+            <hr class="user-dropdown-divider"/>
+            <button class="user-dropdown-item user-logout" id="logoutBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Logout
+            </button>
+          </div>
+        </div>
       </div>
       <hr class="divider"/>
       <div class="bottom-row">
@@ -70,10 +73,16 @@
           </li>
           <li><a href="network.html" class="nav-link">Network</a></li>
           <li><a href="news.html" class="nav-link">News</a></li>
-          <li><a href="contact.html" class="nav-link ">Contact</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
         </ul>
         <div class="nav-icons">
-          <button class="icon-btn mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+          <!--
+            FIX: mobile-menu-btn and searchBtn are now hidden on desktop
+            via CSS in main_fixes.css:
+              .mobile-menu-btn, .icon-btn#searchBtn { display: none !important; }
+            They become visible only at max-width: 768px
+          -->
+          <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu" aria-expanded="false">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
@@ -83,65 +92,56 @@
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </button>
-         <div class="lang-dropdown" id="langDropdown">
-  <button class="icon-btn lang-toggle-btn" id="langToggleBtn">
-    <span id="currentLang">EN</span>
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <polyline points="6 9 12 15 18 9"/>
-    </svg>
-  </button>
-
-  <ul class="lang-dropdown-menu" id="langDropdownMenu">
-    <li data-lang="FR"><a href="#">Français</a></li>
-    <li data-lang="EN"><a href="#">English</a></li>
-    <li data-lang="AR"><a href="#">عربي</a></li>
-  </ul>
-</div>
+          <div class="lang-dropdown" id="langDropdown">
+            <button class="icon-btn lang-toggle-btn" id="langToggleBtn">
+              <span id="currentLang">EN</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+            <ul class="lang-dropdown-menu" id="langDropdownMenu">
+              <li data-lang="FR"><a href="#">Français</a></li>
+              <li data-lang="EN"><a href="#">English</a></li>
+              <li data-lang="AR"><a href="#">عربي</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="search-bar" id="searchBar">
-  <input 
-  type="text"
-  id="searchInput"
-  class="hdr-search-input"
-  placeholder="Search CAAR..."
-/>
-</div>
+  <div class="search-bar" id="searchBar" aria-hidden="true">
+    <input
+      type="text"
+      id="searchInput"
+      class="hdr-search-input"
+      placeholder="Search CAAR..."
+    />
+  </div>
 </header>
 
-<!-- MOBILE NAV DRAWER (unchanged) -->
-<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="toggleMobileMenu()"></div>
-<nav class="mobile-nav" id="mobileNav">
+<!-- MOBILE NAV DRAWER -->
+<!-- FIX: smooth animation via main_fixes.css transform transition -->
+<div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+<nav class="mobile-nav" id="mobileNav" aria-hidden="true">
   <div class="mobile-nav-header">
     <span class="mobile-nav-title">Menu</span>
-    <button onclick="toggleMobileMenu()" class="mobile-nav-close">✕</button>
+    <button id="mobileNavClose" class="mobile-nav-close" aria-label="Close menu">✕</button>
   </div>
-  <a href="index.html"    onclick="toggleMobileMenu()">Home</a>
-  <a href="products.html" onclick="toggleMobileMenu()">Products</a>
-  <a href="company.html"  onclick="toggleMobileMenu()">Company</a>
-  <a href="network.html"  onclick="toggleMobileMenu()">Network</a>
-  <a href="news.html"     onclick="toggleMobileMenu()">News</a>
-  <a href="contact.html" class="active" onclick="toggleMobileMenu()">Contact</a>
+  <a href="index.html">Home</a>
+  <a href="products.html">Products</a>
+  <a href="company.html">Company</a>
+  <a href="network.html">Network</a>
+  <a href="news.html">News</a>
+  <a href="contact.html">Contact</a>
   <div class="mobile-nav-btns">
     <a href="network.html" class="btn-top">Find Agency</a>
     <a href="contact.html" class="btn-top">Contact Us</a>
   </div>
 </nav>
 
-<!-- ════════════════════════════════════════════
-     SCRIPTS
-════════════════════════════════════════════ -->
-<script src="js/auth.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-
 const currentUser = JSON.parse(localStorage.getItem('user')) || null;
-/* ══════════════════════════════════════
-   ÉTAT UTILISATEUR SIMULÉ
-   Change role en : "admin" | "expert" | "client" | null
-══════════════════════════════════════ */
 
 const DASHBOARD_ROUTES = {
   admin:  '/admin-dashboard',
@@ -149,24 +149,63 @@ const DASHBOARD_ROUTES = {
   client: '/client-dashboard',
 };
 
-/* ── Rendu de l'état ── */
 function renderUserState() {
   if (typeof renderAuthHeader === 'function') renderAuthHeader();
 }
 
-/* ── Toggle dropdown ── */
 function initUserMenu() {
   if (typeof initUserMenuToggle === 'function') initUserMenuToggle();
 }
+
 /* ══════════════════════════════════════
-   MOBILE NAV
+   MOBILE NAV — smooth open/close
 ══════════════════════════════════════ */
 function toggleMobileMenu() {
-  document.getElementById('mobileNav').classList.toggle('open');
-  document.getElementById('mobileNavOverlay').classList.toggle('open');
+  const nav = document.getElementById('mobileNav');
+  const overlay = document.getElementById('mobileNavOverlay');
+  const btn = document.getElementById('mobileMenuBtn');
+  const isOpen = nav.classList.contains('open');
+
+  if (isOpen) {
+    nav.classList.remove('open');
+    nav.setAttribute('aria-hidden', 'true');
+    overlay.classList.remove('open');
+    btn && btn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  } else {
+    nav.classList.add('open');
+    nav.setAttribute('aria-hidden', 'false');
+    overlay.classList.add('open');
+    btn && btn.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const hamburger = document.getElementById('mobileMenuBtn');
+  const closeBtn = document.getElementById('mobileNavClose');
+  const overlay = document.getElementById('mobileNavOverlay');
+  const mobileLinks = document.querySelectorAll('.mobile-nav a');
+
+  if (hamburger) hamburger.addEventListener('click', toggleMobileMenu);
+  if (closeBtn) closeBtn.addEventListener('click', toggleMobileMenu);
+  if (overlay) overlay.addEventListener('click', toggleMobileMenu);
+  mobileLinks.forEach(link => link.addEventListener('click', function() {
+    const nav = document.getElementById('mobileNav');
+    if (nav.classList.contains('open')) toggleMobileMenu();
+  }));
+
+  /* Escape key closes mobile nav */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const nav = document.getElementById('mobileNav');
+      if (nav && nav.classList.contains('open')) toggleMobileMenu();
+    }
+  });
+});
+
 /* ══════════════════════════════════════
-   MAP
+   MAP (contact page)
 ══════════════════════════════════════ */
 function initMap() {
   const mapEl = document.getElementById('hqMap');
@@ -176,6 +215,7 @@ function initMap() {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
   L.marker([HQ.lat, HQ.lng]).addTo(map).bindPopup("CAAR Headquarters").openPopup();
 }
+
 /* ══════════════════════════════════════
    VALIDATION FORM (contact.html)
 ══════════════════════════════════════ */
@@ -245,17 +285,12 @@ async function submitForm() {
   }
 }
 
-/* ══════════════════════════════════════
-   INIT GLOBAL
-══════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
   renderUserState();
   initUserMenu();
   initMap();
 });
-
 </script>
-
 
 </body>
 </html>
