@@ -11,6 +11,32 @@
     experts: [],
   };
 
+  const CLAIM_TRANSITIONS = {
+    pending: ['under_review'],
+    under_review: ['expert_assigned'],
+    expert_assigned: ['reported'],
+    reported: ['approved', 'rejected'],
+    approved: ['closed'],
+    rejected: [],
+    closed: [],
+  };
+
+  const STATUS_LABELS = {
+    pending: 'Pending',
+    under_review: 'Under Review',
+    expert_assigned: 'Assigned',
+    reported: 'Reported',
+    approved: 'Approved',
+    rejected: 'Rejected',
+    closed: 'Closed',
+    active: 'Active',
+    inactive: 'Inactive',
+    new: 'Pending',
+    reviewed: 'Under Review',
+    accepted: 'Approved',
+    completed: 'Closed',
+  };
+
   function guardAdmin() {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -72,7 +98,8 @@
   }
 
   function badge(status) {
-    return '<span class="status ' + esc(status) + '">' + esc((status || '').replace(/_/g, ' ')) + '</span>';
+    const key = (status || '').toLowerCase();
+    return '<span class="status ' + esc(key) + '">' + esc(STATUS_LABELS[key] || key.replace(/_/g, ' ')) + '</span>';
   }
 
   async function loadAll() {
@@ -98,21 +125,20 @@
     setStat('sClients', stats.total_clients || 0);
     setStat('sContracts', stats.total_contracts || 0);
     setStat('sClaims', stats.total_claims || 0);
+    setStat('sPendingClaims', stats.pending_claims || 0);
+    setStat('sActiveExperts', stats.active_experts || 0);
     setStat('sPayments', stats.total_payments || 0);
+    setStat('sRevenue', (stats.total_revenue || 0).toLocaleString() + ' DZD');
     setStat('sMessages', stats.total_messages || 0);
     setStat('sApplications', stats.total_applications || 0);
 
+    STATE.experts = expertsRes.ok ? (expertsRes.data.experts || []) : [];
     renderClaims(claimsRes.ok ? claimsRes.data.claims : []);
     renderReports(reportsRes.ok ? reportsRes.data.reports : []);
     renderMessages(messagesRes.ok ? messagesRes.data.messages : []);
     renderApplications(appsRes.ok ? appsRes.data.applications : []);
     renderRoadside(roadsideRes.ok ? roadsideRes.data.requests : []);
     renderUsers(usersRes.ok ? usersRes.data.users : []);
-
-    STATE.experts = expertsRes.ok ? (expertsRes.data.experts || []) : [];
-    if (claimsRes.ok) {
-      renderClaims(claimsRes.data.claims || []);
-    }
 
     setMsg('Admin data loaded.', false);
     setTimeout(() => setMsg('', false), 1400);
@@ -127,38 +153,60 @@
       return;
     }
 
-    const expertOptions = ['<option value="">Assign expert...</option>']
-      .concat((STATE.experts || [])
-        .filter((ex) => ex.is_active)
-        .map((ex) => '<option value="' + ex.expert_id + '">' +
-          esc(ex.first_name + ' ' + ex.last_name + ' (#' + ex.expert_id + ')') +
-        '</option>'))
-      .join('');
-
     body.innerHTML = list.map((c) => {
+      const allowedTransitions = CLAIM_TRANSITIONS[c.status] || [];
+      const activeExperts = (STATE.experts || []).filter((ex) => ex.is_active);
+      const isFinal = c.status === 'approved' || c.status === 'rejected' || c.status === 'closed';
+      const canAssign = c.status === 'under_review' && !c.expert_id;
+      const canUpdate = !isFinal && allowedTransitions.length > 0 && !(c.status === 'under_review' && !c.expert_id);
       const statusSelectId = 'claim-status-' + c.claim_id;
       const expertSelectId = 'claim-expert-' + c.claim_id;
+
+      const statusOptions = allowedTransitions
+        .map((nextStatus) => '<option value="' + nextStatus + '">' + esc(STATUS_LABELS[nextStatus] || nextStatus) + '</option>')
+        .join('');
+
+      const expertOptions = ['<option value="">Assign expert...</option>']
+        .concat(activeExperts.map((ex) => '<option value="' + ex.expert_id + '">' +
+          esc(ex.first_name + ' ' + ex.last_name + ' (#' + ex.expert_id + ')') +
+        '</option>'))
+        .join('');
+
+      let actionsHtml = '';
+      if (canUpdate) {
+        actionsHtml += [
+          '<select id="' + statusSelectId + '">',
+          statusOptions,
+          '</select>',
+          '<div class="row-actions">',
+          '  <button class="tiny-btn" onclick="window.__adminUpdateClaimStatus(' + c.claim_id + ')">Update Status</button>',
+          '</div>',
+        ].join('');
+      }
+
+      if (canAssign) {
+        actionsHtml += [
+          '<div class="row-actions">',
+          '  <select id="' + expertSelectId + '">' + expertOptions + '</select>',
+          '  <button class="tiny-btn" ' + (activeExperts.length ? '' : 'disabled ') + 'onclick="window.__adminAssignExpert(' + c.claim_id + ')">Assign Expert</button>',
+          '</div>',
+          activeExperts.length ? '' : '<small>No active experts available.</small>',
+        ].join('');
+      }
+
+      if (!actionsHtml) {
+        actionsHtml = '<button class="tiny-btn" disabled>No actions available</button>';
+      }
+
       return [
         '<tr>',
         '  <td>#' + esc(c.claim_id) + '<br/><small>' + esc(c.contract_id) + '</small></td>',
         '  <td><strong>' + esc(c.client_name || '-') + '</strong><br/><small>' + esc(c.client_email || '-') + '</small></td>',
-        '  <td>' + badge(c.status) + '</td>',
+        '  <td>' + badge(c.status) + (c.status === 'pending' ? ' <span class="priority-chip">Priority</span>' : '') + '</td>',
         '  <td>',
-        '    <select id="' + statusSelectId + '">',
-        '      <option value="under_review">under_review</option>',
-        '      <option value="expert_assigned">expert_assigned</option>',
-        '      <option value="reported">reported</option>',
-        '      <option value="approved">approved</option>',
-        '      <option value="rejected">rejected</option>',
-        '      <option value="closed">closed</option>',
-        '    </select>',
-        '    <div class="row-actions">',
-        '      <button class="tiny-btn" onclick="window.__adminUpdateClaimStatus(' + c.claim_id + ')">Update</button>',
-        '    </div>',
-        '    <div class="row-actions">',
-        '      <select id="' + expertSelectId + '">' + expertOptions + '</select>',
-        '      <button class="tiny-btn" onclick="window.__adminAssignExpert(' + c.claim_id + ')">Assign</button>',
-        '    </div>',
+        isFinal ? '    <div><small>Final state. No actions available.</small></div>' : '',
+        (!canAssign && c.expert_id && c.status === 'under_review') ? '    <div><small>Expert already assigned (#' + esc(c.expert_id) + ').</small></div>' : '',
+        '    ' + actionsHtml,
         '  </td>',
         '</tr>'
       ].join('');

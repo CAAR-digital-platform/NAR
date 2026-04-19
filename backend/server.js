@@ -29,7 +29,6 @@ const assuranceRoutes = require('./routes/assuranceRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const path = require('path');
-
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/api/auth', authRoutes);
 app.use('/api/roadside', roadsideRoutes);

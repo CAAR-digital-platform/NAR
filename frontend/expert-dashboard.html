@@ -133,18 +133,6 @@
     .status.closed { color:#207f49; background:#eaf9f0; border-color:#c5f0d5; }
     .status.rejected { color:#bf3f2f; background:#fff1ef; border-color:#ffd4d0; }
 
-    .kv { display:grid; gap:9px; margin-bottom:11px; }
-    .kv-row {
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      border:1px solid #f2ece4;
-      border-radius:10px;
-      padding:8px 10px;
-      font-size:.8rem;
-    }
-    .kv-row span { color:var(--muted); }
-
     .field { margin-bottom:10px; }
     .field label {
       display:block;
@@ -170,6 +158,17 @@
       display:flex;
       gap:8px;
       align-items:center;
+    }
+    .no-claims-msg {
+      display: none;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: .8rem;
+      font-weight: 600;
+      color: #7d4f00;
+      background: #fff6e7;
+      border: 1px solid #ffe0ad;
     }
 
     @media (max-width: 980px) {
@@ -208,7 +207,7 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>ID</th><th>Client</th><th>Status</th><th>Description</th><th>Use</th></tr></thead>
+            <thead><tr><th>ID</th><th>Client</th><th>Status</th><th>Description</th></tr></thead>
             <tbody id="expertClaimsBody"></tbody>
           </table>
         </div>
@@ -217,7 +216,7 @@
       <article class="panel">
         <div class="panel-head"><h2>Submit Expert Report</h2></div>
         <div class="panel-body">
-          <div class="kv" id="expertProfile"></div>
+          <div class="no-claims-msg" id="noClaimsMsg"></div>
 
           <div class="field">
             <label for="expertAvailability">Availability</label>
@@ -231,8 +230,14 @@
           </div>
 
           <div class="field">
-            <label for="reportClaimId">Claim ID</label>
-            <input id="reportClaimId" type="number" min="1" placeholder="Select from table or enter claim ID"/>
+            <label for="reportClaimSelect">Assigned Claim</label>
+            <select id="reportClaimSelect">
+              <option value="">Select assigned claim...</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="reportValue">Report (Text or Filename)</label>
+            <input id="reportValue" type="text" placeholder="e.g. report-claim-7.pdf or short summary"/>
           </div>
           <div class="field">
             <label for="reportDate">Report Date</label>
@@ -240,20 +245,18 @@
           </div>
           <div class="field">
             <label for="reportDamage">Estimated Damage (DZD)</label>
-            <input id="reportDamage" type="number" min="0" step="0.01" placeholder="e.g. 120000"/>
+            <input id="reportDamage" type="number" min="0.01" step="0.01" placeholder="e.g. 120000"/>
           </div>
           <div class="field">
             <label for="reportConclusion">Conclusion</label>
             <select id="reportConclusion">
               <option value="covered">covered</option>
-              <option value="partially_covered">partially_covered</option>
               <option value="not_covered">not_covered</option>
-              <option value="pending_review">pending_review</option>
             </select>
           </div>
           <div class="field">
-            <label for="reportText">Report Details</label>
-            <textarea id="reportText" placeholder="Provide detailed technical assessment and recommendations..."></textarea>
+            <label for="reportDetails">Report Details</label>
+            <textarea id="reportDetails" placeholder="Provide detailed technical assessment and recommendations..."></textarea>
           </div>
           <button class="btn btn-orange" id="submitReportBtn" style="width:100%;">Submit Report</button>
         </div>

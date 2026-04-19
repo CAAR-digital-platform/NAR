@@ -149,6 +149,12 @@ async function updateClaimStatus(claimId, status) {
 
   assertClaimStatusTransition(claim.status, nextStatus);
 
+  if (nextStatus === 'expert_assigned' && !claim.expert_id) {
+    const err = new Error('Cannot set status to expert_assigned before assigning an expert');
+    err.status = 409;
+    throw err;
+  }
+
   await claimsModel.updateClaimStatus(claimId, nextStatus);
 
   // ── NOTIFICATION: notify the client about status change ─────────────────
@@ -173,6 +179,12 @@ async function assignExpert(claimId, expertId) {
   const claim = await claimsModel.getClaimById(claimId);
   if (!claim) {
     const err = new Error('Claim not found'); err.status = 404; throw err;
+  }
+
+  if (claim.expert_id) {
+    const err = new Error('This claim already has an assigned expert');
+    err.status = 409;
+    throw err;
   }
 
   assertClaimStatusTransition(claim.status, 'expert_assigned');
@@ -233,8 +245,8 @@ async function createExpertReport(
   if (isNaN(claimIdNum) || claimIdNum < 1) {
     const err = new Error('claim_id must be a positive integer'); err.status = 400; throw err;
   }
-  if (isNaN(damageNum) || damageNum < 0) {
-    const err = new Error('estimated_damage must be a non-negative number'); err.status = 400; throw err;
+  if (isNaN(damageNum) || damageNum <= 0) {
+    const err = new Error('estimated_damage must be greater than 0'); err.status = 400; throw err;
   }
   if (report.trim().length < 10) {
     const err = new Error('report must be at least 10 characters'); err.status = 400; throw err;
