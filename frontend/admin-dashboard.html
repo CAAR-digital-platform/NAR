@@ -154,6 +154,23 @@
       background: #202020;
       color: #fff;
     }
+    .tiny-btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .priority-chip {
+      display: inline-flex;
+      margin-left: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: .65rem;
+      font-weight: 700;
+      color: #8a4b00;
+      background: #ffeacb;
+      border: 1px solid #ffd198;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
 
     .api-msg {
       display: none;
@@ -198,6 +215,9 @@
       <article class="stat"><div class="label">Clients</div><div class="val" id="sClients">-</div></article>
       <article class="stat"><div class="label">Contracts</div><div class="val" id="sContracts">-</div></article>
       <article class="stat"><div class="label">Claims</div><div class="val" id="sClaims">-</div></article>
+      <article class="stat"><div class="label">Pending Claims</div><div class="val" id="sPendingClaims">-</div></article>
+      <article class="stat"><div class="label">Active Experts</div><div class="val" id="sActiveExperts">-</div></article>
+      <article class="stat"><div class="label">Revenue</div><div class="val" id="sRevenue">-</div></article>
       <article class="stat"><div class="label">Payments</div><div class="val" id="sPayments">-</div></article>
       <article class="stat"><div class="label">Messages</div><div class="val" id="sMessages">-</div></article>
       <article class="stat"><div class="label">Applications</div><div class="val" id="sApplications">-</div></article>

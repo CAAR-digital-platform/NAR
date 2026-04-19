@@ -217,6 +217,7 @@ async function getAssignedClaimsByExpertId(expertId) {
     `SELECT
        cl.id AS claim_id,
        cl.contract_id,
+       cl.expert_id,
        cl.description,
        cl.status,
        cl.claim_date,

@@ -12,8 +12,8 @@ const CLAIM_STATUSES = Object.freeze([
 
 const CLAIM_STATUS_TRANSITIONS = Object.freeze({
   pending: Object.freeze(['under_review']),
-  under_review: Object.freeze(['expert_assigned', 'rejected']),
-  expert_assigned: Object.freeze(['reported', 'rejected']),
+  under_review: Object.freeze(['expert_assigned']),
+  expert_assigned: Object.freeze(['reported']),
   reported: Object.freeze(['approved', 'rejected']),
   approved: Object.freeze(['closed']),
   rejected: Object.freeze([]),

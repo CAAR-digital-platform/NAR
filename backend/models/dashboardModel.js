@@ -26,6 +26,8 @@ async function getAdminStats() {
     [[clients]],
     [[contracts]],
     [[claims]],
+    [[pendingClaims]],
+    [[activeExperts]],
     [[payments]],
     [[messages]],
     [[applications]],
@@ -33,6 +35,8 @@ async function getAdminStats() {
     pool.execute('SELECT COUNT(*) AS total FROM clients'),
     pool.execute('SELECT COUNT(*) AS total FROM contracts'),
     pool.execute('SELECT COUNT(*) AS total FROM claims'),
+    pool.execute("SELECT COUNT(*) AS total FROM claims WHERE status = 'pending'"),
+    pool.execute("SELECT COUNT(*) AS total FROM experts WHERE is_available = 1"),
     pool.execute(
       'SELECT COUNT(*) AS total, COALESCE(SUM(amount), 0) AS revenue FROM payments'
     ),
@@ -44,6 +48,8 @@ async function getAdminStats() {
     total_clients:      clients.total,
     total_contracts:    contracts.total,
     total_claims:       claims.total,
+    pending_claims:     pendingClaims.total,
+    active_experts:     activeExperts.total,
     total_payments:     payments.total,
     total_messages:     messages.total,
     total_applications: applications.total,
@@ -160,27 +166,28 @@ async function getExpertStats(userId) {
     [[completed]],
     [[reportsSubmitted]],
   ] = await Promise.all([
-    // Claims currently assigned to this expert (any open status)
+    // Assigned = strictly expert_assigned
     pool.execute(
       `SELECT COUNT(*) AS total
        FROM claims
        WHERE expert_id = ?
-         AND status NOT IN ('closed', 'rejected')`,
+         AND status = 'expert_assigned'`,
       [expertId]
     ),
-    // Claims actively being worked (expert_assigned or reported)
+    // In progress = reported only
     pool.execute(
       `SELECT COUNT(*) AS total
        FROM claims
        WHERE expert_id = ?
-         AND status IN ('expert_assigned', 'reported')`,
+         AND status = 'reported'`,
       [expertId]
     ),
-    // Claims fully resolved by this expert
+    // Completed = approved + rejected
     pool.execute(
       `SELECT COUNT(*) AS total
        FROM claims
-       WHERE expert_id = ? AND status = 'closed'`,
+       WHERE expert_id = ?
+         AND status IN ('approved', 'rejected')`,
       [expertId]
     ),
     // Expert reports submitted by this expert
