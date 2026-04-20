@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CAAR &mdash; Careers</title>
+  <title data-i18n="careers.title">CAAR &mdash; Careers</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="main.css"/>
   <link rel="stylesheet" href="header-extras.css"/>
@@ -18,12 +18,12 @@
   <img src="img/fleche.png" class="hero-deco" alt="" aria-hidden="true"/>
   <div class="caar-hero__inner">
     <div class="caar-hero__text">
-      <span class="caar-hero__tag">Careers at CAAR</span>
-      <h1 class="caar-hero__title">Build your career with CAAR</h1>
-      <p class="caar-hero__subtitle">Join Algeria's leading insurance company 
+      <span class="caar-hero__tag" data-i18n="careers.hero_tag">Careers at CAAR</span>
+      <h1 class="caar-hero__title" data-i18n="careers.hero_title">Build your career with CAAR</h1>
+      <p class="caar-hero__subtitle" data-i18n="careers.hero_subtitle">Join Algeria's leading insurance company 
       and contribute to protecting people, businesses, and infrastructure.</p>
       <div class="caar-hero__actions">
-        <button class="btn-primary" onclick="goToTab('jobs')">
+        <button class="btn-primary" onclick="goToTab('jobs')" data-i18n="careers.hero_btn">
           Explore Opportunities
         </button>
       </div>
@@ -37,10 +37,10 @@
 <!-- ===== TABS ===== -->
 <div class="careers-tabs-bar">
   <div class="careers-tabs">
-    <button class="careers-tab active" data-tab="why"      onclick="goToTab('why')">Why CAAR</button>
-    <button class="careers-tab"        data-tab="profiles" onclick="goToTab('profiles')">Our Profiles</button>
-    <button class="careers-tab"        data-tab="jobs"     onclick="goToTab('jobs')">Open Positions</button>
-    <button class="careers-tab"        data-tab="apply"    onclick="goToTab('apply')">Apply</button>
+    <button class="careers-tab active" data-tab="why"      onclick="goToTab('why')" data-i18n="careers.tab_why">Why CAAR</button>
+    <button class="careers-tab"        data-tab="profiles" onclick="goToTab('profiles')" data-i18n="careers.tab_profiles">Our Profiles</button>
+    <button class="careers-tab"        data-tab="jobs"     onclick="goToTab('jobs')" data-i18n="careers.tab_jobs">Open Positions</button>
+    <button class="careers-tab"        data-tab="apply"    onclick="goToTab('apply')" data-i18n="careers.tab_apply">Apply</button>
   </div>
 </div>
 
@@ -49,8 +49,8 @@
   <div class="careers-pane">
 
     <div class="why-lead">
-      <h2>Why work at CAAR?</h2>
-      <p>A national institution with decades of experience. Working here means building a long-term career while contributing to Algeria's economic stability.</p>
+      <h2 data-i18n="careers.why_title">Why work at CAAR?</h2>
+      <p data-i18n="careers.why_desc">A national institution with decades of experience. Working here means building a long-term career while contributing to Algeria's economic stability.</p>
     </div>
 
     <div class="why-grid">
@@ -58,29 +58,29 @@
         <div class="why-card__icon">
           <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
-        <h3>Stability</h3>
-        <p>A long-established public institution with a strong national presence.</p>
+        <h3 data-i18n="careers.why_stability_title">Stability</h3>
+        <p data-i18n="careers.why_stability_desc">A long-established public institution with a strong national presence.</p>
       </div>
       <div class="why-card">
         <div class="why-card__icon">
           <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         </div>
-        <h3>Expertise</h3>
-        <p>Exposure to complex insurance, reinsurance, and industrial risk challenges.</p>
+        <h3 data-i18n="careers.why_expertise_title">Expertise</h3>
+        <p data-i18n="careers.why_expertise_desc">Exposure to complex insurance, reinsurance, and industrial risk challenges.</p>
       </div>
       <div class="why-card">
         <div class="why-card__icon">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         </div>
-        <h3>Impact</h3>
-        <p>Your work directly protects people, businesses, and infrastructure.</p>
+        <h3 data-i18n="careers.why_impact_title">Impact</h3>
+        <p data-i18n="careers.why_impact_desc">Your work directly protects people, businesses, and infrastructure.</p>
       </div>
       <div class="why-card">
         <div class="why-card__icon">
           <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
         </div>
-        <h3>Growth</h3>
-        <p>Structured career paths, internal mobility, and professional development.</p>
+        <h3 data-i18n="careers.why_growth_title">Growth</h3>
+        <p data-i18n="careers.why_growth_desc">Structured career paths, internal mobility, and professional development.</p>
       </div>
     </div>
 
@@ -89,8 +89,8 @@
         <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
       <div>
-        <h2>Life at CAAR</h2>
-        <p>Collaborative teams, real responsibilities, long-term careers. We believe every person can grow and thrive in a shared mission to protect Algeria.</p>
+        <h2 data-i18n="careers.life_title">Life at CAAR</h2>
+        <p data-i18n="careers.life_desc">Collaborative teams, real responsibilities, long-term careers. We believe every person can grow and thrive in a shared mission to protect Algeria.</p>
       </div>
     </div>
 
@@ -102,46 +102,46 @@
   <div class="careers-pane">
 
     <div class="profiles-lead">
-      <h2>Our Profiles</h2>
-      <p>CAAR recruits diverse profiles across its technical, financial, and operational missions. Click a profile to explore that domain.</p>
+      <h2 data-i18n="careers.profiles_title">Our Profiles</h2>
+      <p data-i18n="careers.profiles_desc">CAAR recruits diverse profiles across its technical, financial, and operational missions. Click a profile to explore that domain.</p>
     </div>
 
     <div class="profiles-grid">
       <div class="profile-card" onclick="filterAndGo('Actuarial')">
         <div class="profile-card-emoji">&#128202;</div>
-        <h3>Actuarial &amp; Risk</h3>
-        <p>Risk analysis, underwriting, and loss modeling.</p>
-        <div class="profile-card-arrow">Explore roles &rarr;</div>
+        <h3 data-i18n="careers.profile_actuarial_title">Actuarial &amp; Risk</h3>
+        <p data-i18n="careers.profile_actuarial_desc">Risk analysis, underwriting, and loss modeling.</p>
+        <div class="profile-card-arrow" data-i18n="careers.explore_roles">Explore roles &rarr;</div>
       </div>
       <div class="profile-card" onclick="filterAndGo('IT')">
         <div class="profile-card-emoji">&#128187;</div>
-        <h3>IT &amp; Digital</h3>
-        <p>Systems, cybersecurity, and digital transformation.</p>
-        <div class="profile-card-arrow">Explore roles &rarr;</div>
+        <h3 data-i18n="careers.profile_it_title">IT &amp; Digital</h3>
+        <p data-i18n="careers.profile_it_desc">Systems, cybersecurity, and digital transformation.</p>
+        <div class="profile-card-arrow" data-i18n="careers.explore_roles">Explore roles &rarr;</div>
       </div>
       <div class="profile-card" onclick="filterAndGo('Finance')">
         <div class="profile-card-emoji">&#128188;</div>
-        <h3>Finance &amp; Accounting</h3>
-        <p>Financial management, reporting, and investments.</p>
-        <div class="profile-card-arrow">Explore roles &rarr;</div>
+        <h3 data-i18n="careers.profile_finance_title">Finance &amp; Accounting</h3>
+        <p data-i18n="careers.profile_finance_desc">Financial management, reporting, and investments.</p>
+        <div class="profile-card-arrow" data-i18n="careers.explore_roles">Explore roles &rarr;</div>
       </div>
       <div class="profile-card" onclick="filterAndGo('Engineering')">
         <div class="profile-card-emoji">&#9881;&#65039;</div>
-        <h3>Engineering &amp; Technical</h3>
-        <p>Industrial, construction, and technical risk assessment.</p>
-        <div class="profile-card-arrow">Explore roles &rarr;</div>
+        <h3 data-i18n="careers.profile_engineering_title">Engineering &amp; Technical</h3>
+        <p data-i18n="careers.profile_engineering_desc">Industrial, construction, and technical risk assessment.</p>
+        <div class="profile-card-arrow" data-i18n="careers.explore_roles">Explore roles &rarr;</div>
       </div>
       <div class="profile-card" onclick="filterAndGo('Commercial')">
         <div class="profile-card-emoji">&#129309;</div>
-        <h3>Commercial &amp; Network</h3>
-        <p>Client relations, agencies, and market development.</p>
-        <div class="profile-card-arrow">Explore roles &rarr;</div>
+        <h3 data-i18n="careers.profile_commercial_title">Commercial &amp; Network</h3>
+        <p data-i18n="careers.profile_commercial_desc">Client relations, agencies, and market development.</p>
+        <div class="profile-card-arrow" data-i18n="careers.explore_roles">Explore roles &rarr;</div>
       </div>
       <div class="profile-card" onclick="filterAndGo('Support')">
         <div class="profile-card-emoji">&#128203;</div>
-        <h3>Support Functions</h3>
-        <p>HR, legal, compliance, and administration.</p>
-        <div class="profile-card-arrow">Explore roles &rarr;</div>
+        <h3 data-i18n="careers.profile_support_title">Support Functions</h3>
+        <p data-i18n="careers.profile_support_desc">HR, legal, compliance, and administration.</p>
+        <div class="profile-card-arrow" data-i18n="careers.explore_roles">Explore roles &rarr;</div>
       </div>
     </div>
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CAAR — Titre de la page</title>
+  <title data-i18n="auto.title">CAAR — Titre de la page</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="main.css"/>
   <link rel="stylesheet" href="header-extras.css"/>
@@ -20,9 +20,9 @@
    <img src="img/fleche.png" class="hero-deco" alt="" aria-hidden="true"/>
   <div class="caar-hero__inner">
     <div class="caar-hero__text">
-      <span class="caar-hero__tag">Auto Insurance</span>
-      <h1 class="caar-hero__title">Auto Insurance</h1>
-      <p class="caar-hero__subtitle">Complete vehicle insurance — mandatory 
+      <span class="caar-hero__tag" data-i18n="auto.hero_tag">Auto Insurance</span>
+      <h1 class="caar-hero__title" data-i18n="auto.hero_title">Auto Insurance</h1>
+      <p class="caar-hero__subtitle" data-i18n="auto.hero_subtitle">Complete vehicle insurance — mandatory 
       civil liability and optional guarantees to protect you on Algerian roads.</p>
     </div>
     <div class="caar-hero__image">
@@ -36,38 +36,38 @@
 
     <!-- SIDEBAR -->
     <aside class="product-sidebar">
-      <span class="sidebar-label">Products</span>
+      <span class="sidebar-label" data-i18n="auto.sidebar_label">Products</span>
       <button class="sidebar-btn active" onclick="show('motor', this)">
         <div class="sidebar-btn__icon">🚗</div>
         <div>
-          <div>Motor Insurance</div>
-          <div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">RC Auto</div>
+          <div data-i18n="auto.motor_title">Motor Insurance</div>
+          <div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;" data-i18n="auto.motor_abbr">RC Auto</div>
         </div>
-        <span class="sidebar-btn__abbr">RC</span>
+        <span class="sidebar-btn__abbr" data-i18n="auto.motor_abbr">RC</span>
       </button>
       <button class="sidebar-btn" onclick="show('roadside', this)">
         <div class="sidebar-btn__icon">🛞</div>
         <div>
-          <div>Roadside Assistance</div>
-          <div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">Assistance</div>
+          <div data-i18n="auto.roadside_title">Roadside Assistance</div>
+          <div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;" data-i18n="auto.roadside_abbr">Assistance</div>
         </div>
       </button>
       <button class="sidebar-btn" onclick="show('glass', this)">
         <div class="sidebar-btn__icon">🪟</div>
         <div>
-          <div>Glass Breakage</div>
-          <div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;">Bris de Glace</div>
+          <div data-i18n="auto.glass_title">Glass Breakage</div>
+          <div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;" data-i18n="auto.glass_abbr">Bris de Glace</div>
         </div>
       </button>
 
       <div class="sidebar-cta">
         <a href="Online_subscription.html" class="btn-sidebar-primary">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14m7-7H5"/></svg>
-          Subscribe Online
+          <span data-i18n="auto.subscribe_online">Subscribe Online</span>
         </a>
         <a href="network.html" class="btn-sidebar-secondary">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          Find an Agency
+          <span data-i18n="auto.find_agency">Find an Agency</span>
         </a>
         <a href="contact.html" class="btn-sidebar-secondary">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>

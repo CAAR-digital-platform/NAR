@@ -107,7 +107,11 @@
 
     /* ── Footer ── */
     if (document.getElementById('site-footer')) {
-      loadComponent('site-footer', base + 'components/footer.html', null);
+      loadComponent('site-footer', base + 'components/footer.html', function () {
+        if (window.Language && typeof window.Language.applyTranslations === 'function') {
+          window.Language.applyTranslations(window.Language.getLanguage());
+        }
+      });
     }
   }
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CAAR &mdash; About Us</title>
+  <title data-i18n="company.title">CAAR &mdash; About Us</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <!-- Shared stylesheet — provides header, footer, and all shared component styles -->
   <link rel="stylesheet" href="main.css"/>
@@ -22,12 +22,12 @@
   <img src="img/fleche.png" class="hero-deco" alt="" aria-hidden="true"/>
   <div class="caar-hero__inner">
     <div class="caar-hero__text">
-      <span class="caar-hero__tag">About CAAR</span>
-      <h1 class="caar-hero__title">About CAAR</h1>
-      <p class="caar-hero__subtitle">A national insurance and reinsurance company serving individuals, professionals, and institutions since 1963.</p>
+      <span class="caar-hero__tag" data-i18n="company.hero_tag">About CAAR</span>
+      <h1 class="caar-hero__title" data-i18n="company.hero_title">About CAAR</h1>
+      <p class="caar-hero__subtitle" data-i18n="company.hero_subtitle">A national insurance and reinsurance company serving individuals, professionals, and institutions since 1963.</p>
       <div class="caar-hero__actions">
-        <a href="#tab-overview" class="btn-primary">Discover Our Story</a>
-        <a href="contact.html" class="btn-secondary">Contact Us</a>
+        <a href="#tab-overview" class="btn-primary" data-i18n="company.hero_btn_discover">Discover Our Story</a>
+        <a href="contact.html" class="btn-secondary" data-i18n="company.hero_btn_contact">Contact Us</a>
       </div>
     </div>
     <div class="caar-hero__image">
@@ -42,12 +42,12 @@
 
     <!-- Sidebar -->
     <nav class="company-nav">
-      <button class="company-nav-btn active" onclick="showTab('overview',     this)">Overview</button>
-      <button class="company-nav-btn"         onclick="showTab('activities',   this)">Activities</button>
-      <button class="company-nav-btn"         onclick="showTab('leadership',   this)">Leadership</button>
-      <button class="company-nav-btn"         onclick="showTab('history',      this)">History</button>
-      <button class="company-nav-btn"         onclick="showTab('organization', this)">Organization</button>
-      <button class="company-nav-btn"         onclick="showTab('keyfigures',   this)">Key Figures</button>
+      <button class="company-nav-btn active" onclick="showTab('overview',     this)" data-i18n="company.tab_overview">Overview</button>
+      <button class="company-nav-btn"         onclick="showTab('activities',   this)" data-i18n="company.tab_activities">Activities</button>
+      <button class="company-nav-btn"         onclick="showTab('leadership',   this)" data-i18n="company.tab_leadership">Leadership</button>
+      <button class="company-nav-btn"         onclick="showTab('history',      this)" data-i18n="company.tab_history">History</button>
+      <button class="company-nav-btn"         onclick="showTab('organization', this)" data-i18n="company.tab_organization">Organization</button>
+      <button class="company-nav-btn"         onclick="showTab('keyfigures',   this)" data-i18n="company.tab_keyfigures">Key Figures</button>
     </nav>
 
     <!-- Beige content panel -->
@@ -59,10 +59,10 @@
           <div class="tab-header-icon">
             <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </div>
-          <h2 class="tab-section-title">Company Overview</h2>
+          <h2 class="tab-section-title" data-i18n="company.overview_title">Company Overview</h2>
         </div>
         <div class="tab-rule"></div>
-        <p class="overview-description">
+        <p class="overview-description" data-i18n="company.overview_desc">
           The Compagnie Algérienne d'Assurance et de Réassurance (CAAR) is a major player in the national
           insurance market. Founded in 1963, it has supported the country's economic development for decades,
           providing comprehensive protection for individuals, businesses, and industrial complexes.
@@ -71,19 +71,19 @@
           <div class="stat-box">
             <div class="stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
             <div class="stat-highlight">60+</div>
-            <div class="stat-label">Years of Experience</div>
+            <div class="stat-label" data-i18n="company.overview_years">Years of Experience</div>
             <div class="stat-bar"></div>
           </div>
           <div class="stat-box">
             <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
             <div class="stat-highlight">48</div>
-            <div class="stat-label">National Presence<br/>(48 Wilayas)</div>
+            <div class="stat-label" data-i18n="company.overview_presence">National Presence<br/>(48 Wilayas)</div>
             <div class="stat-bar"></div>
           </div>
           <div class="stat-box">
             <div class="stat-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
             <div class="stat-highlight">#1</div>
-            <div class="stat-label">Leader in Industrial Risks</div>
+            <div class="stat-label" data-i18n="company.overview_leader">Leader in Industrial Risks</div>
             <div class="stat-bar"></div>
           </div>
         </div>
@@ -95,15 +95,15 @@
           <div class="tab-header-icon">
             <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           </div>
-          <h2 class="tab-section-title">Our Activities</h2>
+          <h2 class="tab-section-title" data-i18n="company.activities_title">Our Activities</h2>
         </div>
         <div class="tab-rule"></div>
         <div class="act-list">
           <div class="act-card">
             <div class="act-card-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
             <div class="act-card-body">
-              <h3 class="act-card-title">Insurance</h3>
-              <p class="act-card-desc">Offering a wide range of products including Automotive, Industrial Risks, Transport, and Personal insurance.</p>
+              <h3 class="act-card-title" data-i18n="company.activities_insurance_title">Insurance</h3>
+              <p class="act-card-desc" data-i18n="company.activities_insurance_desc">Offering a wide range of products including Automotive, Industrial Risks, Transport, and Personal insurance.</p>
             </div>
           </div>
           <div class="act-card">
@@ -111,15 +111,15 @@
               <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
             </div>
             <div class="act-card-body">
-              <h3 class="act-card-title">Reinsurance</h3>
-              <p class="act-card-desc">Providing reinsurance capacity and expertise to secure major national risks and projects.</p>
+              <h3 class="act-card-title" data-i18n="company.activities_reinsurance_title">Reinsurance</h3>
+              <p class="act-card-desc" data-i18n="company.activities_reinsurance_desc">Providing reinsurance capacity and expertise to secure major national risks and projects.</p>
             </div>
           </div>
           <div class="act-card">
             <div class="act-card-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
             <div class="act-card-body">
-              <h3 class="act-card-title">Financial Investments</h3>
-              <p class="act-card-desc">Active participation in the national financial market through strategic placements and investments.</p>
+              <h3 class="act-card-title" data-i18n="company.activities_investments_title">Financial Investments</h3>
+              <p class="act-card-desc" data-i18n="company.activities_investments_desc">Active participation in the national financial market through strategic placements and investments.</p>
             </div>
           </div>
         </div>
@@ -130,42 +130,20 @@
         <div class="ld-profile-card">
           <img src="img/real.jpg" alt="Mr. M. Ammar Meslouh" class="ld-photo"/>
           <div class="ld-profile-info">
-            <h2 class="ld-name">Mr. M. Ammar Meslouh</h2>
-            <p class="ld-ceo-title">Chief Executive Officer</p>
+            <h2 class="ld-name" data-i18n="company.leadership_name">Mr. M. Ammar Meslouh</h2>
+            <p class="ld-ceo-title" data-i18n="company.leadership_title">Chief Executive Officer</p>
           </div>
         </div>
 
-        <div class="ld-preview-box" id="ld-preview">
-          <p>Dear partners,<br/>Dear colleagues,</p>
-          <p>Assuming the presidency of the Algerian Insurance and Reinsurance Company is for me an immense honor and a responsibility that I embrace with humility and determination.</p>
-          <p>It is also a return to an institution to which I remain deeply attached, and whose history merges with that of the economic and social development of our country.</p>
-        </div>
+        <div class="ld-preview-box" id="ld-preview" data-i18n="company.leadership_preview"></div>
 
-        <button class="ld-read-btn" id="ld-read-btn" onclick="toggleFullMessage()">
+        <button class="ld-read-btn" id="ld-read-btn" onclick="toggleFullMessage()" data-i18n="company.leadership_read_full">
           Read full message &nbsp;→
         </button>
 
         <div class="ld-full-message" id="ld-full-message">
-          <div class="ld-full-scroll">
-            <p>Dear partners,<br/>Dear colleagues,</p>
-            <p>Assuming the presidency of the Algerian Insurance and Reinsurance Company is for me an immense honor and a responsibility that I embrace with humility and determination.</p>
-            <p>It is also a return to an institution to which I remain deeply attached, and whose history merges with that of the economic and social development of our country.</p>
-            <p>For more than six decades, the CAAR has embodied solidity, trust and commitment. It has accompanied the major changes in the national economy, protected generations of citizens, and supported the ambitions of thousands of companies. This heritage is our pride, but also our responsibility: that of keeping it alive, strengthening it, and transmitting it.</p>
-            <p>Today, a new stage opens.</p>
-            <p>Our ambition is clear: to bring the CAAR into an era of modernity and agility, while remaining faithful to its identity as a reference company, close to its clients and faithful to its values.</p>
-            <p>This involves:</p>
-            <p>
-              • Digitize our services to offer our policyholders a smooth, fast and accessible experience;<br/>
-              • Strengthen our proximity with our customers, by placing their expectations and satisfaction at the heart of our priorities;<br/>
-              • Valuing our internal talents, by encouraging innovation, continuous training and operational excellence;<br/>
-              • Reaffirm our leadership role, adopting international best practices and anticipating market developments.
-            </p>
-            <p>This transformation will not be a break, but an ambitious continuity.</p>
-            <p>It will build on the solid foundations of CAAR, while instilling a new dynamic focused on sustainable performance, social responsibility and value creation for all our stakeholders.</p>
-            <p>To our employees, partners and clients: Thank you for your trust.</p>
-            <p>The future of CAAR is built with you, and it is with you that we will face the challenges ahead.</p>
-          </div>
-          <button class="ld-back-btn" onclick="toggleFullMessage()">← &nbsp;Back to preview</button>
+          <div class="ld-full-scroll" data-i18n="company.leadership_full"></div>
+          <button class="ld-back-btn" onclick="toggleFullMessage()" data-i18n="company.leadership_back">← &nbsp;Back to preview</button>
         </div>
       </div>
 
@@ -173,40 +151,40 @@
       <div class="tab-pane" id="tab-history">
         <div class="tab-header">
           <div class="tab-header-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <h2 class="tab-section-title">Company History</h2>
+          <h2 class="tab-section-title" data-i18n="company.history_title">Company History</h2>
         </div>
         <div class="tab-rule"></div>
         <div class="hist-timeline">
           <div class="hist-timeline-inner">
             <div class="hist-item">
               <div class="hist-year">1963</div>
-              <h3 class="hist-milestone">Creation of CAAR Insurance</h3>
-              <p class="hist-detail">CAAR was established as Algeria's national insurance and reinsurance company, tasked with protecting the country's economic development.</p>
+              <h3 class="hist-milestone" data-i18n="company.history_1963_title">Creation of CAAR Insurance</h3>
+              <p class="hist-detail" data-i18n="company.history_1963_desc">CAAR was established as Algeria's national insurance and reinsurance company, tasked with protecting the country's economic development.</p>
             </div>
             <div class="hist-item">
               <div class="hist-year">1988</div>
-              <h3 class="hist-milestone">Transformation into a Joint-Stock Company</h3>
-              <p class="hist-detail">CAAR restructured into a joint-stock company, marking a pivotal shift toward a more autonomous and commercially oriented model.</p>
+              <h3 class="hist-milestone" data-i18n="company.history_1988_title">Transformation into a Joint-Stock Company</h3>
+              <p class="hist-detail" data-i18n="company.history_1988_desc">CAAR restructured into a joint-stock company, marking a pivotal shift toward a more autonomous and commercially oriented model.</p>
             </div>
             <div class="hist-item">
               <div class="hist-year">2006</div>
-              <h3 class="hist-milestone">Introduction of New Regulatory Instruments</h3>
-              <p class="hist-detail">The company adapted to new national insurance regulations, reinforcing its governance and compliance frameworks.</p>
+              <h3 class="hist-milestone" data-i18n="company.history_2006_regulatory_title">Introduction of New Regulatory Instruments</h3>
+              <p class="hist-detail" data-i18n="company.history_2006_regulatory_desc">The company adapted to new national insurance regulations, reinforcing its governance and compliance frameworks.</p>
             </div>
             <div class="hist-item">
               <div class="hist-year">2006</div>
-              <h3 class="hist-milestone">The Multiple Missions of CAAR Insurance</h3>
-              <p class="hist-detail">CAAR expanded its mandate, broadening its portfolio across insurance, reinsurance, and financial investment activities.</p>
+              <h3 class="hist-milestone" data-i18n="company.history_2006_missions_title">The Multiple Missions of CAAR Insurance</h3>
+              <p class="hist-detail" data-i18n="company.history_2006_missions_desc">CAAR expanded its mandate, broadening its portfolio across insurance, reinsurance, and financial investment activities.</p>
             </div>
             <div class="hist-item">
               <div class="hist-year">2011</div>
-              <h3 class="hist-milestone">Creation of the CAARAMA Subsidiary</h3>
-              <p class="hist-detail">CAAR launched CAARAMA, a dedicated subsidiary reinforcing its presence in specialized insurance segments.</p>
+              <h3 class="hist-milestone" data-i18n="company.history_2011_title">Creation of the CAARAMA Subsidiary</h3>
+              <p class="hist-detail" data-i18n="company.history_2011_desc">CAAR launched CAARAMA, a dedicated subsidiary reinforcing its presence in specialized insurance segments.</p>
             </div>
             <div class="hist-item hist-today">
               <div class="hist-year">Today</div>
-              <h3 class="hist-milestone">Market Leadership Consolidated</h3>
-              <p class="hist-detail">CAAR has not only maintained its position as a leader in industrial risk but has also increased its market share, continuing to serve individuals, businesses, and major national projects.</p>
+              <h3 class="hist-milestone" data-i18n="company.history_today_title">Market Leadership Consolidated</h3>
+              <p class="hist-detail" data-i18n="company.history_today_desc">CAAR has not only maintained its position as a leader in industrial risk but has also increased its market share, continuing to serve individuals, businesses, and major national projects.</p>
             </div>
           </div>
         </div>
@@ -225,7 +203,7 @@
           <div class="tab-header-icon">
             <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           </div>
-          <h2 class="tab-section-title">Key Figures</h2>
+          <h2 class="tab-section-title" data-i18n="company.keyfigures_title">Key Figures</h2>
         </div>
         <div class="tab-rule"></div>
 
@@ -234,36 +212,36 @@
             <div class="kf-card-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div>
             <div class="kf-number">20B</div>
             <div class="kf-number-bar"></div>
-            <div class="kf-label">Capital Social</div>
-            <div class="kf-sublabel">DZD</div>
+            <div class="kf-label" data-i18n="company.keyfigures_capital">Capital Social</div>
+            <div class="kf-sublabel" data-i18n="company.keyfigures_capital_unit">DZD</div>
           </div>
           <div class="kf-card">
             <div class="kf-card-icon"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
             <div class="kf-number">14.8B</div>
             <div class="kf-number-bar"></div>
-            <div class="kf-label">Chiffre d'Affaires</div>
-            <div class="kf-sublabel">DZD — Dernière année</div>
+            <div class="kf-label" data-i18n="company.keyfigures_revenue">Chiffre d'Affaires</div>
+            <div class="kf-sublabel" data-i18n="company.keyfigures_revenue_unit">DZD — Dernière année</div>
           </div>
           <div class="kf-card">
             <div class="kf-card-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
             <div class="kf-number">21.2B</div>
             <div class="kf-number-bar"></div>
-            <div class="kf-label">Fonds Propres</div>
-            <div class="kf-sublabel">DZD</div>
+            <div class="kf-label" data-i18n="company.keyfigures_funds">Fonds Propres</div>
+            <div class="kf-sublabel" data-i18n="company.keyfigures_funds_unit">DZD</div>
           </div>
           <div class="kf-card">
             <div class="kf-card-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
             <div class="kf-number">1.14B</div>
             <div class="kf-number-bar"></div>
-            <div class="kf-label">Résultat Net</div>
-            <div class="kf-sublabel">DZD</div>
+            <div class="kf-label" data-i18n="company.keyfigures_profit">Résultat Net</div>
+            <div class="kf-sublabel" data-i18n="company.keyfigures_profit_unit">DZD</div>
           </div>
         </div>
 
-        <div class="kf-charts-title">Évolution des indicateurs</div>
+        <div class="kf-charts-title" data-i18n="company.keyfigures_evolution">Évolution des indicateurs</div>
         <div class="kf-charts-row">
           <div class="kf-chart-box">
-            <div class="kf-chart-label">Chiffre d'Affaires (Milliards DZD)</div>
+            <div class="kf-chart-label" data-i18n="company.keyfigures_revenue_chart">Chiffre d'Affaires (Milliards DZD)</div>
             <div class="kf-bar-chart">
               <div class="kf-bar-group"><div class="kf-bar" style="height:40px;"></div><div class="kf-bar-year">2020</div></div>
               <div class="kf-bar-group"><div class="kf-bar" style="height:52px;"></div><div class="kf-bar-year">2021</div></div>
@@ -273,7 +251,7 @@
             </div>
           </div>
           <div class="kf-chart-box">
-            <div class="kf-chart-label">Fonds Propres (Milliards DZD)</div>
+            <div class="kf-chart-label" data-i18n="company.keyfigures_funds_chart">Fonds Propres (Milliards DZD)</div>
             <div class="kf-bar-chart">
               <div class="kf-bar-group"><div class="kf-bar" style="height:34px;"></div><div class="kf-bar-year">2020</div></div>
               <div class="kf-bar-group"><div class="kf-bar" style="height:48px;"></div><div class="kf-bar-year">2021</div></div>
@@ -293,7 +271,6 @@
 
 <!-- FOOTER — injecté automatiquement -->
   <div id="site-footer"></div>
-
 
 <script src="app-state.js"></script>
 <script src="auth.js"></script>
