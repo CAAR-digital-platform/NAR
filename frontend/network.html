@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CAAR &mdash; Agency Network</title>
+  <title data-i18n="network.title">CAAR &mdash; Agency Network</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -18,24 +18,24 @@
 <!-- ══ CROSS-NAV BANNER ══ -->
 <div class="crossnav-banner">
   <div class="crossnav-banner-text">
-    <strong>Prefer to send a message?</strong> &nbsp;Our team responds within 24 hours.
+    <strong data-i18n="network.banner_cta">Prefer to send a message?</strong> &nbsp;<span data-i18n="network.banner_subtitle">Our team responds within 24 hours.</span>
   </div>
-  <a href="contact.html" class="btn-crossnav-banner">Send a Request →</a>
+  <a href="contact.html" class="btn-crossnav-banner" data-i18n="network.banner_link">Send a Request →</a>
 </div>
 
 <!-- ══ FOCUS BANNER (shown when coming from contact page with ?focus=hq) ══ -->
 <div class="focus-banner" id="focusBanner">
   <span class="focus-banner-pin">📍</span>
-  <span>Showing <strong>CAAR Headquarters</strong> — 48 Rue Didouche Mourad, Algiers</span>
-  <button class="focus-banner-dismiss" onclick="dismissFocusBanner()">✕ Dismiss</button>
+  <span data-i18n="network.focus_banner_prefix">Showing</span> <strong data-i18n="network.focus_banner_location">CAAR Headquarters</strong> — <span data-i18n="network.focus_banner_address">48 Rue Didouche Mourad, Algiers</span>
+  <button class="focus-banner-dismiss" onclick="dismissFocusBanner()" data-i18n="network.focus_banner_dismiss">✕ Dismiss</button>
 </div>
 
 <!-- ══ HERO: search ══ -->
 <section class="network-hero">
   <div class="network-hero-inner">
     <div class="network-hero-left">
-      <h2>Find a CAAR Agency Near You</h2>
-      <p>Access our nationwide network of agencies and get assistance wherever you are.</p>
+      <h2 data-i18n="network.hero_title">Find a CAAR Agency Near You</h2>
+      <p data-i18n="network.hero_subtitle">Access our nationwide network of agencies and get assistance wherever you are.</p>
 
       <div class="search-wrap">
         <span class="s-pin">📍</span>
@@ -43,6 +43,7 @@
           class="map-search-input"
           id="mapSearch"
           type="text"
+          data-i18n-placeholder="network.hero_search_placeholder"
           placeholder="Enter a city, wilaya, or postcode"
           autocomplete="off"
           oninput="onSearchInput(this.value)"
@@ -57,7 +58,7 @@
           <circle cx="12" cy="12" r="3"/>
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
         </svg>
-        <span>Use my location</span>
+        <span data-i18n="network.hero_location_btn">Use my location</span>
       </button>
     </div>
 
@@ -80,6 +81,7 @@
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
       <input class="fd-search-input" id="fdSearchInput" type="text"
+        data-i18n-placeholder="network.filter_search_placeholder"
         placeholder="Search agency name…" autocomplete="off"
         oninput="setSearchFilter(this.value)"/>
       <button class="fd-search-clear" id="fdSearchClear" onclick="clearNameSearch()">✕</button>
@@ -88,7 +90,7 @@
     <!-- Wilaya filter — populated dynamically by network-map.js -->
     <div class="filter-dropdown" id="fd-wilaya">
       <button class="fd-btn" onclick="toggleDrop('fd-wilaya')">
-        <span id="fdlbl-wilaya">Wilaya</span>
+        <span id="fdlbl-wilaya" data-i18n="network.filter_wilaya">Wilaya</span>
         <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
       </button>
       <div class="fd-menu" id="fdm-wilaya">
@@ -99,29 +101,29 @@
     <!-- City filter — populated dynamically when a wilaya is selected -->
     <div class="filter-dropdown" id="fd-city">
       <button class="fd-btn" onclick="toggleDrop('fd-city')">
-        <span id="fdlbl-city">City</span>
+        <span id="fdlbl-city" data-i18n="network.filter_city">City</span>
         <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
       </button>
       <div class="fd-menu" id="fdm-city">
         <div class="fd-item active"
-          onclick="applyFilter('city_id','',this,'City')">All Cities</div>
+          onclick="applyFilter('city_id','',this,'City')" data-i18n="network.filter_all_cities">All Cities</div>
       </div>
     </div>
 
     <!-- Agency Type filter -->
     <div class="filter-dropdown" id="fd-type">
       <button class="fd-btn" onclick="toggleDrop('fd-type')">
-        <span id="fdlbl-type">Type</span>
+        <span id="fdlbl-type" data-i18n="network.filter_type">Type</span>
         <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
       </button>
       <div class="fd-menu" id="fdm-type">
-        <div class="fd-item active" onclick="setFilter('type','',this,'Type')">All Types</div>
-        <div class="fd-item" onclick="setFilter('type','Main Agency',this,'Main Agency')">🏢 Main Agency</div>
-        <div class="fd-item" onclick="setFilter('type','Regional Office',this,'Regional Office')">🏬 Regional Office</div>
-        <div class="fd-item" onclick="setFilter('type','Sub Agency',this,'Sub Agency')">🏪 Sub Agency</div>
-        <div class="fd-item" onclick="setFilter('type','Agency',this,'Agency')">📍 Agency</div>
-        <div class="fd-item" onclick="setFilter('type','Claims Center',this,'Claims Center')">🗂 Claims Center</div>
-        <div class="fd-item" onclick="setFilter('type','Headquarters',this,'Headquarters')">⭐ Headquarters</div>
+        <div class="fd-item active" onclick="setFilter('type','',this,'Type')" data-i18n="network.filter_type_all">All Types</div>
+        <div class="fd-item" onclick="setFilter('type','Main Agency',this,'Main Agency')" data-i18n="network.filter_type_main">🏢 Main Agency</div>
+        <div class="fd-item" onclick="setFilter('type','Regional Office',this,'Regional Office')" data-i18n="network.filter_type_regional">🏬 Regional Office</div>
+        <div class="fd-item" onclick="setFilter('type','Sub Agency',this,'Sub Agency')" data-i18n="network.filter_type_sub">🏪 Sub Agency</div>
+        <div class="fd-item" onclick="setFilter('type','Agency',this,'Agency')" data-i18n="network.filter_type_agency">📍 Agency</div>
+        <div class="fd-item" onclick="setFilter('type','Claims Center',this,'Claims Center')" data-i18n="network.filter_type_claims">🗂 Claims Center</div>
+        <div class="fd-item" onclick="setFilter('type','Headquarters',this,'Headquarters')" data-i18n="network.filter_type_headquarters">⭐ Headquarters</div>
       </div>
     </div>
 
@@ -130,21 +132,21 @@
          Valid values: Auto, Habitation, Transport, Industrial, Agricultural, Claims -->
     <div class="filter-dropdown" id="fd-service">
       <button class="fd-btn" onclick="toggleDrop('fd-service')">
-        <span id="fdlbl-service">Service</span>
+        <span id="fdlbl-service" data-i18n="network.filter_service">Service</span>
         <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg>
       </button>
       <div class="fd-menu" id="fdm-service">
-        <div class="fd-item active" onclick="setFilter('service','',this,'Service')">All Services</div>
-        <div class="fd-item" onclick="setFilter('service','Auto',this,'Auto')">🚗 Auto Insurance</div>
-        <div class="fd-item" onclick="setFilter('service','Habitation',this,'Habitation')">🏠 Habitation</div>
-        <div class="fd-item" onclick="setFilter('service','Transport',this,'Transport')">🚢 Transport</div>
-        <div class="fd-item" onclick="setFilter('service','Industrial',this,'Industrial')">🏭 Industrial</div>
-        <div class="fd-item" onclick="setFilter('service','Agricultural',this,'Agricultural')">🌾 Agricultural</div>
-        <div class="fd-item" onclick="setFilter('service','Claims',this,'Claims')">🗂 Claims Processing</div>
+        <div class="fd-item active" onclick="setFilter('service','',this,'Service')" data-i18n="network.filter_service_all">All Services</div>
+        <div class="fd-item" onclick="setFilter('service','Auto',this,'Auto')" data-i18n="network.filter_service_auto">🚗 Auto Insurance</div>
+        <div class="fd-item" onclick="setFilter('service','Habitation',this,'Habitation')" data-i18n="network.filter_service_habitation">🏠 Habitation</div>
+        <div class="fd-item" onclick="setFilter('service','Transport',this,'Transport')" data-i18n="network.filter_service_transport">🚢 Transport</div>
+        <div class="fd-item" onclick="setFilter('service','Industrial',this,'Industrial')" data-i18n="network.filter_service_industrial">🏭 Industrial</div>
+        <div class="fd-item" onclick="setFilter('service','Agricultural',this,'Agricultural')" data-i18n="network.filter_service_agricultural">🌾 Agricultural</div>
+        <div class="fd-item" onclick="setFilter('service','Claims',this,'Claims')" data-i18n="network.filter_service_claims">🗂 Claims Processing</div>
       </div>
     </div>
 
-    <button class="fd-reset" onclick="resetFilters()">↺ Reset Filters</button>
+    <button class="fd-reset" onclick="resetFilters()" data-i18n="network.filter_reset">↺ Reset Filters</button>
   </div>
 
   <div class="filter-tags-row" id="filterTagsRow"></div>
@@ -152,14 +154,14 @@
   <div class="filter-grid">
     <div class="filter-left">
       <div class="filter-count-bar">
-        Showing <strong id="filterCountNum">—</strong> agencies
+        <span data-i18n="network.results_showing">Showing</span> <strong id="filterCountNum">—</strong> <span data-i18n="network.results_count_agencies">agencies</span>
       </div>
       <div class="filter-card-list" id="filterCardList">
         <!-- Cards rendered by network-map.js -->
       </div>
       <div class="filter-no-results" id="filterNoResults">
-        😕 No agencies match your filters.<br>
-        <small>Try resetting or changing your selection.</small>
+        😕 <span data-i18n="network.results_no_results">No agencies match your filters.</span><br>
+        <small data-i18n="network.results_no_results_tip">Try resetting or changing your selection.</small>
       </div>
     </div>
 
@@ -170,7 +172,7 @@
 
   <div style="padding:16px 24px;background:#fafafa;border-top:1px solid var(--border);
               display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-    <span style="font-size:0.82rem;color:#666;">
+    <span style="font-size:0.82rem;color:#666;" data-i18n="network.footer_help_text">
       Can't find what you need? Our team is here to help.
     </span>
     <a href="contact.html"
@@ -178,7 +180,8 @@
               border:1.5px solid var(--hdr-orange);padding:6px 16px;border-radius:20px;
               transition:all 0.2s;"
        onmouseover="this.style.background='var(--hdr-orange)';this.style.color='#fff';"
-       onmouseout="this.style.background='transparent';this.style.color='var(--hdr-orange)';">
+       onmouseout="this.style.background='transparent';this.style.color='var(--hdr-orange)';"
+       data-i18n="network.footer_help_link">
       Send us a message →
     </a>
   </div>
@@ -190,8 +193,8 @@
 <section class="pdf-downloads-section">
   <div class="pdf-downloads-inner">
     <div class="pdf-downloads-left">
-      <div class="pdf-dl-label">Official Agency Lists</div>
-      <div class="pdf-dl-sub">For administrative and legal reference</div>
+      <div class="pdf-dl-label" data-i18n="network.pdf_label">Official Agency Lists</div>
+      <div class="pdf-dl-sub" data-i18n="network.pdf_sublabel">For administrative and legal reference</div>
     </div>
     <div class="pdf-downloads-grid">
       <a href="downloads/SUCCURSALE DE CHERAGA.pdf" download class="pdf-dl-card">
@@ -204,8 +207,8 @@
           </svg>
         </div>
         <div class="pdf-dl-info">
-          <span class="pdf-dl-title">Succursale de Chéraga</span>
-          <span class="pdf-dl-hint">Agency list (PDF)</span>
+          <span class="pdf-dl-title" data-i18n="network.pdf_chéraga_title">Succursale de Chéraga</span>
+          <span class="pdf-dl-hint" data-i18n="network.pdf_chéraga_hint">Agency list (PDF)</span>
         </div>
       </a>
       <a href="downloads/SUCCURSALE DE CONSTANTINE.pdf" download class="pdf-dl-card">
@@ -218,8 +221,8 @@
           </svg>
         </div>
         <div class="pdf-dl-info">
-          <span class="pdf-dl-title">Succursale de Constantine</span>
-          <span class="pdf-dl-hint">Agency list (PDF)</span>
+          <span class="pdf-dl-title" data-i18n="network.pdf_constantine_title">Succursale de Constantine</span>
+          <span class="pdf-dl-hint" data-i18n="network.pdf_constantine_hint">Agency list (PDF)</span>
         </div>
       </a>
       <a href="downloads/Liste des agences CAAR dotées des Terminaux de Paiement.pdf" download class="pdf-dl-card">
@@ -232,8 +235,8 @@
           </svg>
         </div>
         <div class="pdf-dl-info">
-          <span class="pdf-dl-title">Agences avec Terminal TPE</span>
-          <span class="pdf-dl-hint">Payment terminals list (PDF)</span>
+          <span class="pdf-dl-title" data-i18n="network.pdf_tpe_title">Agences avec Terminal TPE</span>
+          <span class="pdf-dl-hint" data-i18n="network.pdf_tpe_hint">Payment terminals list (PDF)</span>
         </div>
       </a>
     </div>

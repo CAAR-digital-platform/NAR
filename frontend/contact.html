@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CAAR — Titre de la page</title>
+  <title data-i18n="contact.title">CAAR — Contact Us</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -21,12 +21,12 @@
     <img src="img/fleche.png" class="hero-deco" alt="" aria-hidden="true"/>
     <div class="caar-hero__inner">
       <div class="caar-hero__text">
-        <span class="caar-hero__tag">Contact Us</span>
-        <h1 class="caar-hero__title">Get help with your insurance — fast and hassle-free</h1>
-        <p class="caar-hero__subtitle">Our advisors respond within 24 hours and guide you step by step.</p>
+        <span class="caar-hero__tag" data-i18n="contact.hero_tag">Contact Us</span>
+        <h1 class="caar-hero__title" data-i18n="contact.hero_title">Get help with your insurance — fast and hassle-free</h1>
+        <p class="caar-hero__subtitle" data-i18n="contact.hero_subtitle">Our advisors respond within 24 hours and guide you step by step.</p>
         <div class="caar-hero__actions">
-          <button class="btn-primary" id="ctaBtn">Send a Request</button>
-          <a href="network.html" class="btn-secondary">Find an Agency</a>
+          <button class="btn-primary" id="ctaBtn" data-i18n="contact.send_request">Send a Request</button>
+          <a href="network.html" class="btn-secondary" data-i18n="contact.find_agency">Find an Agency</a>
         </div>
       </div>
       <div class="caar-hero__image">
@@ -47,12 +47,12 @@
     <div class="contact-form-left">
       <div class="form-collapse-row">
         <div class="form-section-title">Send us a message</div>
-        <button class="btn-collapse" type="button" onclick="collapseForm()">
+        <button class="btn-collapse" type="button" onclick="collapseForm()" data-i18n="contact.close">
           <svg viewBox="0 0 12 12" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2"><path d="M2 8l4-4 4 4"/></svg>
           Close
         </button>
       </div>
-      <p class="form-intro">Please select the subject of your request so we can direct it to the appropriate department.</p>
+      <p class="form-intro" data-i18n="contact.form_intro">Please select the subject of your request so we can direct it to the appropriate department.</p>
 
       <form id="caarContactForm" novalidate autocomplete="on">
 
@@ -60,87 +60,87 @@
 
           <!-- Subject -->
           <div class="cf-group">
-            <label for="cfSubject">Subject <span>*</span></label>
+            <label for="cfSubject" data-i18n="contact.label_subject">Subject <span>*</span></label>
             <select class="cf-select" id="cfSubject" name="subject" required>
-              <option value="" disabled selected>Select the subject of your request</option>
-              <option value="General Information">General Information</option>
-              <option value="Claim Declaration">Claim Declaration</option>
-              <option value="Policy Management">Policy Management</option>
-              <option value="Auto Insurance">Auto Insurance</option>
-              <option value="Habitation Insurance">Habitation Insurance</option>
-              <option value="Agriculture Insurance">Agriculture Insurance</option>
-              <option value="Technical Support">Technical Support</option>
-              <option value="Other">Other</option>
+              <option value="" disabled selected data-i18n="contact.select_subject">Select the subject of your request</option>
+              <option value="General Information" data-i18n="contact.option_general">General Information</option>
+              <option value="Claim Declaration" data-i18n="contact.option_claim">Claim Declaration</option>
+              <option value="Policy Management" data-i18n="contact.option_policy">Policy Management</option>
+              <option value="Auto Insurance" data-i18n="contact.option_auto">Auto Insurance</option>
+              <option value="Habitation Insurance" data-i18n="contact.option_habitation">Habitation Insurance</option>
+              <option value="Agriculture Insurance" data-i18n="contact.option_agriculture">Agriculture Insurance</option>
+              <option value="Technical Support" data-i18n="contact.option_technical">Technical Support</option>
+              <option value="Other" data-i18n="contact.option_other">Other</option>
             </select>
-            <span class="cf-field-error" id="err-subject">Please select a subject.</span>
+            <span class="cf-field-error" id="err-subject" data-i18n="contact.error_subject">Please select a subject.</span>
           </div>
 
           <!-- Full name -->
           <div class="cf-group">
-            <label for="cfName">Full name <span>*</span></label>
+            <label for="cfName" data-i18n="contact.label_name">Full name <span>*</span></label>
             <input class="cf-input" type="text" id="cfName" name="full_name"
-              placeholder="Your full name" required minlength="3" maxlength="100" autocomplete="name"/>
-            <span class="cf-field-error" id="err-name">Please enter your full name (at least 3 characters, letters only).</span>
+              placeholder="Your full name" data-i18n-placeholder="contact.placeholder_name" required minlength="3" maxlength="100" autocomplete="name"/>
+            <span class="cf-field-error" id="err-name" data-i18n="contact.error_name">Please enter your full name (at least 3 characters, letters only).</span>
           </div>
 
           <!-- Email -->
           <div class="cf-group">
-            <label for="cfEmail">Email address <span>*</span></label>
+            <label for="cfEmail" data-i18n="contact.label_email">Email address <span>*</span></label>
             <input class="cf-input" type="email" id="cfEmail" name="email"
-              placeholder="yourname@email.com" required autocomplete="email"/>
-            <span class="cf-field-error" id="err-email">Please enter a valid email address.</span>
+              placeholder="yourname@email.com" data-i18n-placeholder="contact.placeholder_email" required autocomplete="email"/>
+            <span class="cf-field-error" id="err-email" data-i18n="contact.error_email">Please enter a valid email address.</span>
           </div>
 
           <!-- Phone (optional) -->
           <div class="cf-group">
-            <label for="cfPhone">Phone number</label>
+            <label for="cfPhone" data-i18n="contact.label_phone">Phone number</label>
             <input class="cf-input" type="tel" id="cfPhone" name="phone"
-              placeholder="your phone number" pattern="[0-9\s\+\-\(\)]{8,20}" autocomplete="tel"/>
-            <div class="cf-hint">Optional &ndash; useful for faster follow-up.</div>
-            <span class="cf-field-error" id="err-phone">Please enter a valid phone number (8–15 digits).</span>
+              placeholder="your phone number" data-i18n-placeholder="contact.placeholder_phone" pattern="[0-9\s\+\-\(\)]{8,20}" autocomplete="tel"/>
+            <div class="cf-hint" data-i18n="contact.hint_phone">Optional &ndash; useful for faster follow-up.</div>
+            <span class="cf-field-error" id="err-phone" data-i18n="contact.error_phone">Please enter a valid phone number (8–15 digits).</span>
           </div>
 
           <!-- Message -->
           <div class="cf-group">
-            <label for="cfMessage">Message <span>*</span></label>
+            <label for="cfMessage" data-i18n="contact.label_message">Message <span>*</span></label>
             <textarea class="cf-textarea" id="cfMessage" name="message"
-              placeholder="Describe your request clearly (policy number, agency, date, or any useful detail)"
+              placeholder="Describe your request clearly (policy number, agency, date, or any useful detail)" data-i18n-placeholder="contact.placeholder_message"
               required minlength="10" maxlength="2000"
               oninput="updateCharCount(this)"></textarea>
             <div class="cf-char-count" id="cfCharCount">0 / 2000</div>
-            <span class="cf-field-error" id="err-message">Message must be at least 10 characters.</span>
+            <span class="cf-field-error" id="err-message" data-i18n="contact.error_message">Message must be at least 10 characters.</span>
           </div>
 
           <!-- Consent -->
           <div class="cf-check-row">
             <input type="checkbox" id="cfConsent" name="consent" required/>
-            <label for="cfConsent">I agree to the processing of my <a href="#">personal data</a> in accordance with applicable regulations.</label>
+            <label for="cfConsent" data-i18n="contact.consent">I agree to the processing of my <a href="#">personal data</a> in accordance with applicable regulations.</label>
           </div>
-          <span class="cf-field-error" id="err-consent" style="margin-bottom:10px;margin-top:-6px;">You must agree to data processing to continue.</span>
+          <span class="cf-field-error" id="err-consent" style="margin-bottom:10px;margin-top:-6px;" data-i18n="contact.error_consent">You must agree to data processing to continue.</span>
 
           <!-- Robot check -->
           <div class="cf-robot" id="cfRobotWrap">
             <input type="checkbox" id="cfRobot" name="not_robot"/>
-            <label for="cfRobot">I'm not a robot</label>
+            <label for="cfRobot" data-i18n="contact.robot">I'm not a robot</label>
           </div>
-          <span class="cf-field-error" id="err-robot" style="margin-bottom:10px;">Please confirm you are not a robot.</span>
+          <span class="cf-field-error" id="err-robot" style="margin-bottom:10px;" data-i18n="contact.error_robot">Please confirm you are not a robot.</span>
 
           <!-- Submit -->
-          <button class="btn-send" id="sendBtn" type="submit">send my request</button>
-          <p class="cf-confidential">Your request will be processed confidentially by CAAR</p>
+          <button class="btn-send" id="sendBtn" type="submit" data-i18n="contact.send_button">send my request</button>
+          <p class="cf-confidential" data-i18n="contact.confidential">Your request will be processed confidentially by CAAR</p>
         </div>
 
         <!-- Success state -->
         <div class="cf-success-state" id="successState">
           <div class="cf-success-icon">✓</div>
-          <div class="cf-success-title">Request sent successfully!</div>
-          <div class="cf-success-sub">
+          <div class="cf-success-title" data-i18n="contact.success_title">Request sent successfully!</div>
+          <div class="cf-success-sub" data-i18n="contact.success_message">
             Our team will review your message and get back to you within<br>
-            <strong>24 working hours</strong>. Check your email for confirmation.
+            <strong data-i18n="contact.success_hours">24 working hours</strong>. Check your email for confirmation.
           </div>
           <div class="cf-success-actions">
-            <a href="network.html" class="btn-success-primary">Find nearest agency</a>
-            <button class="btn-success-secondary" type="button" onclick="resetForm()">Send another request</button>
+            <a href="network.html" class="btn-success-primary" data-i18n="contact.success_agency">Find nearest agency</a>
+            <button class="btn-success-secondary" type="button" onclick="resetForm()" data-i18n="contact.success_another">Send another request</button>
           </div>
         </div>
 
@@ -149,37 +149,37 @@
 
     <!-- RIGHT: other contact channels -->
     <div class="contact-other-ways">
-      <h3>Other ways to contact us</h3>
+      <h3 data-i18n="contact.other_ways">Other ways to contact us</h3>
 
       <div class="contact-card">
         <div class="contact-card-icon">
           <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7 19.79 19.79 0 0 1 1.06 4.1 2 2 0 0 1 3 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
-        <h4>Call us</h4>
-        <p>+213 (0)21 63 20 72<br/>Sunday to Thursday &ndash; business hours</p>
+        <h4 data-i18n="contact.call_title">Call us</h4>
+        <p data-i18n="contact.call_info">+213 (0)21 63 20 72<br/>Sunday to Thursday &ndash; business hours</p>
       </div>
 
       <div class="contact-card">
         <div class="contact-card-icon">
           <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         </div>
-        <h4>Email</h4>
-        <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82e1edecf6e3e1f6c2e1e3e3f0ace6f8">[email&#160;protected]</a><br/>For non-urgent requests</p>
+        <h4 data-i18n="contact.email_title">Email</h4>
+        <p data-i18n="contact.email_info"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82e1edecf6e3e1f6c2e1e3e3f0ace6f8">[email&#160;protected]</a><br/>For non-urgent requests</p>
       </div>
 
       <div class="contact-card">
         <div class="contact-card-icon">
           <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
-        <h4>Head office</h4>
-        <p>48, Rue Didouche Mourad<br/>Algiers 16000, Algeria</p>
-        <a href="network.html?focus=hq" class="btn-directions">Get directions</a>
+        <h4 data-i18n="contact.office_title">Head office</h4>
+        <p data-i18n="contact.office_address">48, Rue Didouche Mourad<br/>Algiers 16000, Algeria</p>
+        <a href="network.html?focus=hq" class="btn-directions" data-i18n="contact.get_directions">Get directions</a>
       </div>
 
       <div class="contact-crossnav">
-        <div class="contact-crossnav-label">Prefer in-person?</div>
-        <div class="contact-crossnav-text">Visit one of our 39+ agencies across Algeria. We'll find the nearest one to you.</div>
-        <a href="network.html" class="btn-crossnav">
+        <div class="contact-crossnav-label" data-i18n="contact.prefer_in_person">Prefer in-person?</div>
+        <div class="contact-crossnav-text" data-i18n="contact.agency_text">Visit one of our 39+ agencies across Algeria. We'll find the nearest one to you.</div>
+        <a href="network.html" class="btn-crossnav" data-i18n="contact.find_agency_cross">
           Find an agency
           <svg viewBox="0 0 12 12"><path d="M4 2l4 4-4 4"/></svg>
         </a>
@@ -191,10 +191,10 @@
 <!-- MAP SECTION -->
 <section class="contact-map-section">
   <div class="contact-map-header">
-    <h2>CAAR Headquarters Location</h2>
+    <h2 data-i18n="contact.map_title">CAAR Headquarters Location</h2>
     <div class="map-smart-actions">
-      <a href="network.html" class="btn-map-action btn-map-secondary">🗺 View all agencies</a>
-      <a href="network.html?focus=hq" class="btn-map-action btn-map-primary">📍 Get directions</a>
+      <a href="network.html" class="btn-map-action btn-map-secondary" data-i18n="contact.view_all_agencies">🗺 View all agencies</a>
+      <a href="network.html?focus=hq" class="btn-map-action btn-map-primary" data-i18n="contact.get_directions_map">📍 Get directions</a>
     </div>
   </div>
 
