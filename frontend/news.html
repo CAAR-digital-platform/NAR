@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CAAR — Insurance Advice &amp; Articles</title>
+  <title data-i18n="news.title">CAAR — Insurance Advice &amp; Articles</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="main.css"/>
   <link rel="stylesheet" href="header-extras.css"/>
@@ -19,12 +19,12 @@
   <img src="img/fleche.png" class="hero-deco" alt="" aria-hidden="true"/>
   <div class="caar-hero__inner">
     <div class="caar-hero__text">
-      <span class="caar-hero__tag">Insurance Knowledge</span>
-      <h1 class="caar-hero__title">Insurance Advice &amp; Articles</h1>
-      <p class="caar-hero__subtitle">Practical guidance to help you understand risks, procedures, and your rights as a policyholder.</p>
+      <span class="caar-hero__tag" data-i18n="news.hero_tag">Insurance Knowledge</span>
+      <h1 class="caar-hero__title" data-i18n="news.hero_title">Insurance Advice &amp; Articles</h1>
+      <p class="caar-hero__subtitle" data-i18n="news.hero_subtitle">Practical guidance to help you understand risks, procedures, and your rights as a policyholder.</p>
       <div class="caar-hero__actions">
-        <a href="#articles-section" class="btn-primary">Latest News</a>
-        <a href="#articles-section" class="btn-secondary">Browse Articles</a>
+        <a href="#articles-section" class="btn-primary" data-i18n="news.hero_cta_news">Latest News</a>
+        <a href="#articles-section" class="btn-secondary" data-i18n="news.hero_cta_browse">Browse Articles</a>
       </div>
     </div>
     <div class="caar-hero__image">
@@ -37,71 +37,71 @@
 <section class="advice-section scroll-reveal">
   <div class="advice-section__inner">
     <div class="advice-section__header">
-      <h2 class="advice-section__title">Find advice for:</h2>
-      <p class="advice-section__intro">Choose a topic to access practical insurance advice and understand procedures, coverage, and your rights as a policyholder.</p>
+      <h2 class="advice-section__title" data-i18n="news.advice_title">Find advice for:</h2>
+      <p class="advice-section__intro" data-i18n="news.advice_intro">Choose a topic to access practical insurance advice and understand procedures, coverage, and your rights as a policyholder.</p>
     </div>
 
     <div class="advice-categories scroll-reveal-group" role="tablist">
       <button class="advice-category-btn is-active scroll-reveal-item" role="tab" aria-selected="true"
-        onclick="switchAdvice('road', this)">Road Accidents</button>
+        onclick="switchAdvice('road', this)" data-i18n="news.advice_category_road">Road Accidents</button>
       <button class="advice-category-btn scroll-reveal-item" role="tab" aria-selected="false"
-        onclick="switchAdvice('home', this)">Home Insurance</button>
+        onclick="switchAdvice('home', this)" data-i18n="news.advice_category_home">Home Insurance</button>
       <button class="advice-category-btn scroll-reveal-item" role="tab" aria-selected="false"
-        onclick="switchAdvice('business', this)">Business Insurance</button>
+        onclick="switchAdvice('business', this)" data-i18n="news.advice_category_business">Business Insurance</button>
       <button class="advice-category-btn scroll-reveal-item" role="tab" aria-selected="false"
-        onclick="switchAdvice('basics', this)">Insurance Basics</button>
+        onclick="switchAdvice('basics', this)" data-i18n="news.advice_category_basics">Insurance Basics</button>
     </div>
 
     <!-- Road Accidents -->
     <article class="advice-card is-active" id="advice-road" role="tabpanel">
-      <h3 class="advice-card__title">What to do after a road accident?</h3>
-      <p class="advice-card__text">Knowing the correct steps to take after a road accident helps protect your safety and ensures a smoother insurance process.</p>
+      <h3 class="advice-card__title" data-i18n="news.advice_road_title">What to do after a road accident?</h3>
+      <p class="advice-card__text" data-i18n="news.advice_road_description">Knowing the correct steps to take after a road accident helps protect your safety and ensures a smoother insurance process.</p>
       <ul class="advice-card__list">
-        <li>Secure the accident area and ensure everyone's safety</li>
-        <li>Contact the authorities if necessary</li>
-        <li>Document damages and collect information from all parties</li>
-        <li>Inform your insurance company as soon as possible</li>
+        <li data-i18n="news.advice_road_step1">Secure the accident area and ensure everyone's safety</li>
+        <li data-i18n="news.advice_road_step2">Contact the authorities if necessary</li>
+        <li data-i18n="news.advice_road_step3">Document damages and collect information from all parties</li>
+        <li data-i18n="news.advice_road_step4">Inform your insurance company as soon as possible</li>
       </ul>
-      <a href="article-accident.html" class="advice-card__btn">Read full guide →</a>
+      <a href="article-accident.html" class="advice-card__btn" data-i18n="news.advice_road_link">Read full guide →</a>
     </article>
 
     <!-- Home Insurance -->
     <article class="advice-card" id="advice-home" role="tabpanel">
-      <h3 class="advice-card__title">How to properly protect your home?</h3>
-      <p class="advice-card__text">Home insurance helps protect your property and belongings against common risks such as fire, water damage, and theft.</p>
+      <h3 class="advice-card__title" data-i18n="news.advice_home_title">How to properly protect your home?</h3>
+      <p class="advice-card__text" data-i18n="news.advice_home_description">Home insurance helps protect your property and belongings against common risks such as fire, water damage, and theft.</p>
       <ul class="advice-card__list">
-        <li>Identify the main risks affecting your home</li>
-        <li>Insure both the building and its contents when applicable</li>
-        <li>Accurately declare the value of your belongings</li>
-        <li>Regularly update your contract after renovations or new purchases</li>
+        <li data-i18n="news.advice_home_step1">Identify the main risks affecting your home</li>
+        <li data-i18n="news.advice_home_step2">Insure both the building and its contents when applicable</li>
+        <li data-i18n="news.advice_home_step3">Accurately declare the value of your belongings</li>
+        <li data-i18n="news.advice_home_step4">Regularly update your contract after renovations or new purchases</li>
       </ul>
-      <a href="article-home.html" class="advice-card__btn">Read full guide →</a>
+      <a href="article-home.html" class="advice-card__btn" data-i18n="news.advice_home_link">Read full guide →</a>
     </article>
 
     <!-- Business Insurance -->
     <article class="advice-card" id="advice-business" role="tabpanel">
-      <h3 class="advice-card__title">Why is business insurance essential?</h3>
-      <p class="advice-card__text">Business insurance protects companies against operational, financial, and liability risks that may threaten their activity.</p>
+      <h3 class="advice-card__title" data-i18n="news.advice_business_title">Why is business insurance essential?</h3>
+      <p class="advice-card__text" data-i18n="news.advice_business_description">Business insurance protects companies against operational, financial, and liability risks that may threaten their activity.</p>
       <ul class="advice-card__list">
-        <li>Identify risks related to your business activity and sector</li>
-        <li>Insure company assets: buildings, equipment, and stock</li>
-        <li>Protect your business against third-party liability</li>
-        <li>Review coverage regularly as the business grows</li>
+        <li data-i18n="news.advice_business_step1">Identify risks related to your business activity and sector</li>
+        <li data-i18n="news.advice_business_step2">Insure company assets: buildings, equipment, and stock</li>
+        <li data-i18n="news.advice_business_step3">Protect your business against third-party liability</li>
+        <li data-i18n="news.advice_business_step4">Review coverage regularly as the business grows</li>
       </ul>
-      <a href="article-business.html" class="advice-card__btn">Read full guide →</a>
+      <a href="article-business.html" class="advice-card__btn" data-i18n="news.advice_business_link">Read full guide →</a>
     </article>
 
     <!-- Insurance Basics -->
     <article class="advice-card" id="advice-basics" role="tabpanel">
-      <h3 class="advice-card__title">Understanding the basics of insurance</h3>
-      <p class="advice-card__text">Insurance is a financial protection mechanism that helps individuals and businesses manage risks and unforeseen events.</p>
+      <h3 class="advice-card__title" data-i18n="news.advice_basics_title">Understanding the basics of insurance</h3>
+      <p class="advice-card__text" data-i18n="news.advice_basics_description">Insurance is a financial protection mechanism that helps individuals and businesses manage risks and unforeseen events.</p>
       <ul class="advice-card__list">
-        <li>Understand the difference between mandatory and optional coverage</li>
-        <li>Know what risks are covered and what exclusions apply</li>
-        <li>Choose coverage adapted to your personal or professional situation</li>
-        <li>Respect contract conditions to avoid claim rejection</li>
+        <li data-i18n="news.advice_basics_step1">Understand the difference between mandatory and optional coverage</li>
+        <li data-i18n="news.advice_basics_step2">Know what risks are covered and what exclusions apply</li>
+        <li data-i18n="news.advice_basics_step3">Choose coverage adapted to your personal or professional situation</li>
+        <li data-i18n="news.advice_basics_step4">Respect contract conditions to avoid claim rejection</li>
       </ul>
-      <a href="article-basics.html" class="advice-card__btn">Read full guide →</a>
+      <a href="article-basics.html" class="advice-card__btn" data-i18n="news.advice_basics_link">Read full guide →</a>
     </article>
   </div>
 </section>
@@ -113,8 +113,8 @@
     <div id="articles-list-view">
       <div class="articles-section__header scroll-reveal">
         <div>
-          <h2 class="articles-section__title">CAAR News &amp; Events</h2>
-          <p class="articles-section__subtitle">Recent activities and initiatives carried out by CAAR across the country.</p>
+          <h2 class="articles-section__title" data-i18n="news.articles_title">CAAR News &amp; Events</h2>
+          <p class="articles-section__subtitle" data-i18n="news.articles_subtitle">Recent activities and initiatives carried out by CAAR across the country.</p>
         </div>
       </div>
       <div class="articles-grid-wrap is-visible">
@@ -125,7 +125,7 @@
 
     <!-- Detail view -->
     <div class="article-detail is-hidden" id="article-detail">
-      <button class="article-back-link" onclick="closeArticleDetail()">← Back to articles</button>
+      <button class="article-back-link" onclick="closeArticleDetail()" data-i18n="news.articles_back_link">← Back to articles</button>
       <div class="article-detail__card">
         <h2 class="article-detail__title" id="detail-title"></h2>
         <div class="article-detail__body">
