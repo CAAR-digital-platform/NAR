@@ -14,7 +14,7 @@
 
 const BASE_API = 'http://localhost:3000/api';
 
-document.addEventListener('DOMContentLoaded', function () {
+function initializeNetworkMap() {
   if (!document.getElementById('filterMap')) return;
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -557,4 +557,22 @@ document.addEventListener('DOMContentLoaded', function () {
     await loadWilayas();
     initMaps();
   })();
+}
+
+// ── FIX: Wait for header to be ready before initializing map ──
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.__caarHeaderReady) {
+    // Header already ready (if document was already loaded)
+    initializeNetworkMap();
+  } else {
+    // Wait for header to be initialized
+    const headerReadyCheck = setInterval(() => {
+      if (window.__caarHeaderReady) {
+        clearInterval(headerReadyCheck);
+        initializeNetworkMap();
+      }
+    }, 50);
+    // Timeout after 3 seconds to prevent infinite waiting
+    setTimeout(() => clearInterval(headerReadyCheck), 3000);
+  }
 });

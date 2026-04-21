@@ -46,18 +46,55 @@
 
   function loadScript(src) {
     return new Promise(function (resolve, reject) {
+      var existing = document.querySelector('script[src="' + src + '"]');
+      if (existing) {
+        if (existing.dataset.loaded === 'true') {
+          resolve();
+          return;
+        }
+        existing.addEventListener('load', function onLoad() {
+          existing.removeEventListener('load', onLoad);
+          resolve();
+        });
+        existing.addEventListener('error', function onError() {
+          existing.removeEventListener('error', onError);
+          reject(new Error('Failed to load ' + src));
+        });
+        return;
+      }
+
       var script = document.createElement('script');
       script.src = src;
       script.async = false;
-      script.onload = function () { resolve(); };
+      script.onload = function () {
+        script.dataset.loaded = 'true';
+        resolve();
+      };
       script.onerror = function () { reject(new Error('Failed to load ' + src)); };
       document.head.appendChild(script);
+    });
+  }
+
+  function loadStyle(href) {
+    if (document.querySelector('link[href="' + href + '"]')) return Promise.resolve();
+    return new Promise(function (resolve, reject) {
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      link.onload = function () { resolve(); };
+      link.onerror = function () { reject(new Error('Failed to load ' + href)); };
+      document.head.appendChild(link);
     });
   }
 
   function loadLanguageAssets(base) {
     return loadScript(base + 'translations.js')
       .then(function () { return loadScript(base + 'lang.js'); });
+  }
+
+  function loadSearchAssets(base) {
+    return loadStyle(base + 'Search.css')
+      .then(function () { return loadScript(base + 'Search.js'); });
   }
 
   /* ── Load an HTML component into a DOM element ── */
@@ -102,6 +139,10 @@
         if (window.Language && typeof window.Language.init === 'function') {
           window.Language.init();
         }
+
+        if (window.CAARSmartSearch && typeof window.CAARSmartSearch.init === 'function') {
+          window.CAARSmartSearch.init();
+        }
       });
     }
 
@@ -114,14 +155,14 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       var base = resolveBase();
-      loadLanguageAssets(base).then(boot).catch(function (err) {
+      Promise.all([loadLanguageAssets(base), loadSearchAssets(base)]).then(boot).catch(function (err) {
         console.warn('[CAAR] Language assets failed to load:', err.message);
         boot();
       });
     });
   } else {
     var base = resolveBase();
-    loadLanguageAssets(base).then(boot).catch(function (err) {
+    Promise.all([loadLanguageAssets(base), loadSearchAssets(base)]).then(boot).catch(function (err) {
       console.warn('[CAAR] Language assets failed to load:', err.message);
       boot();
     });
