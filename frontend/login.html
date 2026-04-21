@@ -418,24 +418,50 @@ document.getElementById('loginForm').addEventListener('submit', async function (
       return;
     }
 
-    const user = data.user || {};
-    const role = user.role || 'client';
+    const userId = Number(data.user_id);
+    const role = typeof data.role === 'string' ? data.role : '';
+    const mustChangePassword = Boolean(data.must_change_password);
 
-    // Store auth data
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('role', role);
-    localStorage.setItem('user', JSON.stringify(user));
-    // Keep legacy key so dashboard.js guard still works during transition
-    localStorage.setItem('caar_auth_token', data.token);
-
-    // Redirect by role and resume intended destination when safe.
     const map = {
       client: 'client-dashboard.html',
       admin:  'admin-dashboard.html',
       expert: 'expert-dashboard.html'
     };
 
-    const roleHome = map[role] || 'client-dashboard.html';
+    if (!data.token || !Number.isInteger(userId) || !map[role]) {
+      showGlobalError('Invalid login response. Please try again.');
+      return;
+    }
+
+    // Store auth data
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('role', role);
+    localStorage.setItem('must_change_password', mustChangePassword ? '1' : '0');
+    localStorage.setItem('user', JSON.stringify({ id: userId, role: role }));
+    // Keep legacy key so dashboard.js guard still works during transition
+    localStorage.setItem('caar_auth_token', data.token);
+
+    // Refresh profile snapshot for header/dashboard labels.
+    try {
+      const meRes = await fetch('http://localhost:3000/api/auth/me', {
+        headers: { Authorization: 'Bearer ' + data.token }
+      });
+      const meData = await meRes.json().catch(() => ({}));
+      if (meRes.ok && meData && meData.user) {
+        localStorage.setItem('user', JSON.stringify(meData.user));
+        localStorage.setItem('must_change_password', meData.user.must_change_password ? '1' : '0');
+      }
+    } catch (_) {
+      // Non-fatal; dashboards can refresh profile data later.
+    }
+
+    if (mustChangePassword) {
+      window.location.href = 'change-password.html';
+      return;
+    }
+
+    // Redirect by role and resume intended destination when safe.
+    const roleHome = map[role];
     const returnTo = getSafeReturnTo();
     const canUseReturnTo = !!returnTo && (
       role === 'client' ||

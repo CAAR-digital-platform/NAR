@@ -1,7 +1,13 @@
 const authService = require('../services/authService');
 
 async function register(req, res) {
-  const { first_name, last_name, email, password, phone } = req.body;
+  const { first_name, last_name, email, password, phone, role } = req.body;
+
+  if (typeof role !== 'undefined' && role !== 'client') {
+    return res.status(403).json({
+      error: 'Public registration only supports client accounts',
+    });
+  }
 
   if (!first_name || !last_name || !email || !password) {
     return res.status(400).json({
@@ -41,11 +47,11 @@ async function login(req, res) {
   }
 
   try {
-    const { token, user } = await authService.login({
+    const { token, user_id, role, must_change_password } = await authService.login({
       email: email.trim().toLowerCase(),
       password,
     });
-    return res.status(200).json({ token, user });
+    return res.status(200).json({ token, user_id, role, must_change_password });
   } catch (err) {
     return res.status(err.status || 500).json({ error: err.message });
   }
@@ -109,4 +115,22 @@ async function changePassword(req, res) {
   }
 }
 
-module.exports = { register, login, getMe, updateProfile, changePassword };
+async function forceChangePassword(req, res) {
+  const { new_password, confirm_password } = req.body;
+
+  try {
+    const result = await authService.forceChangePassword(req.user.id, {
+      new_password,
+      confirm_password,
+    });
+
+    return res.status(200).json({
+      message: 'Password updated',
+      ...result,
+    });
+  } catch (err) {
+    return res.status(err.status || 500).json({ error: err.message });
+  }
+}
+
+module.exports = { register, login, getMe, updateProfile, changePassword, forceChangePassword };

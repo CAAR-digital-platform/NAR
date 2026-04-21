@@ -98,7 +98,8 @@ const Header = (() => {
     userMenu.style.display    = 'block';
     if (dashboardBtn) dashboardBtn.style.display = 'inline-flex';
 
-    const name     = activeUser.first_name || activeUser.email.split('@')[0];
+    const email    = activeUser.email || '';
+    const name     = activeUser.first_name || (email ? email.split('@')[0] : 'User');
     const initials = _buildInitials(name);
     const role     = activeUser.role || 'client';
     const dashHref = (window.DASHBOARD_MAP && window.DASHBOARD_MAP[role])
@@ -190,27 +191,21 @@ const Header = (() => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-          window.location.href = '/frontend/login.html';
+          window.location.href = 'login.html';
           return;
         }
 
         const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-        const role = (storedUser && storedUser.role) || localStorage.getItem('role') || '';
-        console.log('[HEADER] role before dashboard redirect:', role);
+        const mustChange = (storedUser && storedUser.must_change_password) || localStorage.getItem('must_change_password') === '1';
+        if (mustChange) {
+          window.location.href = 'change-password.html';
+          return;
+        }
 
-        if (role === 'admin') {
-          window.location.href = '/frontend/admin-dashboard.html';
-        }
-        else if (role === 'expert') {
-          window.location.href = '/frontend/expert-dashboard.html';
-        }
-        else if (role === 'client') {
-          window.location.href = '/frontend/client-dashboard.html';
-        }
-        else {
-          console.warn('[HEADER] Unknown role, redirecting to login.');
-          window.location.href = '/frontend/login.html';
-        }
+        const role = (storedUser && storedUser.role) || localStorage.getItem('role') || '';
+        const target = (window.DASHBOARD_MAP && window.DASHBOARD_MAP[role]) || null;
+
+        window.location.href = target || 'login.html';
       });
     }
 

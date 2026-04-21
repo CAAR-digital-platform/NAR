@@ -7,6 +7,10 @@
     expert: 'expert-dashboard.html',
   };
 
+  const ICON = window.CAARIcons && typeof window.CAARIcons.render === 'function'
+    ? window.CAARIcons.render
+    : function () { return ''; };
+
   let ASSIGNED_CLAIMS = [];
   let ACTIONABLE_CLAIMS = [];
 
@@ -18,6 +22,16 @@
     approved: 'Approved',
     rejected: 'Rejected',
     closed: 'Closed',
+  };
+
+  const STATUS_ICON = {
+    pending: 'clock',
+    under_review: 'search',
+    expert_assigned: 'userCheck',
+    reported: 'fileText',
+    approved: 'checkCircle',
+    rejected: 'xCircle',
+    closed: 'checkCircle',
   };
 
   function guardExpert() {
@@ -34,6 +48,12 @@
       return false;
     }
 
+    const mustChange = Boolean(user.must_change_password) || localStorage.getItem('must_change_password') === '1';
+    if (mustChange) {
+      window.location.href = 'change-password.html';
+      return false;
+    }
+
     return true;
   }
 
@@ -44,6 +64,14 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+  }
+
+  function paintStaticIcons() {
+    document.querySelectorAll('[data-icon]').forEach(function (el) {
+      const name = el.getAttribute('data-icon');
+      if (!name) return;
+      el.innerHTML = ICON(name, 16, 'ui-icon');
+    });
   }
 
   function api(path, opts) {
@@ -92,27 +120,39 @@
     if (submitBtn) submitBtn.disabled = show;
   }
 
+  function normalizeStatus(status) {
+    return String(status || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, '_');
+  }
+
   function badge(status) {
-    const key = (status || '').toLowerCase();
-    return '<span class="status ' + esc(key) + '">' + esc(STATUS_LABELS[key] || key.replace(/_/g, ' ')) + '</span>';
+    const key = normalizeStatus(status);
+    const icon = STATUS_ICON[key] ? ICON(STATUS_ICON[key], 14, 'status-icon') : '';
+    return '<span class="status status--' + esc(key) + '">' + icon + esc(STATUS_LABELS[key] || key.replace(/_/g, ' ')) + '</span>';
   }
 
   function renderClaims(claims) {
-    const body = document.getElementById('expertClaimsBody');
-    if (!body) return;
+    const cards = document.getElementById('expertClaimsCards');
+    if (!cards) return;
 
     if (!claims || !claims.length) {
-      body.innerHTML = '<tr><td colspan="4">No claims available for reporting</td></tr>';
+      cards.innerHTML = '<div class="empty-state">No assigned claims available yet.</div>';
       return;
     }
 
-    body.innerHTML = claims.map((c) => [
-      '<tr>',
-      '  <td>#' + esc(c.claim_id) + '<br/><small>' + esc(c.contract_id) + '</small></td>',
-      '  <td>' + esc(c.client_name || '-') + '<br/><small>' + esc(c.client_email || '-') + '</small></td>',
-      '  <td>' + badge(c.status) + '</td>',
-      '  <td>' + esc(c.description || '-') + '</td>',
-      '</tr>'
+    cards.innerHTML = claims.map((c) => [
+      '<article class="claim-card">',
+      '  <div class="claim-card-head">',
+      '    <div>',
+      '      <div class="claim-card-id">Claim #' + esc(c.claim_id) + ' - Contract ' + esc(c.contract_id || '-') + '</div>',
+      '      <div class="claim-client">' + ICON('user', 14, '') + esc(c.client_name || '-') + '</div>',
+      '      <div class="claim-email">' + esc(c.client_email || '-') + '</div>',
+      '    </div>',
+      '    <div>' + badge(c.status) + '</div>',
+      '  </div>',
+      '  <div class="claim-desc">' + esc(c.description || 'No claim description provided.') + '</div>',
+      '</article>'
     ].join('')).join('');
   }
 
@@ -133,19 +173,34 @@
   }
 
   function updateMetrics(actionableClaims) {
-    const assignedCount = actionableClaims.length;
+    const assignedCount = ASSIGNED_CLAIMS.length;
+    const inProgress = ASSIGNED_CLAIMS.filter(function (c) { return normalizeStatus(c.status) === 'expert_assigned'; }).length;
+    const completed = ASSIGNED_CLAIMS.filter(function (c) {
+      const s = normalizeStatus(c.status);
+      return s === 'approved' || s === 'rejected' || s === 'closed';
+    }).length;
+    const reports = ASSIGNED_CLAIMS.filter(function (c) {
+      const s = normalizeStatus(c.status);
+      return s === 'reported' || s === 'approved' || s === 'rejected' || s === 'closed';
+    }).length;
 
     setStat('esAssigned', assignedCount);
-    setStat('esProgress', assignedCount);
-    setStat('esCompleted', 0);
-    setStat('esReports', actionableClaims.length);
+    setStat('esProgress', inProgress);
+    setStat('esCompleted', completed);
+    setStat('esReports', reports);
+  }
+
+  function setAvailabilityView(isAvailable) {
+    const toggle = document.getElementById('expertAvailabilityToggle');
+    const stateLabel = document.getElementById('availabilityStateLabel');
+    if (toggle) toggle.checked = Boolean(isAvailable);
+    if (stateLabel) stateLabel.textContent = isAvailable ? 'Available' : 'Busy';
   }
 
   async function loadAll() {
     setMsg('Loading expert data...', false);
 
     const assignedRes = await api('/api/claims/expert/my-assignments');
-    console.log('[Expert Dashboard] /api/claims/expert/my-assignments response:', assignedRes);
 
     if (!assignedRes.ok) {
       setMsg((assignedRes.data && assignedRes.data.error) || 'Failed to load assigned claims.', true);
@@ -156,16 +211,11 @@
     }
 
     ASSIGNED_CLAIMS = Array.isArray(assignedRes.data.claims) ? assignedRes.data.claims : [];
-    console.log('[Expert Dashboard] API response claims:', ASSIGNED_CLAIMS);
 
     ACTIONABLE_CLAIMS = ASSIGNED_CLAIMS;
-    console.log('[Expert Dashboard] backend-filtered assigned claims:', ACTIONABLE_CLAIMS);
 
     const expert = assignedRes.data.expert || null;
-    const av = document.getElementById('expertAvailability');
-    if (av && expert) {
-      av.value = expert.is_available ? 'true' : 'false';
-    }
+    if (expert) setAvailabilityView(Boolean(expert.is_available));
 
     renderClaims(ACTIONABLE_CLAIMS);
     renderClaimSelection(ACTIONABLE_CLAIMS);
@@ -189,7 +239,6 @@
     }
 
     const selectedClaim = ACTIONABLE_CLAIMS.find((claim) => claim.claim_id === claimId);
-    console.log('[Expert Dashboard] selected claim:', selectedClaim || null);
     if (!selectedClaim) {
       setMsg('Invalid claim selection for this account.', true);
       return;
@@ -219,8 +268,6 @@
       },
     });
 
-    console.log('[Expert Dashboard] /api/claims/expert-reports response:', res);
-
     if (!res.ok) {
       setMsg((res.data && res.data.error) || 'Failed to submit report.', true);
       return;
@@ -239,8 +286,9 @@
   }
 
   async function saveAvailability() {
-    const av = (document.getElementById('expertAvailability') || {}).value;
-    const isAvailable = av === 'true';
+    const toggle = document.getElementById('expertAvailabilityToggle');
+    if (!toggle) return;
+    const isAvailable = Boolean(toggle.checked);
 
     const res = await api('/api/claims/expert/availability', {
       method: 'PATCH',
@@ -253,7 +301,8 @@
     }
 
     setMsg('Availability updated.', false);
-    loadAll();
+    setAvailabilityView(isAvailable);
+    setTimeout(function () { setMsg('', false); }, 1300);
   }
 
   function bindTopActions() {
@@ -261,21 +310,12 @@
     const logoutBtn = document.getElementById('expertLogout');
     const home = document.getElementById('expertHome');
     const submitBtn = document.getElementById('submitReportBtn');
-    const availabilityBtn = document.getElementById('saveAvailabilityBtn');
+    const availabilityToggle = document.getElementById('expertAvailabilityToggle');
 
     if (refresh) refresh.addEventListener('click', loadAll);
     if (home) home.addEventListener('click', function () { window.location.href = 'index.html'; });
     if (submitBtn) submitBtn.addEventListener('click', submitReport);
-    if (availabilityBtn) availabilityBtn.addEventListener('click', saveAvailability);
-
-    const claimSelect = document.getElementById('reportClaimSelect');
-    if (claimSelect) {
-      claimSelect.addEventListener('change', function () {
-        const claimId = parseInt(claimSelect.value, 10);
-        const selectedClaim = ACTIONABLE_CLAIMS.find((claim) => claim.claim_id === claimId) || null;
-        console.log('[Expert Dashboard] selected claim:', selectedClaim);
-      });
-    }
+    if (availabilityToggle) availabilityToggle.addEventListener('change', saveAvailability);
 
     if (logoutBtn) logoutBtn.addEventListener('click', function () {
       if (typeof window.logout === 'function') {
@@ -286,12 +326,14 @@
       localStorage.removeItem('role');
       localStorage.removeItem('user');
       localStorage.removeItem('caar_auth_token');
+      localStorage.removeItem('must_change_password');
       window.location.href = 'index.html';
     });
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     if (!guardExpert()) return;
+    paintStaticIcons();
     bindTopActions();
 
     const reportDate = document.getElementById('reportDate');

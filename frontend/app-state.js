@@ -63,9 +63,21 @@ function isAuthenticated() {
 }
 
 function _clearAuth() {
-  ['token', 'role', 'user', 'caar_auth_token'].forEach(function (k) {
+  ['token', 'role', 'user', 'caar_auth_token', 'must_change_password'].forEach(function (k) {
     localStorage.removeItem(k);
   });
+}
+
+function mustChangePassword() {
+  var raw = localStorage.getItem('must_change_password');
+  if (raw === '1') return true;
+
+  try {
+    var u = JSON.parse(localStorage.getItem('user') || 'null');
+    return !!(u && u.must_change_password);
+  } catch (_) {
+    return false;
+  }
 }
 
 /* ── renderAuthHeader ────────────────────────────────────────
@@ -139,6 +151,11 @@ async function initApp(opts) {
 
   if (opts.requireRole && payload.role !== opts.requireRole) {
     window.location.href = DASHBOARD_MAP[payload.role] || 'client-dashboard.html';
+    return;
+  }
+
+  if (mustChangePassword() && !window.location.pathname.includes('change-password')) {
+    window.location.href = 'change-password.html';
     return;
   }
 
@@ -230,3 +247,4 @@ window.renderAuthHeader = renderAuthHeader;
 window.initApp          = initApp;
 window.apiRequest       = apiRequest;
 window.loadContracts    = loadContracts;
+window.mustChangePassword = mustChangePassword;

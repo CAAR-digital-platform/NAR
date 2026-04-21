@@ -13,7 +13,17 @@ async function findByEmail(email) {
 
 async function findById(id) {
   const [rows] = await pool.query(
-    `SELECT id, first_name, last_name, email, phone, role, is_active, created_at
+    `SELECT id, first_name, last_name, email, phone, role, is_active, must_change_password, created_at
+     FROM users
+     WHERE id = ?`,
+    [id]
+  );
+  return rows[0] || null;
+}
+
+async function findRoleById(id) {
+  const [rows] = await pool.query(
+    `SELECT id, role
      FROM users
      WHERE id = ?`,
     [id]
@@ -23,7 +33,7 @@ async function findById(id) {
 
 async function listForAdmin() {
   const [rows] = await pool.query(
-    `SELECT id, first_name, last_name, email, phone, role, is_active, created_at
+    `SELECT id, first_name, last_name, email, phone, role, is_active, must_change_password, created_at
      FROM users
      ORDER BY created_at DESC`
   );
@@ -42,7 +52,7 @@ async function updateActiveStatus(userId, isActive) {
 
 async function findAuthById(id) {
   const [rows] = await pool.query(
-    `SELECT id, email, password_hash
+    `SELECT id, email, password_hash, must_change_password
      FROM users
      WHERE id = ?`,
     [id]
@@ -50,11 +60,12 @@ async function findAuthById(id) {
   return rows[0] || null;
 }
 
-async function createUser({ first_name, last_name, email, password_hash, phone, role }) {
+async function createUser({ first_name, last_name, email, password_hash, phone, role, must_change_password }) {
+  const mustChange = must_change_password ? 1 : 0;
   const [result] = await pool.query(
-    `INSERT INTO users (first_name, last_name, email, password_hash, phone, role)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [first_name, last_name, email, password_hash, phone || null, role || 'client']
+    `INSERT INTO users (first_name, last_name, email, password_hash, phone, role, must_change_password)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [first_name, last_name, email, password_hash, phone || null, role || 'client', mustChange]
   );
   return result.insertId;
 }
@@ -79,7 +90,8 @@ async function updateProfile(userId, { first_name, last_name, email, phone }) {
 async function updatePassword(userId, passwordHash) {
   await pool.query(
     `UPDATE users
-     SET password_hash = ?
+     SET password_hash = ?,
+         must_change_password = 0
      WHERE id = ?`,
     [passwordHash, userId]
   );
@@ -88,6 +100,7 @@ async function updatePassword(userId, passwordHash) {
 module.exports = {
   findByEmail,
   findById,
+  findRoleById,
   findAuthById,
   createUser,
   createClient,

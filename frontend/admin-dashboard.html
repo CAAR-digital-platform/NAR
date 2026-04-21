@@ -17,6 +17,10 @@
       --ok: #1f8f4d;
       --warn: #c47a00;
       --danger: #c0392b;
+      --purple: #7c3aed;
+      --blue: #1f5ea8;
+      --pending: #6b7280;
+      --reported: #c46a00;
     }
     * { box-sizing: border-box; }
     body {
@@ -52,6 +56,9 @@
       cursor: pointer;
       font-family: inherit;
       font-size: .82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
     }
     .btn-orange { background: var(--orange); color: #fff; }
     .btn-orange:hover { background: var(--orange-dark); }
@@ -59,7 +66,7 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
       margin-bottom: 16px;
     }
@@ -67,11 +74,33 @@
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 12px;
-      padding: 13px;
-      min-height: 86px;
+      padding: 13px 14px;
+      min-height: 92px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
     }
+    .stat:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(20, 14, 10, .08);
+      border-color: #dfd0c1;
+    }
+    .stat-meta { min-width: 0; }
     .stat .label { font-size: .73rem; color: var(--muted); }
     .stat .val { margin-top: 6px; font-size: 1.22rem; font-weight: 800; }
+    .stat-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #fdf4ea;
+      color: var(--orange-dark);
+      flex-shrink: 0;
+    }
 
     .grid {
       display: grid;
@@ -97,10 +126,104 @@
       margin: 0;
       font-size: .95rem;
       font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .panel-body {
       max-height: 360px;
       overflow: auto;
+    }
+
+    .mini-btn {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font-family: inherit;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 7px 10px;
+      cursor: pointer;
+      transition: background .15s ease, border-color .15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mini-btn:hover { background: #fcf7f2; border-color: #dfd2c5; }
+
+    .expert-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(17, 12, 8, 0.45);
+      backdrop-filter: blur(2px);
+      z-index: 999;
+      padding: 16px;
+    }
+    .expert-modal[hidden] { display: none; }
+    .expert-modal-card {
+      width: 100%;
+      max-width: 460px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 24px 64px rgba(18, 15, 12, 0.22);
+      overflow: hidden;
+    }
+    .expert-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fdfaf6;
+    }
+    .expert-modal-head h3 {
+      margin: 0;
+      font-size: .94rem;
+      font-weight: 800;
+    }
+    .expert-modal-body {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+    .expert-form-row {
+      display: grid;
+      gap: 5px;
+    }
+    .expert-form-row label {
+      font-size: .74rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .expert-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .expert-inline-msg {
+      display: none;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+    .expert-inline-msg.show { display: block; }
+    .expert-inline-msg.err {
+      color: #b63b2d;
+      background: #fff1f0;
+      border: 1px solid #ffd2ce;
     }
 
     table { width: 100%; border-collapse: collapse; }
@@ -116,17 +239,25 @@
     .status {
       display: inline-flex;
       align-items: center;
+      gap: 5px;
       border-radius: 999px;
-      padding: 2px 9px;
+      padding: 3px 9px;
       font-size: .7rem;
       font-weight: 700;
       border: 1px solid transparent;
       text-transform: capitalize;
     }
-    .status.pending, .status.new { color: var(--warn); background: #fff7e6; border-color: #ffe0aa; }
-    .status.reviewed, .status.under_review, .status.expert_assigned, .status.dispatched { color: #1f5ea8; background: #eef5ff; border-color: #cde0ff; }
-    .status.accepted, .status.active, .status.completed, .status.approved { color: var(--ok); background: #eaf9f0; border-color: #c5f0d5; }
-    .status.rejected, .status.closed, .status.inactive { color: var(--danger); background: #fff0ef; border-color: #ffd4d0; }
+    .status.status--pending, .status.status--new { color: var(--pending); background: #f2f4f7; border-color: #d8dee6; }
+    .status.status--under_review, .status.status--reviewed, .status.status--dispatched { color: var(--blue); background: #eef5ff; border-color: #cde0ff; }
+    .status.status--expert_assigned { color: var(--purple); background: #f4efff; border-color: #e2d5ff; }
+    .status.status--reported { color: var(--reported); background: #fff4e7; border-color: #ffd9ac; }
+    .status.status--approved,
+    .status.status--accepted,
+    .status.status--active,
+    .status.status--completed,
+    .status.status--closed { color: var(--ok); background: #eaf9f0; border-color: #c5f0d5; }
+    .status.status--rejected,
+    .status.status--inactive { color: var(--danger); background: #fff0ef; border-color: #ffd4d0; }
 
     select, input[type="number"] {
       width: 100%;
@@ -140,23 +271,53 @@
 
     .row-actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 6px;
       align-items: center;
       margin-top: 6px;
     }
-    .tiny-btn {
+    .tiny-btn,
+    .action-btn {
       border: 0;
       border-radius: 7px;
       font-weight: 700;
       font-size: .7rem;
-      padding: 6px 8px;
+      padding: 6px 9px;
       cursor: pointer;
       background: #202020;
       color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
-    .tiny-btn:disabled {
+    .tiny-btn:disabled,
+    .action-btn:disabled {
       opacity: .55;
       cursor: not-allowed;
+    }
+    .action-btn[data-variant="approve"] { background: #1f8f4d; }
+    .action-btn[data-variant="reject"] { background: #c0392b; }
+    .action-btn[data-variant="assign"] { background: #2b2b2b; }
+    .action-btn[data-variant="save"] { background: #1f5ea8; }
+
+    .expert-select option:disabled {
+      color: #949494;
+      background: #f7f7f7;
+    }
+
+    .empty-state {
+      padding: 20px 14px;
+      text-align: center;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+    .muted-note {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-top: 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
     .priority-chip {
       display: inline-flex;
@@ -184,11 +345,11 @@
     .api-msg.err { display:block; background: #fff1f0; color: #b63b2d; border: 1px solid #ffd2ce; }
 
     @media (max-width: 1200px) {
-      .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 680px) {
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats { grid-template-columns: 1fr; }
       .top { flex-direction: column; align-items: flex-start; }
       .top-actions { width: 100%; }
       .top-actions .btn { flex: 1; }
@@ -203,29 +364,29 @@
         <p>Claims, experts, communications, applications, roadside and user controls in one place.</p>
       </div>
       <div class="top-actions">
-        <button class="btn btn-light" id="adminRefresh">Refresh</button>
-        <button class="btn btn-light" id="goHome">Public Site</button>
-        <button class="btn btn-orange" id="adminLogout">Logout</button>
+        <button class="btn btn-light" id="adminRefresh"><span data-icon="refresh"></span>Refresh</button>
+        <button class="btn btn-light" id="goHome"><span data-icon="home"></span>Public Site</button>
+        <button class="btn btn-orange" id="adminLogout"><span data-icon="logout"></span>Logout</button>
       </div>
     </div>
 
     <div class="api-msg" id="adminApiMsg"></div>
 
     <section class="stats">
-      <article class="stat"><div class="label">Clients</div><div class="val" id="sClients">-</div></article>
-      <article class="stat"><div class="label">Contracts</div><div class="val" id="sContracts">-</div></article>
-      <article class="stat"><div class="label">Claims</div><div class="val" id="sClaims">-</div></article>
-      <article class="stat"><div class="label">Pending Claims</div><div class="val" id="sPendingClaims">-</div></article>
-      <article class="stat"><div class="label">Active Experts</div><div class="val" id="sActiveExperts">-</div></article>
-      <article class="stat"><div class="label">Revenue</div><div class="val" id="sRevenue">-</div></article>
-      <article class="stat"><div class="label">Payments</div><div class="val" id="sPayments">-</div></article>
-      <article class="stat"><div class="label">Messages</div><div class="val" id="sMessages">-</div></article>
-      <article class="stat"><div class="label">Applications</div><div class="val" id="sApplications">-</div></article>
+      <article class="stat"><div class="stat-meta"><div class="label">Clients</div><div class="val" id="sClients">-</div></div><span class="stat-icon" data-icon="users"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label">Contracts</div><div class="val" id="sContracts">-</div></div><span class="stat-icon" data-icon="shieldCheck"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label">Claims</div><div class="val" id="sClaims">-</div></div><span class="stat-icon" data-icon="fileText"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label">Pending Claims</div><div class="val" id="sPendingClaims">-</div></div><span class="stat-icon" data-icon="clock"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label">Active Experts</div><div class="val" id="sActiveExperts">-</div></div><span class="stat-icon" data-icon="userCheck"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label">Revenue</div><div class="val" id="sRevenue">-</div></div><span class="stat-icon" data-icon="wallet"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label">Payments</div><div class="val" id="sPayments">-</div></div><span class="stat-icon" data-icon="money"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label">Messages</div><div class="val" id="sMessages">-</div></div><span class="stat-icon" data-icon="mail"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label">Applications</div><div class="val" id="sApplications">-</div></div><span class="stat-icon" data-icon="briefcase"></span></article>
     </section>
 
     <section class="grid">
       <article class="panel">
-        <div class="panel-head"><h2>Claims Lifecycle</h2></div>
+        <div class="panel-head"><h2><span data-icon="activity"></span>Claims Lifecycle</h2></div>
         <div class="panel-body">
           <table>
             <thead><tr><th>ID</th><th>Client</th><th>Status</th><th>Actions</th></tr></thead>
@@ -235,7 +396,7 @@
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2>Expert Reports</h2></div>
+        <div class="panel-head"><h2><span data-icon="fileText"></span>Expert Reports</h2></div>
         <div class="panel-body">
           <table>
             <thead><tr><th>Claim</th><th>Expert</th><th>Damage</th><th>Conclusion</th></tr></thead>
@@ -245,7 +406,7 @@
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2>Messages Inbox</h2></div>
+        <div class="panel-head"><h2><span data-icon="mail"></span>Messages Inbox</h2></div>
         <div class="panel-body">
           <table>
             <thead><tr><th>From</th><th>Subject</th><th>Status</th><th>Update</th></tr></thead>
@@ -255,7 +416,7 @@
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2>Job Applications</h2></div>
+        <div class="panel-head"><h2><span data-icon="briefcase"></span>Job Applications</h2></div>
         <div class="panel-body">
           <table>
             <thead><tr><th>Name</th><th>Position</th><th>Status</th><th>Update</th></tr></thead>
@@ -265,7 +426,7 @@
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2>Roadside Requests</h2></div>
+        <div class="panel-head"><h2><span data-icon="wrench"></span>Roadside Requests</h2></div>
         <div class="panel-body">
           <table>
             <thead><tr><th>Reference</th><th>Type</th><th>Status</th><th>Update</th></tr></thead>
@@ -275,7 +436,12 @@
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2>User Management</h2></div>
+        <div class="panel-head">
+          <h2><span data-icon="users"></span>User Management</h2>
+          <div class="panel-head-actions">
+            <button class="mini-btn" id="createExpertBtn" type="button"><span data-icon="userPlus"></span>Create Expert</button>
+          </div>
+        </div>
         <div class="panel-body">
           <table>
             <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
@@ -286,8 +452,43 @@
     </section>
   </div>
 
+  <div class="expert-modal" id="expertCreateModal" hidden>
+    <div class="expert-modal-card" role="dialog" aria-modal="true" aria-labelledby="expertCreateTitle">
+      <div class="expert-modal-head">
+        <h3 id="expertCreateTitle">Create Expert Account</h3>
+        <button class="mini-btn" type="button" id="closeExpertModalBtn"><span data-icon="xCircle"></span>Close</button>
+      </div>
+      <form id="expertCreateForm" class="expert-modal-body">
+        <div class="expert-form-row">
+          <label for="expertFirstName">First Name</label>
+          <input id="expertFirstName" type="text" required />
+        </div>
+        <div class="expert-form-row">
+          <label for="expertLastName">Last Name</label>
+          <input id="expertLastName" type="text" required />
+        </div>
+        <div class="expert-form-row">
+          <label for="expertEmail">Email</label>
+          <input id="expertEmail" type="email" required />
+        </div>
+        <div class="expert-form-row">
+          <label for="expertSpecialization">Specialization</label>
+          <input id="expertSpecialization" type="text" />
+        </div>
+
+        <div id="expertCreateInlineMsg" class="expert-inline-msg err"></div>
+
+        <div class="expert-modal-actions">
+          <button class="mini-btn" type="button" id="cancelExpertCreateBtn">Cancel</button>
+          <button class="btn btn-orange" type="submit" id="submitExpertCreateBtn"><span data-icon="send"></span>Create Expert</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="app-state.js"></script>
   <script src="auth.js"></script>
+  <script src="js/icon-system.js"></script>
   <script src="js/admin-dashboard.js"></script>
 </body>
 </html>

@@ -38,7 +38,12 @@ function getAnnualContractDates() {
 
 function issueAuthToken(user) {
   return jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      must_change_password: Boolean(user.must_change_password),
+    },
     SECRET_KEY,
     { expiresIn: '1d' }
   );

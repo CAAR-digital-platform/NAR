@@ -16,6 +16,10 @@
       --line: #e8dfd5;
       --ok: #207f49;
       --err: #bf3f2f;
+      --purple: #7c3aed;
+      --blue: #1f5ea8;
+      --pending: #6b7280;
+      --reported: #c46a00;
     }
     * { box-sizing: border-box; }
     body {
@@ -49,6 +53,9 @@
       cursor:pointer;
       font-family:inherit;
       font-size:.8rem;
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
     }
     .btn-orange { background:var(--orange); color:#fff; }
     .btn-orange:hover { background:var(--orange-dark); }
@@ -75,11 +82,33 @@
       background:var(--card);
       border:1px solid var(--line);
       border-radius:12px;
-      padding:12px;
+      padding:12px 13px;
       min-height:84px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
     }
+    .stat:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(20, 14, 10, .08);
+      border-color: #dfd0c1;
+    }
+    .stat-meta { min-width: 0; }
     .stat .l { color:var(--muted); font-size:.73rem; }
     .stat .v { margin-top:6px; font-size:1.2rem; font-weight:800; }
+    .stat-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #fdf4ea;
+      color: var(--orange-dark);
+      flex-shrink: 0;
+    }
 
     .layout {
       display:grid;
@@ -105,23 +134,63 @@
       margin:0;
       font-size:.94rem;
       font-weight:800;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
     }
     .panel-body { padding:12px 14px; }
 
-    table { width:100%; border-collapse:collapse; }
-    th, td {
-      text-align:left;
-      border-bottom:1px solid #f0e9e0;
-      padding:9px 8px;
-      font-size:.78rem;
-      vertical-align:top;
+    .claims-grid {
+      display:grid;
+      gap:9px;
+      max-height:560px;
+      overflow:auto;
+      padding-right:2px;
     }
-    th { background:#fcfaf7; position:sticky; top:0; z-index:1; }
-
-    .table-wrap { max-height:510px; overflow:auto; }
+    .claim-card {
+      border:1px solid #f0e8de;
+      border-radius:11px;
+      background:#fff;
+      padding:10px 11px;
+      display:grid;
+      gap:8px;
+    }
+    .claim-card-head {
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .claim-card-id {
+      font-size:.76rem;
+      color:var(--muted);
+      font-weight:700;
+      letter-spacing:.01em;
+    }
+    .claim-client {
+      font-size:.82rem;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .claim-email {
+      color:var(--muted);
+      font-size:.75rem;
+      margin-top:2px;
+    }
+    .claim-desc {
+      font-size:.78rem;
+      color:#3f3f3f;
+      line-height:1.45;
+      border-top:1px solid #f5eee7;
+      padding-top:8px;
+    }
 
     .status {
       display:inline-flex;
+      align-items:center;
+      gap:5px;
       padding:2px 9px;
       border-radius:999px;
       font-size:.69rem;
@@ -129,13 +198,29 @@
       text-transform:capitalize;
       font-weight:700;
     }
-    .status.expert_assigned, .status.reported { color:#1f5ea8; background:#eef5ff; border-color:#cde0ff; }
-    .status.closed { color:#207f49; background:#eaf9f0; border-color:#c5f0d5; }
-    .status.rejected { color:#bf3f2f; background:#fff1ef; border-color:#ffd4d0; }
+    .status.status--pending { color: var(--pending); background:#f2f4f7; border-color:#d8dee6; }
+    .status.status--under_review { color: var(--blue); background:#eef5ff; border-color:#cde0ff; }
+    .status.status--expert_assigned { color: var(--purple); background:#f4efff; border-color:#e2d5ff; }
+    .status.status--reported { color: var(--reported); background:#fff4e7; border-color:#ffd9ac; }
+    .status.status--approved,
+    .status.status--closed { color:#207f49; background:#eaf9f0; border-color:#c5f0d5; }
+    .status.status--rejected { color:#bf3f2f; background:#fff1ef; border-color:#ffd4d0; }
+
+    .empty-state {
+      padding: 20px 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: .82rem;
+      border: 1px dashed #e8dfd5;
+      border-radius: 10px;
+      background: #fcfaf8;
+    }
 
     .field { margin-bottom:10px; }
     .field label {
-      display:block;
+      display:flex;
+      align-items:center;
+      gap:6px;
       margin-bottom:5px;
       font-size:.75rem;
       font-weight:700;
@@ -154,11 +239,69 @@
     }
     .field textarea { min-height:94px; resize:vertical; }
 
+    .section-title {
+      margin: 0 0 8px;
+      font-size: .76rem;
+      font-weight: 800;
+      color: #6a6a6a;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
     .inline {
       display:flex;
       gap:8px;
       align-items:center;
+      flex-wrap:wrap;
     }
+
+    .availability-toggle {
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:#fff;
+      padding:4px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .availability-toggle input { display:none; }
+    .availability-switch {
+      width:46px;
+      height:24px;
+      border-radius:999px;
+      background:#ddd3c8;
+      position:relative;
+      transition:background .18s ease;
+      cursor:pointer;
+    }
+    .availability-switch::after {
+      content:'';
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#fff;
+      position:absolute;
+      top:3px;
+      left:3px;
+      transition:left .18s ease;
+      box-shadow:0 1px 2px rgba(0,0,0,.2);
+    }
+    .availability-toggle input:checked + .availability-switch {
+      background:#3da465;
+    }
+    .availability-toggle input:checked + .availability-switch::after {
+      left:25px;
+    }
+    .availability-state {
+      font-size:.77rem;
+      font-weight:700;
+      color:#5b5b5b;
+      min-width:72px;
+    }
+
     .no-claims-msg {
       display: none;
       margin-bottom: 10px;
@@ -175,6 +318,9 @@
       .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .layout { grid-template-columns: 1fr; }
     }
+    @media (max-width: 620px) {
+      .stats { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -185,80 +331,81 @@
         <p>Review assigned claims, submit reports, and manage your availability.</p>
       </div>
       <div class="inline">
-        <button class="btn btn-light" id="expertRefresh">Refresh</button>
-        <button class="btn btn-light" id="expertHome">Public Site</button>
-        <button class="btn btn-orange" id="expertLogout">Logout</button>
+        <button class="btn btn-light" id="expertRefresh"><span data-icon="refresh"></span>Refresh</button>
+        <button class="btn btn-light" id="expertHome"><span data-icon="home"></span>Public Site</button>
+        <button class="btn btn-orange" id="expertLogout"><span data-icon="logout"></span>Logout</button>
       </div>
     </div>
 
     <div class="api-msg" id="expertApiMsg"></div>
 
     <section class="stats">
-      <article class="stat"><div class="l">Assigned Claims</div><div class="v" id="esAssigned">-</div></article>
-      <article class="stat"><div class="l">In Progress</div><div class="v" id="esProgress">-</div></article>
-      <article class="stat"><div class="l">Completed</div><div class="v" id="esCompleted">-</div></article>
-      <article class="stat"><div class="l">Reports Submitted</div><div class="v" id="esReports">-</div></article>
+      <article class="stat"><div class="stat-meta"><div class="l">Assigned Claims</div><div class="v" id="esAssigned">-</div></div><span class="stat-icon" data-icon="fileText"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="l">In Progress</div><div class="v" id="esProgress">-</div></div><span class="stat-icon" data-icon="activity"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="l">Completed</div><div class="v" id="esCompleted">-</div></div><span class="stat-icon" data-icon="checkCircle"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="l">Reports Submitted</div><div class="v" id="esReports">-</div></div><span class="stat-icon" data-icon="send"></span></article>
     </section>
 
     <section class="layout">
       <article class="panel">
         <div class="panel-head">
-          <h2>Assigned Claims</h2>
+          <h2><span data-icon="fileText"></span>Assigned Claims</h2>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>ID</th><th>Client</th><th>Status</th><th>Description</th></tr></thead>
-            <tbody id="expertClaimsBody"></tbody>
-          </table>
+        <div class="panel-body">
+          <div class="claims-grid" id="expertClaimsCards"></div>
         </div>
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2>Submit Expert Report</h2></div>
+        <div class="panel-head"><h2><span data-icon="send"></span>Submit Expert Report</h2></div>
         <div class="panel-body">
           <div class="no-claims-msg" id="noClaimsMsg"></div>
 
+          <p class="section-title"><span data-icon="toggleOn"></span>Availability</p>
           <div class="field">
-            <label for="expertAvailability">Availability</label>
+            <label for="expertAvailabilityToggle">Status</label>
             <div class="inline">
-              <select id="expertAvailability">
-                <option value="true">Available</option>
-                <option value="false">Busy</option>
-              </select>
-              <button class="btn btn-light" id="saveAvailabilityBtn">Save</button>
+              <label class="availability-toggle" for="expertAvailabilityToggle">
+                <input id="expertAvailabilityToggle" type="checkbox" />
+                <span class="availability-switch"></span>
+                <span class="availability-state" id="availabilityStateLabel">Busy</span>
+              </label>
             </div>
           </div>
 
+          <p class="section-title"><span data-icon="fileText"></span>Claim Context</p>
           <div class="field">
-            <label for="reportClaimSelect">Assigned Claim</label>
+            <label for="reportClaimSelect"><span data-icon="fileText"></span>Assigned Claim</label>
             <select id="reportClaimSelect">
               <option value="">Select assigned claim...</option>
             </select>
           </div>
+
+          <p class="section-title"><span data-icon="activity"></span>Assessment Details</p>
           <div class="field">
-            <label for="reportValue">Report (Text or Filename)</label>
+            <label for="reportValue"><span data-icon="fileText"></span>Report (Text or Filename)</label>
             <input id="reportValue" type="text" placeholder="e.g. report-claim-7.pdf or short summary"/>
           </div>
           <div class="field">
-            <label for="reportDate">Report Date</label>
+            <label for="reportDate"><span data-icon="calendar"></span>Report Date</label>
             <input id="reportDate" type="date"/>
           </div>
           <div class="field">
-            <label for="reportDamage">Estimated Damage (DZD)</label>
+            <label for="reportDamage"><span data-icon="money"></span>Estimated Damage (DZD)</label>
             <input id="reportDamage" type="number" min="0.01" step="0.01" placeholder="e.g. 120000"/>
           </div>
           <div class="field">
-            <label for="reportConclusion">Conclusion</label>
+            <label for="reportConclusion"><span data-icon="checkCircle"></span>Conclusion</label>
             <select id="reportConclusion">
               <option value="covered">covered</option>
               <option value="not_covered">not_covered</option>
             </select>
           </div>
           <div class="field">
-            <label for="reportDetails">Report Details</label>
+            <label for="reportDetails"><span data-icon="fileText"></span>Report Details</label>
             <textarea id="reportDetails" placeholder="Provide detailed technical assessment and recommendations..."></textarea>
           </div>
-          <button class="btn btn-orange" id="submitReportBtn" style="width:100%;">Submit Report</button>
+          <button class="btn btn-orange" id="submitReportBtn"><span data-icon="send"></span>Submit Report</button>
         </div>
       </article>
     </section>
@@ -266,6 +413,7 @@
 
   <script src="app-state.js"></script>
   <script src="auth.js"></script>
+  <script src="js/icon-system.js"></script>
   <script src="js/expert-dashboard.js"></script>
 </body>
 </html>

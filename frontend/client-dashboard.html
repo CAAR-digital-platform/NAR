@@ -102,32 +102,36 @@
 
     /* ─── Next step widget ──────────────────────────────────────── */
     .next-step-widget {
-      background:var(--white); border:1.5px solid var(--border);
-      border-radius:14px; overflow:hidden;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
     }
     .next-step-widget-header {
-      padding:14px 18px 12px; border-bottom:1px solid var(--border);
-      font-size:.82rem; font-weight:700; color:var(--dark);
+      padding: 20px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: .86rem;
+      font-weight: 600;
+      color: #454c57;
     }
-    .next-step-widget-body { padding:16px 18px; }
+    .next-step-widget-body { padding: 20px; }
 
     /* ─── Primary action bar ────────────────────────────────────── */
     .action-bar {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
-      padding: 14px 18px;
-      background: linear-gradient(135deg, #1c1c1c 0%, #2d2d2d 100%);
-      border-radius: 14px;
-      margin-bottom: 22px;
+      padding: 20px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 32px;
       align-items: center;
     }
     .action-bar-label {
-      font-size: .7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: rgba(255,255,255,.45);
+      font-size: .74rem;
+      font-weight: 600;
+      color: #7a818d;
       flex-shrink: 0;
       margin-right: 4px;
     }
@@ -136,15 +140,16 @@
       align-items: center;
       gap: 7px;
       padding: 9px 18px;
-      border-radius: 8px;
+      border-radius: 10px;
       font-family: var(--font-sans);
       font-size: .8rem;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
-      border: none;
+      border: 1px solid transparent;
       text-decoration: none;
-      transition: all .18s;
+      transition: background .18s, border-color .18s, color .18s;
       white-space: nowrap;
+      min-height: 42px;
     }
     .action-bar-btn--primary {
       background: var(--orange);
@@ -152,11 +157,11 @@
     }
     .action-bar-btn--primary:hover { background: var(--orange-dark); transform: translateY(-1px); }
     .action-bar-btn--secondary {
-      background: rgba(255,255,255,.1);
-      color: rgba(255,255,255,.85);
-      border: 1px solid rgba(255,255,255,.15);
+      background: #fff;
+      color: #4e5560;
+      border-color: var(--border);
     }
-    .action-bar-btn--secondary:hover { background: rgba(255,255,255,.18); color:#fff; }
+    .action-bar-btn--secondary:hover { background: #f8f9fb; border-color: #d7dce3; color: #2d3440; }
     .action-bar-btn svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; flex-shrink:0; }
   </style>
 </head>
@@ -173,7 +178,7 @@
         </svg>
         File a New Claim
       </div>
-      <button class="nc-modal-close" id="ncModalCloseBtn" aria-label="Close">✕</button>
+      <button class="nc-modal-close" id="ncModalCloseBtn" aria-label="Close">X</button>
     </div>
     <div class="nc-error" id="claimFormError"></div>
     <div class="nc-field">
@@ -212,7 +217,7 @@
       <div class="cdp-title" id="cdpTitle">Claim Details</div>
       <div class="cdp-subtitle" id="cdpSubtitle">Reference — —</div>
     </div>
-    <button class="btn-close-panel" id="cdpCloseBtn" aria-label="Close">✕</button>
+    <button class="btn-close-panel" id="cdpCloseBtn" aria-label="Close">X</button>
   </div>
   <div class="cdp-body" id="cdpBody"></div>
   <div class="cdp-footer">
@@ -374,7 +379,7 @@
 
         <!-- Welcome header -->
         <div class="dash-content__header">
-          <h1 class="dash-content__header-title">Welcome back 👋</h1>
+          <h1 class="dash-content__header-title">Welcome back</h1>
           <p class="dash-content__header-sub">Here's everything happening on your CAAR account.</p>
         </div>
 
@@ -468,7 +473,7 @@
             <!-- Contextual next step -->
             <div class="next-step-widget" style="margin-bottom:16px;">
               <div class="next-step-widget-header">
-                💡 What to do next
+                What to do next
               </div>
               <div class="next-step-widget-body" id="nextStepWidget">
                 <div style="font-size:.78rem;color:var(--gray);">Loading your account state…</div>
@@ -548,11 +553,13 @@
           <p class="dash-content__header-sub">Fill in the form and our team will dispatch assistance to your location.</p>
         </div>
         <div class="roadside-alert">
-          <div class="roadside-alert-icon">🆘</div>
+          <div class="roadside-alert-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><circle cx="12" cy="16.5" r="1"></circle></svg>
+          </div>
           <div class="roadside-alert-text">
             <div class="roadside-alert-title">Emergency? Call us first!</div>
             <div class="roadside-alert-sub">For immediate roadside danger, call our 24/7 hotline directly.
-              <span class="roadside-alert-phone">📞 +213 (0)21 63 20 72</span></div>
+              <span class="roadside-alert-phone">Call: +213 (0)21 63 20 72</span></div>
           </div>
         </div>
         <div class="roadside-request-wrap">
@@ -570,13 +577,13 @@
               <div class="roadside-form-body" id="roadsideFormBody">
                 <div class="rf-group-title">Type of Problem</div>
                 <div class="rf-problem-chips" id="rfProblemChips">
-                  <div class="rf-problem-chip" data-problem="Breakdown"><span class="chip-icon">⚙️</span> Breakdown</div>
-                  <div class="rf-problem-chip" data-problem="Flat Tyre"><span class="chip-icon">🔧</span> Flat Tyre</div>
-                  <div class="rf-problem-chip" data-problem="Battery Dead"><span class="chip-icon">🔋</span> Battery Dead</div>
-                  <div class="rf-problem-chip" data-problem="Accident"><span class="chip-icon">🚨</span> Accident</div>
-                  <div class="rf-problem-chip" data-problem="Locked Out"><span class="chip-icon">🔑</span> Locked Out</div>
-                  <div class="rf-problem-chip" data-problem="Out of Fuel"><span class="chip-icon">⛽</span> Out of Fuel</div>
-                  <div class="rf-problem-chip" data-problem="Other"><span class="chip-icon">❓</span> Other</div>
+                  <div class="rf-problem-chip" data-problem="Breakdown">Breakdown</div>
+                  <div class="rf-problem-chip" data-problem="Flat Tyre">Flat Tyre</div>
+                  <div class="rf-problem-chip" data-problem="Battery Dead">Battery Dead</div>
+                  <div class="rf-problem-chip" data-problem="Accident">Accident</div>
+                  <div class="rf-problem-chip" data-problem="Locked Out">Locked Out</div>
+                  <div class="rf-problem-chip" data-problem="Out of Fuel">Out of Fuel</div>
+                  <div class="rf-problem-chip" data-problem="Other">Other</div>
                 </div>
                 <input type="hidden" id="rfProblemType" value=""/>
                 <div class="rf-group-title">Roadside Contract</div>
@@ -621,7 +628,9 @@
                 </button>
               </div>
               <div class="roadside-success" id="roadsideSuccess">
-                <div class="roadside-success-icon">✓</div>
+                <div class="roadside-success-icon">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
                 <div class="roadside-success-title">Request Sent!</div>
                 <div class="roadside-success-sub">Our team will contact you within <strong>15 minutes</strong>.</div>
                 <div class="roadside-success-ref" id="rsRequestRef">REF — —</div>
@@ -899,7 +908,7 @@
   if (logoutDropBtn) logoutDropBtn.addEventListener('click', function () {
     closeAllDropdowns();
     if (typeof logout === 'function') logout();
-    else { ['token','role','user','caar_auth_token'].forEach(function(k){localStorage.removeItem(k);}); window.location.href = 'index.html'; }
+    else { ['token','role','user','caar_auth_token','must_change_password'].forEach(function(k){localStorage.removeItem(k);}); window.location.href = 'index.html'; }
   });
 
   var goToProfile = el('goToProfile');

@@ -25,6 +25,10 @@ if (_authUser && _authUser.role !== 'client') {
   window.location.href = 'index.html';
 }
 
+if (_authUser && (_authUser.must_change_password || localStorage.getItem('must_change_password') === '1')) {
+  window.location.href = 'change-password.html';
+}
+
 if (typeof window.apiRequest === 'undefined') {
   console.error('[CAAR] dashboard.js — app-state.js not loaded!');
 }
@@ -36,6 +40,23 @@ var ALL_ROADSIDE        = [];
 var ALL_MESSAGES        = [];
 var _dashStats          = {};
 var DASH_ALERT_ACTIONS  = [];
+
+function getUiIcon(name) {
+  var icons = {
+    clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>',
+    search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>',
+    user: '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>',
+    clipboard: '<svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="4" rx="1"></rect><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path></svg>',
+    check: '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+    x: '<svg viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>',
+    car: '<svg viewBox="0 0 24 24"><path d="M5 16h14l-1.2-5a2 2 0 0 0-1.94-1.53H8.14A2 2 0 0 0 6.2 11L5 16z"></path><circle cx="7.5" cy="17.5" r="1.5"></circle><circle cx="16.5" cy="17.5" r="1.5"></circle></svg>',
+    shield: '<svg viewBox="0 0 24 24"><path d="M12 3 5 6v6c0 5 3.5 8 7 9 3.5-1 7-4 7-9V6l-7-3z"></path></svg>',
+    file: '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>',
+    info: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><circle cx="12" cy="8" r="1"></circle></svg>',
+    alert: '<svg viewBox="0 0 24 24"><path d="M12 3 3.5 19h17L12 3z"></path><path d="M12 9v5"></path><circle cx="12" cy="17" r="1"></circle></svg>',
+  };
+  return icons[name] || icons.file;
+}
 
 function _syncBodyLock() {
   var sidebar = document.getElementById('dashSidebar');
@@ -49,20 +70,20 @@ function _syncBodyLock() {
 
 /* ── Status config ───────────────────────────────────────────── */
 var STATUS_CONFIG = {
-  pending:         { cls: 'status-badge--pending',         label: 'Pending',         icon: '⏳' },
-  under_review:    { cls: 'status-badge--under-review',    label: 'Under Review',    icon: '🔍' },
-  expert_assigned: { cls: 'status-badge--expert-assigned', label: 'Expert Assigned', icon: '👤' },
-  reported:        { cls: 'status-badge--approved',        label: 'Reported',        icon: '📋' },
-  closed:          { cls: 'status-badge--closed',          label: 'Closed',          icon: '✅' },
-  rejected:        { cls: 'status-badge--rejected',        label: 'Rejected',        icon: '❌' },
-  approved:        { cls: 'status-badge--closed',          label: 'Approved',        icon: '✅' },
+  pending:         { cls: 'status-badge--pending',         label: 'Pending',         icon: 'clock' },
+  under_review:    { cls: 'status-badge--under-review',    label: 'Under Review',    icon: 'search' },
+  expert_assigned: { cls: 'status-badge--expert-assigned', label: 'Expert Assigned', icon: 'user' },
+  reported:        { cls: 'status-badge--approved',        label: 'Reported',        icon: 'clipboard' },
+  closed:          { cls: 'status-badge--closed',          label: 'Closed',          icon: 'check' },
+  rejected:        { cls: 'status-badge--rejected',        label: 'Rejected',        icon: 'x' },
+  approved:        { cls: 'status-badge--closed',          label: 'Approved',        icon: 'check' },
 };
 
 /* ── Roadside status config ──────────────────────────────────── */
 var ROADSIDE_STATUS = {
-  pending:    { cls: 'status-badge--pending',      label: 'Pending',    icon: '⏳' },
-  dispatched: { cls: 'status-badge--under-review', label: 'Dispatched', icon: '🚗' },
-  completed:  { cls: 'status-badge--closed',       label: 'Completed',  icon: '✅' },
+  pending:    { cls: 'status-badge--pending',      label: 'Pending',    icon: 'clock' },
+  dispatched: { cls: 'status-badge--under-review', label: 'Dispatched', icon: 'car' },
+  completed:  { cls: 'status-badge--closed',       label: 'Completed',  icon: 'check' },
 };
 
 /* ============================================================
@@ -189,7 +210,7 @@ function renderAlertBanners() {
   if (ALL_CONTRACTS.length === 0) {
     alerts.push({
       type: 'info',
-      icon: '🛡️',
+      icon: 'shield',
       title: 'Get insured today',
       message: 'You have no insurance contracts yet. Explore our products to protect what matters.',
       action: { label: 'Browse Products', fn: function () { window.location.href = 'Online_subscription.html'; } },
@@ -200,7 +221,7 @@ function renderAlertBanners() {
   if (pendingClaims.length > 0) {
     alerts.push({
       type: 'warning',
-      icon: '⏳',
+      icon: 'clock',
       title: pendingClaims.length === 1
         ? 'You have 1 claim awaiting review'
         : 'You have ' + pendingClaims.length + ' claims awaiting review',
@@ -213,7 +234,7 @@ function renderAlertBanners() {
   if (expertClaims.length > 0) {
     alerts.push({
       type: 'success',
-      icon: '👤',
+      icon: 'user',
       title: expertClaims.length === 1
         ? 'An expert has been assigned to your claim'
         : expertClaims.length + ' of your claims have an expert assigned',
@@ -226,7 +247,7 @@ function renderAlertBanners() {
   if (pendingRoadside.length > 0) {
     alerts.push({
       type: 'warning',
-      icon: '🚗',
+      icon: 'car',
       title: 'Roadside request pending',
       message: 'Your roadside assistance request is being processed. Our team will dispatch help shortly.',
       action: { label: 'View Request', fn: function () { openLatestRoadsidePanelFromApi(); } },
@@ -237,7 +258,7 @@ function renderAlertBanners() {
   if (ALL_CONTRACTS.length > 0 && activeClaims.length === 0 && ALL_CLAIMS.length === 0) {
     alerts.push({
       type: 'info',
-      icon: '📋',
+      icon: 'clipboard',
       title: 'No active claims',
       message: 'Experienced an incident? File a claim now and our team will guide you through the process.',
       action: { label: 'File a Claim', fn: openNewClaimModalGeneric },
@@ -253,30 +274,15 @@ function renderAlertBanners() {
   DASH_ALERT_ACTIONS = alerts.map(function (a) { return a.action ? a.action.fn : null; });
 
   container.innerHTML = alerts.map(function (a, i) {
-    var colorMap = {
-      warning: { bg: '#fffbeb', border: '#f59e0b', icon: '#d97706', text: '#92400e' },
-      success: { bg: '#f0fdf4', border: '#22c55e', icon: '#16a34a', text: '#166534' },
-      error:   { bg: '#fff1f2', border: '#f43f5e', icon: '#be123c', text: '#9f1239' },
-      info:    { bg: '#eff6ff', border: '#3b82f6', icon: '#1d4ed8', text: '#1e40af' },
-    };
-    var c = colorMap[a.type] || colorMap.info;
-    return '<div class="dash-alert" style="' +
-      'display:flex;align-items:flex-start;gap:14px;' +
-      'background:' + c.bg + ';border:1.5px solid ' + c.border + ';' +
-      'border-left:4px solid ' + c.border + ';' +
-      'border-radius:12px;padding:14px 18px;margin-bottom:12px;' +
-      'animation:alertSlideIn .3s ease ' + (i * 0.08) + 's both;">' +
-      '<span style="font-size:1.25rem;flex-shrink:0;margin-top:1px;">' + a.icon + '</span>' +
-      '<div style="flex:1;min-width:0;">' +
-        '<div style="font-weight:700;font-size:.88rem;color:' + c.text + ';margin-bottom:3px;">' + a.title + '</div>' +
-        '<div style="font-size:.78rem;color:' + c.text + ';opacity:.8;line-height:1.5;">' + a.message + '</div>' +
+    var alertClass = 'dash-alert dash-alert--' + (a.type || 'info');
+    return '<div class="' + alertClass + '" style="animation:alertSlideIn .3s ease ' + (i * 0.08) + 's both;">' +
+      '<div class="dash-alert-icon">' + getUiIcon(a.icon) + '</div>' +
+      '<div class="dash-alert-content">' +
+        '<div class="dash-alert-title">' + escapeHTML(a.title) + '</div>' +
+        '<div class="dash-alert-desc">' + escapeHTML(a.message) + '</div>' +
       '</div>' +
-      (a.action ? '<button type="button" data-alert-action="' + i + '" style="' +
-        'flex-shrink:0;padding:7px 14px;background:' + c.border + ';color:#fff;' +
-        'border:none;border-radius:8px;font-size:.75rem;font-weight:700;' +
-        'cursor:pointer;font-family:inherit;white-space:nowrap;transition:opacity .2s;"' +
-        ' onmouseover="this.style.opacity=.85" onmouseout="this.style.opacity=1">' +
-        a.action.label + '</button>' : '') +
+      (a.action ? '<button type="button" data-alert-action="' + i + '" class="dash-alert-btn">' +
+        escapeHTML(a.action.label) + '</button>' : '') +
     '</div>';
   }).join('');
 
@@ -386,7 +392,7 @@ function renderRecentActivity() {
   var items = [];
 
   ALL_CLAIMS.slice(0, 5).forEach(function (c) {
-    var sc = STATUS_CONFIG[c.status] || { label: c.status, icon: '📄' };
+    var sc = STATUS_CONFIG[c.status] || { label: c.status, icon: 'file' };
     items.push({
       type:    'claim',
       id:      c.claim_id,
@@ -401,7 +407,7 @@ function renderRecentActivity() {
   });
 
   ALL_ROADSIDE.slice(0, 3).forEach(function (r) {
-    var sc = ROADSIDE_STATUS[r.status] || { label: r.status, icon: '🚗' };
+    var sc = ROADSIDE_STATUS[r.status] || { label: r.status, icon: 'car' };
     items.push({
       type:   'roadside',
       id:     r.request_id,
@@ -440,18 +446,18 @@ function renderRecentActivity() {
     var dotCls = item.type === 'roadside' ? 'activity-dot--blue' : 'activity-dot--amber';
     var dateStr = item.date ? new Date(item.date).toLocaleDateString('en-GB') : '';
 
-    return '<div class="activity-item" style="cursor:pointer;" onclick="' +
+    return '<div class="activity-item activity-item--clickable" onclick="' +
       (item.type === 'claim'
         ? 'openClaimPanel(' + item.id + ')'
         : 'switchSection(\'roadside\', document.querySelector(\'[data-section="roadside"]\'))') +
       '">' +
-      '<div class="activity-dot ' + dotCls + '" style="font-size:.75rem;">' + item.icon + '</div>' +
-      '<div class="activity-body" style="flex:1;">' +
+      '<div class="activity-dot ' + dotCls + '">' + getUiIcon(item.icon) + '</div>' +
+      '<div class="activity-body">' +
         '<div class="activity-body-title">' + escapeHTML(item.title) + '</div>' +
         '<div class="activity-body-sub">' + escapeHTML(item.sub) + '</div>' +
       '</div>' +
-      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">' +
-        '<span class="status-badge ' + item.cls + '" style="font-size:.6rem;">' + escapeHTML(item.status) + '</span>' +
+      '<div class="activity-meta">' +
+        '<span class="status-badge ' + item.cls + '">' + escapeHTML(item.status) + '</span>' +
         '<span class="activity-time">' + escapeHTML(dateStr) + '</span>' +
       '</div>' +
     '</div>';
@@ -470,7 +476,7 @@ function renderContextualNextStep() {
 
   if (ALL_CONTRACTS.length === 0) {
     step = {
-      emoji: '🛡️',
+      icon: 'shield',
       title: 'Start your first policy',
       desc:  'Subscribe to an insurance product to unlock all dashboard features.',
       btnLabel: 'Browse Products',
@@ -478,7 +484,7 @@ function renderContextualNextStep() {
     };
   } else if (activeContracts.length > 0 && ALL_CLAIMS.length === 0) {
     step = {
-      emoji: '📋',
+      icon: 'clipboard',
       title: 'File your first claim',
       desc:  'Had an incident? File a claim in minutes and our team will take care of it.',
       btnLabel: 'File a Claim',
@@ -486,7 +492,7 @@ function renderContextualNextStep() {
     };
   } else if (activeContracts.length > 0 && ALL_ROADSIDE.length === 0) {
     step = {
-      emoji: '🚗',
+      icon: 'car',
       title: 'Request roadside assistance',
       desc:  'Stranded on the road? Get immediate help from our 24/7 assistance team.',
       btnLabel: 'Request Assistance',
@@ -494,7 +500,7 @@ function renderContextualNextStep() {
     };
   } else {
     step = {
-      emoji: '✅',
+      icon: 'check',
       title: 'Your account is active',
       desc:  'All your contracts and services are running. Contact us if you need anything.',
       btnLabel: 'Contact Support',
@@ -503,17 +509,13 @@ function renderContextualNextStep() {
   }
 
   container.innerHTML =
-    '<div style="display:flex;align-items:flex-start;gap:14px;">' +
-      '<div style="font-size:1.6rem;flex-shrink:0;">' + step.emoji + '</div>' +
-      '<div style="flex:1;">' +
-        '<div style="font-weight:700;font-size:.86rem;color:var(--dark);margin-bottom:4px;">' + step.title + '</div>' +
-        '<div style="font-size:.76rem;color:var(--gray);line-height:1.5;margin-bottom:12px;">' + step.desc + '</div>' +
-        '<button onclick="' + step.btnFn + '" style="' +
-          'padding:8px 18px;background:var(--orange);color:#fff;border:none;' +
-          'border-radius:8px;font-size:.76rem;font-weight:700;cursor:pointer;' +
-          'font-family:inherit;transition:background .2s;"' +
-          ' onmouseover="this.style.background=\'var(--orange-dark)\'" onmouseout="this.style.background=\'var(--orange)\'">' +
-          step.btnLabel + '</button>' +
+    '<div class="next-step-row">' +
+      '<div class="next-step-icon">' + getUiIcon(step.icon) + '</div>' +
+      '<div class="next-step-content">' +
+        '<div class="next-step-title">' + escapeHTML(step.title) + '</div>' +
+        '<div class="next-step-desc">' + escapeHTML(step.desc) + '</div>' +
+        '<button onclick="' + step.btnFn + '" class="next-step-btn">' +
+          escapeHTML(step.btnLabel) + '</button>' +
       '</div>' +
     '</div>';
 }
@@ -539,7 +541,7 @@ function renderUserIdentity() {
   var topAvatar = document.querySelector('.dash-topbar__user-avatar');
   if (topAvatar) topAvatar.textContent = initials;
 
-  safeSetText('.dash-content__header-title', 'Welcome back, ' + (user.first_name || 'there') + ' 👋');
+  safeSetText('.dash-content__header-title', 'Welcome back, ' + (user.first_name || 'there'));
 
   safeSetValue('pf-first', user.first_name || '');
   safeSetValue('pf-last',  user.last_name  || '');
@@ -736,13 +738,13 @@ async function loadClaims() {
   try {
     result = await apiRequest('/api/claims/my');
   } catch (e) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#e53e3e;">⚠ Network error. Please refresh.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#e53e3e;">Network error. Please refresh.</td></tr>';
     return;
   }
 
   if (result.status === 404) { ALL_CLAIMS = []; renderClaimsTable([]); return; }
   if (!result.ok) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#e53e3e;">⚠ Unable to load claims (HTTP ' + result.status + ').</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#e53e3e;">Unable to load claims (HTTP ' + result.status + ').</td></tr>';
     return;
   }
 
@@ -840,7 +842,7 @@ window.openClaimPanel = function (claimId) {
     var isCur = stepIdx === curIdx;
     return '<div class="cdp-timeline-item">' +
       '<div class="cdp-timeline-dot ' + dotCls + '">' +
-        (dotCls === 'cdp-timeline-dot--done' ? '✓' : String(i + 1)) +
+        (dotCls === 'cdp-timeline-dot--done' ? getUiIcon('check') : String(i + 1)) +
       '</div>' +
       '<div class="cdp-timeline-content">' +
         '<div class="cdp-timeline-event">' + label + '</div>' +
@@ -852,7 +854,7 @@ window.openClaimPanel = function (claimId) {
   // If rejected, add rejected badge at end
   if (isRejected) {
     timelineHTML += '<div class="cdp-timeline-item">' +
-      '<div class="cdp-timeline-dot" style="background:#f43f5e;color:#fff;">✗</div>' +
+      '<div class="cdp-timeline-dot" style="background:#f43f5e;color:#fff;">' + getUiIcon('x') + '</div>' +
       '<div class="cdp-timeline-content">' +
         '<div class="cdp-timeline-event" style="color:#be123c;">Claim Rejected</div>' +
         '<div class="cdp-timeline-date">Final status</div>' +
@@ -894,21 +896,21 @@ window.openClaimPanel = function (claimId) {
 
 function _buildClaimActionHint(claim) {
   var hints = {
-    pending:         { icon: '⏳', text: 'Your claim is in the queue. We\'ll notify you when our team starts the review.' },
-    under_review:    { icon: '🔍', text: 'Our team is reviewing your claim. An expert may be assigned shortly.' },
-    expert_assigned: { icon: '👤', text: 'An expert has been assigned and will contact you. Please be available.' },
-    reported:        { icon: '📋', text: 'The expert has submitted their report. A decision will follow shortly.' },
-    approved:        { icon: '✅', text: 'Your claim has been approved. Compensation details will be communicated soon.' },
-    closed:          { icon: '✅', text: 'This claim has been closed. Contact support if you have questions.' },
-    rejected:        { icon: '❌', text: 'This claim was rejected. Contact our support team if you believe this is an error.' },
+    pending:         { icon: 'clock', text: 'Your claim is in the queue. We\'ll notify you when our team starts the review.' },
+    under_review:    { icon: 'search', text: 'Our team is reviewing your claim. An expert may be assigned shortly.' },
+    expert_assigned: { icon: 'user', text: 'An expert has been assigned and will contact you. Please be available.' },
+    reported:        { icon: 'clipboard', text: 'The expert has submitted their report. A decision will follow shortly.' },
+    approved:        { icon: 'check', text: 'Your claim has been approved. Compensation details will be communicated soon.' },
+    closed:          { icon: 'check', text: 'This claim has been closed. Contact support if you have questions.' },
+    rejected:        { icon: 'x', text: 'This claim was rejected. Contact our support team if you believe this is an error.' },
   };
   var hint = hints[claim.status];
   if (!hint) return '';
 
-  return '<div style="background:#f8f9fa;border-radius:10px;padding:12px 14px;margin-top:4px;' +
+  return '<div style="background:#f8f9fa;border:1px solid #e8ebef;border-radius:10px;padding:12px 14px;margin-top:4px;' +
     'display:flex;align-items:flex-start;gap:10px;">' +
-    '<span style="font-size:1rem;flex-shrink:0;">' + hint.icon + '</span>' +
-    '<div style="font-size:.78rem;color:#555;line-height:1.5;">' + hint.text + '</div>' +
+    '<span class="cdp-hint-icon">' + getUiIcon(hint.icon) + '</span>' +
+    '<div style="font-size:.78rem;color:#555;line-height:1.5;">' + escapeHTML(hint.text) + '</div>' +
   '</div>';
 }
 

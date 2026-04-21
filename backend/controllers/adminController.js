@@ -1,7 +1,8 @@
 'use strict';
 
 const userModel = require('../models/userModel');
-const pool = require('../db');
+const adminModel = require('../models/adminModel');
+const adminService = require('../services/adminService');
 
 async function listUsers(req, res) {
   try {
@@ -46,26 +47,36 @@ async function updateUserStatus(req, res) {
 
 async function listExperts(req, res) {
   try {
-    const [rows] = await pool.execute(
-      `SELECT ex.id AS expert_id,
-              ex.is_available,
-              ex.specialization,
-              ex.agency_id,
-              ex.wilaya_id,
-              u.id AS user_id,
-              u.first_name,
-              u.last_name,
-              u.email,
-              u.phone,
-              u.is_active
-       FROM experts ex
-       JOIN users u ON u.id = ex.user_id
-            WHERE ex.is_available = 1
-              AND u.is_active = 1
-       ORDER BY u.first_name, u.last_name`
-    );
+    const rows = await adminModel.listExpertsForAssignment();
 
     return res.status(200).json({ count: rows.length, experts: rows });
+  } catch (err) {
+    return res.status(err.status || 500).json({ error: err.message });
+  }
+}
+
+async function createExpert(req, res) {
+  try {
+    const result = await adminService.createExpert(req.body || {});
+
+    return res.status(201).json({
+      message: 'Expert created successfully',
+      user_id: result.user_id,
+      expert_id: result.expert_id,
+      temporary_password: result.temporary_password,
+    });
+  } catch (err) {
+    return res.status(err.status || 500).json({ error: err.message });
+  }
+}
+
+async function checkExpertConsistency(req, res) {
+  try {
+    const result = await adminService.runExpertConsistencyCheck();
+    return res.status(200).json({
+      message: 'Expert consistency check completed',
+      ...result,
+    });
   } catch (err) {
     return res.status(err.status || 500).json({ error: err.message });
   }
@@ -75,4 +86,6 @@ module.exports = {
   listUsers,
   updateUserStatus,
   listExperts,
+  createExpert,
+  checkExpertConsistency,
 };

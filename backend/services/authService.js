@@ -19,6 +19,7 @@ async function register({ first_name, last_name, email, password, phone }) {
     password_hash,
     phone,
     role: 'client',
+    must_change_password: false,
   });
 
   await userModel.createClient(userId);
@@ -46,17 +47,26 @@ async function login({ email, password }) {
     throw err;
   }
 
-  const token = issueAuthToken(user);
-  const safeUser = {
-    id: user.id,
-    first_name: user.first_name,
-    last_name: user.last_name,
-    email: user.email,
-    phone: user.phone,
-    role: user.role,
+  const roleRow = await userModel.findRoleById(user.id);
+  if (!roleRow || !roleRow.role) {
+    const err = new Error('User role not found');
+    err.status = 500;
+    throw err;
+  }
+
+  const authPayload = {
+    ...user,
+    role: roleRow.role,
   };
 
-  return { token, user: safeUser };
+  const token = issueAuthToken(authPayload);
+
+  return {
+    token,
+    user_id: user.id,
+    role: roleRow.role,
+    must_change_password: Boolean(user.must_change_password),
+  };
 }
 
 async function getMe(userId) {
@@ -126,4 +136,43 @@ async function changePassword(userId, { current_password, new_password }) {
   return { user_id: userId };
 }
 
-module.exports = { register, login, getMe, updateProfile, changePassword };
+async function forceChangePassword(userId, { new_password, confirm_password }) {
+  if (!new_password || !confirm_password) {
+    const err = new Error('new_password and confirm_password are required');
+    err.status = 400;
+    throw err;
+  }
+
+  if (new_password.length < 8) {
+    const err = new Error('New password must be at least 8 characters');
+    err.status = 400;
+    throw err;
+  }
+
+  if (new_password !== confirm_password) {
+    const err = new Error('Password confirmation does not match');
+    err.status = 400;
+    throw err;
+  }
+
+  const user = await userModel.findAuthById(userId);
+  if (!user) {
+    const err = new Error('User not found');
+    err.status = 404;
+    throw err;
+  }
+
+  if (!user.must_change_password) {
+    const err = new Error('Password change is not required for this account');
+    err.status = 400;
+    throw err;
+  }
+
+  const passwordHash = await bcrypt.hash(new_password, 12);
+  await userModel.updatePassword(userId, passwordHash);
+
+  const updatedUser = await userModel.findById(userId);
+  return { user: updatedUser };
+}
+
+module.exports = { register, login, getMe, updateProfile, changePassword, forceChangePassword };

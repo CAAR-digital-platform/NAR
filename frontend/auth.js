@@ -56,6 +56,11 @@ window.getDashboardUrl = function(role) {
 
 /* ── redirectToDashboard ── */
 window.redirectToDashboard = function() {
+  if (typeof window.mustChangePassword === 'function' && window.mustChangePassword()) {
+    window.location.href = 'change-password.html';
+    return;
+  }
+
   var user = window.getUser ? window.getUser() : null;
   var role = user ? user.role : (localStorage.getItem('role') || 'client');
   window.location.href = window.getDashboardUrl(role);
@@ -66,11 +71,17 @@ window.requireAuth = function() {
   if (typeof window.isAuthenticated === 'function') {
     if (!window.isAuthenticated()) {
       window.location.href = 'login.html';
+      return;
     }
   } else {
     if (!window.getToken()) {
       window.location.href = 'login.html';
+      return;
     }
+  }
+
+  if (typeof window.mustChangePassword === 'function' && window.mustChangePassword()) {
+    window.location.href = 'change-password.html';
   }
 };
 
@@ -81,6 +92,7 @@ if (typeof window.logout === 'undefined') {
     localStorage.removeItem('role');
     localStorage.removeItem('user');
     localStorage.removeItem('caar_auth_token');
+    localStorage.removeItem('must_change_password');
     window.location.href = 'index.html';
   };
 }

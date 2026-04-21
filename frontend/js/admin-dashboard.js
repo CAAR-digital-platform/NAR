@@ -7,6 +7,10 @@
     expert: 'expert-dashboard.html',
   };
 
+  const ICON = window.CAARIcons && typeof window.CAARIcons.render === 'function'
+    ? window.CAARIcons.render
+    : function () { return ''; };
+
   const STATE = {
     experts: [],
   };
@@ -27,6 +31,23 @@
     completed: 'Closed',
   };
 
+  const STATUS_ICON = {
+    pending: 'clock',
+    new: 'clock',
+    under_review: 'search',
+    reviewed: 'search',
+    expert_assigned: 'userCheck',
+    reported: 'alert',
+    approved: 'checkCircle',
+    accepted: 'checkCircle',
+    active: 'checkCircle',
+    completed: 'checkCircle',
+    closed: 'checkCircle',
+    rejected: 'xCircle',
+    inactive: 'xCircle',
+    dispatched: 'activity',
+  };
+
   function guardAdmin() {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -41,7 +62,21 @@
       return false;
     }
 
+    const mustChange = Boolean(user.must_change_password) || localStorage.getItem('must_change_password') === '1';
+    if (mustChange) {
+      window.location.href = 'change-password.html';
+      return false;
+    }
+
     return true;
+  }
+
+  function paintStaticIcons() {
+    document.querySelectorAll('[data-icon]').forEach(function (el) {
+      const name = el.getAttribute('data-icon');
+      if (!name) return;
+      el.innerHTML = ICON(name, 16, 'ui-icon');
+    });
   }
 
   function esc(v) {
@@ -82,14 +117,39 @@
     el.textContent = message;
   }
 
+  function setExpertInlineMsg(message) {
+    const el = document.getElementById('expertCreateInlineMsg');
+    if (!el) return;
+
+    if (!message) {
+      el.classList.remove('show');
+      el.textContent = '';
+      return;
+    }
+
+    el.textContent = message;
+    el.classList.add('show');
+  }
+
   function setStat(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value == null ? '-' : String(value);
   }
 
+  function normalizeStatus(status) {
+    return String(status || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, '_');
+  }
+
   function badge(status) {
-    const key = (status || '').toLowerCase();
-    return '<span class="status ' + esc(key) + '">' + esc(STATUS_LABELS[key] || key.replace(/_/g, ' ')) + '</span>';
+    const key = normalizeStatus(status);
+    const icon = STATUS_ICON[key] ? ICON(STATUS_ICON[key], 14, 'status-icon') : '';
+    return '<span class="status status--' + esc(key) + '">' + icon + esc(STATUS_LABELS[key] || key.replace(/_/g, ' ')) + '</span>';
+  }
+
+  function emptyRow(colspan, message) {
+    return '<tr><td colspan="' + colspan + '"><div class="empty-state">' + esc(message) + '</div></td></tr>';
   }
 
   async function loadAll() {
@@ -139,14 +199,14 @@
     if (!body) return;
 
     if (!list || !list.length) {
-      body.innerHTML = '<tr><td colspan="4">No claims found.</td></tr>';
+      body.innerHTML = emptyRow(4, 'No claims available yet.');
       return;
     }
 
     let hasPendingClaims = false;
 
     body.innerHTML = list.map((c) => {
-      const activeExperts = (STATE.experts || []).filter((ex) => Boolean(ex.is_active) && Boolean(ex.is_available));
+      const allExperts = (STATE.experts || []);
       const isLocked = c.status === 'approved' || c.status === 'rejected' || c.status === 'closed';
       const canAssign = c.status === 'under_review' && !c.expert_id;
       const isWaitingExpertReport = c.status === 'expert_assigned';
@@ -154,9 +214,14 @@
       const expertSelectId = 'claim-expert-' + c.claim_id;
 
       const expertOptions = ['<option value="">Assign expert...</option>']
-        .concat(activeExperts.map((ex) => '<option value="' + ex.expert_id + '">' +
-          esc(ex.first_name + ' ' + ex.last_name + ' (#' + ex.expert_id + ')') +
-        '</option>'))
+        .concat(allExperts.map((ex) => {
+          const selectable = Boolean(ex.is_available) && Boolean(ex.is_active);
+          const busySuffix = selectable ? '' : ' (Busy)';
+          const label = (ex.full_name || (String(ex.first_name || '') + ' ' + String(ex.last_name || '')).trim() || 'Expert') + busySuffix;
+          return '<option value="' + ex.expert_id + '" ' + (selectable ? '' : 'disabled ') + '>' +
+            esc(label) +
+          '</option>';
+        }))
         .join('');
 
       let actionsHtml = '';
@@ -169,24 +234,24 @@
       if (canAssign) {
         actionsHtml += [
           '<div class="row-actions">',
-          '  <select id="' + expertSelectId + '">' + expertOptions + '</select>',
-          '  <button class="tiny-btn" ' + (activeExperts.length ? '' : 'disabled ') + 'onclick="window.__adminAssignExpert(' + c.claim_id + ')">Assign Expert</button>',
+          '  <select class="expert-select" id="' + expertSelectId + '">' + expertOptions + '</select>',
+          '  <button class="action-btn" data-variant="assign" data-action="assign-expert" data-claim-id="' + c.claim_id + '" ' + (allExperts.length ? '' : 'disabled ') + '>' + ICON('userCheck', 14, '') + 'Assign</button>',
           '</div>',
-          activeExperts.length ? '' : '<small>No available experts right now.</small>',
+          allExperts.length ? '' : '<span class="muted-note">' + ICON('alert', 13, '') + 'No experts found.</span>',
         ].join('');
       } else if (isWaitingExpertReport) {
-        actionsHtml = '<small>Waiting for expert report.</small>';
+        actionsHtml = '<span class="muted-note">' + ICON('clock', 13, '') + 'Waiting for expert report.</span>';
       } else if (canDecide) {
         actionsHtml = [
           '<div class="row-actions">',
-          '  <button class="tiny-btn" onclick="window.__adminApproveClaim(' + c.claim_id + ')">Approve</button>',
-          '  <button class="tiny-btn" onclick="window.__adminRejectClaim(' + c.claim_id + ')">Reject</button>',
+          '  <button class="action-btn" data-variant="approve" data-action="approve-claim" data-claim-id="' + c.claim_id + '">' + ICON('checkCircle', 14, '') + 'Approve</button>',
+          '  <button class="action-btn" data-variant="reject" data-action="reject-claim" data-claim-id="' + c.claim_id + '">' + ICON('xCircle', 14, '') + 'Reject</button>',
           '</div>',
         ].join('');
       } else if (isLocked) {
-        actionsHtml = '<small>Locked final state. No actions available.</small>';
+        actionsHtml = '<span class="muted-note">' + ICON('checkCircle', 13, '') + 'Final state. No actions available.</span>';
       } else if (!actionsHtml) {
-        actionsHtml = '<small>No actions available.</small>';
+        actionsHtml = '<span class="muted-note">' + ICON('alert', 13, '') + 'No actions available.</span>';
       }
 
       return [
@@ -212,7 +277,7 @@
     if (!body) return;
 
     if (!list || !list.length) {
-      body.innerHTML = '<tr><td colspan="4">No reports yet.</td></tr>';
+      body.innerHTML = emptyRow(4, 'No expert reports submitted yet.');
       return;
     }
 
@@ -231,7 +296,7 @@
     if (!body) return;
 
     if (!list || !list.length) {
-      body.innerHTML = '<tr><td colspan="4">No messages found.</td></tr>';
+      body.innerHTML = emptyRow(4, 'No messages found.');
       return;
     }
 
@@ -246,7 +311,7 @@
       '      <option value="read">read</option>',
       '      <option value="replied">replied</option>',
       '    </select>',
-      '    <div class="row-actions"><button class="tiny-btn" onclick="window.__adminUpdateMessageStatus(' + m.id + ')">Save</button></div>',
+      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-message" data-message-id="' + m.id + '">' + ICON('send', 14, '') + 'Save</button></div>',
       '  </td>',
       '</tr>'
     ].join('')).join('');
@@ -257,7 +322,7 @@
     if (!body) return;
 
     if (!list || !list.length) {
-      body.innerHTML = '<tr><td colspan="4">No applications found.</td></tr>';
+      body.innerHTML = emptyRow(4, 'No job applications found.');
       return;
     }
 
@@ -273,7 +338,7 @@
       '      <option value="accepted">accepted</option>',
       '      <option value="rejected">rejected</option>',
       '    </select>',
-      '    <div class="row-actions"><button class="tiny-btn" onclick="window.__adminUpdateApplicationStatus(' + a.id + ')">Save</button></div>',
+      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-application" data-application-id="' + a.id + '">' + ICON('send', 14, '') + 'Save</button></div>',
       '  </td>',
       '</tr>'
     ].join('')).join('');
@@ -284,7 +349,7 @@
     if (!body) return;
 
     if (!list || !list.length) {
-      body.innerHTML = '<tr><td colspan="4">No roadside requests found.</td></tr>';
+      body.innerHTML = emptyRow(4, 'No roadside requests found.');
       return;
     }
 
@@ -299,7 +364,7 @@
       '      <option value="dispatched">dispatched</option>',
       '      <option value="completed">completed</option>',
       '    </select>',
-      '    <div class="row-actions"><button class="tiny-btn" onclick="window.__adminUpdateRoadsideStatus(' + r.id + ')">Save</button></div>',
+      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-roadside" data-request-id="' + r.id + '">' + ICON('send', 14, '') + 'Save</button></div>',
       '  </td>',
       '</tr>'
     ].join('')).join('');
@@ -310,7 +375,7 @@
     if (!body) return;
 
     if (!list || !list.length) {
-      body.innerHTML = '<tr><td colspan="4">No users found.</td></tr>';
+      body.innerHTML = emptyRow(4, 'No users found.');
       return;
     }
 
@@ -319,8 +384,8 @@
       '  <td>' + esc((u.first_name || '') + ' ' + (u.last_name || '')) + '<br/><small>' + esc(u.email || '-') + '</small></td>',
       '  <td>' + esc(u.role) + '</td>',
       '  <td>' + badge(u.is_active ? 'active' : 'inactive') + '</td>',
-      '  <td><button class="tiny-btn" onclick="window.__adminToggleUser(' + u.id + ', ' + (u.is_active ? 'false' : 'true') + ')">' +
-          (u.is_active ? 'Deactivate' : 'Activate') +
+      '  <td><button class="action-btn" data-action="toggle-user" data-user-id="' + u.id + '" data-next-active="' + (u.is_active ? '0' : '1') + '">' +
+          (u.is_active ? (ICON('userX', 14, '') + 'Deactivate') : (ICON('userCheck', 14, '') + 'Activate')) +
       '</button></td>',
       '</tr>'
     ].join('')).join('');
@@ -353,6 +418,12 @@
     const select = document.getElementById('claim-expert-' + claimId);
     if (!select || !select.value) {
       setMsg('Please choose an expert before assigning.', true);
+      return;
+    }
+
+    const selectedOption = select.options[select.selectedIndex];
+    if (selectedOption && selectedOption.disabled) {
+      setMsg('Expert is currently busy', true);
       return;
     }
 
@@ -439,6 +510,146 @@
     loadAll();
   }
 
+  function bindTableActions() {
+    document.addEventListener('click', function (e) {
+      const trigger = e.target.closest('[data-action]');
+      if (!trigger) return;
+
+      const action = trigger.getAttribute('data-action');
+      if (!action) return;
+
+      if (action === 'assign-expert') {
+        const claimId = parseInt(trigger.getAttribute('data-claim-id'), 10);
+        if (!isNaN(claimId)) assignExpert(claimId);
+        return;
+      }
+
+      if (action === 'approve-claim') {
+        const claimId = parseInt(trigger.getAttribute('data-claim-id'), 10);
+        if (!isNaN(claimId)) approveClaim(claimId);
+        return;
+      }
+
+      if (action === 'reject-claim') {
+        const claimId = parseInt(trigger.getAttribute('data-claim-id'), 10);
+        if (!isNaN(claimId)) rejectClaim(claimId);
+        return;
+      }
+
+      if (action === 'save-message') {
+        const messageId = parseInt(trigger.getAttribute('data-message-id'), 10);
+        if (!isNaN(messageId)) updateMessageStatus(messageId);
+        return;
+      }
+
+      if (action === 'save-application') {
+        const applicationId = parseInt(trigger.getAttribute('data-application-id'), 10);
+        if (!isNaN(applicationId)) updateApplicationStatus(applicationId);
+        return;
+      }
+
+      if (action === 'save-roadside') {
+        const requestId = parseInt(trigger.getAttribute('data-request-id'), 10);
+        if (!isNaN(requestId)) updateRoadsideStatus(requestId);
+        return;
+      }
+
+      if (action === 'toggle-user') {
+        const userId = parseInt(trigger.getAttribute('data-user-id'), 10);
+        const nextActive = trigger.getAttribute('data-next-active') === '1';
+        if (!isNaN(userId)) toggleUser(userId, nextActive);
+      }
+    });
+  }
+
+  function bindExpertCreateActions() {
+    const openBtn = document.getElementById('createExpertBtn');
+    const modal = document.getElementById('expertCreateModal');
+    const closeBtn = document.getElementById('closeExpertModalBtn');
+    const cancelBtn = document.getElementById('cancelExpertCreateBtn');
+    const form = document.getElementById('expertCreateForm');
+    const submitBtn = document.getElementById('submitExpertCreateBtn');
+
+    if (!openBtn || !modal || !form || !submitBtn) return;
+
+    function openModal() {
+      setExpertInlineMsg('');
+      form.reset();
+      modal.hidden = false;
+      const first = document.getElementById('expertFirstName');
+      if (first) first.focus();
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      setExpertInlineMsg('');
+    }
+
+    openBtn.addEventListener('click', openModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !modal.hidden) {
+        closeModal();
+      }
+    });
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const first_name = (document.getElementById('expertFirstName').value || '').trim();
+      const last_name = (document.getElementById('expertLastName').value || '').trim();
+      const email = (document.getElementById('expertEmail').value || '').trim();
+      const specialization = (document.getElementById('expertSpecialization').value || '').trim();
+
+      if (!first_name || !last_name || !email) {
+        setExpertInlineMsg('First name, last name and email are required.');
+        return;
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setExpertInlineMsg('Please enter a valid email address.');
+        return;
+      }
+
+      setExpertInlineMsg('');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating...';
+
+      const res = await api('/api/admin/experts', {
+        method: 'POST',
+        body: {
+          first_name,
+          last_name,
+          email,
+          specialization,
+        },
+      });
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Expert';
+
+      if (!res.ok) {
+        const msg = (res.data && res.data.error) || 'Failed to create expert.';
+        setExpertInlineMsg(msg);
+        setMsg(msg, true);
+        return;
+      }
+
+      const tempPassword = (res.data && res.data.temporary_password) || '(not provided)';
+      setExpertInlineMsg('Expert created. Default password: ' + tempPassword);
+      setMsg('Expert created successfully.', false);
+      setTimeout(function () {
+        window.location.reload();
+      }, 900);
+    });
+  }
+
   function bindTopActions() {
     const refresh = document.getElementById('adminRefresh');
     const logoutBtn = document.getElementById('adminLogout');
@@ -455,21 +666,17 @@
       localStorage.removeItem('role');
       localStorage.removeItem('user');
       localStorage.removeItem('caar_auth_token');
+      localStorage.removeItem('must_change_password');
       window.location.href = 'index.html';
     });
   }
 
-  window.__adminApproveClaim = approveClaim;
-  window.__adminRejectClaim = rejectClaim;
-  window.__adminAssignExpert = assignExpert;
-  window.__adminUpdateMessageStatus = updateMessageStatus;
-  window.__adminUpdateApplicationStatus = updateApplicationStatus;
-  window.__adminUpdateRoadsideStatus = updateRoadsideStatus;
-  window.__adminToggleUser = toggleUser;
-
   document.addEventListener('DOMContentLoaded', function () {
     if (!guardAdmin()) return;
+    paintStaticIcons();
     bindTopActions();
+    bindTableActions();
+    bindExpertCreateActions();
     loadAll();
   });
 })();

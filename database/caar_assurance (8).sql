@@ -954,6 +954,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `phone` varchar(25) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `role` enum('client','expert','admin') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'client',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `must_change_password` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -965,18 +966,18 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password_hash`, `phone`, `role`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'Ad', 'admin@test.com', '$2b$12$3eYwfKSAolqx8RIQkbqeiuibWoS7ADbm95PCDp4vSbobpCurJUJ2W', NULL, 'admin', 1, '2026-04-13 12:02:30', '2026-04-13 14:58:40'),
-(2, 'Client', 'User', 'client@test.com', '$2b$10$ntnCCsuDWmVDc.UmDdRX8OLFcPMrGQ6vI/p.7/RPWxsBjBBD33IYm', NULL, 'client', 1, '2026-04-13 14:59:13', '2026-04-13 20:33:28'),
-(3, 'Admin', 'User', 'admin@test1.com', '$2b$12$9OBt/kQSErEyk7JhhCQeAeHvMkSzbjN/d7zBWRX30/JXHayBlG8Hm', NULL, 'client', 1, '2026-04-13 15:48:51', '2026-04-13 15:48:51'),
-(4, 'Aida', 'Moufouki', 'aida.moufouki@gmail.com', '$2b$12$ZX27LH0k2YEhvsfxvWPzO.hS2IV5QikfSLOY6KD.WL5LqOP7/20.S', '+213549025814', 'client', 1, '2026-04-14 15:05:54', '2026-04-14 15:05:54'),
-(5, 'Test', 'User', 'test@test.com', '$2b$12$9m89QJFfWJLX6aYg309WnOoti7seFZJUPxS.7XUiVY90h2E.FPXvu', '0555555555', 'client', 1, '2026-04-16 13:00:59', '2026-04-16 13:00:59'),
-(6, 'Aida', 'Test', 'aida@test.com', '$2b$12$1WuTK6.PqhvWmr2Ach9PReqo9EUK89r.timnqKdZOLsxCAwvLxDCm', '0550000000', 'client', 1, '2026-04-16 13:17:23', '2026-04-16 13:17:23'),
-(7, 'Amel', 'Test', 'amel@test.com', '$2b$12$wryn3rdT1OiB4MyzGqQ4xuuYKZZjiJYHxfcHfGJ45FCkXRG4z5JVu', '0550000009', 'client', 1, '2026-04-16 13:49:37', '2026-04-16 13:49:37'),
-(8, 'Riham', 'MOHAMED KEBIR', 'mohamedkbirr@gmail.com', '$2b$12$wScrdX.5Ntq.TlUi4jW7gOvxvBk7SgGvi/o8L91hKFf0fm2JFfZBy', '0541775494', 'client', 1, '2026-04-17 00:40:17', '2026-04-17 00:40:17'),
-(9, 'Warda', 'MOUFOUKI', 'warda.moufouki@gmail.com', '$2b$12$sCDGkFJZp/zvbNdw7pMmre5pu/Mm8qkTI6.nX2XpxKEG8zbFmXR9i', '+213541775494', 'client', 1, '2026-04-17 12:05:16', '2026-04-17 12:05:16'),
-(10, 'Karim', 'Expert', 'expert@caar.dz', '$2b$10$CEzbSrKvO7vGcw8JTAGPD.vU4XPV60YEszlIzxm785TPV/v424h/6', '0550000001', 'expert', 1, '2026-04-19 09:56:16', '2026-04-19 10:32:10'),
-(12, 'Admin', 'Main', 'admin@caar.dz', '$2b$10$hash', NULL, 'admin', 1, '2026-04-19 10:21:23', '2026-04-19 10:21:23');
+INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password_hash`, `phone`, `role`, `is_active`, `must_change_password`, `created_at`, `updated_at`) VALUES
+(1, 'Admin', 'Ad', 'admin@test.com', '$2b$12$3eYwfKSAolqx8RIQkbqeiuibWoS7ADbm95PCDp4vSbobpCurJUJ2W', NULL, 'admin', 1, 0, '2026-04-13 12:02:30', '2026-04-13 14:58:40'),
+(2, 'Client', 'User', 'client@test.com', '$2b$10$ntnCCsuDWmVDc.UmDdRX8OLFcPMrGQ6vI/p.7/RPWxsBjBBD33IYm', NULL, 'client', 1, 0, '2026-04-13 14:59:13', '2026-04-13 20:33:28'),
+(3, 'Admin', 'User', 'admin@test1.com', '$2b$12$9OBt/kQSErEyk7JhhCQeAeHvMkSzbjN/d7zBWRX30/JXHayBlG8Hm', NULL, 'client', 1, 0, '2026-04-13 15:48:51', '2026-04-13 15:48:51'),
+(4, 'Aida', 'Moufouki', 'aida.moufouki@gmail.com', '$2b$12$ZX27LH0k2YEhvsfxvWPzO.hS2IV5QikfSLOY6KD.WL5LqOP7/20.S', '+213549025814', 'client', 1, 0, '2026-04-14 15:05:54', '2026-04-14 15:05:54'),
+(5, 'Test', 'User', 'test@test.com', '$2b$12$9m89QJFfWJLX6aYg309WnOoti7seFZJUPxS.7/RPWxsBjBBD33IYm', '0555555555', 'client', 1, 0, '2026-04-16 13:00:59', '2026-04-16 13:00:59'),
+(6, 'Aida', 'Test', 'aida@test.com', '$2b$12$1WuTK6.PqhvWmr2Ach9PReqo9EUK89r.timnqKdZOLsxCAwvLxDCm', '0550000000', 'client', 1, 0, '2026-04-16 13:17:23', '2026-04-16 13:17:23'),
+(7, 'Amel', 'Test', 'amel@test.com', '$2b$12$wryn3rdT1OiB4MyzGqQ4xuuYKZZjiJYHxfcHfGJ45FCkXRG4z5JVu', '0550000009', 'client', 1, 0, '2026-04-16 13:49:37', '2026-04-16 13:49:37'),
+(8, 'Riham', 'MOHAMED KEBIR', 'mohamedkbirr@gmail.com', '$2b$12$wScrdX.5Ntq.TlUi4jW7gOvxvBk7SgGvi/o8L91hKFf0fm2JFfZBy', '0541775494', 'client', 1, 0, '2026-04-17 00:40:17', '2026-04-17 00:40:17'),
+(9, 'Warda', 'MOUFOUKI', 'warda.moufouki@gmail.com', '$2b$12$sCDGkFJZp/zvbNdw7pMmre5pu/Mm8qkTI6.nX2XpxKEG8zbFmXR9i', '+213541775494', 'client', 1, 0, '2026-04-17 12:05:16', '2026-04-17 12:05:16'),
+(10, 'Karim', 'Expert', 'expert@caar.dz', '$2b$10$CEzbSrKvO7vGcw8JTAGPD.vU4XPV60YEszlIzxm785TPV/v424h/6', '0550000001', 'expert', 1, 0, '2026-04-19 09:56:16', '2026-04-19 10:32:10'),
+(12, 'Admin', 'Main', 'admin@caar.dz', '$2b$10$hash', NULL, 'admin', 1, 0, '2026-04-19 10:21:23', '2026-04-19 10:21:23');
 
 -- --------------------------------------------------------
 

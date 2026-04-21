@@ -225,7 +225,7 @@ async function assignExpert(claimId, expertId) {
 
     const expertRow = await claimsModel.getAvailableExpertForUpdateTx(conn, expertId);
     if (!expertRow) {
-      const err = new Error('Selected expert is not available for assignment');
+      const err = new Error('Expert is currently busy');
       err.status = 409;
       throw err;
     }
