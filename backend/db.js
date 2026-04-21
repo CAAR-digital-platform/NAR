@@ -14,27 +14,44 @@ async function ensureAuthSchema() {
     const conn = await pool.getConnection();
 
     try {
-        const [rows] = await conn.query(
-            `SELECT COUNT(*) AS cnt
-             FROM information_schema.COLUMNS
-             WHERE TABLE_SCHEMA = DATABASE()
-               AND TABLE_NAME = 'users'
-               AND COLUMN_NAME = 'must_change_password'`
-        );
+        // Check is_active
+        const [activeCheck] = await conn.query(`
+            SELECT COUNT(*) AS cnt
+            FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = 'users'
+              AND COLUMN_NAME = 'is_active'
+        `);
 
-        if (!rows[0] || Number(rows[0].cnt) === 0) {
-            await conn.query(
-                `ALTER TABLE users
-                 ADD COLUMN must_change_password TINYINT(1) NOT NULL DEFAULT 0
-                 AFTER is_active`
-            );
-            console.log("✅ users.must_change_password column added");
+        if (Number(activeCheck[0].cnt) === 0) {
+            await conn.query(`
+                ALTER TABLE users
+                ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1
+            `);
+            console.log("✅ users.is_active added");
         }
+
+        // Check must_change_password
+        const [passCheck] = await conn.query(`
+            SELECT COUNT(*) AS cnt
+            FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = 'users'
+              AND COLUMN_NAME = 'must_change_password'
+        `);
+
+        if (Number(passCheck[0].cnt) === 0) {
+            await conn.query(`
+                ALTER TABLE users
+                ADD COLUMN must_change_password TINYINT(1) NOT NULL DEFAULT 0
+            `);
+            console.log("✅ users.must_change_password added");
+        }
+
     } finally {
         conn.release();
     }
 }
-
 // Test de connexion au démarrage
 pool.getConnection()
     .then(async (conn) => {
