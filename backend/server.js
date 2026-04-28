@@ -23,34 +23,38 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const authRoutes = require('./routes/authRoutes');
-const roadsideRoutes = require('./routes/roadsideRoutes');
-const dashboardRoutes = require('./routes/dashboardRoutes');
-const messageRoutes = require('./routes/messageRoutes');
-const applicationRoutes = require('./routes/applicationRoutes');
-const claimsRoutes = require('./routes/claimsRoutes');
-const agencyRoutes = require('./routes/agencyRoutes');
-const contractsRoutes = require('./routes/contractsRoutes');
-const plansRoutes = require('./routes/plansRoutes');
-const catnatRoutes = require('./routes/catnatRoutes');
-const assuranceRoutes = require('./routes/assuranceRoutes');
+const authRoutes         = require('./routes/authRoutes');
+const roadsideRoutes     = require('./routes/roadsideRoutes');
+const dashboardRoutes    = require('./routes/dashboardRoutes');
+const messageRoutes      = require('./routes/messageRoutes');
+const applicationRoutes  = require('./routes/applicationRoutes');
+const claimsRoutes       = require('./routes/claimsRoutes');
+const agencyRoutes       = require('./routes/agencyRoutes');
+const contractsRoutes    = require('./routes/contractsRoutes');
+const plansRoutes        = require('./routes/plansRoutes');
+const catnatRoutes       = require('./routes/catnatRoutes');
+const assuranceRoutes    = require('./routes/assuranceRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+const adminRoutes        = require('./routes/adminRoutes');
+const newsRoutes         = require('./routes/newsRoutes');       // ← NEW
+
 const path = require('path');
 app.use(express.static(path.join(__dirname, '../frontend')));
-app.use('/api/auth', authRoutes);
-app.use('/api/roadside', roadsideRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/applications', applicationRoutes);
-app.use('/api/claims', claimsRoutes);
-app.use('/api/agencies', agencyRoutes);
-app.use('/api/contracts', contractsRoutes);
-app.use('/api/plans', plansRoutes);
-app.use('/api/catnat', catnatRoutes);
-app.use('/api/assurances', assuranceRoutes);
+
+app.use('/api/auth',          authRoutes);
+app.use('/api/roadside',      roadsideRoutes);
+app.use('/api/dashboard',     dashboardRoutes);
+app.use('/api/messages',      messageRoutes);
+app.use('/api/applications',  applicationRoutes);
+app.use('/api/claims',        claimsRoutes);
+app.use('/api/agencies',      agencyRoutes);
+app.use('/api/contracts',     contractsRoutes);
+app.use('/api/plans',         plansRoutes);
+app.use('/api/catnat',        catnatRoutes);
+app.use('/api/assurances',    assuranceRoutes);
 app.use('/api/notifications', notificationRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api/admin',         adminRoutes);
+app.use('/api/news',          newsRoutes);                       // ← NEW
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
