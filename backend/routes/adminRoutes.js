@@ -29,6 +29,7 @@
  * GET    /api/admin/products/:id     get one product
  * POST   /api/admin/products         create product
  * PUT    /api/admin/products/:id     update product
+ * PATCH  /api/admin/products/:id/status toggle active/inactive
  * DELETE /api/admin/products/:id     delete product
  */
 
@@ -145,16 +146,19 @@ router.delete('/news/:id', ...adminGuard, newsCtrl.adminDelete);
 // alongside /api/assurances — nothing is duplicated in the service layer.
 
 // GET /api/admin/products
-router.get('/products', ...adminGuard, assuranceCtrl.list);
+router.get('/products', ...adminGuard, assuranceCtrl.adminList);
 
 // GET /api/admin/products/:id — MUST be after root routes
-router.get('/products/:id', ...adminGuard, assuranceCtrl.getOne);
+router.get('/products/:id', ...adminGuard, assuranceCtrl.adminGetOne);
 
 // POST /api/admin/products
 router.post('/products', ...adminGuard, assuranceCtrl.create);
 
 // PUT /api/admin/products/:id
 router.put('/products/:id', ...adminGuard, assuranceCtrl.update);
+
+// PATCH /api/admin/products/:id/status
+router.patch('/products/:id/status', ...adminGuard, assuranceCtrl.updateStatus);
 
 // DELETE /api/admin/products/:id
 router.delete('/products/:id', ...adminGuard, assuranceCtrl.remove);

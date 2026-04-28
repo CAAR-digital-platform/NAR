@@ -21,11 +21,26 @@ function normalizeBasePrice(basePrice) {
 }
 
 async function listProducts() {
+  const products = await assuranceModel.getActiveProducts();
+  return products.map(normalizeProduct);
+}
+
+async function listAllProducts() {
   const products = await assuranceModel.getAllProducts();
   return products.map(normalizeProduct);
 }
 
 async function getProduct(productId) {
+  const product = await assuranceModel.getActiveProductById(productId);
+  if (!product) {
+    const err = new Error('Produit non trouve');
+    err.status = 404;
+    throw err;
+  }
+  return normalizeProduct(product);
+}
+
+async function getAdminProduct(productId) {
   const product = await assuranceModel.getProductById(productId);
   if (!product) {
     const err = new Error('Produit non trouve');
@@ -49,7 +64,7 @@ async function createProduct({ name, description, insurance_type, base_price }) 
     base_price: normalizeBasePrice(base_price),
   });
 
-  return getProduct(productId);
+  return getAdminProduct(productId);
 }
 
 async function updateProduct(productId, { name, description, insurance_type, base_price }) {
@@ -72,7 +87,31 @@ async function updateProduct(productId, { name, description, insurance_type, bas
     throw err;
   }
 
-  return getProduct(productId);
+  return getAdminProduct(productId);
+}
+
+async function updateProductStatus(productId, isActive) {
+  if (typeof isActive !== 'boolean') {
+    const err = new Error('is_active must be boolean');
+    err.status = 400;
+    throw err;
+  }
+
+  const existing = await assuranceModel.getProductById(productId);
+  if (!existing) {
+    const err = new Error('Produit non trouve');
+    err.status = 404;
+    throw err;
+  }
+
+  const affectedRows = await assuranceModel.updateProductStatus(productId, isActive);
+  if (!affectedRows) {
+    const err = new Error('Produit non trouve');
+    err.status = 404;
+    throw err;
+  }
+
+  return getAdminProduct(productId);
 }
 
 async function deleteProduct(productId) {
@@ -85,9 +124,12 @@ async function deleteProduct(productId) {
 }
 
 module.exports = {
+  listAllProducts,
   listProducts,
   getProduct,
+  getAdminProduct,
   createProduct,
   updateProduct,
+  updateProductStatus,
   deleteProduct,
 };

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAAR — Admin Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="admin-cms.css"/>
   <style>
     :root {
       --orange: #E8761E;
@@ -447,6 +448,101 @@
             <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
             <tbody id="usersTableBody"></tbody>
           </table>
+        </div>
+      </article>
+
+      <article class="panel panel--full">
+        <div class="panel-head">
+          <h2><span data-icon="fileText"></span>Content Management</h2>
+          <div class="panel-head-actions">
+            <span class="cms-form-note">Draft articles and inactive products stay hidden from public views.</span>
+          </div>
+        </div>
+        <div class="panel-body panel-body--cms">
+          <div class="cms-grid">
+            <section class="cms-card">
+              <div class="cms-card-head">
+                <div>
+                  <h3><span data-icon="fileText"></span>Manage News</h3>
+                  <p>Create articles here, then use the table buttons to edit, delete, publish or unpublish them.</p>
+                </div>
+              </div>
+              <form id="newsForm" class="cms-form">
+                <div class="cms-form-grid">
+                  <div class="cms-form-row cms-form-row--full">
+                    <label for="newsTitleInput">Title</label>
+                    <input id="newsTitleInput" type="text" required maxlength="255" />
+                  </div>
+                  <div class="cms-form-row">
+                    <label for="newsStatusInput">Status</label>
+                    <select id="newsStatusInput" required>
+                      <option value="draft">Draft</option>
+                      <option value="published">Published</option>
+                    </select>
+                  </div>
+                  <div class="cms-form-row">
+                    <label for="newsImageInput">Image URL</label>
+                    <input id="newsImageInput" type="url" placeholder="https://example.com/image.jpg" />
+                  </div>
+                  <div class="cms-form-row cms-form-row--full">
+                    <label for="newsContentInput">Content</label>
+                    <textarea id="newsContentInput" required minlength="10" placeholder="Article content"></textarea>
+                  </div>
+                </div>
+                <div id="newsFormMsg" class="cms-inline-msg err"></div>
+                <div class="cms-form-actions">
+                  <button class="mini-btn" type="button" id="newsCancelEditBtn" hidden>Cancel edit</button>
+                  <button class="btn btn-orange" type="submit" id="newsSubmitBtn">Create Article</button>
+                </div>
+              </form>
+              <div class="cms-table-wrap">
+                <table>
+                  <thead><tr><th>Article</th><th>Status</th><th>Updated</th><th>Actions</th></tr></thead>
+                  <tbody id="newsTableBody"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="cms-card">
+              <div class="cms-card-head">
+                <div>
+                  <h3><span data-icon="shieldCheck"></span>Manage Products</h3>
+                  <p>Create or update products here, then toggle active state from the list.</p>
+                </div>
+              </div>
+              <form id="productForm" class="cms-form">
+                <div class="cms-form-grid">
+                  <div class="cms-form-row cms-form-row--full">
+                    <label for="productNameInput">Name</label>
+                    <input id="productNameInput" type="text" required maxlength="100" />
+                  </div>
+                  <div class="cms-form-row">
+                    <label for="productTypeInput">Insurance Type</label>
+                    <input id="productTypeInput" type="text" maxlength="50" />
+                  </div>
+                  <div class="cms-form-row">
+                    <label for="productPriceInput">Base Price</label>
+                    <input id="productPriceInput" type="number" min="0" step="0.01" placeholder="0.00" />
+                  </div>
+                  <div class="cms-form-row cms-form-row--full">
+                    <label for="productDescriptionInput">Description</label>
+                    <textarea id="productDescriptionInput" required placeholder="Product description"></textarea>
+                  </div>
+                </div>
+                <div id="productFormMsg" class="cms-inline-msg err"></div>
+                <div class="cms-form-actions">
+                  <button class="mini-btn" type="button" id="productCancelEditBtn" hidden>Cancel edit</button>
+                  <button class="btn btn-orange" type="submit" id="productSubmitBtn">Create Product</button>
+                </div>
+              </form>
+              <div class="cms-table-wrap">
+                <table>
+                  <thead><tr><th>Product</th><th>Type</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+                  <tbody id="productsTableBody"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
         </div>
       </article>
     </section>

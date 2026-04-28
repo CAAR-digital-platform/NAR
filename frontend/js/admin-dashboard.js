@@ -13,6 +13,10 @@
 
   const STATE = {
     experts: [],
+    news: [],
+    products: [],
+    editingNewsId: null,
+    editingProductId: null,
   };
 
   const STATUS_LABELS = {
@@ -25,6 +29,8 @@
     closed: 'Closed',
     active: 'Active',
     inactive: 'Inactive',
+    draft: 'Draft',
+    published: 'Published',
     new: 'Pending',
     reviewed: 'Under Review',
     accepted: 'Approved',
@@ -46,6 +52,8 @@
     rejected: 'xCircle',
     inactive: 'xCircle',
     dispatched: 'activity',
+    draft: 'clock',
+    published: 'checkCircle',
   };
 
   function guardAdmin() {
@@ -152,10 +160,205 @@
     return '<tr><td colspan="' + colspan + '"><div class="empty-state">' + esc(message) + '</div></td></tr>';
   }
 
+  function setInlineMsg(id, message, isError) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    if (!message) {
+      el.className = 'cms-inline-msg';
+      el.textContent = '';
+      return;
+    }
+
+    el.className = 'cms-inline-msg show ' + (isError ? 'err' : 'ok');
+    el.textContent = message;
+  }
+
+  function normalizeText(value) {
+    return String(value == null ? '' : value).replace(/\s+/g, ' ').trim();
+  }
+
+  function truncateText(value, maxLength) {
+    const text = normalizeText(value);
+    if (text.length <= maxLength) return text;
+    return text.slice(0, Math.max(0, maxLength - 3)).trimEnd() + '...';
+  }
+
+  function formatDate(value) {
+    if (!value) return '-';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+
+    return date.toLocaleDateString('en-GB', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+    });
+  }
+
+  function formatPrice(value) {
+    if (value == null || value === '') return '-';
+
+    const amount = Number(value);
+    if (Number.isNaN(amount)) return String(value);
+
+    return amount.toLocaleString() + ' DZD';
+  }
+
+  function findNewsById(newsId) {
+    return (STATE.news || []).find((item) => Number(item.id) === Number(newsId));
+  }
+
+  function findProductById(productId) {
+    return (STATE.products || []).find((item) => Number(item.id) === Number(productId));
+  }
+
+  function resetNewsForm() {
+    STATE.editingNewsId = null;
+    const form = document.getElementById('newsForm');
+    const submitBtn = document.getElementById('newsSubmitBtn');
+    const cancelBtn = document.getElementById('newsCancelEditBtn');
+
+    if (form) form.reset();
+    if (submitBtn) submitBtn.textContent = 'Create Article';
+    if (cancelBtn) cancelBtn.hidden = true;
+    setInlineMsg('newsFormMsg', '', false);
+  }
+
+  function openNewsForm(article) {
+    if (!article) return;
+
+    STATE.editingNewsId = Number(article.id);
+
+    const form = document.getElementById('newsForm');
+    const title = document.getElementById('newsTitleInput');
+    const status = document.getElementById('newsStatusInput');
+    const image = document.getElementById('newsImageInput');
+    const content = document.getElementById('newsContentInput');
+    const submitBtn = document.getElementById('newsSubmitBtn');
+    const cancelBtn = document.getElementById('newsCancelEditBtn');
+
+    if (title) title.value = article.title || '';
+    if (status) status.value = article.status || 'draft';
+    if (image) image.value = article.image_url || '';
+    if (content) content.value = article.content || '';
+    if (submitBtn) submitBtn.textContent = 'Update Article';
+    if (cancelBtn) cancelBtn.hidden = false;
+    setInlineMsg('newsFormMsg', '', false);
+
+    if (form && typeof form.scrollIntoView === 'function') {
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function resetProductForm() {
+    STATE.editingProductId = null;
+    const form = document.getElementById('productForm');
+    const submitBtn = document.getElementById('productSubmitBtn');
+    const cancelBtn = document.getElementById('productCancelEditBtn');
+
+    if (form) form.reset();
+    if (submitBtn) submitBtn.textContent = 'Create Product';
+    if (cancelBtn) cancelBtn.hidden = true;
+    setInlineMsg('productFormMsg', '', false);
+  }
+
+  function openProductForm(product) {
+    if (!product) return;
+
+    STATE.editingProductId = Number(product.id);
+
+    const form = document.getElementById('productForm');
+    const name = document.getElementById('productNameInput');
+    const type = document.getElementById('productTypeInput');
+    const price = document.getElementById('productPriceInput');
+    const description = document.getElementById('productDescriptionInput');
+    const submitBtn = document.getElementById('productSubmitBtn');
+    const cancelBtn = document.getElementById('productCancelEditBtn');
+
+    if (name) name.value = product.name || '';
+    if (type) type.value = product.insurance_type || '';
+    if (price) price.value = product.base_price == null ? '' : product.base_price;
+    if (description) description.value = product.description || '';
+    if (submitBtn) submitBtn.textContent = 'Update Product';
+    if (cancelBtn) cancelBtn.hidden = false;
+    setInlineMsg('productFormMsg', '', false);
+
+    if (form && typeof form.scrollIntoView === 'function') {
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function renderNews(list) {
+    const body = document.getElementById('newsTableBody');
+    if (!body) return;
+
+    if (!list || !list.length) {
+      body.innerHTML = emptyRow(4, 'No news articles available yet.');
+      return;
+    }
+
+    body.innerHTML = list.map((article) => {
+      const publishVariant = article.status === 'published' ? 'unpublish' : 'publish';
+      const publishLabel = article.status === 'published' ? 'Unpublish' : 'Publish';
+      const publishIcon = article.status === 'published' ? 'toggleOff' : 'toggleOn';
+      const articleSummary = truncateText(article.content || '', 110);
+
+      return [
+        '<tr>',
+        '  <td><strong>' + esc(article.title || '-') + '</strong><br/><small>' + esc(articleSummary || '-') + '</small></td>',
+        '  <td>' + badge(article.status || 'draft') + '</td>',
+        '  <td>' + esc(formatDate(article.updated_at || article.created_at)) + '</td>',
+        '  <td>',
+        '    <div class="row-actions">',
+        '      <button class="action-btn" data-variant="edit" data-action="edit-news" data-news-id="' + article.id + '">Edit</button>',
+        '      <button class="action-btn" data-variant="delete" data-action="delete-news" data-news-id="' + article.id + '">' + ICON('xCircle', 14, '') + 'Delete</button>',
+        '      <button class="action-btn" data-variant="' + publishVariant + '" data-action="toggle-news-status" data-news-id="' + article.id + '">' + ICON(publishIcon, 14, '') + publishLabel + '</button>',
+        '    </div>',
+        '  </td>',
+        '</tr>',
+      ].join('');
+    }).join('');
+  }
+
+  function renderProducts(list) {
+    const body = document.getElementById('productsTableBody');
+    if (!body) return;
+
+    if (!list || !list.length) {
+      body.innerHTML = emptyRow(5, 'No products available yet.');
+      return;
+    }
+
+    body.innerHTML = list.map((product) => {
+      const toggleVariant = product.is_active ? 'deactivate' : 'activate';
+      const toggleLabel = product.is_active ? 'Deactivate' : 'Activate';
+      const toggleIcon = product.is_active ? 'toggleOff' : 'toggleOn';
+      const productSummary = truncateText(product.description || '', 105);
+
+      return [
+        '<tr>',
+        '  <td><strong>' + esc(product.name || '-') + '</strong><br/><small>' + esc(productSummary || '-') + '</small></td>',
+        '  <td>' + esc(product.insurance_type || '-') + '</td>',
+        '  <td>' + esc(formatPrice(product.base_price)) + '</td>',
+        '  <td>' + badge(product.is_active ? 'active' : 'inactive') + '</td>',
+        '  <td>',
+        '    <div class="row-actions">',
+        '      <button class="action-btn" data-variant="edit" data-action="edit-product" data-product-id="' + product.id + '">Edit</button>',
+        '      <button class="action-btn" data-variant="delete" data-action="delete-product" data-product-id="' + product.id + '">' + ICON('xCircle', 14, '') + 'Delete</button>',
+        '      <button class="action-btn" data-variant="' + toggleVariant + '" data-action="toggle-product-status" data-product-id="' + product.id + '">' + ICON(toggleIcon, 14, '') + toggleLabel + '</button>',
+        '    </div>',
+        '  </td>',
+        '</tr>',
+      ].join('');
+    }).join('');
+  }
+
   async function loadAll() {
     setMsg('Loading admin data...', false);
 
-    const [statsRes, claimsRes, reportsRes, messagesRes, appsRes, roadsideRes, usersRes, expertsRes] = await Promise.all([
+    const [statsRes, claimsRes, reportsRes, messagesRes, appsRes, roadsideRes, usersRes, expertsRes, newsRes, productsRes] = await Promise.all([
       api('/api/dashboard/stats'),
       api('/api/claims'),
       api('/api/claims/expert-reports'),
@@ -164,6 +367,8 @@
       api('/api/roadside/requests'),
       api('/api/admin/users'),
       api('/api/admin/experts'),
+      api('/api/admin/news'),
+      api('/api/admin/products'),
     ]);
 
     if (!statsRes.ok) {
@@ -189,6 +394,10 @@
     renderApplications(appsRes.ok ? appsRes.data.applications : []);
     renderRoadside(roadsideRes.ok ? roadsideRes.data.requests : []);
     renderUsers(usersRes.ok ? usersRes.data.users : []);
+    STATE.news = newsRes.ok ? (Array.isArray(newsRes.data) ? newsRes.data : (newsRes.data.articles || [])) : [];
+    STATE.products = productsRes.ok ? (Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data.products || [])) : [];
+    renderNews(STATE.news);
+    renderProducts(STATE.products);
 
     setMsg('Admin data loaded.', false);
     setTimeout(() => setMsg('', false), 1400);
@@ -510,6 +719,220 @@
     loadAll();
   }
 
+  async function saveNewsForm(e) {
+    e.preventDefault();
+
+    const titleInput = document.getElementById('newsTitleInput');
+    const statusInput = document.getElementById('newsStatusInput');
+    const imageInput = document.getElementById('newsImageInput');
+    const contentInput = document.getElementById('newsContentInput');
+
+    const title = normalizeText(titleInput && titleInput.value);
+    const status = normalizeText(statusInput && statusInput.value) || 'draft';
+    const image_url = normalizeText(imageInput && imageInput.value);
+    const content = String(contentInput && contentInput.value ? contentInput.value : '').trim();
+
+    if (!title || !content) {
+      setInlineMsg('newsFormMsg', 'Title and content are required.', true);
+      return;
+    }
+
+    const isEditing = Boolean(STATE.editingNewsId);
+    const res = await api(isEditing ? '/api/admin/news/' + STATE.editingNewsId : '/api/admin/news', {
+      method: isEditing ? 'PUT' : 'POST',
+      body: {
+        title,
+        content,
+        image_url: image_url || null,
+        status,
+      },
+    });
+
+    if (!res.ok) {
+      const msg = (res.data && res.data.error) || 'Failed to save article.';
+      setInlineMsg('newsFormMsg', msg, true);
+      setMsg(msg, true);
+      return;
+    }
+
+    resetNewsForm();
+    setInlineMsg('newsFormMsg', isEditing ? 'Article updated successfully.' : 'Article created successfully.', false);
+    setMsg(isEditing ? 'Article updated successfully.' : 'Article created successfully.', false);
+    loadAll();
+  }
+
+  async function saveProductForm(e) {
+    e.preventDefault();
+
+    const nameInput = document.getElementById('productNameInput');
+    const typeInput = document.getElementById('productTypeInput');
+    const priceInput = document.getElementById('productPriceInput');
+    const descriptionInput = document.getElementById('productDescriptionInput');
+
+    const name = normalizeText(nameInput && nameInput.value);
+    const insurance_type = normalizeText(typeInput && typeInput.value);
+    const base_price = normalizeText(priceInput && priceInput.value);
+    const description = String(descriptionInput && descriptionInput.value ? descriptionInput.value : '').trim();
+
+    if (!name || !description) {
+      setInlineMsg('productFormMsg', 'Name and description are required.', true);
+      return;
+    }
+
+    const isEditing = Boolean(STATE.editingProductId);
+    const res = await api(isEditing ? '/api/admin/products/' + STATE.editingProductId : '/api/admin/products', {
+      method: isEditing ? 'PUT' : 'POST',
+      body: {
+        name,
+        description,
+        insurance_type: insurance_type || null,
+        base_price: base_price === '' ? null : base_price,
+      },
+    });
+
+    if (!res.ok) {
+      const msg = (res.data && res.data.error) || 'Failed to save product.';
+      setInlineMsg('productFormMsg', msg, true);
+      setMsg(msg, true);
+      return;
+    }
+
+    resetProductForm();
+    setInlineMsg('productFormMsg', isEditing ? 'Product updated successfully.' : 'Product created successfully.', false);
+    setMsg(isEditing ? 'Product updated successfully.' : 'Product created successfully.', false);
+    loadAll();
+  }
+
+  function editNews(newsId) {
+    const article = findNewsById(newsId);
+    if (!article) {
+      setMsg('Article not found.', true);
+      return;
+    }
+
+    openNewsForm(article);
+  }
+
+  async function deleteNews(newsId) {
+    const article = findNewsById(newsId);
+    if (!article) {
+      setMsg('Article not found.', true);
+      return;
+    }
+
+    if (!window.confirm('Delete this article permanently?')) {
+      return;
+    }
+
+    const res = await api('/api/admin/news/' + newsId, { method: 'DELETE' });
+    if (!res.ok) {
+      const msg = (res.data && res.data.error) || 'Failed to delete article.';
+      setMsg(msg, true);
+      return;
+    }
+
+    if (STATE.editingNewsId && Number(STATE.editingNewsId) === Number(newsId)) {
+      resetNewsForm();
+    }
+
+    setMsg('Article deleted successfully.', false);
+    loadAll();
+  }
+
+  async function toggleNewsStatus(newsId) {
+    const article = findNewsById(newsId);
+    if (!article) {
+      setMsg('Article not found.', true);
+      return;
+    }
+
+    const nextStatus = article.status === 'published' ? 'draft' : 'published';
+    const res = await api('/api/admin/news/' + newsId, {
+      method: 'PUT',
+      body: {
+        title: article.title,
+        content: article.content,
+        image_url: article.image_url || null,
+        status: nextStatus,
+      },
+    });
+
+    if (!res.ok) {
+      const msg = (res.data && res.data.error) || 'Failed to update article status.';
+      setMsg(msg, true);
+      return;
+    }
+
+    if (STATE.editingNewsId && Number(STATE.editingNewsId) === Number(newsId)) {
+      openNewsForm(res.data.article || article);
+    }
+
+    setMsg('Article status updated.', false);
+    loadAll();
+  }
+
+  function editProduct(productId) {
+    const product = findProductById(productId);
+    if (!product) {
+      setMsg('Product not found.', true);
+      return;
+    }
+
+    openProductForm(product);
+  }
+
+  async function deleteProduct(productId) {
+    const product = findProductById(productId);
+    if (!product) {
+      setMsg('Product not found.', true);
+      return;
+    }
+
+    if (!window.confirm('Delete this product permanently?')) {
+      return;
+    }
+
+    const res = await api('/api/admin/products/' + productId, { method: 'DELETE' });
+    if (!res.ok) {
+      const msg = (res.data && res.data.error) || 'Failed to delete product.';
+      setMsg(msg, true);
+      return;
+    }
+
+    if (STATE.editingProductId && Number(STATE.editingProductId) === Number(productId)) {
+      resetProductForm();
+    }
+
+    setMsg('Product deleted successfully.', false);
+    loadAll();
+  }
+
+  async function toggleProductStatus(productId) {
+    const product = findProductById(productId);
+    if (!product) {
+      setMsg('Product not found.', true);
+      return;
+    }
+
+    const res = await api('/api/admin/products/' + productId + '/status', {
+      method: 'PATCH',
+      body: { is_active: !product.is_active },
+    });
+
+    if (!res.ok) {
+      const msg = (res.data && res.data.error) || 'Failed to update product status.';
+      setMsg(msg, true);
+      return;
+    }
+
+    if (STATE.editingProductId && Number(STATE.editingProductId) === Number(productId)) {
+      openProductForm(res.data.product || product);
+    }
+
+    setMsg('Product status updated.', false);
+    loadAll();
+  }
+
   function bindTableActions() {
     document.addEventListener('click', function (e) {
       const trigger = e.target.closest('[data-action]');
@@ -558,8 +981,56 @@
         const userId = parseInt(trigger.getAttribute('data-user-id'), 10);
         const nextActive = trigger.getAttribute('data-next-active') === '1';
         if (!isNaN(userId)) toggleUser(userId, nextActive);
+        return;
+      }
+
+      if (action === 'edit-news') {
+        const newsId = parseInt(trigger.getAttribute('data-news-id'), 10);
+        if (!isNaN(newsId)) editNews(newsId);
+        return;
+      }
+
+      if (action === 'delete-news') {
+        const newsId = parseInt(trigger.getAttribute('data-news-id'), 10);
+        if (!isNaN(newsId)) deleteNews(newsId);
+        return;
+      }
+
+      if (action === 'toggle-news-status') {
+        const newsId = parseInt(trigger.getAttribute('data-news-id'), 10);
+        if (!isNaN(newsId)) toggleNewsStatus(newsId);
+        return;
+      }
+
+      if (action === 'edit-product') {
+        const productId = parseInt(trigger.getAttribute('data-product-id'), 10);
+        if (!isNaN(productId)) editProduct(productId);
+        return;
+      }
+
+      if (action === 'delete-product') {
+        const productId = parseInt(trigger.getAttribute('data-product-id'), 10);
+        if (!isNaN(productId)) deleteProduct(productId);
+        return;
+      }
+
+      if (action === 'toggle-product-status') {
+        const productId = parseInt(trigger.getAttribute('data-product-id'), 10);
+        if (!isNaN(productId)) toggleProductStatus(productId);
       }
     });
+  }
+
+  function bindContentManagementActions() {
+    const newsForm = document.getElementById('newsForm');
+    const productForm = document.getElementById('productForm');
+    const newsCancel = document.getElementById('newsCancelEditBtn');
+    const productCancel = document.getElementById('productCancelEditBtn');
+
+    if (newsForm) newsForm.addEventListener('submit', saveNewsForm);
+    if (productForm) productForm.addEventListener('submit', saveProductForm);
+    if (newsCancel) newsCancel.addEventListener('click', resetNewsForm);
+    if (productCancel) productCancel.addEventListener('click', resetProductForm);
   }
 
   function bindExpertCreateActions() {
@@ -676,6 +1147,7 @@
     paintStaticIcons();
     bindTopActions();
     bindTableActions();
+    bindContentManagementActions();
     bindExpertCreateActions();
     loadAll();
   });

@@ -105,6 +105,42 @@ async function ensureClientIntegrity() {
         conn.release();
     }
 }
+
+async function ensureProductSchema() {
+    const conn = await pool.getConnection();
+
+    try {
+        const [tableCheck] = await conn.query(`
+            SELECT COUNT(*) AS cnt
+            FROM information_schema.TABLES
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = 'products'
+        `);
+
+        if (Number(tableCheck[0].cnt) === 0) {
+            return;
+        }
+
+        const [activeCheck] = await conn.query(`
+            SELECT COUNT(*) AS cnt
+            FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = 'products'
+              AND COLUMN_NAME = 'is_active'
+        `);
+
+        if (Number(activeCheck[0].cnt) === 0) {
+            await conn.query(`
+                ALTER TABLE products
+                ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1
+                AFTER base_price
+            `);
+            console.log("✅ products.is_active added");
+        }
+    } finally {
+        conn.release();
+    }
+}
 // Test de connexion au démarrage
 pool.getConnection()
     .then(async (conn) => {
@@ -121,6 +157,12 @@ pool.getConnection()
             await ensureClientIntegrity();
         } catch (integrityErr) {
             console.error("❌ Erreur migration clients.user_id unique:", integrityErr.message);
+        }
+
+        try {
+            await ensureProductSchema();
+        } catch (productSchemaErr) {
+            console.error("❌ Erreur migration products.is_active:", productSchemaErr.message);
         }
     })
     .catch((err) => {
