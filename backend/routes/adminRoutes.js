@@ -31,6 +31,10 @@
  * PUT    /api/admin/products/:id     update product
  * PATCH  /api/admin/products/:id/status toggle active/inactive
  * DELETE /api/admin/products/:id     delete product
+ *
+ * ── Homepage products (online section only) ───────────────────
+ * GET    /api/admin/homepage-products         list all (active + inactive)
+ * PUT    /api/admin/homepage-products/:id     update one
  */
 
 const express        = require('express');
@@ -38,11 +42,12 @@ const router         = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole    = require('../middleware/roleMiddleware');
 
-const userModel      = require('../models/userModel');
-const adminModel     = require('../models/adminModel');
-const adminService   = require('../services/adminService');
-const newsCtrl       = require('../controllers/newsController');
-const assuranceCtrl  = require('../controllers/assuranceController');
+const userModel           = require('../models/userModel');
+const adminModel          = require('../models/adminModel');
+const adminService        = require('../services/adminService');
+const newsCtrl            = require('../controllers/newsController');
+const assuranceCtrl       = require('../controllers/assuranceController');
+const homepageProductCtrl = require('../controllers/homepageProductController');
 
 // ── Shared guard — applies to every route in this file ────────────────────────
 // Declared once here rather than repeating on every route.
@@ -162,6 +167,16 @@ router.patch('/products/:id/status', ...adminGuard, assuranceCtrl.updateStatus);
 
 // DELETE /api/admin/products/:id
 router.delete('/products/:id', ...adminGuard, assuranceCtrl.remove);
+
+// ─── Homepage products (online section) ──────────────────────────────────────
+// Separate from the full product catalog — only CATNAT + Roadside entries.
+// No delete: admin can deactivate rows but never remove them.
+
+// GET /api/admin/homepage-products
+router.get('/homepage-products', ...adminGuard, homepageProductCtrl.adminList);
+
+// PUT /api/admin/homepage-products/:id
+router.put('/homepage-products/:id', ...adminGuard, homepageProductCtrl.adminUpdate);
 
 // ─────────────────────────────────────────────────────────────────────────────
 

@@ -141,6 +141,68 @@ async function ensureProductSchema() {
         conn.release();
     }
 }
+
+/**
+ * Create the homepage_products table if it doesn't exist, then seed
+ * the two default rows (CATNAT + Roadside Assistance) using INSERT IGNORE
+ * so re-runs are safe.
+ */
+async function ensureHomepageProductsSchema() {
+    const conn = await pool.getConnection();
+
+    try {
+        // 1. Create table
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS \`homepage_products\` (
+              \`id\`            int UNSIGNED     NOT NULL AUTO_INCREMENT,
+              \`name\`          varchar(120)     COLLATE utf8mb4_unicode_ci NOT NULL,
+              \`description\`   text             COLLATE utf8mb4_unicode_ci,
+              \`image_url\`     varchar(512)     COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+              \`cta_label\`     varchar(80)      COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Subscribe',
+              \`is_active\`     tinyint(1)       NOT NULL DEFAULT 1,
+              \`display_order\` int              NOT NULL DEFAULT 0,
+              \`created_at\`    timestamp        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              \`updated_at\`    timestamp        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              PRIMARY KEY (\`id\`),
+              KEY \`idx_hp_active_order\` (\`is_active\`, \`display_order\`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+              COMMENT='Controls the Online Products section on the homepage'
+        `);
+
+        // 2. Seed default rows (INSERT IGNORE = safe on re-run)
+        await conn.query(`
+            INSERT IGNORE INTO \`homepage_products\`
+              (\`id\`, \`name\`, \`description\`, \`image_url\`, \`cta_label\`, \`is_active\`, \`display_order\`)
+            VALUES
+              (1,
+               'Natural Disaster (CATNAT)',
+               'Mandatory coverage by Algerian law (Ordonnance 03-12) protecting your property against earthquakes, floods, storms, landslides and ground movements.',
+               NULL,
+               'Get a Quote',
+               1,
+               1),
+              (2,
+               'Roadside Assistance',
+               'Emergency vehicle assistance available 24/7 across all 48 wilayas — towing, on-site repair, replacement vehicle, and hotel coverage.',
+               NULL,
+               'Subscribe Now',
+               1,
+               2)
+        `);
+
+        // Check if any rows exist (to log the right message)
+        const [[countRow]] = await conn.query(
+            'SELECT COUNT(*) AS cnt FROM homepage_products'
+        );
+        console.log(
+            `✅ homepage_products ready (${countRow.cnt} row${countRow.cnt !== 1 ? 's' : ''})`
+        );
+
+    } finally {
+        conn.release();
+    }
+}
+
 // Test de connexion au démarrage
 pool.getConnection()
     .then(async (conn) => {
@@ -163,6 +225,12 @@ pool.getConnection()
             await ensureProductSchema();
         } catch (productSchemaErr) {
             console.error("❌ Erreur migration products.is_active:", productSchemaErr.message);
+        }
+
+        try {
+            await ensureHomepageProductsSchema();
+        } catch (hpErr) {
+            console.error("❌ Erreur migration homepage_products:", hpErr.message);
         }
     })
     .catch((err) => {
