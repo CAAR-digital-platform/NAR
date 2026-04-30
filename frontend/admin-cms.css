@@ -140,6 +140,51 @@
   margin-top: 0;
 }
 
+.cms-table-input,
+.cms-table-textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 8px;
+  font-family: inherit;
+  font-size: .74rem;
+  background: #fff;
+}
+
+.cms-table-input--readonly {
+  background: #f8f7f5;
+  color: #5f5f5f;
+}
+
+.cms-table-input--number {
+  min-width: 84px;
+}
+
+.cms-table-textarea {
+  min-height: 84px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.cms-checkbox-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .74rem;
+  font-weight: 700;
+  color: #2f2f2f;
+}
+
+.cms-checkbox-wrap input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--orange);
+}
+
+#productsTableBody .cms-inline-msg {
+  margin-top: 6px;
+}
+
 .action-btn[data-variant="edit"] { background: #444; }
 .action-btn[data-variant="delete"] { background: #c0392b; }
 .action-btn[data-variant="publish"],

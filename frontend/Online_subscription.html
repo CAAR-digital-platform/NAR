@@ -40,40 +40,8 @@
       </div>
     </div>
 
-    <div class="products-online-grid">
-
-      <!-- CARD 1: Natural Disasters (CATNAT) -->
-      <div class="product-online-card">
-        <img class="product-online-card-img" src="img/catnat.webp" alt="Natural Disasters CATNAT"/>
-        <h3 class="product-online-card-title">Natural Disasters<br>(CATNAT)</h3>
-        <p class="product-online-card-desc">
-          Coverage against earthquakes, floods, storms and landslides.
-        </p>
-        <a href="catnat-subscription.html" class="product-online-card-btn">
-          <img class="product-online-card-btn-logo" src="img/cib.webp" alt="CIB"/>
-          <div class="product-online-card-btn-text">
-            <span class="product-online-card-btn-label">Subscribe<br>CATNAT</span>
-            <span class="product-online-card-btn-arrow">&#8594;</span>
-          </div>
-        </a>
-      </div>
-
-      <!-- CARD 2: Roadside Assistance -->
-      <div class="product-online-card">
-        <img class="product-online-card-img" src="img/onlinecar.webp" alt="Roadside Assistance"/>
-        <h3 class="product-online-card-title">Roadside Assistance</h3>
-        <p class="product-online-card-desc">
-          Get immediate help in case of breakdown or accident. Towing, on-site repair, and 24/7 support wherever you are.
-        </p>
-       <a href="roads.html" class="product-online-card-btn">
-          <img class="product-online-card-btn-logo" src="img/cib.webp" alt="CIB"/>
-          <div class="product-online-card-btn-text">
-            <span class="product-online-card-btn-label">Subscribe<br>RA</span>
-            <span class="product-online-card-btn-arrow">&#8594;</span>
-          </div>
-        </a>
-      </div>
-
+    <div class="products-online-grid" id="homepageProductsGrid">
+      <p class="products-online-state">Loading online products...</p>
     </div><!-- /grid -->
   </div>
 </section>
@@ -89,16 +57,6 @@
 <script src="header-controller.js"></script>
 <script src="main.js"></script>
 <script src="js/animations.js"></script>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    if (!window.CAARAccessGate) return;
-    window.CAARAccessGate.protectLinks([
-      'a[href="catnat-subscription.html"]',
-      'a[href="roads.html"]'
-    ], { reason: 'product_auth_required' });
-  });
-</script>
 
 </body>
 </html>

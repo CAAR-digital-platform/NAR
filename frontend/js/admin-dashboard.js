@@ -16,7 +16,6 @@
     news: [],
     products: [],
     editingNewsId: null,
-    editingProductId: null,
   };
 
   const STATUS_LABELS = {
@@ -210,10 +209,6 @@
     return (STATE.news || []).find((item) => Number(item.id) === Number(newsId));
   }
 
-  function findProductById(productId) {
-    return (STATE.products || []).find((item) => Number(item.id) === Number(productId));
-  }
-
   function resetNewsForm() {
     STATE.editingNewsId = null;
     const form = document.getElementById('newsForm');
@@ -252,42 +247,8 @@
     }
   }
 
-  function resetProductForm() {
-    STATE.editingProductId = null;
-    const form = document.getElementById('productForm');
-    const submitBtn = document.getElementById('productSubmitBtn');
-    const cancelBtn = document.getElementById('productCancelEditBtn');
-
-    if (form) form.reset();
-    if (submitBtn) submitBtn.textContent = 'Create Product';
-    if (cancelBtn) cancelBtn.hidden = true;
-    setInlineMsg('productFormMsg', '', false);
-  }
-
-  function openProductForm(product) {
-    if (!product) return;
-
-    STATE.editingProductId = Number(product.id);
-
-    const form = document.getElementById('productForm');
-    const name = document.getElementById('productNameInput');
-    const type = document.getElementById('productTypeInput');
-    const price = document.getElementById('productPriceInput');
-    const description = document.getElementById('productDescriptionInput');
-    const submitBtn = document.getElementById('productSubmitBtn');
-    const cancelBtn = document.getElementById('productCancelEditBtn');
-
-    if (name) name.value = product.name || '';
-    if (type) type.value = product.insurance_type || '';
-    if (price) price.value = product.base_price == null ? '' : product.base_price;
-    if (description) description.value = product.description || '';
-    if (submitBtn) submitBtn.textContent = 'Update Product';
-    if (cancelBtn) cancelBtn.hidden = false;
-    setInlineMsg('productFormMsg', '', false);
-
-    if (form && typeof form.scrollIntoView === 'function') {
-      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  function homepageFieldId(productId, fieldName) {
+    return 'homepage-product-' + fieldName + '-' + productId;
   }
 
   function renderNews(list) {
@@ -327,28 +288,33 @@
     if (!body) return;
 
     if (!list || !list.length) {
-      body.innerHTML = emptyRow(5, 'No products available yet.');
+      body.innerHTML = emptyRow(7, 'No homepage products available.');
       return;
     }
 
     body.innerHTML = list.map((product) => {
-      const toggleVariant = product.is_active ? 'deactivate' : 'activate';
-      const toggleLabel = product.is_active ? 'Deactivate' : 'Activate';
-      const toggleIcon = product.is_active ? 'toggleOff' : 'toggleOn';
-      const productSummary = truncateText(product.description || '', 105);
+      const id = Number(product.id);
+      const nameId = homepageFieldId(id, 'name');
+      const descriptionId = homepageFieldId(id, 'description');
+      const imageId = homepageFieldId(id, 'image');
+      const ctaId = homepageFieldId(id, 'cta');
+      const orderId = homepageFieldId(id, 'order');
+      const activeId = homepageFieldId(id, 'active');
+      const msgId = homepageFieldId(id, 'msg');
 
       return [
         '<tr>',
-        '  <td><strong>' + esc(product.name || '-') + '</strong><br/><small>' + esc(productSummary || '-') + '</small></td>',
-        '  <td>' + esc(product.insurance_type || '-') + '</td>',
-        '  <td>' + esc(formatPrice(product.base_price)) + '</td>',
-        '  <td>' + badge(product.is_active ? 'active' : 'inactive') + '</td>',
+        '  <td><input class="cms-table-input cms-table-input--readonly" id="' + nameId + '" type="text" value="' + esc(product.name || '') + '" readonly /></td>',
+        '  <td><textarea class="cms-table-textarea" id="' + descriptionId + '" rows="4" placeholder="Description">' + esc(product.description || '') + '</textarea></td>',
+        '  <td><input class="cms-table-input" id="' + imageId + '" type="url" value="' + esc(product.image_url || '') + '" placeholder="https://example.com/image.jpg" /></td>',
+        '  <td><input class="cms-table-input" id="' + ctaId + '" type="text" maxlength="80" value="' + esc(product.cta_label || '') + '" placeholder="CTA label" /></td>',
+        '  <td><input class="cms-table-input cms-table-input--number" id="' + orderId + '" type="number" min="0" step="1" value="' + esc(product.display_order == null ? 0 : product.display_order) + '" /></td>',
+        '  <td><label class="cms-checkbox-wrap"><input id="' + activeId + '" type="checkbox" ' + (product.is_active ? 'checked ' : '') + '/><span>Active</span></label></td>',
         '  <td>',
         '    <div class="row-actions">',
-        '      <button class="action-btn" data-variant="edit" data-action="edit-product" data-product-id="' + product.id + '">Edit</button>',
-        '      <button class="action-btn" data-variant="delete" data-action="delete-product" data-product-id="' + product.id + '">' + ICON('xCircle', 14, '') + 'Delete</button>',
-        '      <button class="action-btn" data-variant="' + toggleVariant + '" data-action="toggle-product-status" data-product-id="' + product.id + '">' + ICON(toggleIcon, 14, '') + toggleLabel + '</button>',
+        '      <button class="action-btn" data-variant="save" data-action="save-homepage-product" data-product-id="' + id + '">' + ICON('save', 14, '') + 'Save</button>',
         '    </div>',
+        '    <div id="' + msgId + '" class="cms-inline-msg"></div>',
         '  </td>',
         '</tr>',
       ].join('');
@@ -368,7 +334,7 @@
       api('/api/admin/users'),
       api('/api/admin/experts'),
       api('/api/admin/news'),
-      api('/api/admin/products'),
+      api('/api/admin/homepage-products'),
     ]);
 
     if (!statsRes.ok) {
@@ -732,8 +698,18 @@
     const image_url = normalizeText(imageInput && imageInput.value);
     const content = String(contentInput && contentInput.value ? contentInput.value : '').trim();
 
-    if (!title || !content) {
-      setInlineMsg('newsFormMsg', 'Title and content are required.', true);
+    if (title.length < 3 || title.length > 255) {
+      setInlineMsg('newsFormMsg', 'Title must be between 3 and 255 characters.', true);
+      return;
+    }
+
+    if (content.length < 10) {
+      setInlineMsg('newsFormMsg', 'Content must be at least 10 characters.', true);
+      return;
+    }
+
+    if (!['draft', 'published'].includes(status)) {
+      setInlineMsg('newsFormMsg', 'Status must be draft or published.', true);
       return;
     }
 
@@ -761,45 +737,59 @@
     loadAll();
   }
 
-  async function saveProductForm(e) {
-    e.preventDefault();
+  async function saveHomepageProduct(productId) {
+    const id = Number(productId);
+    if (!id) return;
 
-    const nameInput = document.getElementById('productNameInput');
-    const typeInput = document.getElementById('productTypeInput');
-    const priceInput = document.getElementById('productPriceInput');
-    const descriptionInput = document.getElementById('productDescriptionInput');
+    const nameInput = document.getElementById(homepageFieldId(id, 'name'));
+    const descriptionInput = document.getElementById(homepageFieldId(id, 'description'));
+    const imageInput = document.getElementById(homepageFieldId(id, 'image'));
+    const ctaInput = document.getElementById(homepageFieldId(id, 'cta'));
+    const orderInput = document.getElementById(homepageFieldId(id, 'order'));
+    const activeInput = document.getElementById(homepageFieldId(id, 'active'));
+    const msgId = homepageFieldId(id, 'msg');
 
     const name = normalizeText(nameInput && nameInput.value);
-    const insurance_type = normalizeText(typeInput && typeInput.value);
-    const base_price = normalizeText(priceInput && priceInput.value);
     const description = String(descriptionInput && descriptionInput.value ? descriptionInput.value : '').trim();
+    const image_url = normalizeText(imageInput && imageInput.value);
+    const cta_label = normalizeText(ctaInput && ctaInput.value);
+    const rawOrder = normalizeText(orderInput && orderInput.value);
+    const display_order = rawOrder === '' ? 0 : parseInt(rawOrder, 10);
+    const is_active = Boolean(activeInput && activeInput.checked);
 
-    if (!name || !description) {
-      setInlineMsg('productFormMsg', 'Name and description are required.', true);
+    if (!name) {
+      setInlineMsg(msgId, 'Name is required.', true);
       return;
     }
 
-    const isEditing = Boolean(STATE.editingProductId);
-    const res = await api(isEditing ? '/api/admin/products/' + STATE.editingProductId : '/api/admin/products', {
-      method: isEditing ? 'PUT' : 'POST',
+    if (Number.isNaN(display_order) || display_order < 0) {
+      setInlineMsg(msgId, 'Display order must be a non-negative number.', true);
+      return;
+    }
+
+    setInlineMsg(msgId, '', false);
+
+    const res = await api('/api/admin/homepage-products/' + id, {
+      method: 'PUT',
       body: {
         name,
-        description,
-        insurance_type: insurance_type || null,
-        base_price: base_price === '' ? null : base_price,
+        description: description || null,
+        image_url: image_url || null,
+        cta_label: cta_label || 'Subscribe',
+        is_active,
+        display_order,
       },
     });
 
     if (!res.ok) {
-      const msg = (res.data && res.data.error) || 'Failed to save product.';
-      setInlineMsg('productFormMsg', msg, true);
+      const msg = (res.data && res.data.error) || 'Failed to save homepage product.';
+      setInlineMsg(msgId, msg, true);
       setMsg(msg, true);
       return;
     }
 
-    resetProductForm();
-    setInlineMsg('productFormMsg', isEditing ? 'Product updated successfully.' : 'Product created successfully.', false);
-    setMsg(isEditing ? 'Product updated successfully.' : 'Product created successfully.', false);
+    setInlineMsg(msgId, 'Saved.', false);
+    setMsg('Homepage product updated successfully.', false);
     loadAll();
   }
 
@@ -868,68 +858,6 @@
     }
 
     setMsg('Article status updated.', false);
-    loadAll();
-  }
-
-  function editProduct(productId) {
-    const product = findProductById(productId);
-    if (!product) {
-      setMsg('Product not found.', true);
-      return;
-    }
-
-    openProductForm(product);
-  }
-
-  async function deleteProduct(productId) {
-    const product = findProductById(productId);
-    if (!product) {
-      setMsg('Product not found.', true);
-      return;
-    }
-
-    if (!window.confirm('Delete this product permanently?')) {
-      return;
-    }
-
-    const res = await api('/api/admin/products/' + productId, { method: 'DELETE' });
-    if (!res.ok) {
-      const msg = (res.data && res.data.error) || 'Failed to delete product.';
-      setMsg(msg, true);
-      return;
-    }
-
-    if (STATE.editingProductId && Number(STATE.editingProductId) === Number(productId)) {
-      resetProductForm();
-    }
-
-    setMsg('Product deleted successfully.', false);
-    loadAll();
-  }
-
-  async function toggleProductStatus(productId) {
-    const product = findProductById(productId);
-    if (!product) {
-      setMsg('Product not found.', true);
-      return;
-    }
-
-    const res = await api('/api/admin/products/' + productId + '/status', {
-      method: 'PATCH',
-      body: { is_active: !product.is_active },
-    });
-
-    if (!res.ok) {
-      const msg = (res.data && res.data.error) || 'Failed to update product status.';
-      setMsg(msg, true);
-      return;
-    }
-
-    if (STATE.editingProductId && Number(STATE.editingProductId) === Number(productId)) {
-      openProductForm(res.data.product || product);
-    }
-
-    setMsg('Product status updated.', false);
     loadAll();
   }
 
@@ -1002,35 +930,19 @@
         return;
       }
 
-      if (action === 'edit-product') {
+      if (action === 'save-homepage-product') {
         const productId = parseInt(trigger.getAttribute('data-product-id'), 10);
-        if (!isNaN(productId)) editProduct(productId);
-        return;
-      }
-
-      if (action === 'delete-product') {
-        const productId = parseInt(trigger.getAttribute('data-product-id'), 10);
-        if (!isNaN(productId)) deleteProduct(productId);
-        return;
-      }
-
-      if (action === 'toggle-product-status') {
-        const productId = parseInt(trigger.getAttribute('data-product-id'), 10);
-        if (!isNaN(productId)) toggleProductStatus(productId);
+        if (!isNaN(productId)) saveHomepageProduct(productId);
       }
     });
   }
 
   function bindContentManagementActions() {
     const newsForm = document.getElementById('newsForm');
-    const productForm = document.getElementById('productForm');
     const newsCancel = document.getElementById('newsCancelEditBtn');
-    const productCancel = document.getElementById('productCancelEditBtn');
 
     if (newsForm) newsForm.addEventListener('submit', saveNewsForm);
-    if (productForm) productForm.addEventListener('submit', saveProductForm);
     if (newsCancel) newsCancel.addEventListener('click', resetNewsForm);
-    if (productCancel) productCancel.addEventListener('click', resetProductForm);
   }
 
   function bindExpertCreateActions() {

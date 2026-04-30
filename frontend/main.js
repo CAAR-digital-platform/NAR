@@ -540,126 +540,200 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 /* ============================================================
-   NEWS PAGE — article pagination + detail view
+   ONLINE SUBSCRIPTION PAGE - homepage products from API
 ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
-  var gridEl = document.getElementById('articles-grid');
-  if (!gridEl) return;
-  if (window.__newsArticlesInited) return;
-  window.__newsArticlesInited = true;
+  var homepageGridEl = document.getElementById('homepageProductsGrid');
+  if (!homepageGridEl) return;
+  if (window.__homepageProductsInited) return;
+  window.__homepageProductsInited = true;
 
-  var articles = [
-    { id: 'agency602', category: 'PRESS',       date: 'Sep 24, 2023', image: 'img/art1.png', emoji: '🏢', isLatest: false,
-      title: 'Agency 602 Renovated – Didouche Mourad',
-      excerpt: 'CAAR modernized Agency 602 in Didouche Mourad to enhance customer experience.',
-      content: '<p>As part of its network modernization strategy, CAAR completed the renovation of Agency 602, located in Didouche Mourad. Reopened on September 24, 2023, the agency now features a modern design aligned with CAAR\'s visual identity.</p>' },
-    { id: 'agency228', category: 'PRESS',       date: 'Sep 25, 2023', image: 'img/art2.png', emoji: '🏢', isLatest: false,
-      title: 'Agency 228 Renovated – Larbâa Nath Irathen',
-      excerpt: 'Agency 228 was renovated as part of CAAR\'s ongoing distribution network modernization.',
-      content: '<p>CAAR continues the modernization of its network with the renovation of Agency 228, in Larbâa Nath Irathen. Officially reopened on September 25, 2023.</p>' },
-    { id: 'bejaia',    category: 'EVENT',       date: 'Oct 4, 2023',  image: 'img/art3.png', emoji: '📅', isLatest: false,
-      title: 'CAAR Information Day in Béjaïa',
-      excerpt: 'CAAR organized an information day in Béjaïa during its 60th anniversary celebrations.',
-      content: '<p>As part of its 60th anniversary, CAAR organized an information day on October 4, 2023, at the Cristal Hotel in Béjaïa, gathering key regional partners.</p>' },
-    { id: 'sada2025',  category: 'PARTNERSHIP', date: 'Apr 28, 2025', image: 'img/art4.png', emoji: '🤝', isLatest: false,
-      title: 'CAAR at the African Business Forum – SADA 2025',
-      excerpt: 'CAAR took part in SADA 2025 in Oran, strengthening its presence within the African business community.',
-      content: '<p>CAAR participated in the 3rd edition of the African Business Forum (SADA 2025) held in Oran, reinforcing its role within the African business ecosystem.</p>' },
-    { id: 'tiziagri',  category: 'EVENT',       date: 'May 10, 2025', image: 'img/art5.png', emoji: '🌾', isLatest: true,
-      title: 'TIZI AGRI EXPO 2025',
-      excerpt: 'CAAR participated in the 1st edition of TIZI AGRI EXPO, supporting the livestock and dairy sector.',
-      content: '<p>CAAR participated in the 1st edition of TIZI AGRI EXPO in Tizi Ouzou, showcasing its agricultural insurance products and connecting with professionals in the sector.</p>' },
-  ];
-
-  var PER_PAGE    = 4;
-  var currentPage = 1;
-  var totalPages  = Math.ceil(articles.length / PER_PAGE);
-  var wrapEl      = gridEl.closest('.articles-grid-wrap');
-  var paginEl     = document.getElementById('articles-pagination');
-  var detailEl    = document.getElementById('article-detail');
-  var listView    = document.getElementById('articles-list-view');
-
-  function renderPage(page) {
-    if (wrapEl) { wrapEl.classList.remove('is-visible'); wrapEl.classList.add('is-transitioning'); }
-    setTimeout(function () {
-      currentPage = page;
-      var slice = articles.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-      gridEl.innerHTML = '';
-      slice.forEach(function (art, idx) {
-        var card = document.createElement('div');
-        card.className = 'article-card';
-        card.style.transitionDelay = (idx * 0.07) + 's';
-        card.innerHTML =
-          '<div class="article-card__img-wrap">' +
-            (art.isLatest ? '<span class="article-card__latest">Latest</span>' : '') +
-            (art.image ? '<img src="' + art.image + '" alt="' + art.title + '" class="article-card__img">' :
-              '<div class="article-card__img-placeholder">' + art.emoji + '</div>') +
-          '</div>' +
-          '<div class="article-card__body">' +
-            '<span class="article-card__category">' + art.category + '</span>' +
-            '<span class="article-card__date">' + art.date + '</span>' +
-            '<h3 class="article-card__title">' + art.title + '</h3>' +
-            '<p class="article-card__excerpt">' + art.excerpt + '</p>' +
-            '<button class="article-card__read-btn">Read article →</button>' +
-          '</div>';
-        card.addEventListener('click', function () { openDetail(art.id); });
-        gridEl.appendChild(card);
-      });
-      renderPagination();
-      if (wrapEl) { wrapEl.classList.remove('is-transitioning'); wrapEl.classList.add('is-visible'); }
-      gridEl.querySelectorAll('.article-card').forEach(function (c, i) {
-        c.style.opacity = '0'; c.style.transform = 'translateY(20px)';
-        setTimeout(function () {
-          c.style.transition = 'opacity .38s ease,transform .38s ease';
-          c.style.opacity = '1'; c.style.transform = 'translateY(0)';
-        }, i * 70 + 30);
-      });
-    }, 220);
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
-  function renderPagination() {
-    if (!paginEl) return;
-    paginEl.innerHTML = '';
-    if (totalPages <= 1) return;
-    for (var i = 1; i <= totalPages; i++) {
-      (function (p) {
-        var btn = document.createElement('button');
-        btn.className = 'pagination-btn' + (p === currentPage ? ' is-active' : '');
-        btn.textContent = p;
-        btn.addEventListener('click', function () { renderPage(p); });
-        paginEl.appendChild(btn);
-      })(i);
+  function request(path) {
+    if (typeof window.apiRequest === 'function') {
+      return window.apiRequest(path);
+    }
+
+    return fetch('http://localhost:3000' + path, { method: 'GET' })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          return { ok: res.ok, status: res.status, data: data };
+        });
+      });
+  }
+
+  function setState(message) {
+    homepageGridEl.innerHTML = '<p class="products-online-state">' + esc(message) + '</p>';
+  }
+
+  function resolveSubscriptionHref(product) {
+    var id = Number(product && product.id);
+    if (id === 1) return 'catnat-subscription.html';
+    if (id === 2) return 'roads.html';
+
+    var name = String((product && product.name) || '').toLowerCase();
+    if (name.indexOf('catnat') !== -1 || name.indexOf('natural') !== -1) return 'catnat-subscription.html';
+    if (name.indexOf('roadside') !== -1 || name.indexOf('road') !== -1) return 'roads.html';
+    return '#';
+  }
+
+  function renderProducts(products) {
+    if (!products.length) {
+      setState('No online products are available right now.');
+      return;
+    }
+
+    homepageGridEl.innerHTML = products.map(function (product) {
+      var image = String(product.image_url || '').trim();
+      var imageHtml = image ? '<img class="product-online-card-img" src="' + esc(image) + '" alt="' + esc(product.name || 'Online product') + '"/>' : '';
+      var label = String(product.cta_label || 'Subscribe').trim() || 'Subscribe';
+      var href = resolveSubscriptionHref(product);
+
+      return [
+        '<div class="product-online-card">',
+        imageHtml,
+        '<h3 class="product-online-card-title">' + esc(product.name || '') + '</h3>',
+        '<p class="product-online-card-desc">' + esc(product.description || '') + '</p>',
+        '<a href="' + esc(href) + '" class="product-online-card-btn">',
+        '  <img class="product-online-card-btn-logo" src="img/cib.webp" alt="CIB"/>',
+        '  <div class="product-online-card-btn-text">',
+        '    <span class="product-online-card-btn-label">' + esc(label) + '</span>',
+        '    <span class="product-online-card-btn-arrow">&#8594;</span>',
+        '  </div>',
+        '</a>',
+        '</div>',
+      ].join('');
+    }).join('');
+
+    if (window.CAARAccessGate && typeof window.CAARAccessGate.protectLinks === 'function') {
+      window.CAARAccessGate.protectLinks('a.product-online-card-btn', { reason: 'product_auth_required' });
     }
   }
 
-  function openDetail(id) {
-    var art = articles.find(function (a) { return a.id === id; });
-    if (!art || !detailEl || !listView) return;
-    detailEl.innerHTML =
-      '<button class="article-back-link" id="detailBackBtn">← Back to articles</button>' +
-      '<div class="article-detail__card">' +
-        '<h2 class="article-detail__title">' + art.title + '</h2>' +
-        '<div style="font-size:.75rem;color:#888;margin-bottom:16px;">' + art.emoji + ' ' + art.category + ' • ' + art.date + '</div>' +
-        (art.image ? '<img src="' + art.image + '" alt="' + art.title + '" style="width:100%;border-radius:8px;margin-bottom:16px;">' : '') +
-        '<div class="article-detail__text">' + art.content + '</div>' +
-      '</div>';
-    document.getElementById('detailBackBtn').addEventListener('click', closeDetail);
-    listView.style.display = 'none';
-    detailEl.classList.remove('is-hidden');
-    var section = document.getElementById('articles-section');
-    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  (async function loadHomepageProducts() {
+    setState('Loading online products...');
+
+    var res;
+    try {
+      res = await request('/api/homepage-products');
+    } catch (_) {
+      setState('Unable to load online products right now.');
+      return;
+    }
+
+    if (!res.ok) {
+      setState('Unable to load online products right now.');
+      return;
+    }
+
+    var data = res.data || {};
+    var products = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
+    renderProducts(products);
+  })();
+});
+
+/* ============================================================
+   NEWS PAGE - dynamic published articles
+============================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+  var newsContainer = document.getElementById('news-container');
+  if (!newsContainer) return;
+  if (window.__newsArticlesInited) return;
+  window.__newsArticlesInited = true;
+
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
-  function closeDetail() {
-    if (!detailEl || !listView) return;
-    detailEl.classList.add('is-hidden');
-    listView.style.display = '';
-    var section = document.getElementById('articles-section');
-    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function preview(content) {
+    var text = String(content == null ? '' : content).replace(/\s+/g, ' ').trim();
+    if (text.length <= 120) return text;
+    return text.slice(0, 120).trimEnd() + '...';
   }
 
-  window.closeArticleDetail = closeDetail;
-  renderPage(1);
+  function formatDate(value) {
+    if (!value) return '';
+    var date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' });
+  }
+
+  function showFallback(message) {
+    newsContainer.innerHTML = '<p class="articles-section__subtitle">' + esc(message) + '</p>';
+  }
+
+  function renderArticles(articles) {
+    if (!Array.isArray(articles) || !articles.length) {
+      showFallback('No published articles available yet.');
+      return;
+    }
+
+    newsContainer.innerHTML = articles.map(function (article) {
+      var title = esc(article.title || 'Untitled');
+      var excerpt = esc(preview(article.content));
+      var date = esc(formatDate(article.created_at));
+      var image = String(article.image_url || '').trim();
+
+      return [
+        '<article class="article-card">',
+        '  <div class="article-card__img-wrap">',
+        image ? '    <img class="article-card__img" src="' + esc(image) + '" alt="' + title + '">' : '    <div class="article-card__img-placeholder">News</div>',
+        '  </div>',
+        '  <div class="article-card__body">',
+        '    <span class="article-card__date">' + date + '</span>',
+        '    <h3 class="article-card__title">' + title + '</h3>',
+        '    <p class="article-card__excerpt">' + excerpt + '</p>',
+        '  </div>',
+        '</article>'
+      ].join('');
+    }).join('');
+  }
+
+  function request(path) {
+    if (typeof window.apiRequest === 'function') {
+      return window.apiRequest(path);
+    }
+
+    return fetch('http://localhost:3000' + path, { method: 'GET' })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          return { ok: res.ok, status: res.status, data: data };
+        });
+      });
+  }
+
+  (async function loadNewsArticles() {
+    showFallback('Loading news...');
+
+    try {
+      var res = await request('/api/news');
+
+      if (!res.ok) {
+        console.error('[news] Failed to fetch /api/news:', res.status, res.data);
+        showFallback('Unable to load news right now.');
+        return;
+      }
+
+      var payload = res.data || {};
+      renderArticles(Array.isArray(payload.articles) ? payload.articles : []);
+    } catch (err) {
+      console.error('[news] Unexpected error while loading news:', err);
+      showFallback('Unable to load news right now.');
+    }
+  })();
 });
 // Dans le callback de loadComponent('site-header', ...)
 var path = window.location.pathname.split('/').pop() || 'index.html';
