@@ -25,9 +25,18 @@ function makeError(message, status) {
   return err;
 }
 
+function sanitizeImageUrl(imageUrl) {
+  if (typeof imageUrl !== 'string') {
+    return imageUrl;
+  }
+
+  return imageUrl.replace(/^frontend\//, '');
+}
+
 function normalize(row) {
   return {
     ...row,
+    image_url: sanitizeImageUrl(row.image_url),
     is_active:     Boolean(row.is_active),
     display_order: Number(row.display_order),
   };

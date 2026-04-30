@@ -585,6 +585,33 @@ document.addEventListener('DOMContentLoaded', function () {
     return '#';
   }
 
+  function resolveProductImage(imageUrl) {
+    if (!imageUrl || typeof imageUrl !== 'string') {
+      return 'img/new.webp';
+    }
+
+    var trimmed = String(imageUrl).trim();
+    if (!trimmed) {
+      return 'img/new.webp';
+    }
+
+    // If it starts with http/https, use as-is; otherwise treat as relative to frontend folder
+    if (/^https?:\/\//i.test(trimmed)) {
+      return trimmed;
+    }
+
+    // Relative path — ensure it's relative to /frontend/ folder
+    // If it's already img/..., keep it; browser will resolve correctly from HTML location
+    if (trimmed.indexOf('/') === -1 || trimmed.indexOf('img/') === 0 || trimmed.indexOf('./img/') === 0) {
+      return trimmed.indexOf('img/') === 0 ? trimmed : ('img/' + trimmed);
+    }
+
+    return 'img/new.webp';
+  }
+
+  // NOTE: Use DB `image_url` exactly as provided. Do not transform the value
+  // (do not strip 'img/' or reconstruct paths). Only fall back when the
+  // DB value is missing/empty or when the image fails to load (onerror).
   function renderProducts(products) {
     if (!products.length) {
       setState('No online products are available right now.');
@@ -592,8 +619,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     homepageGridEl.innerHTML = products.map(function (product) {
-      var image = String(product.image_url || '').trim();
-      var imageHtml = image ? '<img class="product-online-card-img" src="' + esc(image) + '" alt="' + esc(product.name || 'Online product') + '"/>' : '';
+      // Use the image_url exactly as stored in the DB/API. If it's null or
+      // an empty string, use the placeholder. Do NOT modify the string.
+      var resolved = (product.image_url == null || product.image_url === '') ? 'img/new.webp' : product.image_url;
+      var imageHtml = '<img class="product-online-card-img" src="' + esc(resolved) + '" alt="' + esc(product.name || 'Online product') + '" onerror="this.src=\'img/new.webp\';this.onerror=null;"/>';
       var label = String(product.cta_label || 'Subscribe').trim() || 'Subscribe';
       var href = resolveSubscriptionHref(product);
 
@@ -645,9 +674,23 @@ document.addEventListener('DOMContentLoaded', function () {
 ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
   var newsContainer = document.getElementById('news-container');
+  var newsPagination = document.getElementById('news-pagination');
+  var listView = document.getElementById('articles-list-view');
+  var detailView = document.getElementById('article-detail');
+  var detailBackBtn = document.getElementById('article-detail-back');
+  var detailTitle = document.getElementById('detail-title');
+  var detailDate = document.getElementById('detail-date');
+  var detailText = document.getElementById('detail-text');
+  var detailImage = document.getElementById('detail-image');
+  var detailImageWrap = document.getElementById('detail-image-wrap');
   if (!newsContainer) return;
   if (window.__newsArticlesInited) return;
   window.__newsArticlesInited = true;
+
+  var NEWS_PER_PAGE = 4;
+  var currentPage = 1;
+  var allArticles = [];
+  var FALLBACK_NEWS_IMAGE = 'img/new.webp';
 
   function esc(value) {
     return String(value == null ? '' : value)
@@ -659,7 +702,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function preview(content) {
-    var text = String(content == null ? '' : content).replace(/\s+/g, ' ').trim();
+    var text = String(content == null ? '' : content)
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
     if (text.length <= 120) return text;
     return text.slice(0, 120).trimEnd() + '...';
   }
@@ -673,33 +719,138 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function showFallback(message) {
     newsContainer.innerHTML = '<p class="articles-section__subtitle">' + esc(message) + '</p>';
+    if (newsPagination) newsPagination.innerHTML = '';
   }
 
-  function renderArticles(articles) {
-    if (!Array.isArray(articles) || !articles.length) {
+  function normaliseArticleId(article) {
+    if (!article || article.id == null) return '';
+    return String(article.id).trim();
+  }
+
+  function isValidArticle(article) {
+    if (!article || typeof article !== 'object') return false;
+    var title = String(article.title || '').trim();
+    var content = String(article.content || '').trim();
+    return title.length > 0 && content.length > 0;
+  }
+
+  function getArticleImage(article) {
+    if (!article || typeof article !== 'object') return FALLBACK_NEWS_IMAGE;
+    var image = String(article.image_url || '').trim();
+    return image || FALLBACK_NEWS_IMAGE;
+  }
+
+  function getArticleById(id) {
+    if (!id) return null;
+    for (var i = 0; i < allArticles.length; i++) {
+      if (normaliseArticleId(allArticles[i]) === id) return allArticles[i];
+    }
+    return null;
+  }
+
+  function renderFullContent(content) {
+    var text = String(content == null ? '' : content).replace(/\r\n/g, '\n').trim();
+    if (!text) return '<p>No content available for this article.</p>';
+
+    return text
+      .split(/\n{2,}/)
+      .map(function (paragraph) {
+        return '<p>' + esc(paragraph).replace(/\n/g, '<br>') + '</p>';
+      })
+      .join('');
+  }
+
+  function showListView() {
+    if (detailView) {
+      detailView.classList.add('is-hidden');
+      detailView.classList.remove('fade-in');
+    }
+    if (listView) listView.style.display = '';
+  }
+
+  function showDetailView(article) {
+    if (!article || !listView || !detailView) return;
+
+    var image = getArticleImage(article);
+    var titleText = String(article.title || 'Untitled');
+
+    if (detailTitle) detailTitle.textContent = titleText;
+    if (detailDate) detailDate.textContent = formatDate(article.created_at);
+    if (detailText) detailText.innerHTML = renderFullContent(article.content);
+
+    if (detailImage && image) {
+      detailImage.src = image;
+      detailImage.alt = titleText;
+    }
+    if (detailImageWrap) detailImageWrap.style.display = image ? '' : 'none';
+
+    listView.style.display = 'none';
+    detailView.classList.remove('is-hidden');
+    detailView.classList.add('fade-in');
+
+    var section = document.getElementById('articles-section');
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderPagination(articles) {
+    if (!newsPagination) return;
+    newsPagination.innerHTML = '';
+    if (!articles || !articles.length) return;
+
+    var totalPages = Math.ceil(articles.length / NEWS_PER_PAGE);
+    console.log('Articles:', articles.length);
+    console.log('Total pages:', totalPages);
+
+    for (var i = 1; i <= totalPages; i++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+      btn.textContent = i;
+      btn.addEventListener('click', (function (pageNumber) {
+        return function () {
+          if (pageNumber === currentPage) return;
+          currentPage = pageNumber;
+          renderCurrentPage();
+        };
+      })(i));
+      newsPagination.appendChild(btn);
+    }
+  }
+
+  function renderCurrentPage() {
+    if (!allArticles.length) {
       showFallback('No published articles available yet.');
       return;
     }
 
-    newsContainer.innerHTML = articles.map(function (article) {
+    var totalPages = Math.ceil(allArticles.length / NEWS_PER_PAGE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    var pageStart = (currentPage - 1) * NEWS_PER_PAGE;
+    var pageItems = allArticles.slice(pageStart, pageStart + NEWS_PER_PAGE);
+
+    newsContainer.innerHTML = pageItems.map(function (article) {
       var title = esc(article.title || 'Untitled');
-      var excerpt = esc(preview(article.content));
+      var excerpt = esc(preview(article.content || 'No summary available for this article.'));
       var date = esc(formatDate(article.created_at));
-      var image = String(article.image_url || '').trim();
+      var image = getArticleImage(article);
+      var articleId = esc(normaliseArticleId(article));
 
       return [
-        '<article class="article-card">',
-        '  <div class="article-card__img-wrap">',
-        image ? '    <img class="article-card__img" src="' + esc(image) + '" alt="' + title + '">' : '    <div class="article-card__img-placeholder">News</div>',
-        '  </div>',
-        '  <div class="article-card__body">',
-        '    <span class="article-card__date">' + date + '</span>',
-        '    <h3 class="article-card__title">' + title + '</h3>',
-        '    <p class="article-card__excerpt">' + excerpt + '</p>',
+        '<article class="news-card">',
+        '  <img src="' + esc(image) + '" alt="' + title + '">',
+        '  <div class="news-content">',
+        '    <span class="news-date">' + date + '</span>',
+        '    <h3>' + title + '</h3>',
+        '    <p>' + excerpt + '</p>',
+        '    <button type="button" class="read-btn" data-article-id="' + articleId + '">Read More</button>',
         '  </div>',
         '</article>'
       ].join('');
     }).join('');
+
+    renderPagination(allArticles);
   }
 
   function request(path) {
@@ -716,6 +867,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   (async function loadNewsArticles() {
+    showListView();
     showFallback('Loading news...');
 
     try {
@@ -728,12 +880,36 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       var payload = res.data || {};
-      renderArticles(Array.isArray(payload.articles) ? payload.articles : []);
+      var articles = Array.isArray(payload.articles) ? payload.articles : [];
+      allArticles = articles.filter(isValidArticle);
+      currentPage = 1;
+      renderCurrentPage();
     } catch (err) {
       console.error('[news] Unexpected error while loading news:', err);
       showFallback('Unable to load news right now.');
     }
   })();
+
+  newsContainer.addEventListener('click', function (event) {
+    var btn = event.target.closest('.read-btn');
+    if (!btn) return;
+
+    var articleId = String(btn.getAttribute('data-article-id') || '').trim();
+    if (!articleId) return;
+
+    var article = getArticleById(articleId);
+    if (!article) return;
+
+    showDetailView(article);
+  });
+
+  if (detailBackBtn) {
+    detailBackBtn.addEventListener('click', function () {
+      showListView();
+      var section = document.getElementById('articles-section');
+      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
 });
 // Dans le callback de loadComponent('site-header', ...)
 var path = window.location.pathname.split('/').pop() || 'index.html';

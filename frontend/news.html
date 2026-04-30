@@ -108,7 +108,7 @@
 
 <!-- ══ ARTICLES SECTION ══ -->
 <section class="articles-section scroll-reveal" id="articles-section">
-  <div class="articles-section__container">
+  <div class="articles-section__container news-container">
 
     <div id="articles-list-view">
       <div class="articles-section__header scroll-reveal">
@@ -118,8 +118,23 @@
         </div>
       </div>
       <div class="articles-grid-wrap is-visible">
-        <div class="articles-grid scroll-reveal-group" id="news-container"></div>
+        <div class="articles-grid news-grid scroll-reveal-group" id="news-container"></div>
       </div>
+      <div class="pagination" id="news-pagination" aria-label="News pages"></div>
+    </div>
+
+    <div class="article-detail is-hidden" id="article-detail">
+      <button type="button" class="article-back-link" id="article-detail-back">← Back to articles</button>
+      <article class="article-detail__card">
+        <h3 class="article-detail__title" id="detail-title"></h3>
+        <span class="article-detail__date" id="detail-date"></span>
+        <div class="article-detail__body">
+          <div class="article-detail__text" id="detail-text"></div>
+          <div class="article-detail__image-wrap" id="detail-image-wrap">
+            <img class="article-detail__image" id="detail-image" alt="Article image"/>
+          </div>
+        </div>
+      </article>
     </div>
   </div>
 </section>
