@@ -11,31 +11,39 @@
     ? window.CAARIcons.render
     : function () { return ''; };
 
-  const STATE = {
-    experts: [],
-    news: [],
-    products: [],
-    editingNewsId: null,
+  function t(key, fallback) {
+    if (window.Language && typeof window.Language.t === 'function') {
+      const value = window.Language.t(key);
+      if (value) return value;
+    }
+    return fallback || '';
+  }
+
+  /* Status key mapping — uses translation keys, NOT direct translations */
+  const STATUS_KEYS = {
+    pending: 'status.pending',
+    under_review: 'status.under_review',
+    expert_assigned: 'status.assigned',
+    reported: 'status.reported',
+    approved: 'status.approved',
+    rejected: 'status.rejected',
+    closed: 'status.closed',
+    active: 'status.active',
+    inactive: 'status.inactive',
+    draft: 'status.draft',
+    published: 'status.published',
+    new: 'status.pending',
+    reviewed: 'status.under_review',
+    accepted: 'status.approved',
+    completed: 'status.closed',
+    dispatched: 'status.dispatched',
   };
 
-  const STATUS_LABELS = {
-    pending: 'Pending',
-    under_review: 'Under Review',
-    expert_assigned: 'Assigned',
-    reported: 'Reported',
-    approved: 'Approved',
-    rejected: 'Rejected',
-    closed: 'Closed',
-    active: 'Active',
-    inactive: 'Inactive',
-    draft: 'Draft',
-    published: 'Published',
-    new: 'Pending',
-    reviewed: 'Under Review',
-    accepted: 'Approved',
-    completed: 'Closed',
-  };
+  function getStatusKey(status) {
+    return STATUS_KEYS[status] || 'status.' + status;
+  }
 
+  /* Status icon mapping — purely visual, no logic */
   const STATUS_ICON = {
     pending: 'clock',
     new: 'clock',
@@ -54,6 +62,13 @@
     draft: 'clock',
     published: 'checkCircle',
   };
+
+  function badge(status) {
+    const key = getStatusKey(status);
+    const icon = STATUS_ICON[status] || 'file';
+    const label = t(key, String(status));
+    return '<span class="status-badge status-badge--' + esc(status) + '" title="' + esc(label) + '">' + ICON(icon, 12, '') + esc(label) + '</span>';
+  }
 
   function guardAdmin() {
     const token = localStorage.getItem('token');
@@ -94,6 +109,19 @@
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
   }
+
+  // Shared runtime state for admin dashboard — must always exist
+  var STATE = {
+    experts: [],
+    news: [],
+    products: [],
+    claims: [],
+    reports: [],
+    messages: [],
+    applications: [],
+    roadside: [],
+    users: []
+  };
 
   function api(path, opts) {
     if (typeof window.apiRequest === 'function') {
@@ -147,12 +175,6 @@
     return String(status || '')
       .toLowerCase()
       .replace(/[^a-z0-9_]/g, '_');
-  }
-
-  function badge(status) {
-    const key = normalizeStatus(status);
-    const icon = STATUS_ICON[key] ? ICON(STATUS_ICON[key], 14, 'status-icon') : '';
-    return '<span class="status status--' + esc(key) + '">' + icon + esc(STATUS_LABELS[key] || key.replace(/_/g, ' ')) + '</span>';
   }
 
   function emptyRow(colspan, message) {
@@ -216,7 +238,7 @@
     const cancelBtn = document.getElementById('newsCancelEditBtn');
 
     if (form) form.reset();
-    if (submitBtn) submitBtn.textContent = 'Create Article';
+    if (submitBtn) submitBtn.textContent = t('admin.news.create_article', 'Create Article');
     if (cancelBtn) cancelBtn.hidden = true;
     setInlineMsg('newsFormMsg', '', false);
   }
@@ -238,7 +260,7 @@
     if (status) status.value = article.status || 'draft';
     if (image) image.value = article.image_url || '';
     if (content) content.value = article.content || '';
-    if (submitBtn) submitBtn.textContent = 'Update Article';
+    if (submitBtn) submitBtn.textContent = t('admin.news.update_article', 'Update Article');
     if (cancelBtn) cancelBtn.hidden = false;
     setInlineMsg('newsFormMsg', '', false);
 
@@ -252,17 +274,20 @@
   }
 
   function renderNews(list) {
+    if (Array.isArray(list)) STATE.news = list;
+    list = STATE.news || [];
     const body = document.getElementById('newsTableBody');
     if (!body) return;
 
     if (!list || !list.length) {
-      body.innerHTML = emptyRow(4, 'No news articles available yet.');
+      body.innerHTML = emptyRow(4, t('admin.news.no_articles', 'No news articles available yet.'));
+      window.Language.applyTranslations(body);
       return;
     }
 
     body.innerHTML = list.map((article) => {
       const publishVariant = article.status === 'published' ? 'unpublish' : 'publish';
-      const publishLabel = article.status === 'published' ? 'Unpublish' : 'Publish';
+      const publishLabel = article.status === 'published' ? t('admin.news.unpublish', 'Unpublish') : t('admin.news.publish', 'Publish');
       const publishIcon = article.status === 'published' ? 'toggleOff' : 'toggleOn';
       const articleSummary = truncateText(article.content || '', 110);
 
@@ -273,22 +298,26 @@
         '  <td>' + esc(formatDate(article.updated_at || article.created_at)) + '</td>',
         '  <td>',
         '    <div class="row-actions">',
-        '      <button class="action-btn" data-variant="edit" data-action="edit-news" data-news-id="' + article.id + '">Edit</button>',
-        '      <button class="action-btn" data-variant="delete" data-action="delete-news" data-news-id="' + article.id + '">' + ICON('xCircle', 14, '') + 'Delete</button>',
+        '      <button class="action-btn" data-variant="edit" data-action="edit-news" data-news-id="' + article.id + '">' + t('admin.news.edit', 'Edit') + '</button>',
+        '      <button class="action-btn" data-variant="delete" data-action="delete-news" data-news-id="' + article.id + '">' + ICON('xCircle', 14, '') + t('admin.news.delete', 'Delete') + '</button>',
         '      <button class="action-btn" data-variant="' + publishVariant + '" data-action="toggle-news-status" data-news-id="' + article.id + '">' + ICON(publishIcon, 14, '') + publishLabel + '</button>',
         '    </div>',
         '  </td>',
         '</tr>',
       ].join('');
     }).join('');
+    window.Language.applyTranslations(body);
   }
 
   function renderProducts(list) {
+    if (Array.isArray(list)) STATE.products = list;
+    list = STATE.products || [];
     const body = document.getElementById('productsTableBody');
     if (!body) return;
 
     if (!list || !list.length) {
-      body.innerHTML = emptyRow(7, 'No homepage products available.');
+      body.innerHTML = emptyRow(7, t('admin.products.no_products', 'No homepage products available.'));
+      window.Language.applyTranslations(body);
       return;
     }
 
@@ -305,24 +334,25 @@
       return [
         '<tr>',
         '  <td><input class="cms-table-input cms-table-input--readonly" id="' + nameId + '" type="text" value="' + esc(product.name || '') + '" readonly /></td>',
-        '  <td><textarea class="cms-table-textarea" id="' + descriptionId + '" rows="4" placeholder="Description">' + esc(product.description || '') + '</textarea></td>',
-        '  <td><input class="cms-table-input" id="' + imageId + '" type="url" value="' + esc(product.image_url || '') + '" placeholder="https://example.com/image.jpg" /></td>',
-        '  <td><input class="cms-table-input" id="' + ctaId + '" type="text" maxlength="80" value="' + esc(product.cta_label || '') + '" placeholder="CTA label" /></td>',
+        '  <td><textarea class="cms-table-textarea" id="' + descriptionId + '" rows="4" placeholder="' + t('admin.products.description_placeholder', 'Description') + '">' + esc(product.description || '') + '</textarea></td>',
+        '  <td><input class="cms-table-input" id="' + imageId + '" type="url" value="' + esc(product.image_url || '') + '" placeholder="' + t('admin.products.image_placeholder', 'https://example.com/image.jpg') + '" /></td>',
+        '  <td><input class="cms-table-input" id="' + ctaId + '" type="text" maxlength="80" value="' + esc(product.cta_label || '') + '" placeholder="' + t('admin.products.cta_placeholder', 'CTA label') + '" /></td>',
         '  <td><input class="cms-table-input cms-table-input--number" id="' + orderId + '" type="number" min="0" step="1" value="' + esc(product.display_order == null ? 0 : product.display_order) + '" /></td>',
-        '  <td><label class="cms-checkbox-wrap"><input id="' + activeId + '" type="checkbox" ' + (product.is_active ? 'checked ' : '') + '/><span>Active</span></label></td>',
+        '  <td><label class="cms-checkbox-wrap"><input id="' + activeId + '" type="checkbox" ' + (product.is_active ? 'checked ' : '') + '/><span>' + t('admin.products.active', 'Active') + '</span></label></td>',
         '  <td>',
         '    <div class="row-actions">',
-        '      <button class="action-btn" data-variant="save" data-action="save-homepage-product" data-product-id="' + id + '">' + ICON('save', 14, '') + 'Save</button>',
+        '      <button class="action-btn" data-variant="save" data-action="save-homepage-product" data-product-id="' + id + '">' + ICON('save', 14, '') + t('admin.products.save', 'Save') + '</button>',
         '    </div>',
         '    <div id="' + msgId + '" class="cms-inline-msg"></div>',
         '  </td>',
         '</tr>',
       ].join('');
     }).join('');
+    window.Language.applyTranslations(body);
   }
 
   async function loadAll() {
-    setMsg('Loading admin data...', false);
+    setMsg(t('admin.loading', 'Loading admin data...'), false);
 
     const [statsRes, claimsRes, reportsRes, messagesRes, appsRes, roadsideRes, usersRes, expertsRes, newsRes, productsRes] = await Promise.all([
       api('/api/dashboard/stats'),
@@ -353,28 +383,39 @@
     setStat('sMessages', stats.total_messages || 0);
     setStat('sApplications', stats.total_applications || 0);
 
-    STATE.experts = expertsRes.ok ? (expertsRes.data.experts || []) : [];
-    renderClaims(claimsRes.ok ? claimsRes.data.claims : []);
-    renderReports(reportsRes.ok ? reportsRes.data.reports : []);
-    renderMessages(messagesRes.ok ? messagesRes.data.messages : []);
-    renderApplications(appsRes.ok ? appsRes.data.applications : []);
-    renderRoadside(roadsideRes.ok ? roadsideRes.data.requests : []);
-    renderUsers(usersRes.ok ? usersRes.data.users : []);
-    STATE.news = newsRes.ok ? (Array.isArray(newsRes.data) ? newsRes.data : (newsRes.data.articles || [])) : [];
-    STATE.products = productsRes.ok ? (Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data.products || [])) : [];
-    renderNews(STATE.news);
-    renderProducts(STATE.products);
+    // Safely normalize API responses into STATE; never assume .data exists
+    STATE.experts = expertsRes && expertsRes.ok && expertsRes.data && Array.isArray(expertsRes.data.experts) ? expertsRes.data.experts : [];
+    STATE.claims = claimsRes && claimsRes.ok && claimsRes.data && Array.isArray(claimsRes.data.claims) ? claimsRes.data.claims : [];
+    STATE.reports = reportsRes && reportsRes.ok && reportsRes.data && Array.isArray(reportsRes.data.reports) ? reportsRes.data.reports : [];
+    STATE.messages = messagesRes && messagesRes.ok && messagesRes.data && Array.isArray(messagesRes.data.messages) ? messagesRes.data.messages : [];
+    STATE.applications = appsRes && appsRes.ok && appsRes.data && Array.isArray(appsRes.data.applications) ? appsRes.data.applications : [];
+    STATE.roadside = roadsideRes && roadsideRes.ok && roadsideRes.data && Array.isArray(roadsideRes.data.requests) ? roadsideRes.data.requests : [];
+    STATE.users = usersRes && usersRes.ok && usersRes.data && Array.isArray(usersRes.data.users) ? usersRes.data.users : [];
+    STATE.news = newsRes && newsRes.ok && (Array.isArray(newsRes.data) ? newsRes.data : (newsRes.data && Array.isArray(newsRes.data.articles) ? newsRes.data.articles : [])) ? (Array.isArray(newsRes.data) ? newsRes.data : (newsRes.data && Array.isArray(newsRes.data.articles) ? newsRes.data.articles : [])) : [];
+    STATE.products = productsRes && productsRes.ok && (Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data && Array.isArray(productsRes.data.products) ? productsRes.data.products : [])) ? (Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data && Array.isArray(productsRes.data.products) ? productsRes.data.products : [])) : [];
 
-    setMsg('Admin data loaded.', false);
+    // Render from STATE only
+    renderClaims();
+    renderReports();
+    renderMessages();
+    renderApplications();
+    renderRoadside();
+    renderUsers();
+    renderNews();
+    renderProducts();
+
+    setMsg(t('admin.data_loaded', 'Admin data loaded.'), false);
     setTimeout(() => setMsg('', false), 1400);
   }
 
   function renderClaims(list) {
+    if (Array.isArray(list)) STATE.claims = list;
+    list = STATE.claims || [];
     const body = document.getElementById('claimsTableBody');
     if (!body) return;
 
     if (!list || !list.length) {
-      body.innerHTML = emptyRow(4, 'No claims available yet.');
+      body.innerHTML = emptyRow(4, t('admin.no_claims_available', 'No claims available yet.'));
       return;
     }
 
@@ -388,10 +429,10 @@
       const canDecide = c.status === 'reported';
       const expertSelectId = 'claim-expert-' + c.claim_id;
 
-      const expertOptions = ['<option value="">Assign expert...</option>']
+      const expertOptions = ['<option value="">' + t('admin.assign_expert_placeholder', 'Assign expert...') + '</option>']
         .concat(allExperts.map((ex) => {
           const selectable = Boolean(ex.is_available) && Boolean(ex.is_active);
-          const busySuffix = selectable ? '' : ' (Busy)';
+          const busySuffix = selectable ? '' : ' ' + t('admin.status.busy', '(Busy)');
           const label = (ex.full_name || (String(ex.first_name || '') + ' ' + String(ex.last_name || '')).trim() || 'Expert') + busySuffix;
           return '<option value="' + ex.expert_id + '" ' + (selectable ? '' : 'disabled ') + '>' +
             esc(label) +
@@ -403,44 +444,45 @@
 
       if (c.status === 'pending') {
         hasPendingClaims = true;
-        actionsHtml = '<small>Automatically moving to under review...</small>';
+        actionsHtml = '<small>' + t('admin.status.auto_moving', 'Automatically moving to under review...') + '</small>';
       }
 
       if (canAssign) {
         actionsHtml += [
           '<div class="row-actions">',
           '  <select class="expert-select" id="' + expertSelectId + '">' + expertOptions + '</select>',
-          '  <button class="action-btn" data-variant="assign" data-action="assign-expert" data-claim-id="' + c.claim_id + '" ' + (allExperts.length ? '' : 'disabled ') + '>' + ICON('userCheck', 14, '') + 'Assign</button>',
+          '  <button class="action-btn" data-variant="assign" data-action="assign-expert" data-claim-id="' + c.claim_id + '" ' + (allExperts.length ? '' : 'disabled ') + '>' + ICON('userCheck', 14, '') + t('admin.actions.assign', 'Assign') + '</button>',
           '</div>',
-          allExperts.length ? '' : '<span class="muted-note">' + ICON('alert', 13, '') + 'No experts found.</span>',
+          allExperts.length ? '' : '<span class="muted-note">' + ICON('alert', 13, '') + t('admin.status.no_experts', 'No experts found.') + '</span>',
         ].join('');
       } else if (isWaitingExpertReport) {
-        actionsHtml = '<span class="muted-note">' + ICON('clock', 13, '') + 'Waiting for expert report.</span>';
+        actionsHtml = '<span class="muted-note">' + ICON('clock', 13, '') + t('admin.status.waiting_report', 'Waiting for expert report.') + '</span>';
       } else if (canDecide) {
         actionsHtml = [
           '<div class="row-actions">',
-          '  <button class="action-btn" data-variant="approve" data-action="approve-claim" data-claim-id="' + c.claim_id + '">' + ICON('checkCircle', 14, '') + 'Approve</button>',
-          '  <button class="action-btn" data-variant="reject" data-action="reject-claim" data-claim-id="' + c.claim_id + '">' + ICON('xCircle', 14, '') + 'Reject</button>',
+          '  <button class="action-btn" data-variant="approve" data-action="approve-claim" data-claim-id="' + c.claim_id + '">' + ICON('checkCircle', 14, '') + t('admin.actions.approve', 'Approve') + '</button>',
+          '  <button class="action-btn" data-variant="reject" data-action="reject-claim" data-claim-id="' + c.claim_id + '">' + ICON('xCircle', 14, '') + t('admin.actions.reject', 'Reject') + '</button>',
           '</div>',
         ].join('');
       } else if (isLocked) {
-        actionsHtml = '<span class="muted-note">' + ICON('checkCircle', 13, '') + 'Final state. No actions available.</span>';
+        actionsHtml = '<span class="muted-note">' + ICON('checkCircle', 13, '') + t('admin.status.final_state', 'Final state. No actions available.') + '</span>';
       } else if (!actionsHtml) {
-        actionsHtml = '<span class="muted-note">' + ICON('alert', 13, '') + 'No actions available.</span>';
+        actionsHtml = '<span class="muted-note">' + ICON('alert', 13, '') + t('admin.status.no_actions', 'No actions available.') + '</span>';
       }
 
       return [
         '<tr>',
         '  <td>#' + esc(c.claim_id) + '<br/><small>' + esc(c.contract_id) + '</small></td>',
         '  <td><strong>' + esc(c.client_name || '-') + '</strong><br/><small>' + esc(c.client_email || '-') + '</small></td>',
-        '  <td>' + badge(c.status) + (c.status === 'pending' ? ' <span class="priority-chip">Priority</span>' : '') + '</td>',
+        '  <td>' + badge(c.status) + (c.status === 'pending' ? ' <span class="priority-chip">' + t('admin.priority_chip', 'Priority') + '</span>' : '') + '</td>',
         '  <td>',
-        (!canAssign && c.expert_id && c.status === 'under_review') ? '    <div><small>Expert already assigned (#' + esc(c.expert_id) + ').</small></div>' : '',
+        (!canAssign && c.expert_id && c.status === 'under_review') ? '    <div><small>' + t('admin.status.expert_assigned', 'Expert already assigned') + ' (#' + esc(c.expert_id) + ').</small></div>' : '',
         '    ' + actionsHtml,
         '  </td>',
         '</tr>'
       ].join('');
     }).join('');
+    window.Language.applyTranslations(body);
 
     if (hasPendingClaims) {
       setTimeout(loadAll, 350);
@@ -448,11 +490,14 @@
   }
 
   function renderReports(list) {
+    if (Array.isArray(list)) STATE.reports = list;
+    list = STATE.reports || [];
     const body = document.getElementById('reportsTableBody');
     if (!body) return;
 
-    if (!list || !list.length) {
-      body.innerHTML = emptyRow(4, 'No expert reports submitted yet.');
+    if (!list.length) {
+      body.innerHTML = emptyRow(4, t('admin.no_reports', 'No expert reports submitted yet.'));
+      window.Language.applyTranslations(body);
       return;
     }
 
@@ -464,14 +509,18 @@
       '  <td>' + badge(r.conclusion || 'pending_review') + '</td>',
       '</tr>'
     ].join('')).join('');
+    window.Language.applyTranslations(body);
   }
 
   function renderMessages(list) {
+    if (Array.isArray(list)) STATE.messages = list;
+    list = STATE.messages || [];
     const body = document.getElementById('messagesTableBody');
     if (!body) return;
 
-    if (!list || !list.length) {
-      body.innerHTML = emptyRow(4, 'No messages found.');
+    if (!list.length) {
+      body.innerHTML = emptyRow(4, t('admin.no_messages', 'No messages found.'));
+      window.Language.applyTranslations(body);
       return;
     }
 
@@ -482,22 +531,26 @@
       '  <td>' + badge(m.status || 'new') + '</td>',
       '  <td>',
       '    <select id="msg-status-' + m.id + '">',
-      '      <option value="new">new</option>',
-      '      <option value="read">read</option>',
-      '      <option value="replied">replied</option>',
+      '      <option value="new">' + t('admin.message_status.new', 'New') + '</option>',
+      '      <option value="read">' + t('admin.message_status.read', 'Read') + '</option>',
+      '      <option value="replied">' + t('admin.message_status.replied', 'Replied') + '</option>',
       '    </select>',
-      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-message" data-message-id="' + m.id + '">' + ICON('send', 14, '') + 'Save</button></div>',
+      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-message" data-message-id="' + m.id + '">' + ICON('send', 14, '') + t('admin.common.save', 'Save') + '</button></div>',
       '  </td>',
       '</tr>'
     ].join('')).join('');
+    window.Language.applyTranslations(body);
   }
 
   function renderApplications(list) {
+    if (Array.isArray(list)) STATE.applications = list;
+    list = STATE.applications || [];
     const body = document.getElementById('applicationsTableBody');
     if (!body) return;
 
-    if (!list || !list.length) {
-      body.innerHTML = emptyRow(4, 'No job applications found.');
+    if (!list.length) {
+      body.innerHTML = emptyRow(4, t('admin.no_applications', 'No job applications found.'));
+      window.Language.applyTranslations(body);
       return;
     }
 
@@ -508,23 +561,27 @@
       '  <td>' + badge(a.status || 'pending') + '</td>',
       '  <td>',
       '    <select id="app-status-' + a.id + '">',
-      '      <option value="pending">pending</option>',
-      '      <option value="reviewed">reviewed</option>',
-      '      <option value="accepted">accepted</option>',
-      '      <option value="rejected">rejected</option>',
+      '      <option value="pending">' + t('admin.application_status.pending', 'Pending') + '</option>',
+      '      <option value="reviewed">' + t('admin.application_status.reviewed', 'Reviewed') + '</option>',
+      '      <option value="accepted">' + t('admin.application_status.accepted', 'Accepted') + '</option>',
+      '      <option value="rejected">' + t('admin.application_status.rejected', 'Rejected') + '</option>',
       '    </select>',
-      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-application" data-application-id="' + a.id + '">' + ICON('send', 14, '') + 'Save</button></div>',
+      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-application" data-application-id="' + a.id + '">' + ICON('send', 14, '') + t('admin.common.save', 'Save') + '</button></div>',
       '  </td>',
       '</tr>'
     ].join('')).join('');
+    window.Language.applyTranslations(body);
   }
 
   function renderRoadside(list) {
+    if (Array.isArray(list)) STATE.roadside = list;
+    list = STATE.roadside || [];
     const body = document.getElementById('roadsideTableBody');
     if (!body) return;
 
-    if (!list || !list.length) {
-      body.innerHTML = emptyRow(4, 'No roadside requests found.');
+    if (!list.length) {
+      body.innerHTML = emptyRow(4, t('admin.no_roadside_requests', 'No roadside requests found.'));
+      window.Language.applyTranslations(body);
       return;
     }
 
@@ -535,22 +592,26 @@
       '  <td>' + badge(r.status || 'pending') + '</td>',
       '  <td>',
       '    <select id="road-status-' + r.id + '">',
-      '      <option value="pending">pending</option>',
-      '      <option value="dispatched">dispatched</option>',
-      '      <option value="completed">completed</option>',
+      '      <option value="pending">' + t('admin.roadside_status.pending', 'Pending') + '</option>',
+      '      <option value="dispatched">' + t('admin.roadside_status.dispatched', 'Dispatched') + '</option>',
+      '      <option value="completed">' + t('admin.roadside_status.completed', 'Completed') + '</option>',
       '    </select>',
-      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-roadside" data-request-id="' + r.id + '">' + ICON('send', 14, '') + 'Save</button></div>',
+      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-roadside" data-request-id="' + r.id + '">' + ICON('send', 14, '') + t('admin.common.save', 'Save') + '</button></div>',
       '  </td>',
       '</tr>'
     ].join('')).join('');
+    window.Language.applyTranslations(body);
   }
 
   function renderUsers(list) {
+    if (Array.isArray(list)) STATE.users = list;
+    list = STATE.users || [];
     const body = document.getElementById('usersTableBody');
     if (!body) return;
 
-    if (!list || !list.length) {
-      body.innerHTML = emptyRow(4, 'No users found.');
+    if (!list.length) {
+      body.innerHTML = emptyRow(4, t('admin.users.no_users', 'No users found.'));
+      window.Language.applyTranslations(body);
       return;
     }
 
@@ -560,10 +621,11 @@
       '  <td>' + esc(u.role) + '</td>',
       '  <td>' + badge(u.is_active ? 'active' : 'inactive') + '</td>',
       '  <td><button class="action-btn" data-action="toggle-user" data-user-id="' + u.id + '" data-next-active="' + (u.is_active ? '0' : '1') + '">' +
-          (u.is_active ? (ICON('userX', 14, '') + 'Deactivate') : (ICON('userCheck', 14, '') + 'Activate')) +
+          (u.is_active ? (ICON('userX', 14, '') + t('admin.common.deactivate', 'Deactivate')) : (ICON('userCheck', 14, '') + t('admin.common.activate', 'Activate'))) +
       '</button></td>',
       '</tr>'
     ].join('')).join('');
+    window.Language.applyTranslations(body);
   }
 
   async function decideClaim(claimId, decision) {
@@ -573,11 +635,11 @@
     });
 
     if (!res.ok) {
-      setMsg((res.data && res.data.error) || 'Failed to apply claim decision.', true);
+      setMsg((res.data && res.data.error) || t('admin.claim_decision_failed', 'Failed to apply claim decision.'), true);
       return;
     }
 
-    setMsg('Claim decision applied.', false);
+    setMsg(t('admin.claim_decision_applied', 'Claim decision applied.'), false);
     loadAll();
   }
 
@@ -592,13 +654,13 @@
   async function assignExpert(claimId) {
     const select = document.getElementById('claim-expert-' + claimId);
     if (!select || !select.value) {
-      setMsg('Please choose an expert before assigning.', true);
+      setMsg(t('admin.choose_expert', 'Please choose an expert before assigning.'), true);
       return;
     }
 
     const selectedOption = select.options[select.selectedIndex];
     if (selectedOption && selectedOption.disabled) {
-      setMsg('Expert is currently busy', true);
+      setMsg(t('admin.expert_busy', 'Expert is currently busy'), true);
       return;
     }
 
@@ -608,11 +670,11 @@
     });
 
     if (!res.ok) {
-      setMsg((res.data && res.data.error) || 'Failed to assign expert.', true);
+      setMsg((res.data && res.data.error) || t('admin.assign_expert_failed', 'Failed to assign expert.'), true);
       return;
     }
 
-    setMsg('Expert assigned successfully.', false);
+    setMsg(t('admin.expert_assigned', 'Expert assigned successfully.'), false);
     loadAll();
   }
 
@@ -626,11 +688,11 @@
     });
 
     if (!res.ok) {
-      setMsg((res.data && res.data.error) || 'Failed to update message status.', true);
+      setMsg((res.data && res.data.error) || t('admin.message_status_failed', 'Failed to update message status.'), true);
       return;
     }
 
-    setMsg('Message status updated.', false);
+    setMsg(t('admin.message_status_updated', 'Message status updated.'), false);
     loadAll();
   }
 
@@ -644,11 +706,11 @@
     });
 
     if (!res.ok) {
-      setMsg((res.data && res.data.error) || 'Failed to update application status.', true);
+      setMsg((res.data && res.data.error) || t('admin.application_status_failed', 'Failed to update application status.'), true);
       return;
     }
 
-    setMsg('Application status updated.', false);
+    setMsg(t('admin.application_status_updated', 'Application status updated.'), false);
     loadAll();
   }
 
@@ -662,11 +724,11 @@
     });
 
     if (!res.ok) {
-      setMsg((res.data && res.data.error) || 'Failed to update roadside request status.', true);
+      setMsg((res.data && res.data.error) || t('admin.roadside_status_failed', 'Failed to update roadside request status.'), true);
       return;
     }
 
-    setMsg('Roadside status updated.', false);
+    setMsg(t('admin.roadside_status_updated', 'Roadside status updated.'), false);
     loadAll();
   }
 
@@ -677,11 +739,11 @@
     });
 
     if (!res.ok) {
-      setMsg((res.data && res.data.error) || 'Failed to update user status.', true);
+      setMsg((res.data && res.data.error) || t('admin.user_status_failed', 'Failed to update user status.'), true);
       return;
     }
 
-    setMsg('User status updated.', false);
+    setMsg(t('admin.user_status_updated', 'User status updated.'), false);
     loadAll();
   }
 
@@ -699,17 +761,17 @@
     const content = String(contentInput && contentInput.value ? contentInput.value : '').trim();
 
     if (title.length < 3 || title.length > 255) {
-      setInlineMsg('newsFormMsg', 'Title must be between 3 and 255 characters.', true);
+      setInlineMsg('newsFormMsg', t('admin.news.title_invalid', 'Title must be between 3 and 255 characters.'), true);
       return;
     }
 
     if (content.length < 10) {
-      setInlineMsg('newsFormMsg', 'Content must be at least 10 characters.', true);
+      setInlineMsg('newsFormMsg', t('admin.news.content_invalid', 'Content must be at least 10 characters.'), true);
       return;
     }
 
     if (!['draft', 'published'].includes(status)) {
-      setInlineMsg('newsFormMsg', 'Status must be draft or published.', true);
+      setInlineMsg('newsFormMsg', t('admin.news.status_invalid', 'Status must be draft or published.'), true);
       return;
     }
 
@@ -725,15 +787,15 @@
     });
 
     if (!res.ok) {
-      const msg = (res.data && res.data.error) || 'Failed to save article.';
+      const msg = (res.data && res.data.error) || t('admin.news.save_failed', 'Failed to save article.');
       setInlineMsg('newsFormMsg', msg, true);
       setMsg(msg, true);
       return;
     }
 
     resetNewsForm();
-    setInlineMsg('newsFormMsg', isEditing ? 'Article updated successfully.' : 'Article created successfully.', false);
-    setMsg(isEditing ? 'Article updated successfully.' : 'Article created successfully.', false);
+    setInlineMsg('newsFormMsg', isEditing ? t('admin.news.updated_success', 'Article updated successfully.') : t('admin.news.created_success', 'Article created successfully.'), false);
+    setMsg(isEditing ? t('admin.news.updated_success', 'Article updated successfully.') : t('admin.news.created_success', 'Article created successfully.'), false);
     loadAll();
   }
 
@@ -758,12 +820,12 @@
     const is_active = Boolean(activeInput && activeInput.checked);
 
     if (!name) {
-      setInlineMsg(msgId, 'Name is required.', true);
+      setInlineMsg(msgId, t('admin.products.name_required', 'Name is required.'), true);
       return;
     }
 
     if (Number.isNaN(display_order) || display_order < 0) {
-      setInlineMsg(msgId, 'Display order must be a non-negative number.', true);
+      setInlineMsg(msgId, t('admin.products.order_invalid', 'Display order must be a non-negative number.'), true);
       return;
     }
 
@@ -775,28 +837,28 @@
         name,
         description: description || null,
         image_url: image_url || null,
-        cta_label: cta_label || 'Subscribe',
+        cta_label: cta_label || t('online.subscribe', 'Subscribe'),
         is_active,
         display_order,
       },
     });
 
     if (!res.ok) {
-      const msg = (res.data && res.data.error) || 'Failed to save homepage product.';
+      const msg = (res.data && res.data.error) || t('admin.products.save_failed', 'Failed to save homepage product.');
       setInlineMsg(msgId, msg, true);
       setMsg(msg, true);
       return;
     }
 
-    setInlineMsg(msgId, 'Saved.', false);
-    setMsg('Homepage product updated successfully.', false);
+    setInlineMsg(msgId, t('admin.products.saved', 'Saved.'), false);
+    setMsg(t('admin.products.updated_success', 'Homepage product updated successfully.'), false);
     loadAll();
   }
 
   function editNews(newsId) {
     const article = findNewsById(newsId);
     if (!article) {
-      setMsg('Article not found.', true);
+      setMsg(t('admin.news.not_found', 'Article not found.'), true);
       return;
     }
 
@@ -806,17 +868,17 @@
   async function deleteNews(newsId) {
     const article = findNewsById(newsId);
     if (!article) {
-      setMsg('Article not found.', true);
+      setMsg(t('admin.news.not_found', 'Article not found.'), true);
       return;
     }
 
-    if (!window.confirm('Delete this article permanently?')) {
+    if (!window.confirm(t('admin.news.delete_confirm', 'Delete this article permanently?'))) {
       return;
     }
 
     const res = await api('/api/admin/news/' + newsId, { method: 'DELETE' });
     if (!res.ok) {
-      const msg = (res.data && res.data.error) || 'Failed to delete article.';
+      const msg = (res.data && res.data.error) || t('admin.news.delete_failed', 'Failed to delete article.');
       setMsg(msg, true);
       return;
     }
@@ -825,14 +887,14 @@
       resetNewsForm();
     }
 
-    setMsg('Article deleted successfully.', false);
+    setMsg(t('admin.news.deleted_success', 'Article deleted successfully.'), false);
     loadAll();
   }
 
   async function toggleNewsStatus(newsId) {
     const article = findNewsById(newsId);
     if (!article) {
-      setMsg('Article not found.', true);
+      setMsg(t('admin.news.not_found', 'Article not found.'), true);
       return;
     }
 
@@ -848,7 +910,7 @@
     });
 
     if (!res.ok) {
-      const msg = (res.data && res.data.error) || 'Failed to update article status.';
+      const msg = (res.data && res.data.error) || t('admin.news.status_update_failed', 'Failed to update article status.');
       setMsg(msg, true);
       return;
     }
@@ -857,7 +919,7 @@
       openNewsForm(res.data.article || article);
     }
 
-    setMsg('Article status updated.', false);
+    setMsg(t('admin.news.status_updated', 'Article status updated.'), false);
     loadAll();
   }
 
@@ -991,18 +1053,18 @@
       const specialization = (document.getElementById('expertSpecialization').value || '').trim();
 
       if (!first_name || !last_name || !email) {
-        setExpertInlineMsg('First name, last name and email are required.');
+        setExpertInlineMsg(t('admin.expert.create.error_missing_fields', 'First name, last name and email are required.'), true);
         return;
       }
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setExpertInlineMsg('Please enter a valid email address.');
+        setExpertInlineMsg(t('admin.expert.invalid_email', 'Please enter a valid email address.'), true);
         return;
       }
 
       setExpertInlineMsg('');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Creating...';
+      submitBtn.textContent = t('actions.creating', 'Creating...');
 
       const res = await api('/api/admin/experts', {
         method: 'POST',
@@ -1015,18 +1077,20 @@
       });
 
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Create Expert';
+      submitBtn.textContent = t('actions.create_expert', 'Create Expert');
 
       if (!res.ok) {
-        const msg = (res.data && res.data.error) || 'Failed to create expert.';
-        setExpertInlineMsg(msg);
+        const msg = (res.data && res.data.error) || t('admin.expert.create_failed', 'Failed to create expert.');
+        setExpertInlineMsg(msg, true);
         setMsg(msg, true);
         return;
       }
 
       const tempPassword = (res.data && res.data.temporary_password) || '(not provided)';
-      setExpertInlineMsg('Expert created. Default password: ' + tempPassword);
-      setMsg('Expert created successfully.', false);
+      var createdMsgTemplate = t('admin.expert.created_with_password', 'Expert created. Default password: {{password}}');
+      var createdMsg = createdMsgTemplate.replace(/{{\s*password\s*}}/g, tempPassword);
+      setExpertInlineMsg(createdMsg);
+      setMsg(t('admin.expert.created_success', 'Expert created successfully.'), false);
       setTimeout(function () {
         window.location.reload();
       }, 900);
@@ -1062,5 +1126,8 @@
     bindContentManagementActions();
     bindExpertCreateActions();
     loadAll();
+    if (window.Language && typeof window.Language.applyTranslations === 'function') {
+      window.Language.applyTranslations(document);
+    }
   });
 })();

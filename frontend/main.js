@@ -111,6 +111,9 @@
       })
       .then(function (html) {
         el.innerHTML = html;
+        if (window.Language && typeof window.Language.applyTranslations === 'function') {
+          window.Language.applyTranslations(el);
+        }
         if (callback) callback();
       })
       .catch(function (err) {
@@ -140,6 +143,10 @@
           window.Language.init();
         }
 
+        if (window.Language && typeof window.Language.applyTranslations === 'function') {
+          window.Language.applyTranslations(document);
+        }
+
         if (window.CAARSmartSearch && typeof window.CAARSmartSearch.init === 'function') {
           window.CAARSmartSearch.init();
         }
@@ -148,7 +155,11 @@
 
     /* ── Footer ── */
     if (document.getElementById('site-footer')) {
-      loadComponent('site-footer', base + 'components/footer.html', null);
+      loadComponent('site-footer', base + 'components/footer.html', function () {
+        if (window.Language && typeof window.Language.applyTranslations === 'function') {
+          window.Language.applyTranslations(document);
+        }
+      });
     }
   }
 
@@ -574,6 +585,14 @@ document.addEventListener('DOMContentLoaded', function () {
     homepageGridEl.innerHTML = '<p class="products-online-state">' + esc(message) + '</p>';
   }
 
+  function t(key, fallback) {
+    if (window.Language && typeof window.Language.t === 'function') {
+      var value = window.Language.t(key);
+      if (value) return value;
+    }
+    return fallback || '';
+  }
+
   function resolveSubscriptionHref(product) {
     var id = Number(product && product.id);
     if (id === 1) return 'catnat-subscription.html';
@@ -614,7 +633,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // DB value is missing/empty or when the image fails to load (onerror).
   function renderProducts(products) {
     if (!products.length) {
-      setState('No online products are available right now.');
+      setState(t('online.no_products', 'No online products are available right now.'));
       return;
     }
 
@@ -622,8 +641,8 @@ document.addEventListener('DOMContentLoaded', function () {
       // Use the image_url exactly as stored in the DB/API. If it's null or
       // an empty string, use the placeholder. Do NOT modify the string.
       var resolved = (product.image_url == null || product.image_url === '') ? 'img/new.webp' : product.image_url;
-      var imageHtml = '<img class="product-online-card-img" src="' + esc(resolved) + '" alt="' + esc(product.name || 'Online product') + '" onerror="this.src=\'img/new.webp\';this.onerror=null;"/>';
-      var label = String(product.cta_label || 'Subscribe').trim() || 'Subscribe';
+      var imageHtml = '<img class="product-online-card-img" src="' + esc(resolved) + '" alt="' + esc(product.name || t('online.product_alt', 'Online product')) + '" onerror="this.src=\'img/new.webp\';this.onerror=null;"/>';
+      var label = String(product.cta_label || t('online.subscribe', 'Subscribe')).trim() || t('online.subscribe', 'Subscribe');
       var href = resolveSubscriptionHref(product);
 
       return [
@@ -648,18 +667,18 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   (async function loadHomepageProducts() {
-    setState('Loading online products...');
+    setState(t('online.loading', 'Loading online products...'));
 
     var res;
     try {
       res = await request('/api/homepage-products');
     } catch (_) {
-      setState('Unable to load online products right now.');
+      setState(t('online.unable_to_load', 'Unable to load online products right now.'));
       return;
     }
 
     if (!res.ok) {
-      setState('Unable to load online products right now.');
+      setState(t('online.unable_to_load', 'Unable to load online products right now.'));
       return;
     }
 
@@ -750,7 +769,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderFullContent(content) {
     var text = String(content == null ? '' : content).replace(/\r\n/g, '\n').trim();
-    if (!text) return '<p>No content available for this article.</p>';
+    if (!text) return '<p>' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('news.no_content', 'No content available for this article.') : 'No content available for this article.') + '</p>';
 
     return text
       .split(/\n{2,}/)
@@ -772,7 +791,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!article || !listView || !detailView) return;
 
     var image = getArticleImage(article);
-    var titleText = String(article.title || 'Untitled');
+    var titleText = String(article.title || (window.Language && typeof window.Language.t === 'function' ? window.Language.t('news.untitled_article', 'Untitled') : 'Untitled'));
 
     if (detailTitle) detailTitle.textContent = titleText;
     if (detailDate) detailDate.textContent = formatDate(article.created_at);
@@ -819,7 +838,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderCurrentPage() {
     if (!allArticles.length) {
-      showFallback('No published articles available yet.');
+      showFallback(window.Language && typeof window.Language.t === 'function' ? window.Language.t('news.no_articles', 'No published articles available yet.') : 'No published articles available yet.');
       return;
     }
 
@@ -831,8 +850,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var pageItems = allArticles.slice(pageStart, pageStart + NEWS_PER_PAGE);
 
     newsContainer.innerHTML = pageItems.map(function (article) {
-      var title = esc(article.title || 'Untitled');
-      var excerpt = esc(preview(article.content || 'No summary available for this article.'));
+      var title = esc(article.title || (window.Language && typeof window.Language.t === 'function' ? window.Language.t('news.untitled_article', 'Untitled') : 'Untitled'));
+      var excerpt = esc(preview(article.content || (window.Language && typeof window.Language.t === 'function' ? window.Language.t('news.no_summary', 'No summary available for this article.') : 'No summary available for this article.')));
       var date = esc(formatDate(article.created_at));
       var image = getArticleImage(article);
       var articleId = esc(normaliseArticleId(article));
@@ -844,7 +863,7 @@ document.addEventListener('DOMContentLoaded', function () {
         '    <span class="news-date">' + date + '</span>',
         '    <h3>' + title + '</h3>',
         '    <p>' + excerpt + '</p>',
-        '    <button type="button" class="read-btn" data-article-id="' + articleId + '">Read More</button>',
+        '    <button type="button" class="read-btn" data-article-id="' + articleId + '">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('actions.read_more', 'Read More') : 'Read More') + '</button>',
         '  </div>',
         '</article>'
       ].join('');
@@ -868,14 +887,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   (async function loadNewsArticles() {
     showListView();
-    showFallback('Loading news...');
+    showFallback(window.Language && typeof window.Language.t === 'function' ? window.Language.t('news.loading', 'Loading news...') : 'Loading news...');
 
     try {
       var res = await request('/api/news');
 
       if (!res.ok) {
         console.error('[news] Failed to fetch /api/news:', res.status, res.data);
-        showFallback('Unable to load news right now.');
+        showFallback(window.Language && typeof window.Language.t === 'function' ? window.Language.t('news.unable_to_load', 'Unable to load news right now.') : 'Unable to load news right now.');
         return;
       }
 
@@ -886,7 +905,7 @@ document.addEventListener('DOMContentLoaded', function () {
       renderCurrentPage();
     } catch (err) {
       console.error('[news] Unexpected error while loading news:', err);
-      showFallback('Unable to load news right now.');
+      showFallback(window.Language && typeof window.Language.t === 'function' ? window.Language.t('news.unable_to_load', 'Unable to load news right now.') : 'Unable to load news right now.');
     }
   })();
 

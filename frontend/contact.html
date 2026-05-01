@@ -11,6 +11,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link rel="stylesheet" href="main.css"/>
 <link rel="stylesheet" href="header-extras.css"/>
+<style>
+  /* Contact form hidden by default; .show reveals it with a smooth transition */
+  .contact-form-section {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 360ms ease, opacity 260ms ease;
+  }
+  .contact-form-section.show {
+    max-height: 2000px; /* large enough to show full form */
+    opacity: 1;
+  }
+</style>
 </head>
 <body>
 
@@ -39,7 +52,7 @@
 <!-- ════════════════════════════════════════════
      CONTACT FORM
 ════════════════════════════════════════════ -->
-<section class="contact-form-section show" id="contactForm">
+<section class="contact-form-section" id="contactForm">
   <div id="contactApiMsg" style="display:none;"></div>
   <div class="contact-form-inner">
 
@@ -228,5 +241,35 @@
 <script src="js/contact-api.js"></script>
 <script src="main.js"></script>
 <script src="js/animations.js"></script>
+<script>
+  (function () {
+    var form = document.getElementById('contactForm');
+    var cta = document.getElementById('ctaBtn');
+
+    // Exposed for existing inline onclick on the Close button
+    window.collapseForm = function () {
+      var f = form || document.getElementById('contactForm');
+      if (!f) return;
+      f.classList.remove('show');
+      var hero = document.querySelector('.caar-hero');
+      if (hero && typeof hero.scrollIntoView === 'function') {
+        hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
+    if (cta) {
+      cta.addEventListener('click', function (e) {
+        e.preventDefault();
+        var f = form || document.getElementById('contactForm');
+        if (!f) return;
+        f.classList.add('show');
+        // small timeout to ensure layout update before scroll
+        setTimeout(function () {
+          if (typeof f.scrollIntoView === 'function') f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 10);
+      });
+    }
+  })();
+</script>
 </body>
 </html>

@@ -248,11 +248,11 @@
     <span class="login-logo-fallback" style="display:none;">CAAR</span>
   </div>
 
-  <h1 class="login-title">Login</h1>
-  <p class="login-subtitle">Access your account</p>
+  <h1 class="login-title" data-i18n="auth.login.title">Login</h1>
+  <p class="login-subtitle" data-i18n="auth.login.subtitle">Access your account</p>
   <div id="authNotice" class="login-hint" style="display:none;margin-top:-12px;margin-bottom:18px;">
-    <strong>Protected product</strong>
-    <div id="authNoticeText" class="login-hint-row"></div>
+    <strong data-i18n="auth.login.protected_product">Protected product</strong>
+    <div id="authNoticeText" class="login-hint-row" data-i18n="auth.login.protected_notice"></div>
   </div>
 
   <!-- Erreur globale -->
@@ -260,59 +260,65 @@
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
     </svg>
-    <span id="globalErrorText">Email ou mot de passe invalide.</span>
+    <span id="globalErrorText" data-i18n="auth.login.error_invalid">Email ou mot de passe invalide.</span>
   </div>
 
   <form id="loginForm" novalidate>
 
     <!-- Email -->
     <div class="login-field">
-      <label for="loginEmail">Adresse email</label>
+      <label for="loginEmail" data-i18n="auth.login.email_label">Adresse email</label>
       <div class="login-input-wrap">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
           <polyline points="22,6 12,13 2,6"/>
         </svg>
-        <input type="email" id="loginEmail" class="login-input"
-               placeholder="vous@exemple.com" autocomplete="email" required/>
+         <input type="email" id="loginEmail" class="login-input"
+           placeholder="vous@exemple.com" data-i18n-placeholder="auth.login.email_placeholder" autocomplete="email" required/>
       </div>
-      <div class="login-field-error" id="err-email">Veuillez entrer une adresse email valide.</div>
+      <div class="login-field-error" id="err-email" data-i18n="auth.login.email_error">Veuillez entrer une adresse email valide.</div>
     </div>
 
     <!-- Password -->
     <div class="login-field">
-      <label for="loginPassword">Mot de passe</label>
+      <label for="loginPassword" data-i18n="auth.login.password_label">Mot de passe</label>
       <div class="login-input-wrap">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
-        <input type="password" id="loginPassword" class="login-input has-icon-right"
-               placeholder="••••••••" autocomplete="current-password" required/>
-        <button type="button" class="toggle-pw" id="togglePw" aria-label="Afficher le mot de passe">
+         <input type="password" id="loginPassword" class="login-input has-icon-right"
+           placeholder="••••••••" data-i18n-placeholder="auth.login.password_placeholder" autocomplete="current-password" required/>
+         <button type="button" class="toggle-pw" id="togglePw" data-i18n-aria-label="auth.login.toggle_password_show">
           <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
             <circle cx="12" cy="12" r="3"/>
           </svg>
         </button>
       </div>
-      <div class="login-field-error" id="err-password">Veuillez entrer votre mot de passe.</div>
+      <div class="login-field-error" id="err-password" data-i18n="auth.login.password_error">Veuillez entrer votre mot de passe.</div>
     </div>
 
-    <button type="submit" class="btn-login-submit" id="submitBtn">Login</button>
+    <button type="submit" class="btn-login-submit" id="submitBtn" data-i18n="auth.login.submit">Login</button>
 
   </form>
 
-  <div class="login-divider">ou</div>
+  <div class="login-divider" data-i18n="auth.login.or">ou</div>
 
 <a href="register.html" class="btn-login-submit" 
    style="display:block; text-align:center; text-decoration:none; background:transparent; color:var(--hdr-orange); border:2px solid var(--hdr-orange); margin-bottom:12px;">
-  Créer un compte
+  <span data-i18n="auth.login.create_account">Créer un compte</span>
 </a>
 
-<a href="index.html" class="login-back">← Retour au <span>site CAAR</span></a>
+<a href="index.html" class="login-back" data-i18n-html="auth.login.back_to_site">← Retour au <span>site CAAR</span></a>
 
+<script src="translations.js"></script>
+<script src="lang.js"></script>
 <script>
+
+if (window.Language && typeof window.Language.init === 'function') {
+  window.Language.init();
+}
 
 /* ══════════════════════════════════════
    TOGGLE PASSWORD
@@ -376,8 +382,11 @@ function showAuthNotice() {
   if (!box || !text) return;
 
   if (reason === 'product_auth_required') {
-    text.textContent = 'Please login to access CATNAT and Roadside subscription forms.';
+    text.dataset.i18n = 'auth.login.protected_notice';
     box.style.display = 'block';
+    if (window.Language && typeof window.Language.applyTranslations === 'function') {
+      window.Language.applyTranslations(box);
+    }
   }
 }
 
@@ -403,7 +412,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   }
   if (hasError) return;
 
-  btn.disabled = true; btn.textContent = 'Logging in…'; btn.classList.add('loading');
+  btn.disabled = true; btn.textContent = window.Language && typeof window.Language.t === 'function' ? window.Language.t('auth.login.loading') : 'Logging in…'; btn.classList.add('loading');
 
   try {
     const res  = await fetch('http://localhost:3000/api/auth/login', {
@@ -414,7 +423,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     const data = await res.json();
 
     if (!res.ok) {
-      showGlobalError(data.error || 'Invalid email or password.');
+      showGlobalError(data.error || (window.Language && typeof window.Language.t === 'function' ? window.Language.t('auth.login.error_invalid') : 'Invalid email or password.'));
       return;
     }
 
@@ -429,7 +438,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     };
 
     if (!data.token || !Number.isInteger(userId) || !map[role]) {
-      showGlobalError('Invalid login response. Please try again.');
+      showGlobalError(window.Language && typeof window.Language.t === 'function' ? window.Language.t('auth.login.error_response') : 'Invalid login response. Please try again.');
       return;
     }
 
@@ -472,9 +481,9 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     window.location.href = canUseReturnTo ? returnTo : roleHome;
 
   } catch (err) {
-    showGlobalError('Server error. Please try again later.');
+    showGlobalError(window.Language && typeof window.Language.t === 'function' ? window.Language.t('auth.login.error_server') : 'Server error. Please try again later.');
   } finally {
-    btn.disabled = false; btn.textContent = 'Login'; btn.classList.remove('loading');
+    btn.disabled = false; btn.textContent = window.Language && typeof window.Language.t === 'function' ? window.Language.t('auth.login.submit') : 'Login'; btn.classList.remove('loading');
   }
 });
 

@@ -58,6 +58,39 @@ function getUiIcon(name) {
   return icons[name] || icons.file;
 }
 
+function t(key, fallbackOrVars) {
+  var value = '';
+  if (window.Language && typeof window.Language.t === 'function') {
+    value = window.Language.t(key) || '';
+  }
+
+  var vars = null;
+  var fallback = '';
+  if (typeof fallbackOrVars === 'object' && fallbackOrVars !== null) {
+    vars = fallbackOrVars;
+  } else if (typeof fallbackOrVars === 'string') {
+    fallback = fallbackOrVars;
+  }
+
+  if (!value) value = fallback || '';
+
+  if (vars && value) {
+    Object.keys(vars).forEach(function (k) {
+      var re = new RegExp('{{\\s*' + k + '\\s*}}', 'g');
+      value = value.replace(re, String(vars[k]));
+    });
+  }
+
+  return value;
+}
+
+function statusText(config, fallbackKey, fallbackText) {
+  if (!config) {
+    return t(fallbackKey, fallbackText);
+  }
+  return t(config.labelKey || fallbackKey, config.labelFallback || fallbackText);
+}
+
 function _syncBodyLock() {
   var sidebar = document.getElementById('dashSidebar');
   var modal = document.getElementById('newClaimModal');
@@ -70,20 +103,20 @@ function _syncBodyLock() {
 
 /* ── Status config ───────────────────────────────────────────── */
 var STATUS_CONFIG = {
-  pending:         { cls: 'status-badge--pending',         label: 'Pending',         icon: 'clock' },
-  under_review:    { cls: 'status-badge--under-review',    label: 'Under Review',    icon: 'search' },
-  expert_assigned: { cls: 'status-badge--expert-assigned', label: 'Expert Assigned', icon: 'user' },
-  reported:        { cls: 'status-badge--approved',        label: 'Reported',        icon: 'clipboard' },
-  closed:          { cls: 'status-badge--closed',          label: 'Closed',          icon: 'check' },
-  rejected:        { cls: 'status-badge--rejected',        label: 'Rejected',        icon: 'x' },
-  approved:        { cls: 'status-badge--closed',          label: 'Approved',        icon: 'check' },
+  pending:         { cls: 'status-badge--pending',         labelKey: 'status.pending',         labelFallback: 'Pending',         icon: 'clock' },
+  under_review:    { cls: 'status-badge--under-review',    labelKey: 'status.under_review',    labelFallback: 'Under Review',    icon: 'search' },
+  expert_assigned: { cls: 'status-badge--expert-assigned', labelKey: 'status.assigned', labelFallback: 'Assigned', icon: 'user' },
+  reported:        { cls: 'status-badge--approved',        labelKey: 'status.reported',        labelFallback: 'Reported',        icon: 'clipboard' },
+  closed:          { cls: 'status-badge--closed',          labelKey: 'status.closed',          labelFallback: 'Closed',          icon: 'check' },
+  rejected:        { cls: 'status-badge--rejected',        labelKey: 'status.rejected',        labelFallback: 'Rejected',        icon: 'x' },
+  approved:        { cls: 'status-badge--closed',          labelKey: 'status.approved',        labelFallback: 'Approved',        icon: 'check' },
 };
 
 /* ── Roadside status config ──────────────────────────────────── */
 var ROADSIDE_STATUS = {
-  pending:    { cls: 'status-badge--pending',      label: 'Pending',    icon: 'clock' },
-  dispatched: { cls: 'status-badge--under-review', label: 'Dispatched', icon: 'car' },
-  completed:  { cls: 'status-badge--closed',       label: 'Completed',  icon: 'check' },
+  pending:    { cls: 'status-badge--pending',      labelKey: 'status.pending',      labelFallback: 'Pending',    icon: 'clock' },
+  dispatched: { cls: 'status-badge--under-review', labelKey: 'status.dispatched', labelFallback: 'Dispatched', icon: 'car' },
+  completed:  { cls: 'status-badge--closed',       labelKey: 'status.completed',  labelFallback: 'Completed',  icon: 'check' },
 };
 
 /* ============================================================
@@ -92,6 +125,9 @@ var ROADSIDE_STATUS = {
 document.addEventListener('DOMContentLoaded', function () {
   renderUserIdentity();
   loadAllData();
+  if (window.Language && typeof window.Language.applyTranslations === 'function') {
+    window.Language.applyTranslations(document);
+  }
 });
 
 /* ============================================================
@@ -138,6 +174,9 @@ async function loadAllData() {
   populateClaimModalContracts();
   populateRoadsideContractSelect();
   renderRoadsideRequests();
+  if (window.Language && typeof window.Language.applyTranslations === 'function') {
+    window.Language.applyTranslations(document);
+  }
 }
 
 /* ============================================================
@@ -155,9 +194,9 @@ function renderSummaryCards() {
   safeSetText('.summary-card--green  .sc-value', _dashStats.total_payments || 0);
 
   // Update sub-labels
-  safeSetText('.summary-card--orange .sc-sub', activeClaims.length + ' active');
-  safeSetText('.summary-card--amber  .sc-sub', pendingClaims.length + ' awaiting review');
-  safeSetText('.summary-card--blue   .sc-sub', activeContracts.length + ' active');
+  safeSetText('.summary-card--orange .sc-sub', activeClaims.length + ' ' + t('status.active', 'active'));
+  safeSetText('.summary-card--amber  .sc-sub', pendingClaims.length + ' ' + t('status.under_review', 'awaiting review'));
+  safeSetText('.summary-card--blue   .sc-sub', activeContracts.length + ' ' + t('status.active', 'active'));
 
   // Make cards clickable
   const orangeCard = document.querySelector('.summary-card--orange');
@@ -167,7 +206,7 @@ function renderSummaryCards() {
   if (orangeCard) {
     orangeCard.style.cursor = 'pointer';
     orangeCard.addEventListener('click', function () { switchSection('claims', document.querySelector('[data-section="claims"]')); });
-    orangeCard.title = 'View all claims';
+    orangeCard.title = t('dashboard.view_all_claims', 'View all claims');
   }
   if (amberCard) {
     amberCard.style.cursor = 'pointer';
@@ -178,12 +217,12 @@ function renderSummaryCards() {
         if (sel) { sel.value = 'pending'; filterClaims('pending'); }
       }, 300);
     });
-    amberCard.title = 'View active claims';
+    amberCard.title = t('dashboard.view_active_claims', 'View active claims');
   }
   if (blueCard) {
     blueCard.style.cursor = 'pointer';
     blueCard.addEventListener('click', function () { switchSection('contracts', document.querySelector('[data-section="contracts"]')); });
-    blueCard.title = 'View all contracts';
+    blueCard.title = t('dashboard.view_all_contracts', 'View all contracts');
   }
 
   // Badge on claims nav item
@@ -211,9 +250,9 @@ function renderAlertBanners() {
     alerts.push({
       type: 'info',
       icon: 'shield',
-      title: 'Get insured today',
-      message: 'You have no insurance contracts yet. Explore our products to protect what matters.',
-      action: { label: 'Browse Products', fn: function () { window.location.href = 'Online_subscription.html'; } },
+      title: t('dashboard.get_insured_today', 'Get insured today'),
+      message: t('dashboard.no_contracts_message', 'You have no insurance contracts yet. Explore our products to protect what matters.'),
+      action: { label: t('dashboard.browse_products', 'Browse Products'), fn: function () { window.location.href = 'Online_subscription.html'; } },
     });
   }
 
@@ -223,10 +262,10 @@ function renderAlertBanners() {
       type: 'warning',
       icon: 'clock',
       title: pendingClaims.length === 1
-        ? 'You have 1 claim awaiting review'
-        : 'You have ' + pendingClaims.length + ' claims awaiting review',
-      message: 'Our team will review your claim shortly. You\'ll be notified when the status changes.',
-      action: { label: 'View Claims', fn: function () { openLatestClaimPanelFromApi(['pending', 'under_review', 'expert_assigned', 'reported']); } },
+        ? t('dashboard.one_claim_awaiting', 'You have 1 claim awaiting review')
+        : t('dashboard.claims_awaiting', 'You have ') + pendingClaims.length + t('dashboard.claims_awaiting_suffix', ' claims awaiting review'),
+      message: t('dashboard.claims_review_message', 'Our team will review your claim shortly. You\'ll be notified when the status changes.'),
+      action: { label: t('dashboard.view_claims', 'View Claims'), fn: function () { openLatestClaimPanelFromApi(['pending', 'under_review', 'expert_assigned', 'reported']); } },
     });
   }
 
@@ -236,10 +275,10 @@ function renderAlertBanners() {
       type: 'success',
       icon: 'user',
       title: expertClaims.length === 1
-        ? 'An expert has been assigned to your claim'
-        : expertClaims.length + ' of your claims have an expert assigned',
-      message: 'Your claim is being actively handled. The expert will contact you soon.',
-      action: { label: 'View Claims', fn: function () { openLatestClaimPanelFromApi(['expert_assigned']); } },
+        ? t('dashboard.expert_assigned_single', 'An expert has been assigned to your claim')
+        : t('dashboard.expert_assigned_many_prefix', '') + expertClaims.length + t('dashboard.expert_assigned_many_suffix', ' of your claims have an expert assigned'),
+      message: t('dashboard.expert_assigned_message', 'Your claim is being actively handled. The expert will contact you soon.'),
+      action: { label: t('dashboard.view_claims', 'View Claims'), fn: function () { openLatestClaimPanelFromApi(['expert_assigned']); } },
     });
   }
 
@@ -248,9 +287,9 @@ function renderAlertBanners() {
     alerts.push({
       type: 'warning',
       icon: 'car',
-      title: 'Roadside request pending',
-      message: 'Your roadside assistance request is being processed. Our team will dispatch help shortly.',
-      action: { label: 'View Request', fn: function () { openLatestRoadsidePanelFromApi(); } },
+      title: t('dashboard.roadside_pending', 'Roadside request pending'),
+      message: t('dashboard.roadside_message', 'Your roadside assistance request is being processed. Our team will dispatch help shortly.'),
+      action: { label: t('dashboard.view_request', 'View Request'), fn: function () { openLatestRoadsidePanelFromApi(); } },
     });
   }
 
@@ -259,9 +298,9 @@ function renderAlertBanners() {
     alerts.push({
       type: 'info',
       icon: 'clipboard',
-      title: 'No active claims',
-      message: 'Experienced an incident? File a claim now and our team will guide you through the process.',
-      action: { label: 'File a Claim', fn: openNewClaimModalGeneric },
+      title: t('dashboard.no_active_claims_title', 'No active claims'),
+      message: t('dashboard.no_active_claims_message', 'Experienced an incident? File a claim now and our team will guide you through the process.'),
+      action: { label: t('dashboard.file_a_claim', 'File a Claim'), fn: openNewClaimModalGeneric },
     });
   }
 
@@ -322,7 +361,7 @@ async function _refreshRoadsideFromApi() {
 async function openLatestClaimPanelFromApi(preferredStatuses) {
   var claims = await _refreshClaimsFromApi();
   if (!claims.length) {
-    showToast('No claims available to display.', 'error');
+    showToast(t('dashboard.no_claims_available', 'No claims available to display.'), 'error');
     return;
   }
 
@@ -346,22 +385,22 @@ window.openRoadsidePanel = function (requestId) {
   });
   if (!request) return;
 
-  var sc = ROADSIDE_STATUS[request.status] || { cls: 'status-badge--pending', label: request.status || 'Pending' };
-  document.getElementById('cdpTitle').textContent = 'Roadside ' + (request.request_reference || ('#' + request.request_id));
-  document.getElementById('cdpSubtitle').textContent = 'Contract #' + (request.contract_id || '—');
+  var sc = ROADSIDE_STATUS[request.status] || { cls: 'status-badge--pending', labelKey: 'status.pending', labelFallback: 'Pending' };
+  document.getElementById('cdpTitle').textContent = t('dashboard.roadside_title_prefix', 'Roadside ') + (request.request_reference || ('#' + request.request_id));
+  document.getElementById('cdpSubtitle').textContent = t('expert.contract_prefix', 'Contract') + ' #' + (request.contract_id || '—');
 
   document.getElementById('cdpBody').innerHTML =
-    '<div class="cdp-section"><div class="cdp-section-title">Request Details</div>' +
+    '<div class="cdp-section"><div class="cdp-section-title">' + t('dashboard.request_details', 'Request Details') + '</div>' +
     '<div class="cdp-info-grid">' +
-      '<div class="cdp-info-item"><div class="cdp-info-label">Status</div><div class="cdp-info-value"><span class="status-badge ' + sc.cls + '">' + escapeHTML(sc.label) + '</span></div></div>' +
-      '<div class="cdp-info-item"><div class="cdp-info-label">Created</div><div class="cdp-info-value">' + escapeHTML(request.created_at ? new Date(request.created_at).toLocaleDateString('en-GB') : '—') + '</div></div>' +
-      '<div class="cdp-info-item"><div class="cdp-info-label">Problem Type</div><div class="cdp-info-value">' + escapeHTML(request.problem_type || '—') + '</div></div>' +
-      '<div class="cdp-info-item"><div class="cdp-info-label">Vehicle</div><div class="cdp-info-value">' + escapeHTML(request.vehicle_label || request.license_plate || '—') + '</div></div>' +
-      '<div class="cdp-info-item"><div class="cdp-info-label">Location</div><div class="cdp-info-value">' + escapeHTML(request.location_address || request.city || '—') + '</div></div>' +
-      '<div class="cdp-info-item"><div class="cdp-info-label">Phone</div><div class="cdp-info-value">' + escapeHTML(request.phone || '—') + '</div></div>' +
+      '<div class="cdp-info-item"><div class="cdp-info-label">' + t('dashboard.status_label', 'Status') + '</div><div class="cdp-info-value"><span class="status-badge ' + sc.cls + '">' + escapeHTML(statusText(sc, 'status.' + request.status, request.status)) + '</span></div></div>' +
+      '<div class="cdp-info-item"><div class="cdp-info-label">' + t('dashboard.created_label', 'Created') + '</div><div class="cdp-info-value">' + escapeHTML(request.created_at ? new Date(request.created_at).toLocaleDateString('en-GB') : '—') + '</div></div>' +
+      '<div class="cdp-info-item"><div class="cdp-info-label">' + t('dashboard.problem_type_label', 'Problem Type') + '</div><div class="cdp-info-value">' + escapeHTML(request.problem_type || '—') + '</div></div>' +
+      '<div class="cdp-info-item"><div class="cdp-info-label">' + t('dashboard.vehicle_label', 'Vehicle') + '</div><div class="cdp-info-value">' + escapeHTML(request.vehicle_label || request.license_plate || '—') + '</div></div>' +
+      '<div class="cdp-info-item"><div class="cdp-info-label">' + t('dashboard.location_label', 'Location') + '</div><div class="cdp-info-value">' + escapeHTML(request.location_address || request.city || '—') + '</div></div>' +
+      '<div class="cdp-info-item"><div class="cdp-info-label">' + t('dashboard.phone_label', 'Phone') + '</div><div class="cdp-info-value">' + escapeHTML(request.phone || '—') + '</div></div>' +
     '</div></div>' +
-    '<div class="cdp-section"><div class="cdp-section-title">Description</div>' +
-      '<div class="cdp-description">' + escapeHTML(request.description || 'No description provided.') + '</div></div>';
+    '<div class="cdp-section"><div class="cdp-section-title">' + t('dashboard.description_label', 'Description') + '</div>' +
+      '<div class="cdp-description">' + escapeHTML(request.description || t('dashboard.no_description_provided', 'No description provided.')) + '</div></div>';
 
   document.getElementById('claimPanelOverlay').classList.add('open');
   document.getElementById('claimDetailPanel').classList.add('open');
@@ -371,7 +410,7 @@ window.openRoadsidePanel = function (requestId) {
 async function openLatestRoadsidePanelFromApi() {
   var requests = await _refreshRoadsideFromApi();
   if (!requests.length) {
-    showToast('No roadside requests available to display.', 'error');
+    showToast(t('dashboard.no_roadside_requests', 'No roadside requests available to display.'), 'error');
     return;
   }
 
@@ -397,9 +436,9 @@ function renderRecentActivity() {
       type:    'claim',
       id:      c.claim_id,
       icon:    sc.icon,
-      title:   'Claim #' + c.claim_id,
-      sub:     'Contract #' + c.contract_id,
-      status:  sc.label,
+      title:   t('dashboard.claim_prefix', 'Claim #') + c.claim_id,
+      sub:     t('dashboard.contract_prefix', 'Contract #') + c.contract_id,
+      status:  statusText(sc, 'status.' + c.status, c.status),
       cls:     sc.cls,
       date:    c.claim_date,
       raw:     c,
@@ -412,9 +451,9 @@ function renderRecentActivity() {
       type:   'roadside',
       id:     r.request_id,
       icon:   sc.icon,
-      title:  'Roadside ' + (r.request_reference || '#' + r.request_id),
-      sub:    r.problem_type || 'Assistance request',
-      status: sc.label,
+      title:  t('dashboard.roadside_title_prefix', 'Roadside ') + (r.request_reference || '#' + r.request_id),
+      sub:    r.problem_type || t('dashboard.assistance_request', 'Assistance request'),
+      status: statusText(sc, 'status.' + r.status, r.status),
       cls:    sc.cls,
       date:   r.created_at,
       raw:    r,
@@ -435,8 +474,8 @@ function renderRecentActivity() {
           '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>' +
           '<polyline points="14 2 14 8 20 8"/></svg></div>' +
         '<div class="activity-body">' +
-          '<div class="activity-body-title">No recent activity</div>' +
-          '<div class="activity-body-sub">Your claims and roadside requests will appear here</div>' +
+          '<div class="activity-body-title">' + escapeHTML(t('dashboard.no_recent_activity_title', 'No recent activity')) + '</div>' +
+          '<div class="activity-body-sub">' + escapeHTML(t('dashboard.no_recent_activity_sub', 'Your claims and roadside requests will appear here')) + '</div>' +
         '</div>' +
       '</div>';
     return;
@@ -477,33 +516,33 @@ function renderContextualNextStep() {
   if (ALL_CONTRACTS.length === 0) {
     step = {
       icon: 'shield',
-      title: 'Start your first policy',
-      desc:  'Subscribe to an insurance product to unlock all dashboard features.',
-      btnLabel: 'Browse Products',
+      title: t('dashboard.next_start_policy_title', 'Start your first policy'),
+      desc:  t('dashboard.next_start_policy_desc', 'Subscribe to an insurance product to unlock all dashboard features.'),
+      btnLabel: t('dashboard.next_browse_products', 'Browse Products'),
       btnFn: 'window.location.href="Online_subscription.html"',
     };
   } else if (activeContracts.length > 0 && ALL_CLAIMS.length === 0) {
     step = {
       icon: 'clipboard',
-      title: 'File your first claim',
-      desc:  'Had an incident? File a claim in minutes and our team will take care of it.',
-      btnLabel: 'File a Claim',
+      title: t('dashboard.next_file_first_claim_title', 'File your first claim'),
+      desc:  t('dashboard.next_file_first_claim_desc', 'Had an incident? File a claim in minutes and our team will take care of it.'),
+      btnLabel: t('dashboard.next_file_claim_btn', 'File a Claim'),
       btnFn: 'openNewClaimModalGeneric()',
     };
   } else if (activeContracts.length > 0 && ALL_ROADSIDE.length === 0) {
     step = {
       icon: 'car',
-      title: 'Request roadside assistance',
-      desc:  'Stranded on the road? Get immediate help from our 24/7 assistance team.',
-      btnLabel: 'Request Assistance',
+      title: t('dashboard.next_request_roadside_title', 'Request roadside assistance'),
+      desc:  t('dashboard.next_request_roadside_desc', 'Stranded on the road? Get immediate help from our 24/7 assistance team.'),
+      btnLabel: t('dashboard.next_request_roadside_btn', 'Request Assistance'),
       btnFn: 'switchSection("roadside", document.querySelector("[data-section=roadside]"))',
     };
   } else {
     step = {
       icon: 'check',
-      title: 'Your account is active',
-      desc:  'All your contracts and services are running. Contact us if you need anything.',
-      btnLabel: 'Contact Support',
+      title: t('dashboard.next_account_active_title', 'Your account is active'),
+      desc:  t('dashboard.next_account_active_desc', 'All your contracts and services are running. Contact us if you need anything.'),
+      btnLabel: t('dashboard.next_contact_support_btn', 'Contact Support'),
       btnFn: 'window.location.href="contact.html"',
     };
   }
@@ -541,7 +580,7 @@ function renderUserIdentity() {
   var topAvatar = document.querySelector('.dash-topbar__user-avatar');
   if (topAvatar) topAvatar.textContent = initials;
 
-  safeSetText('.dash-content__header-title', 'Welcome back, ' + (user.first_name || 'there'));
+  safeSetText('.dash-content__header-title', t('dashboard.welcome_back_prefix', 'Welcome back, ') + (user.first_name || t('dashboard.welcome_back_anonymous', 'there')));
 
   safeSetValue('pf-first', user.first_name || '');
   safeSetValue('pf-last',  user.last_name  || '');
@@ -587,12 +626,12 @@ function formatDateTime(value) {
    SPA NAVIGATION
    ============================================================ */
 var SECTION_CONFIG = {
-  dashboard: { title: 'Dashboard',       icon: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>' },
-  claims:    { title: 'My Claims',        icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>' },
-  roadside:  { title: 'Request Roadside', icon: '<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>' },
-  messages:  { title: 'Messages',         icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' },
-  contracts: { title: 'My Contracts',     icon: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>' },
-  profile:   { title: 'Profile',          icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' },
+  dashboard: { titleKey: 'section.dashboard',    icon: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>' },
+  claims:    { titleKey: 'section.claims',       icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>' },
+  roadside:  { titleKey: 'section.roadside',     icon: '<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>' },
+  messages:  { titleKey: 'section.messages',     icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' },
+  contracts: { titleKey: 'section.contracts',    icon: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>' },
+  profile:   { titleKey: 'section.profile',      icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' },
 };
 
 window.switchSection = function (key, _el) {
@@ -606,7 +645,8 @@ window.switchSection = function (key, _el) {
   if (navItem) navItem.classList.add('active');
 
   var cfg = SECTION_CONFIG[key] || SECTION_CONFIG.dashboard;
-  safeSetText('#topbarTitle', cfg.title);
+  var sectionTitle = cfg.titleKey ? t(cfg.titleKey, cfg.title) : cfg.title;
+  safeSetText('#topbarTitle', sectionTitle);
   var iconEl = document.getElementById('topbarIcon');
   if (iconEl) iconEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + cfg.icon + '</svg>';
 
@@ -657,15 +697,14 @@ function populateClaimModalContracts() {
   var active = ALL_CONTRACTS.filter(function (c) { return c.status === 'active'; });
 
   if (!active.length) {
-    select.innerHTML = '<option value="">— No active contracts found —</option>';
+    select.innerHTML = '<option value="">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('dashboard.no_active_contracts', '— No active contracts found —') : '— No active contracts found —') + '</option>';
     return;
   }
-
-  select.innerHTML = '<option value="">— Select a contract —</option>' +
+  select.innerHTML = '<option value="">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('dashboard.select_contract_placeholder', '— Select a contract —') : '— Select a contract —') + '</option>' +
     active.map(function (c) {
       return '<option value="' + c.contract_id + '">' +
         (c.policy_reference || '#' + c.contract_id) +
-        ' — ' + (c.product_name || 'Insurance') +
+        ' — ' + (c.product_name || (window.Language && typeof window.Language.t === 'function' ? window.Language.t('dashboard.contract_product_default', 'Insurance') : 'Insurance')) +
         ' (expires ' + (c.end_date ? new Date(c.end_date).toLocaleDateString('en-GB') : '') + ')' +
         '</option>';
     }).join('');
@@ -683,16 +722,16 @@ function populateRoadsideContractSelect() {
 
   var active = getActiveRoadsideContracts();
   if (!active.length) {
-    select.innerHTML = '<option value="">No active roadside assistance contract found</option>';
+    select.innerHTML = '<option value="">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('dashboard.no_active_roadside_contract_found', 'No active roadside assistance contract found') : 'No active roadside assistance contract found') + '</option>';
     syncRoadsideVehicleFields(null);
     return;
   }
 
   select.innerHTML = active.map(function (c, idx) {
     return '<option value="' + c.contract_id + '"' + (idx === 0 ? ' selected' : '') + '>' +
-      escapeHTML(c.policy_reference || '#' + c.contract_id) +
-      ' - ' + escapeHTML(c.product_name || 'Roadside Assistance') +
-      '</option>';
+    escapeHTML(c.policy_reference || '#' + c.contract_id) +
+    ' - ' + escapeHTML(c.product_name || (window.Language && typeof window.Language.t === 'function' ? window.Language.t('dashboard.roadside_product_default', 'Roadside Assistance') : 'Roadside Assistance')) +
+    '</option>';
   }).join('');
 
   select.onchange = function () {
@@ -732,19 +771,19 @@ async function loadClaims() {
   tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#999;font-size:.82rem;">' +
     '<div style="width:22px;height:22px;border:2px solid #f0ece6;border-top-color:#E8761E;' +
     'border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;"></div>' +
-    'Loading your claims…</td></tr>';
+    escapeHTML(t('dashboard.loading_claims', 'Loading your claims…')) + '</td></tr>';
 
   var result;
   try {
     result = await apiRequest('/api/claims/my');
   } catch (e) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#e53e3e;">Network error. Please refresh.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#e53e3e;">' + escapeHTML(t('dashboard.network_error_refresh', 'Network error. Please refresh.')) + '</td></tr>';
     return;
   }
 
   if (result.status === 404) { ALL_CLAIMS = []; renderClaimsTable([]); return; }
   if (!result.ok) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#e53e3e;">Unable to load claims (HTTP ' + result.status + ').</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#e53e3e;">' + escapeHTML(t('dashboard.unable_load_claims', 'Unable to load claims (HTTP ' + result.status + ').')) + '</td></tr>';
     return;
   }
 
@@ -783,10 +822,10 @@ function renderClaimsTable(claims) {
       '<td><span class="claim-id-cell">#' + c.claim_id + '</span></td>' +
       '<td>' + date + '</td>' +
       '<td><span class="type-chip">Contract #' + c.contract_id + '</span></td>' +
-      '<td><span class="status-badge ' + sc.cls + '">' + sc.label + '</span></td>' +
+      '<td><span class="status-badge ' + sc.cls + '">' + escapeHTML(statusText(sc, 'status.' + c.status, c.status)) + '</span></td>' +
       '<td><button class="btn-claim-view" onclick="openClaimPanel(' + c.claim_id + ')">' +
       '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>' +
-      '<circle cx="12" cy="12" r="3"/></svg>View</button></td>' +
+      '<circle cx="12" cy="12" r="3"/></svg>' + escapeHTML(t('dashboard.view_button', 'View')) + '</button></td>' +
       '</tr>';
   }).join('');
 }
@@ -802,12 +841,12 @@ window.filterClaims = function (status) {
    CLAIM DETAIL PANEL — with mini timeline
    ============================================================ */
 var TIMELINE_STEPS = [
-  { key: 'pending',         label: 'Claim Filed' },
-  { key: 'under_review',   label: 'Under Review' },
-  { key: 'expert_assigned',label: 'Expert Assigned' },
-  { key: 'reported',        label: 'Report Submitted' },
-  { key: 'approved',        label: 'Approved' },
-  { key: 'closed',          label: 'Closed' },
+  { key: 'pending',         labelKey: 'timeline.claim_filed' },
+  { key: 'under_review',    labelKey: 'timeline.under_review' },
+  { key: 'expert_assigned', labelKey: 'timeline.expert_assigned' },
+  { key: 'reported',        labelKey: 'timeline.report_submitted' },
+  { key: 'approved',        labelKey: 'timeline.approved' },
+  { key: 'closed',          labelKey: 'timeline.closed' },
 ];
 
 window.openClaimPanel = function (claimId) {
@@ -816,8 +855,8 @@ window.openClaimPanel = function (claimId) {
   });
   if (!claim) return;
 
-  document.getElementById('cdpTitle').textContent    = 'Claim #' + claim.claim_id;
-  document.getElementById('cdpSubtitle').textContent = 'Contract #' + claim.contract_id + ' · ' + (STATUS_CONFIG[claim.status] || {}).label;
+  document.getElementById('cdpTitle').textContent    = t('dashboard.claim_prefix', 'Claim #') + claim.claim_id;
+  document.getElementById('cdpSubtitle').textContent = t('dashboard.contract_prefix', 'Contract #') + claim.contract_id + ' · ' + statusText(STATUS_CONFIG[claim.status], 'status.' + claim.status, claim.status);
 
   var sc = STATUS_CONFIG[claim.status] || { cls: 'status-badge--pending', label: claim.status };
 
@@ -838,7 +877,7 @@ window.openClaimPanel = function (claimId) {
     } else {
       dotCls = 'cdp-timeline-dot--pending';
     }
-    var label = isRejected && i === stepsToShow.length - 1 ? 'Rejected' : step.label;
+    var label = isRejected && i === stepsToShow.length - 1 ? t('status.rejected', 'Rejected') : t(step.labelKey, step.label || step.key);
     var isCur = stepIdx === curIdx;
     return '<div class="cdp-timeline-item">' +
       '<div class="cdp-timeline-dot ' + dotCls + '">' +
@@ -846,7 +885,7 @@ window.openClaimPanel = function (claimId) {
       '</div>' +
       '<div class="cdp-timeline-content">' +
         '<div class="cdp-timeline-event">' + label + '</div>' +
-        (isCur ? '<div class="cdp-timeline-date">Current status</div>' : '') +
+        (isCur ? '<div class="cdp-timeline-date">' + escapeHTML(t('dashboard.current_status', 'Current status')) + '</div>' : '') +
       '</div>' +
     '</div>';
   }).join('');
@@ -856,35 +895,35 @@ window.openClaimPanel = function (claimId) {
     timelineHTML += '<div class="cdp-timeline-item">' +
       '<div class="cdp-timeline-dot" style="background:#f43f5e;color:#fff;">' + getUiIcon('x') + '</div>' +
       '<div class="cdp-timeline-content">' +
-        '<div class="cdp-timeline-event" style="color:#be123c;">Claim Rejected</div>' +
-        '<div class="cdp-timeline-date">Final status</div>' +
+        '<div class="cdp-timeline-event" style="color:#be123c;">' + escapeHTML(t('timeline.rejected_event', 'Claim Rejected')) + '</div>' +
+        '<div class="cdp-timeline-date">' + escapeHTML(t('timeline.final_status', 'Final status')) + '</div>' +
       '</div>' +
     '</div>';
   }
 
   document.getElementById('cdpBody').innerHTML =
     // Status + details
-    '<div class="cdp-section"><div class="cdp-section-title">Claim Details</div>' +
+    '<div class="cdp-section"><div class="cdp-section-title">' + escapeHTML(t('dashboard.claim_details_title', 'Claim Details')) + '</div>' +
     '<div class="cdp-info-grid">' +
-      '<div class="cdp-info-item"><div class="cdp-info-label">Status</div>' +
-        '<div class="cdp-info-value"><span class="status-badge ' + sc.cls + '">' + sc.label + '</span></div></div>' +
-      '<div class="cdp-info-item"><div class="cdp-info-label">Date Filed</div>' +
+      '<div class="cdp-info-item"><div class="cdp-info-label">' + escapeHTML(t('dashboard.status_label', 'Status')) + '</div>' +
+        '<div class="cdp-info-value"><span class="status-badge ' + sc.cls + '">' + escapeHTML(statusText(sc, 'status.' + claim.status, claim.status)) + '</span></div></div>' +
+      '<div class="cdp-info-item"><div class="cdp-info-label">' + escapeHTML(t('dashboard.date_filed_label', 'Date Filed')) + '</div>' +
         '<div class="cdp-info-value">' + (claim.claim_date ? new Date(claim.claim_date).toLocaleDateString('en-GB') : '—') + '</div></div>' +
-      '<div class="cdp-info-item"><div class="cdp-info-label">Contract</div>' +
+      '<div class="cdp-info-item"><div class="cdp-info-label">' + escapeHTML(t('dashboard.contract_label', 'Contract')) + '</div>' +
         '<div class="cdp-info-value">#' + escapeHTML(claim.contract_id) + '</div></div>' +
-      '<div class="cdp-info-item"><div class="cdp-info-label">Location</div>' +
-        '<div class="cdp-info-value">' + escapeHTML(claim.incident_location || 'Not specified') + '</div></div>' +
+      '<div class="cdp-info-item"><div class="cdp-info-label">' + escapeHTML(t('dashboard.location_label', 'Location')) + '</div>' +
+        '<div class="cdp-info-value">' + escapeHTML(claim.incident_location || t('dashboard.not_specified', 'Not specified')) + '</div></div>' +
     '</div></div>' +
     // Description
-    '<div class="cdp-section"><div class="cdp-section-title">Description</div>' +
-      '<div class="cdp-description">' + escapeHTML(claim.description || 'No description provided.') + '</div></div>' +
+    '<div class="cdp-section"><div class="cdp-section-title">' + escapeHTML(t('dashboard.description_label', 'Description')) + '</div>' +
+      '<div class="cdp-description">' + escapeHTML(claim.description || t('dashboard.no_description_provided', 'No description provided.')) + '</div></div>' +
     // Rejection reason
     (claim.rejection_reason ?
-      '<div class="cdp-section"><div class="cdp-section-title">Rejection Reason</div>' +
+      '<div class="cdp-section"><div class="cdp-section-title">' + escapeHTML(t('dashboard.rejection_reason_title', 'Rejection Reason')) + '</div>' +
       '<div class="cdp-description" style="border-color:#f43f5e;background:#fff1f2;color:#be123c;">' +
       escapeHTML(claim.rejection_reason) + '</div></div>' : '') +
     // Mini timeline
-    '<div class="cdp-section"><div class="cdp-section-title">Progress Timeline</div>' +
+    '<div class="cdp-section"><div class="cdp-section-title">' + escapeHTML(t('dashboard.progress_timeline_title', 'Progress Timeline')) + '</div>' +
       '<div class="cdp-timeline">' + timelineHTML + '</div></div>' +
     // Action hint based on status
     _buildClaimActionHint(claim);
@@ -896,13 +935,13 @@ window.openClaimPanel = function (claimId) {
 
 function _buildClaimActionHint(claim) {
   var hints = {
-    pending:         { icon: 'clock', text: 'Your claim is in the queue. We\'ll notify you when our team starts the review.' },
-    under_review:    { icon: 'search', text: 'Our team is reviewing your claim. An expert may be assigned shortly.' },
-    expert_assigned: { icon: 'user', text: 'An expert has been assigned and will contact you. Please be available.' },
-    reported:        { icon: 'clipboard', text: 'The expert has submitted their report. A decision will follow shortly.' },
-    approved:        { icon: 'check', text: 'Your claim has been approved. Compensation details will be communicated soon.' },
-    closed:          { icon: 'check', text: 'This claim has been closed. Contact support if you have questions.' },
-    rejected:        { icon: 'x', text: 'This claim was rejected. Contact our support team if you believe this is an error.' },
+    pending:         { icon: 'clock', text: t('dashboard.hint_pending', 'Your claim is in the queue. We\'ll notify you when our team starts the review.') },
+    under_review:    { icon: 'search', text: t('dashboard.hint_under_review', 'Our team is reviewing your claim. An expert may be assigned shortly.') },
+    expert_assigned: { icon: 'user', text: t('dashboard.hint_expert_assigned', 'An expert has been assigned and will contact you. Please be available.') },
+    reported:        { icon: 'clipboard', text: t('dashboard.hint_reported', 'The expert has submitted their report. A decision will follow shortly.') },
+    approved:        { icon: 'check', text: t('dashboard.hint_approved', 'Your claim has been approved. Compensation details will be communicated soon.') },
+    closed:          { icon: 'check', text: t('dashboard.hint_closed', 'This claim has been closed. Contact support if you have questions.') },
+    rejected:        { icon: 'x', text: t('dashboard.hint_rejected', 'This claim was rejected. Contact our support team if you believe this is an error.') },
   };
   var hint = hints[claim.status];
   if (!hint) return '';
@@ -934,13 +973,13 @@ window.openNewClaimModalGeneric = async function () {
       ALL_CONTRACTS = (result.ok && result.data.contracts) ? result.data.contracts : [];
       active = ALL_CONTRACTS.filter(function (c) { return c.status === 'active'; });
     } catch (e) {
-      showToast('Unable to load your contracts. Please try again.', 'error');
+      showToast(t('dashboard.contracts_load_error', 'Unable to load your contracts. Please try again.'), 'error');
       return;
     }
   }
 
   if (!active.length) {
-    showToast('You have no active contracts. Please subscribe to an insurance product first.', 'error');
+    showToast(t('dashboard.no_active_contracts_modal', 'You have no active contracts. Please subscribe to an insurance product first.'), 'error');
     return;
   }
 
@@ -993,13 +1032,13 @@ window.submitNewClaim = async function () {
   var submitBtn   = document.getElementById('ncSubmitBtn');
 
   function showErr(msg) { errEl.textContent = msg; errEl.style.display = 'block'; }
-  if (!contractId)              { showErr('Please select a contract.'); return; }
-  if (description.length < 10) { showErr('Description must be at least 10 characters.'); return; }
-  if (!claimDate)               { showErr('Please enter the incident date.'); return; }
+  if (!contractId)              { showErr(t('dashboard.err_select_contract', 'Please select a contract.')); return; }
+  if (description.length < 10) { showErr(t('dashboard.err_description_length', 'Description must be at least 10 characters.')); return; }
+  if (!claimDate)               { showErr(t('dashboard.err_enter_incident_date', 'Please enter the incident date.')); return; }
 
   errEl.style.display = 'none';
   submitBtn.disabled    = true;
-  submitBtn.textContent = 'Submitting…';
+  submitBtn.textContent = t('dashboard.submitting', 'Submitting…');
 
   var result;
   try {
@@ -1013,25 +1052,25 @@ window.submitNewClaim = async function () {
       }
     });
   } catch (e) {
-    showErr('Network error — please check your connection.');
-    submitBtn.disabled = false; submitBtn.textContent = 'Submit Claim';
+    showErr(t('dashboard.network_error_check_connection', 'Network error — please check your connection.'));
+    submitBtn.disabled = false; submitBtn.textContent = t('dashboard.submit_claim_button', 'Submit Claim');
     return;
   }
 
   if (!result.ok) {
-    showErr(result.data.error || 'Failed to submit claim (HTTP ' + result.status + ').');
-    submitBtn.disabled = false; submitBtn.textContent = 'Submit Claim';
+    showErr(result.data.error || t('dashboard.failed_submit_claim', 'Failed to submit claim (HTTP ' + result.status + ').'));
+    submitBtn.disabled = false; submitBtn.textContent = t('dashboard.submit_claim_button', 'Submit Claim');
     return;
   }
 
   closeNewClaimModal();
-  showToast('Claim #' + result.data.claim_id + ' submitted successfully!');
+  showToast(t('dashboard.claim_submitted_success', 'Claim submitted successfully!'));
   await loadClaims();
   renderAlertBanners();
   renderRecentActivity();
   renderContextualNextStep();
   if (typeof window.refreshNotifications === 'function') window.refreshNotifications();
-  submitBtn.disabled = false; submitBtn.textContent = 'Submit Claim';
+  submitBtn.disabled = false; submitBtn.textContent = t('dashboard.submit_claim_button', 'Submit Claim');
 };
 
 /* ============================================================
@@ -1063,19 +1102,26 @@ var selectedProblemType = '';
 async function loadRoadsideRequests() {
   var list = document.getElementById('roadsideRequestsList');
   if (list) {
-    list.innerHTML = '<div class="roadside-list-empty">Loading your requests...</div>';
+    list.innerHTML = '<div class="roadside-list-empty">' + escapeHTML(t('dashboard.loading_roadside', 'Loading your requests...')) + '</div>';
+    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(list);
   }
 
   var result;
   try {
     result = await apiRequest('/api/roadside/requests/my');
   } catch (e) {
-    if (list) list.innerHTML = '<div class="roadside-list-empty" style="color:#c53030;">Network error while loading requests.</div>';
+    if (list) {
+      list.innerHTML = '<div class="roadside-list-empty" style="color:#c53030;">' + escapeHTML(t('dashboard.network_error_loading_roadside', 'Network error while loading requests.')) + '</div>';
+      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(list);
+    }
     return;
   }
 
   if (!result.ok) {
-    if (list) list.innerHTML = '<div class="roadside-list-empty" style="color:#c53030;">Unable to load requests (HTTP ' + result.status + ').</div>';
+    if (list) {
+      list.innerHTML = '<div class="roadside-list-empty" style="color:#c53030;">' + escapeHTML(t('dashboard.unable_load_roadside', { status: result.status })) + '</div>';
+      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(list);
+    }
     return;
   }
 
@@ -1090,7 +1136,8 @@ function renderRoadsideRequests() {
   if (!list) return;
 
   if (!ALL_ROADSIDE.length) {
-    list.innerHTML = '<div class="roadside-list-empty">Your roadside requests will appear here after submission.</div>';
+    list.innerHTML = '<div class="roadside-list-empty">' + escapeHTML(t('dashboard.roadside_empty', 'Your roadside requests will appear here after submission.')) + '</div>';
+    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(list);
     return;
   }
 
@@ -1104,11 +1151,12 @@ function renderRoadsideRequests() {
           '<div class="roadside-request-ref">' + escapeHTML(r.request_reference || '#' + r.request_id) + '</div>' +
           '<div class="roadside-request-meta">' + escapeHTML(created) + ' - ' + escapeHTML(vehicle) + '</div>' +
         '</div>' +
-        '<span class="status-badge ' + sc.cls + '">' + escapeHTML(sc.label) + '</span>' +
+        '<span class="status-badge ' + sc.cls + '">' + escapeHTML(statusText(sc, 'status.' + r.status, r.status)) + '</span>' +
       '</div>' +
-      '<div class="roadside-request-desc">' + escapeHTML(r.problem_type || 'Assistance') + ' - ' + escapeHTML(r.location_address || r.city || '') + '</div>' +
+      '<div class="roadside-request-desc">' + escapeHTML(r.problem_type ? r.problem_type : t('dashboard.assistance_request', 'Assistance')) + ' - ' + escapeHTML(r.location_address || r.city || '') + '</div>' +
     '</div>';
   }).join('');
+  if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(list);
 }
 
 window.submitRoadsideRequest = async function () {
@@ -1121,16 +1169,16 @@ window.submitRoadsideRequest = async function () {
   var desc    = ((document.getElementById('rfDescription') || {}).value || '').trim();
   var phone   = ((document.getElementById('rfPhone') || {}).value || '').trim();
 
-  if (!selectedProblemType) { showToast('Please select the type of problem.', 'error'); return; }
-  if (!contractId) { showToast('Please select an active roadside assistance contract.', 'error'); return; }
-  if (!plate)   { showToast('Please enter your license plate.', 'error'); return; }
-  if (!wilaya)  { showToast('Please select your wilaya.', 'error'); return; }
-  if (!address) { showToast('Please enter your location.', 'error'); return; }
-  if (!desc)    { showToast('Please describe the problem.', 'error'); return; }
-  if (!phone)   { showToast('Please enter your phone number.', 'error'); return; }
+  if (!selectedProblemType) { showToast(t('dashboard.roadside_err_select_problem', 'Please select the type of problem.'), 'error'); return; }
+  if (!contractId) { showToast(t('dashboard.roadside_err_select_contract', 'Please select an active roadside assistance contract.'), 'error'); return; }
+  if (!plate)   { showToast(t('dashboard.roadside_err_enter_plate', 'Please enter your license plate.'), 'error'); return; }
+  if (!wilaya)  { showToast(t('dashboard.roadside_err_select_wilaya', 'Please select your wilaya.'), 'error'); return; }
+  if (!address) { showToast(t('dashboard.roadside_err_enter_location', 'Please enter your location.'), 'error'); return; }
+  if (!desc)    { showToast(t('dashboard.roadside_err_describe_problem', 'Please describe the problem.'), 'error'); return; }
+  if (!phone)   { showToast(t('dashboard.roadside_err_enter_phone', 'Please enter your phone number.'), 'error'); return; }
 
   var btn = document.getElementById('btnRoadsideSubmit');
-  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+  if (btn) { btn.disabled = true; btn.textContent = t('dashboard.roadside_sending', 'Sending...'); }
 
   try {
     var activeRoadside = ALL_CONTRACTS.filter(function (co) {
@@ -1138,7 +1186,7 @@ window.submitRoadsideRequest = async function () {
     });
 
     if (!activeRoadside.length) {
-      showToast('You need an active Roadside Assistance contract before submitting a request.', 'error');
+      showToast(t('dashboard.roadside_err_need_contract', 'You need an active Roadside Assistance contract before submitting a request.'), 'error');
       return;
     }
 
@@ -1146,7 +1194,7 @@ window.submitRoadsideRequest = async function () {
       return String(co.contract_id) === String(contractId);
     });
     if (!contract) {
-      showToast('Selected roadside contract is not available.', 'error');
+      showToast(t('dashboard.roadside_err_contract_unavailable', 'Selected roadside contract is not available.'), 'error');
       return;
     }
 
@@ -1166,7 +1214,7 @@ window.submitRoadsideRequest = async function () {
     });
 
     if (!result.ok) {
-      showToast((result.data && result.data.error) || 'Failed to submit roadside request.', 'error');
+      showToast((result.data && result.data.error) || t('dashboard.roadside_failed_submit', 'Failed to submit roadside request.'), 'error');
       return;
     }
 
@@ -1196,12 +1244,12 @@ window.submitRoadsideRequest = async function () {
     renderRecentActivity();
     renderContextualNextStep();
     if (typeof window.refreshNotifications === 'function') window.refreshNotifications();
-    showToast('Roadside request submitted successfully.');
+    showToast(t('dashboard.roadside_submitted_success', 'Roadside request submitted successfully.'));
 
   } catch (_) {
-    showToast('Network error while sending the roadside request.', 'error');
+    showToast(t('dashboard.roadside_network_error', 'Network error while sending the roadside request.'), 'error');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Send Assistance Request'; }
+    if (btn) { btn.disabled = false; btn.textContent = t('dashboard.roadside_send_button', 'Send Assistance Request'); }
   }
 };
 
@@ -1225,19 +1273,21 @@ window.resetRoadsideForm = function () {
 window.loadMessages = async function () {
   var list = document.getElementById('messagesList');
   if (!list) return;
-
-  list.innerHTML = '<div class="messages-empty">Loading your messages...</div>';
+  list.innerHTML = '<div class="messages-empty">' + escapeHTML(t('dashboard.loading_messages', 'Loading your messages...')) + '</div>';
+  if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(list);
 
   var result;
   try {
     result = await apiRequest('/api/messages/my');
   } catch (e) {
-    list.innerHTML = '<div class="messages-empty" style="color:#c53030;">Network error while loading messages.</div>';
+    list.innerHTML = '<div class="messages-empty" style="color:#c53030;">' + escapeHTML(t('dashboard.network_error_loading_messages', 'Network error while loading messages.')) + '</div>';
+    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(list);
     return;
   }
 
   if (!result.ok) {
-    list.innerHTML = '<div class="messages-empty" style="color:#c53030;">Unable to load messages (HTTP ' + result.status + ').</div>';
+    list.innerHTML = '<div class="messages-empty" style="color:#c53030;">' + escapeHTML(t('dashboard.unable_load_messages', { status: result.status })) + '</div>';
+    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(list);
     return;
   }
 
@@ -1250,7 +1300,8 @@ function renderMessages() {
   if (!list) return;
 
   if (!ALL_MESSAGES.length) {
-    list.innerHTML = '<div class="messages-empty">No messages yet. Send your first message using the form.</div>';
+    list.innerHTML = '<div class="messages-empty">' + escapeHTML(t('dashboard.no_messages_yet', 'No messages yet. Send your first message using the form.')) + '</div>';
+    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(list);
     return;
   }
 
@@ -1279,11 +1330,11 @@ window.submitDashboardMessage = async function () {
   var message = (contentEl ? contentEl.value : '').trim();
 
   if (!subject) {
-    showToast('Please enter a message subject.', 'error');
+    showToast(t('dashboard.err_enter_message_subject', 'Please enter a message subject.'), 'error');
     return;
   }
   if (message.length < 10) {
-    showToast('Message must be at least 10 characters.', 'error');
+    showToast(t('dashboard.err_message_length', 'Message must be at least 10 characters.'), 'error');
     return;
   }
 
@@ -1291,11 +1342,11 @@ window.submitDashboardMessage = async function () {
   var name = ((user.first_name || '') + ' ' + (user.last_name || '')).trim() || user.email || 'Client';
   var email = user.email || '';
   if (!email) {
-    showToast('Your account email is missing. Please refresh and sign in again.', 'error');
+    showToast(t('dashboard.err_account_email_missing', 'Your account email is missing. Please refresh and sign in again.'), 'error');
     return;
   }
 
-  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending...'; }
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = t('dashboard.sending', 'Sending...'); }
 
   var result;
   try {
@@ -1310,21 +1361,21 @@ window.submitDashboardMessage = async function () {
       },
     });
   } catch (e) {
-    showToast('Network error while sending your message.', 'error');
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message'; }
+    showToast(t('dashboard.network_error_sending_message', 'Network error while sending your message.'), 'error');
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = t('dashboard.send_message_button', 'Send Message'); }
     return;
   }
 
-  if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message'; }
+  if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = t('dashboard.send_message_button', 'Send Message'); }
 
   if (!result.ok) {
-    showToast((result.data && result.data.error) || 'Unable to send message.', 'error');
+    showToast((result.data && result.data.error) || t('dashboard.unable_send_message', 'Unable to send message.'), 'error');
     return;
   }
 
   if (subjectEl) subjectEl.value = '';
   if (contentEl) contentEl.value = '';
-  showToast('Message sent successfully.');
+  showToast(t('dashboard.message_sent_success', 'Message sent successfully.'));
   await window.loadMessages();
 };
 
@@ -1334,10 +1385,10 @@ window.submitDashboardMessage = async function () {
 window.saveProfile = function () {
   var first = (document.getElementById('pf-first') || {}).value || '';
   var last  = (document.getElementById('pf-last')  || {}).value || '';
-  if (!first || !last) { showToast('Name fields cannot be empty.', 'error'); return; }
+  if (!first || !last) { showToast(t('profile.err_name_empty', 'Name fields cannot be empty.'), 'error'); return; }
   var ok = document.getElementById('pfb-success');
   if (ok) { ok.style.display = 'flex'; setTimeout(function () { ok.style.display = 'none'; }, 3000); }
-  showToast('Profile saved.');
+  showToast(t('profile.saved', 'Profile saved.'));
 };
 
 window.cancelProfile = function () {
@@ -1365,7 +1416,7 @@ window.changePassword = function () {
     return;
   }
   if (okEl) { okEl.style.display = 'flex'; setTimeout(function () { okEl.style.display = 'none'; }, 3000); }
-  showToast('Password updated.');
+  showToast(t('profile.password_updated', 'Password updated.'));
 };
 
 /* ============================================================

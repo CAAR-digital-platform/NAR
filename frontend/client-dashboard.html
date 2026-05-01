@@ -204,7 +204,7 @@
     </div>
     <div class="nc-actions">
       <button class="nc-btn-cancel" id="ncCancelBtn">Cancel</button>
-      <button class="nc-btn-submit" id="ncSubmitBtn">Submit Claim</button>
+      <button class="nc-btn-submit" id="ncSubmitBtn" data-i18n="actions.submit">Submit</button>
     </div>
   </div>
 </div>
@@ -513,7 +513,7 @@
             <span class="claims-filter-label">Filter by:</span>
             <select class="claims-filter-select" id="claimsFilterSelect">
               <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
+              <option value="pending" data-i18n="status.pending">Pending</option>
               <option value="under_review">Under Review</option>
               <option value="expert_assigned">Expert Assigned</option>
               <option value="reported">Reported</option>
@@ -720,27 +720,27 @@
                 <div class="pfb-field pfb-field--full"><label>Phone Number</label><input class="pfb-input" type="tel" id="pf-phone"/></div>
               </div>
               <div class="pfb-actions">
-                <button class="pfb-btn-primary" id="pfSaveBtn">Save Changes</button>
-                <button class="pfb-btn-secondary" id="pfCancelBtn">Cancel</button>
+                <button class="pfb-btn-primary" id="pfSaveBtn" data-i18n="profile.save_changes">Save Changes</button>
+                <button class="pfb-btn-secondary" id="pfCancelBtn" data-i18n="profile.cancel">Cancel</button>
               </div>
               <div class="pfb-success" id="pfb-success" style="display:none;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Profile updated successfully.
+                <span data-i18n="profile.updated_success">Profile updated successfully.</span>
               </div>
             </div>
             <div class="profile-form-block">
-              <div class="pfb-title">Change Password</div>
+              <div class="pfb-title" data-i18n="profile.change_password_title">Change Password</div>
               <div class="pfb-grid">
-                <div class="pfb-field pfb-field--full"><label>Current Password</label><input class="pfb-input" type="password" id="pf-pw-current" placeholder="••••••••"/></div>
-                <div class="pfb-field"><label>New Password</label><input class="pfb-input" type="password" id="pf-pw-new" placeholder="Min 8 characters"/></div>
-                <div class="pfb-field"><label>Confirm New Password</label><input class="pfb-input" type="password" id="pf-pw-confirm" placeholder="Repeat new password"/></div>
+                <div class="pfb-field pfb-field--full"><label data-i18n="profile.current_password_label">Current Password</label><input class="pfb-input" type="password" id="pf-pw-current" placeholder="••••••••" data-i18n-placeholder="profile.current_password_placeholder"/></div>
+                <div class="pfb-field"><label data-i18n="profile.new_password_label">New Password</label><input class="pfb-input" type="password" id="pf-pw-new" placeholder="Min 8 characters" data-i18n-placeholder="profile.new_password_placeholder"/></div>
+                <div class="pfb-field"><label data-i18n="profile.confirm_password_label">Confirm New Password</label><input class="pfb-input" type="password" id="pf-pw-confirm" placeholder="Repeat new password" data-i18n-placeholder="profile.confirm_password_placeholder"/></div>
               </div>
               <div class="pfb-actions"><button class="pfb-btn-primary" id="pfPwBtn">Update Password</button></div>
               <div class="pfb-success" id="pfb-pw-success" style="display:none;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Password changed successfully.
+                <span data-i18n="profile.password_changed_success">Password changed successfully.</span>
               </div>
-              <div class="pfb-error" id="pfb-pw-error" style="display:none;">Passwords do not match.</div>
+              <div class="pfb-error" id="pfb-pw-error" style="display:none;" data-i18n="profile.passwords_mismatch">Passwords do not match.</div>
             </div>
           </div>
         </div>

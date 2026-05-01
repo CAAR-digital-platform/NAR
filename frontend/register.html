@@ -200,55 +200,55 @@
   </div>
 
   <!-- Titre -->
-  <h1 class="reg-title">Créer un compte</h1>
-  <p class="reg-subtitle">Remplissez vos informations pour accéder à votre espace client</p>
+  <h1 class="reg-title" data-i18n="auth.register.title">Créer un compte</h1>
+  <p class="reg-subtitle" data-i18n="auth.register.subtitle">Remplissez vos informations pour accéder à votre espace client</p>
 
   <!-- Formulaire -->
   <form id="regForm" novalidate>
 
     <!-- Nom complet -->
     <div class="reg-field">
-      <label for="regName">Nom complet</label>
+      <label for="regName" data-i18n="auth.register.name_label">Nom complet</label>
       <div class="reg-input-wrap">
         <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
         </svg>
-        <input type="text" id="regName" class="reg-input"
-               placeholder="ex : Ahmed Benali" autocomplete="name"/>
+         <input type="text" id="regName" class="reg-input"
+           placeholder="ex : Ahmed Benali" data-i18n-placeholder="auth.register.name_placeholder" autocomplete="name"/>
       </div>
-      <div class="reg-field-error" id="err-name">Minimum 3 caractères requis.</div>
+      <div class="reg-field-error" id="err-name" data-i18n="auth.register.name_error">Minimum 3 caractères requis.</div>
     </div>
 
     <!-- Email -->
     <div class="reg-field">
-      <label for="regEmail">Adresse email</label>
+      <label for="regEmail" data-i18n="auth.register.email_label">Adresse email</label>
       <div class="reg-input-wrap">
         <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
           <polyline points="22,6 12,13 2,6"/>
         </svg>
-        <input type="email" id="regEmail" class="reg-input"
-               placeholder="vous@exemple.com" autocomplete="email"/>
+         <input type="email" id="regEmail" class="reg-input"
+           placeholder="vous@exemple.com" data-i18n-placeholder="auth.register.email_placeholder" autocomplete="email"/>
       </div>
-      <div class="reg-field-error" id="err-email">Adresse email invalide.</div>
+      <div class="reg-field-error" id="err-email" data-i18n="auth.register.email_error">Adresse email invalide.</div>
     </div>
 
     <!-- Téléphone + Date naissance -->
     <div class="reg-row">
       <div class="reg-field">
-        <label for="regPhone">Téléphone</label>
+        <label for="regPhone" data-i18n="auth.register.phone_label">Téléphone</label>
         <div class="reg-input-wrap">
           <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
           </svg>
-          <input type="tel" id="regPhone" class="reg-input"
-                 placeholder="+213 6XX XXX XXX" autocomplete="tel"/>
+             <input type="tel" id="regPhone" class="reg-input"
+               placeholder="+213 6XX XXX XXX" data-i18n-placeholder="auth.register.phone_placeholder" autocomplete="tel"/>
         </div>
-        <div class="reg-field-error" id="err-phone">Numéro invalide.</div>
+        <div class="reg-field-error" id="err-phone" data-i18n="auth.register.phone_error">Numéro invalide.</div>
       </div>
 
       <div class="reg-field">
-        <label for="regDob">Date de naissance</label>
+        <label for="regDob" data-i18n="auth.register.dob_label">Date de naissance</label>
         <div class="reg-input-wrap">
           <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -257,32 +257,32 @@
           </svg>
           <input type="date" id="regDob" class="reg-input"/>
         </div>
-        <div class="reg-field-error" id="err-dob">Vous devez avoir au moins 18 ans.</div>
+        <div class="reg-field-error" id="err-dob" data-i18n="auth.register.dob_error">Vous devez avoir au moins 18 ans.</div>
       </div>
     </div>
 
     <!-- Mot de passe -->
     <div class="reg-field">
-      <label for="regPassword">Mot de passe</label>
+      <label for="regPassword" data-i18n="auth.register.password_label">Mot de passe</label>
       <div class="reg-input-wrap">
         <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
-        <input type="password" id="regPassword" class="reg-input has-pw-toggle"
-               placeholder="Minimum 8 caractères" autocomplete="new-password"/>
-        <button type="button" class="toggle-pw" id="togglePw" aria-label="Afficher">
+         <input type="password" id="regPassword" class="reg-input has-pw-toggle"
+           placeholder="Minimum 8 caractères" data-i18n-placeholder="auth.register.password_placeholder" autocomplete="new-password"/>
+         <button type="button" class="toggle-pw" id="togglePw" data-i18n-aria-label="auth.register.toggle_password_show">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
             <circle cx="12" cy="12" r="3"/>
           </svg>
         </button>
       </div>
-      <div class="reg-field-error" id="err-password">Minimum 8 caractères requis.</div>
+      <div class="reg-field-error" id="err-password" data-i18n="auth.register.password_error">Minimum 8 caractères requis.</div>
     </div>
 
     <!-- Submit -->
-    <button type="submit" class="btn-reg" id="submitBtn">Créer mon compte</button>
+    <button type="submit" class="btn-reg" id="submitBtn" data-i18n="auth.register.submit">Créer mon compte</button>
 
   </form>
 
@@ -291,15 +291,21 @@
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
     </svg>
-    Compte créé avec succès ! Redirection en cours...
+    <span data-i18n="auth.register.success">Compte créé avec succès ! Redirection en cours...</span>
   </div>
 
   <!-- Lien login -->
-  <a href="login.html" class="reg-login-link">Déjà un compte ? <span>Se connecter</span></a>
+  <a href="login.html" class="reg-login-link" data-i18n-html="auth.register.login_link">Déjà un compte ? <span>Se connecter</span></a>
 
 </div>
 
+<script src="translations.js"></script>
+<script src="lang.js"></script>
 <script>
+
+if (window.Language && typeof window.Language.init === 'function') {
+  window.Language.init();
+}
 
 /* ── Toggle password ── */
 document.getElementById('togglePw').addEventListener('click', function () {
@@ -367,7 +373,7 @@ document.getElementById('regForm').addEventListener('submit', async function (e)
   /* ── Loading ── */
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  btn.textContent = 'Création en cours...';
+  btn.textContent = window.Language && typeof window.Language.t === 'function' ? window.Language.t('auth.register.loading') : 'Création en cours...';
   btn.classList.add('loading');
 
 const res  = await fetch('http://localhost:3000/api/auth/register', {
@@ -385,13 +391,13 @@ const data = await res.json();
 
 if (!res.ok) {
   btn.disabled = false; btn.textContent = 'Créer mon compte';
-  document.getElementById('successMsg').textContent = data.error || 'Registration failed.';
+  document.getElementById('successMsg').textContent = data.error || (window.Language && typeof window.Language.t === 'function' ? window.Language.t('auth.register.error') : 'Registration failed.');
   document.getElementById('successMsg').style.color = '#e53e3e';
   document.getElementById('successMsg').classList.add('visible');
   return;
 }
 
-btn.disabled = false; btn.textContent = '✓ Compte créé !';
+btn.disabled = false; btn.textContent = window.Language && typeof window.Language.t === 'function' ? window.Language.t('auth.register.success_btn') : '✓ Compte créé !';
 document.getElementById('successMsg').classList.add('visible');
 setTimeout(() => { window.location.href = 'login.html'; }, 1500);
 
