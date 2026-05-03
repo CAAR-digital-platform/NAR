@@ -194,9 +194,18 @@ function renderSummaryCards() {
   safeSetText('.summary-card--green  .sc-value', _dashStats.total_payments || 0);
 
   // Update sub-labels
-  safeSetText('.summary-card--orange .sc-sub', activeClaims.length + ' ' + t('status.active', 'active'));
-  safeSetText('.summary-card--amber  .sc-sub', pendingClaims.length + ' ' + t('status.under_review', 'awaiting review'));
-  safeSetText('.summary-card--blue   .sc-sub', activeContracts.length + ' ' + t('status.active', 'active'));
+  (function () {
+    var el = document.querySelector('.summary-card--orange .sc-sub');
+    if (el) el.innerHTML = '<span class="sc-count">' + (activeClaims.length || 0) + '</span> ' + (window.i18nSpan ? window.i18nSpan('status.active', 'active') : (t('status.active','active')));
+  })();
+  (function () {
+    var el = document.querySelector('.summary-card--amber .sc-sub');
+    if (el) el.innerHTML = '<span class="sc-count">' + (pendingClaims.length || 0) + '</span> ' + (window.i18nSpan ? window.i18nSpan('status.under_review', 'awaiting review') : (t('status.under_review','awaiting review')));
+  })();
+  (function () {
+    var el = document.querySelector('.summary-card--blue .sc-sub');
+    if (el) el.innerHTML = '<span class="sc-count">' + (activeContracts.length || 0) + '</span> ' + (window.i18nSpan ? window.i18nSpan('status.active', 'active') : (t('status.active','active')));
+  })();
 
   // Make cards clickable
   const orangeCard = document.querySelector('.summary-card--orange');
@@ -250,22 +259,25 @@ function renderAlertBanners() {
     alerts.push({
       type: 'info',
       icon: 'shield',
-      title: t('dashboard.get_insured_today', 'Get insured today'),
-      message: t('dashboard.no_contracts_message', 'You have no insurance contracts yet. Explore our products to protect what matters.'),
-      action: { label: t('dashboard.browse_products', 'Browse Products'), fn: function () { window.location.href = 'Online_subscription.html'; } },
+      titleKey: 'dashboard.get_insured_today',
+      titleFallback: 'Get insured today',
+      messageKey: 'dashboard.no_contracts_message',
+      messageFallback: 'You have no insurance contracts yet. Explore our products to protect what matters.',
+      action: { labelKey: 'dashboard.browse_products', labelFallback: 'Browse Products', fn: function () { window.location.href = 'Online_subscription.html'; } },
     });
   }
 
   // Alert: pending claims awaiting review
-  if (pendingClaims.length > 0) {
+    if (pendingClaims.length > 0) {
     alerts.push({
       type: 'warning',
       icon: 'clock',
-      title: pendingClaims.length === 1
-        ? t('dashboard.one_claim_awaiting', 'You have 1 claim awaiting review')
-        : t('dashboard.claims_awaiting', 'You have ') + pendingClaims.length + t('dashboard.claims_awaiting_suffix', ' claims awaiting review'),
-      message: t('dashboard.claims_review_message', 'Our team will review your claim shortly. You\'ll be notified when the status changes.'),
-      action: { label: t('dashboard.view_claims', 'View Claims'), fn: function () { openLatestClaimPanelFromApi(['pending', 'under_review', 'expert_assigned', 'reported']); } },
+      titleKey: (pendingClaims.length === 1) ? 'dashboard.one_claim_awaiting' : 'dashboard.claims_awaiting',
+      titleFallback: (pendingClaims.length === 1) ? 'You have 1 claim awaiting review' : ('You have ' + pendingClaims.length + ' claims awaiting review'),
+      // For complex dynamic titles we still provide a fallback built here; translators should use plural keys.
+      messageKey: 'dashboard.claims_review_message',
+      messageFallback: 'Our team will review your claim shortly. You\'ll be notified when the status changes.',
+      action: { labelKey: 'dashboard.view_claims', labelFallback: 'View Claims', fn: function () { openLatestClaimPanelFromApi(['pending', 'under_review', 'expert_assigned', 'reported']); } },
     });
   }
 
@@ -314,14 +326,21 @@ function renderAlertBanners() {
 
   container.innerHTML = alerts.map(function (a, i) {
     var alertClass = 'dash-alert dash-alert--' + (a.type || 'info');
+    var titleHtml = a.titleKey ? (window.i18nSpan ? window.i18nSpan(a.titleKey, a.titleFallback || '') : escapeHTML(a.titleFallback || '')) : escapeHTML(a.title || '');
+    var messageHtml = a.messageKey ? (window.i18nSpan ? window.i18nSpan(a.messageKey, a.messageFallback || '') : escapeHTML(a.messageFallback || '')) : escapeHTML(a.message || '');
+    var actionHtml = '';
+    if (a.action) {
+      var labelHtml = a.action.labelKey ? (window.i18nSpan ? window.i18nSpan(a.action.labelKey, a.action.labelFallback || '') : escapeHTML(a.action.labelFallback || '')) : escapeHTML((a.action.label || ''));
+      actionHtml = '<button type="button" data-alert-action="' + i + '" class="dash-alert-btn">' + labelHtml + '</button>';
+    }
+
     return '<div class="' + alertClass + '" style="animation:alertSlideIn .3s ease ' + (i * 0.08) + 's both;">' +
       '<div class="dash-alert-icon">' + getUiIcon(a.icon) + '</div>' +
       '<div class="dash-alert-content">' +
-        '<div class="dash-alert-title">' + escapeHTML(a.title) + '</div>' +
-        '<div class="dash-alert-desc">' + escapeHTML(a.message) + '</div>' +
+        '<div class="dash-alert-title">' + titleHtml + '</div>' +
+        '<div class="dash-alert-desc">' + messageHtml + '</div>' +
       '</div>' +
-      (a.action ? '<button type="button" data-alert-action="' + i + '" class="dash-alert-btn">' +
-        escapeHTML(a.action.label) + '</button>' : '') +
+      actionHtml +
     '</div>';
   }).join('');
 

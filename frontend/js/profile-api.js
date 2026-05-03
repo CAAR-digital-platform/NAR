@@ -24,11 +24,14 @@ async function saveProfileAPI() {
   var btn = document.querySelector('.pfb-btn-primary');
   btnLoading(btn, 'Saving...');
 
-  var result = await apiRequest('/api/auth/profile', 'PUT', {
-    first_name: first,
-    last_name: last,
-    email: email,
-    phone: phone || null,
+  var result = await apiRequest('/api/auth/profile', {
+    method: 'PUT',
+    body: {
+      first_name: first,
+      last_name: last,
+      email: email,
+      phone: phone || null,
+    },
   });
 
   btnReset(btn);
@@ -80,9 +83,12 @@ async function changePasswordAPI() {
   }
 
   btnLoading(btn, 'Updating...');
-  var result = await apiRequest('/api/auth/password', 'PUT', {
-    current_password: current,
-    new_password: pw1,
+  var result = await apiRequest('/api/auth/password', {
+    method: 'PUT',
+    body: {
+      current_password: current,
+      new_password: pw1,
+    },
   });
   btnReset(btn);
 

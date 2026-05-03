@@ -849,7 +849,7 @@
     var token = typeof getToken === 'function' ? getToken() : localStorage.getItem('token');
     if (!token) return;
     try {
-      var result = await apiRequest('/api/notifications', 'GET');
+      var result = await apiRequest('/api/notifications', { method: 'GET' });
       if (!result.ok) { renderNotifications([]); return; }
       renderNotifications(result.data.notifications || result.data || []);
     } catch { renderNotifications([]); }
@@ -860,7 +860,7 @@
     var item = _notifications.find(function (n) { return String(n.id) === String(id); });
     if (item) item.is_read = true;
     renderNotifications(_notifications);
-    try { await apiRequest('/api/notifications/' + id + '/read', 'PATCH'); } catch (_) {}
+    try { await apiRequest('/api/notifications/' + id + '/read', { method: 'PATCH' }); } catch (_) {}
   }
 
   function syncUserIdentity() {
@@ -888,7 +888,7 @@
     e.stopPropagation();
     _notifications.forEach(function (n) { n.is_read = true; });
     renderNotifications(_notifications);
-    try { await apiRequest('/api/notifications/read-all', 'PATCH'); } catch (_) {}
+    try { await apiRequest('/api/notifications/read-all', { method: 'PATCH' }); } catch (_) {}
   });
 
   var notifList = el('notifList');

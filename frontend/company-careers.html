@@ -153,29 +153,29 @@
   <div class="careers-pane">
 
     <div class="jobs-toolbar">
-      <h2>Open Positions</h2>
+      <h2 data-i18n="careers.tab_jobs_label">Open Positions</h2>
       <div class="jobs-filters" id="jobsFilters" style="display:none;">
-        <button class="jf-btn active" onclick="filterJobs(this,'All')">All</button>
-        <button class="jf-btn" onclick="filterJobs(this,'Actuarial')">Actuarial</button>
-        <button class="jf-btn" onclick="filterJobs(this,'IT')">IT &amp; Digital</button>
-        <button class="jf-btn" onclick="filterJobs(this,'Finance')">Finance</button>
-        <button class="jf-btn" onclick="filterJobs(this,'Engineering')">Engineering</button>
-        <button class="jf-btn" onclick="filterJobs(this,'Commercial')">Commercial</button>
-        <button class="jf-btn" onclick="filterJobs(this,'Support')">Support</button>
+        <button class="jf-btn active" onclick="filterJobs(this,'All')" data-i18n="careers.tab_jobs_filters_all">All</button>
+        <button class="jf-btn" onclick="filterJobs(this,'Actuarial')" data-i18n="careers.tab_jobs_filters_actuarial">Actuarial</button>
+        <button class="jf-btn" onclick="filterJobs(this,'IT')" data-i18n="careers.tab_jobs_filters_it">IT &amp; Digital</button>
+        <button class="jf-btn" onclick="filterJobs(this,'Finance')" data-i18n="careers.tab_jobs_filters_finance">Finance</button>
+        <button class="jf-btn" onclick="filterJobs(this,'Engineering')" data-i18n="careers.tab_jobs_filters_engineering">Engineering</button>
+        <button class="jf-btn" onclick="filterJobs(this,'Commercial')" data-i18n="careers.tab_jobs_filters_commercial">Commercial</button>
+        <button class="jf-btn" onclick="filterJobs(this,'Support')" data-i18n="careers.tab_jobs_filters_support">Support</button>
       </div>
     </div>
 
     <div id="jobsList" class="jobs-list"></div>
-    <div class="jobs-no-filter" id="noFilterResults">No positions found for this category.</div>
+    <div class="jobs-no-filter" id="noFilterResults" data-i18n="careers.tab_jobs_no_results">No positions found for this category.</div>
 
     <div class="jobs-empty" id="jobsEmptyState">
       <div class="jobs-empty-emoji">&#128203;</div>
-      <h3>No open positions at the moment</h3>
-      <p>We currently don't have active job openings, but we're always looking for talented people.</p>
+      <h3 data-i18n="careers.tab_jobs_empty_title">No open positions at the moment</h3>
+      <p data-i18n="careers.tab_jobs_empty_text">We currently don't have active job openings, but we're always looking for talented people.</p>
       <p class="jobs-empty-secondary">
-        You can also <a onclick="goToTab('profiles')">explore our profiles</a> to understand what we recruit.
+        <span data-i18n="careers.tab_jobs_empty_profiles">You can also explore our profiles to understand what we recruit.</span>
       </p>
-      <button class="btn-cta-orange" onclick="goToTab('apply')">Submit a Spontaneous Application</button>
+      <button class="btn-cta-orange" onclick="goToTab('apply')" data-i18n="careers.tab_jobs_empty_apply">Submit a Spontaneous Application</button>
     </div>
 
   </div>
@@ -187,28 +187,28 @@
     <div class="apply-layout">
 
       <div class="apply-info">
-        <h2>How to apply</h2>
-        <p>Fill in the form and attach your CV. Our HR team reviews all applications and will contact you if a relevant opportunity arises.</p>
+        <h2 data-i18n="careers.tab_apply_label">How to apply</h2>
+        <p data-i18n="careers.tab_apply_text">Fill in the form and attach your CV. Our HR team reviews all applications and will contact you if a relevant opportunity arises.</p>
         <div class="apply-steps">
           <div class="apply-step">
             <div class="apply-step-num">1</div>
             <div class="apply-step-txt">
-              <h5>Submit your application</h5>
-              <p>Fill in your details and upload your CV.</p>
+              <h5 data-i18n="careers.tab_apply_step1_title">Submit your application</h5>
+              <p data-i18n="careers.tab_apply_step1_text">Fill in your details and upload your CV.</p>
             </div>
           </div>
           <div class="apply-step">
             <div class="apply-step-num">2</div>
             <div class="apply-step-txt">
-              <h5>HR review</h5>
-              <p>Our team reviews your profile and matches it to open or future positions.</p>
+              <h5 data-i18n="careers.tab_apply_step2_title">HR review</h5>
+              <p data-i18n="careers.tab_apply_step2_text">Our team reviews your profile and matches it to open or future positions.</p>
             </div>
           </div>
           <div class="apply-step">
             <div class="apply-step-num">3</div>
             <div class="apply-step-txt">
-              <h5>Interview</h5>
-              <p>Shortlisted candidates are invited for a phone or in-person interview.</p>
+              <h5 data-i18n="careers.tab_apply_step3_title">Interview</h5>
+              <p data-i18n="careers.tab_apply_step3_text">Shortlisted candidates are invited for a phone or in-person interview.</p>
             </div>
           </div>
         </div>

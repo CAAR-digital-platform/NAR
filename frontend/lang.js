@@ -6,39 +6,71 @@
   var RTL_LANGS = ['AR'];
   var translations = {};
   var translationsLoaded = false;
+  var translationsLoadingPromise = null;
+  var initPromise = null;
 
   function localeUrl(code) {
     return 'lang/' + code.toLowerCase() + '.json';
   }
 
   function loadLocale(code) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', localeUrl(code), false);
-    xhr.send(null);
+    return fetch(localeUrl(code), { cache: 'no-cache' })
+      .then(function (res) {
+        if (!res.ok) {
+          return {};
+        }
+        return res.json().catch(function (err) {
+          console.warn('[CAAR] Failed to parse locale file:', code, err);
+          return {};
+        });
+      })
+      .catch(function (err) {
+        console.warn('[CAAR] Failed to load locale file:', code, err && err.message ? err.message : err);
+        return {};
+      });
+  }
 
-    if (xhr.status < 200 || xhr.status >= 300) {
-      return {};
+  function ensureTranslationsLoaded() {
+    if (translationsLoaded) {
+      return Promise.resolve(translations);
     }
 
-    try {
-      return JSON.parse(xhr.responseText || '{}');
-    } catch (err) {
-      console.warn('[CAAR] Failed to parse locale file:', code, err);
-      return {};
+    if (translationsLoadingPromise) {
+      return translationsLoadingPromise;
     }
+
+    translationsLoadingPromise = Promise.all([
+      loadLocale('EN'),
+      loadLocale('FR'),
+      loadLocale('AR')
+    ]).then(function (payloads) {
+      translations = {
+        EN: payloads[0] || {},
+        FR: payloads[1] || {},
+        AR: payloads[2] || {}
+      };
+      translationsLoaded = true;
+      return translations;
+    }).finally(function () {
+      translationsLoadingPromise = null;
+    });
+
+    return translationsLoadingPromise;
   }
 
   function loadTranslations() {
-    if (translationsLoaded) {
-      return translations;
+    // Backward-compatible alias for older callsites.
+    // This function now starts async loading and returns current cache.
+    ensureTranslationsLoaded();
+
+    if (!translationsLoaded) {
+      return {
+        EN: translations.EN || {},
+        FR: translations.FR || {},
+        AR: translations.AR || {}
+      };
     }
 
-    translations = {
-      EN: loadLocale('EN'),
-      FR: loadLocale('FR'),
-      AR: loadLocale('AR')
-    };
-    translationsLoaded = true;
     return translations;
   }
 
@@ -47,9 +79,10 @@
   }
 
   function getSavedLanguage() {
-    loadTranslations();
     var saved = normalizeCode(localStorage.getItem(STORAGE_KEY));
-    return saved && translations[saved] ? saved : DEFAULT_LANG;
+    if (!saved) return DEFAULT_LANG;
+    if (!translationsLoaded) return saved;
+    return translations[saved] ? saved : DEFAULT_LANG;
   }
 
   function saveLanguage(code) {
@@ -57,7 +90,7 @@
   }
 
   function getTranslation(key, lang) {
-    loadTranslations();
+    if (!translationsLoaded) return '';
     if (!key || !lang || !translations[lang]) return '';
     return translations[lang][key] || translations[DEFAULT_LANG][key] || '';
   }
@@ -84,7 +117,15 @@
   }
 
   function applyTranslations(rootElement) {
+    if (!translationsLoaded) {
+      ensureTranslationsLoaded().then(function () {
+        applyTranslations(rootElement);
+      });
+      return getSavedLanguage();
+    }
+
     var lang = getSavedLanguage();
+    if (!translations[lang]) lang = DEFAULT_LANG;
     var root = rootElement && rootElement.querySelectorAll ? rootElement : document;
 
     if (root.matches && root.matches('[data-i18n]')) {
@@ -158,25 +199,37 @@
   }
 
   function setLanguage(code) {
-    loadTranslations();
-    var lang = normalizeCode(code);
-    if (!translations[lang]) {
-      lang = DEFAULT_LANG;
-    }
-    saveLanguage(lang);
-    applyTranslations(document);
-    document.dispatchEvent(new CustomEvent('caar:language-changed', {
-      detail: { lang: lang }
-    }));
+    return ensureTranslationsLoaded().then(function () {
+      var lang = normalizeCode(code);
+      if (!translations[lang]) {
+        lang = DEFAULT_LANG;
+      }
+      saveLanguage(lang);
+      applyTranslations(document);
+      document.dispatchEvent(new CustomEvent('caar:language-changed', {
+        detail: { lang: lang }
+      }));
+      return lang;
+    });
   }
 
   function init() {
-    loadTranslations();
-    setLanguage(getSavedLanguage());
+    if (initPromise) return initPromise;
+
+    initPromise = ensureTranslationsLoaded().then(function () {
+      var lang = getSavedLanguage();
+      if (!translations[lang]) lang = DEFAULT_LANG;
+      saveLanguage(lang);
+      applyTranslations(document);
+      return lang;
+    });
+
+    return initPromise;
   }
 
   function translate(key, lang) {
     var activeLang = normalizeCode(lang) || getSavedLanguage();
+    if (!translationsLoaded) return '';
     if (!translations[activeLang]) activeLang = DEFAULT_LANG;
     return getTranslation(key, activeLang);
   }
@@ -187,6 +240,28 @@
     getLanguage: getSavedLanguage,
     applyTranslations: applyTranslations,
     t: translate,
-    getTranslation: translate
+    getTranslation: translate,
+    ready: init
   };
+
+  function escapeHtml(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // Create an inline HTML fragment that can be translated later by applyTranslations.
+  // Keeps a safe fallback visible until translations are applied.
+  window.i18nSpan = function (key, fallback) {
+    return '<span data-i18n="' + escapeHtml(String(key || '')) + '">' + escapeHtml(fallback || '') + '</span>';
+  };
+
+  // Convenience alias on Language
+  window.Language.i18nSpan = window.i18nSpan;
+
+  // Start loading in background immediately to keep switching responsive.
+  ensureTranslationsLoaded();
 })();

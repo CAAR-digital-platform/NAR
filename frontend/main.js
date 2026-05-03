@@ -89,7 +89,12 @@
 
   function loadLanguageAssets(base) {
     return loadScript(base + 'translations.js')
-      .then(function () { return loadScript(base + 'lang.js'); });
+      .then(function () { return loadScript(base + 'lang.js'); })
+      .then(function () {
+        if (window.Language && typeof window.Language.init === 'function') {
+          return window.Language.init();
+        }
+      });
   }
 
   function loadSearchAssets(base) {
@@ -122,6 +127,45 @@
       });
   }
 
+  function getHeaderRuntimeStatus() {
+    var missing = [];
+
+    if (!window.Header) missing.push('window.Header');
+    if (!window.Header || typeof window.Header.init !== 'function') missing.push('window.Header.init');
+    if (!window.Header || typeof window.Header.render !== 'function') missing.push('window.Header.render');
+
+    return {
+      ready: missing.length === 0,
+      missing: missing,
+    };
+  }
+
+  function initHeaderSafely(attempt, maxAttempts) {
+    var status = getHeaderRuntimeStatus();
+    if (status.ready) {
+      try {
+        window.Header.init();
+        return true;
+      } catch (err) {
+        console.error('[CAAR][HeaderBoot] Header.init() crashed. Initialization aborted.', err);
+        return false;
+      }
+    }
+
+    var isLastAttempt = attempt >= maxAttempts;
+
+    if (isLastAttempt) {
+      console.error('[CAAR][HeaderBoot] Header initialization aborted. Missing required globals:', status.missing.join(', '));
+      return false;
+    }
+
+    console.error('[CAAR][HeaderBoot] Header dependencies unavailable (attempt ' + attempt + '/' + maxAttempts + '). Missing:', status.missing.join(', '));
+    setTimeout(function () {
+      initHeaderSafely(attempt + 1, maxAttempts);
+    }, 120);
+    return false;
+  }
+
   /* ============================================================
      BOOT FUNCTION — ALL component loading is inside here.
      base is defined here and NEVER referenced outside this fn.
@@ -132,16 +176,7 @@
     /* ── Header ── */
     if (document.getElementById('site-header')) {
       loadComponent('site-header', base + 'components/header.html', function () {
-        /* header-controller.js must already be loaded (script tag order) */
-        if (window.Header && typeof window.Header.init === 'function') {
-          window.Header.init();
-        } else {
-          console.error('[CAAR] Header controller not found. Check script load order.');
-        }
-
-        if (window.Language && typeof window.Language.init === 'function') {
-          window.Language.init();
-        }
+        initHeaderSafely(1, 20);
 
         if (window.Language && typeof window.Language.applyTranslations === 'function') {
           window.Language.applyTranslations(document);

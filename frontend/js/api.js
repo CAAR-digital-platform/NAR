@@ -1,58 +1,11 @@
 /* ============================================================
-   CAAR — api.js  (Centralized API helper)
-   Load this AFTER app-state.js on every page that needs API calls.
-   <script src="api.js"></script>
+   CAAR — api.js  (UI utilities only)
+   Keep app-state.js as the single source of truth for apiRequest().
+   This file only provides loading and inline message helpers.
    ============================================================ */
 'use strict';
 
 var CAAR_API_BASE = 'http://localhost:3000';
-
-/* ── Get stored token ── */
-function getToken() {
-  return localStorage.getItem('token') || localStorage.getItem('caar_auth_token') || null;
-}
-
-/* ── Core request helper ── */
-async function apiRequest(path, method, body) {
-  var requestOptions;
-  if (method && typeof method === 'object') {
-    requestOptions = method;
-    method = requestOptions.method || 'GET';
-    body = requestOptions.body;
-  } else {
-    requestOptions = {};
-    method = method || 'GET';
-  }
-
-  method = String(method).toUpperCase();
-  var token = getToken();
-  var headers = Object.assign({ 'Content-Type': 'application/json' }, requestOptions.headers || {});
-  if (token) headers['Authorization'] = 'Bearer ' + token;
-
-  var opts = { method: method, headers: headers };
-  if (body && method !== 'GET') opts.body = JSON.stringify(body);
-
-  var res, data;
-  try {
-    res = await fetch(CAAR_API_BASE + path, opts);
-  } catch (e) {
-    alert('Network error. Please check your connection.');
-    throw e;
-  }
-
-  try { data = await res.json(); } catch (_) { data = {}; }
-
-  if (res.status === 401) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    if (!window.location.pathname.includes('login')) {
-      window.location.href = 'login.html';
-    }
-    throw new Error('Unauthorized');
-  }
-
-  return { ok: res.ok, status: res.status, data: data };
-}
 
 /* ── Button loading helpers ── */
 function btnLoading(btn, msg) {
@@ -88,8 +41,6 @@ function hideMsg(elId) {
 }
 
 window.CAAR_API_BASE = CAAR_API_BASE;
-window.apiRequest    = apiRequest;
-window.getToken      = getToken;
 window.btnLoading    = btnLoading;
 window.btnReset      = btnReset;
 window.showMsg       = showMsg;

@@ -144,7 +144,9 @@
   function badge(status) {
     const key = normalizeStatus(status);
     const icon = STATUS_ICON[key] ? ICON(STATUS_ICON[key], 14, 'status-icon') : '';
-    return '<span class="status status--' + esc(key) + '">' + icon + esc(t('status.' + key, key.replace(/_/g, ' '))) + '</span>';
+    const fallback = key.replace(/_/g, ' ');
+    const labelHtml = (window.i18nSpan ? window.i18nSpan('status.' + key, fallback) : esc(t('status.' + key, fallback)));
+    return '<span class="status status--' + esc(key) + '">' + icon + labelHtml + '</span>';
   }
 
   function renderClaims(claims) {
@@ -152,7 +154,7 @@
     if (!cards) return;
 
     if (!claims || !claims.length) {
-      cards.innerHTML = '<div class="empty-state">' + t('expert.no_assigned_claims', 'No assigned claims available yet.') + '</div>';
+      cards.innerHTML = '<div class="empty-state">' + (window.i18nSpan ? window.i18nSpan('expert.no_assigned_claims','No assigned claims available yet.') : t('expert.no_assigned_claims', 'No assigned claims available yet.')) + '</div>';
       return;
     }
 
@@ -160,13 +162,13 @@
       '<article class="claim-card">',
       '  <div class="claim-card-head">',
       '    <div>',
-      '      <div class="claim-card-id">' + t('expert.claim_prefix', 'Claim #') + esc(c.claim_id) + ' - ' + t('expert.contract_prefix', 'Contract') + ' ' + esc(c.contract_id || '-') + '</div>',
+      '      <div class="claim-card-id">' + (window.i18nSpan ? window.i18nSpan('expert.claim_prefix','Claim #') : t('expert.claim_prefix', 'Claim #')) + esc(c.claim_id) + ' - ' + (window.i18nSpan ? window.i18nSpan('expert.contract_prefix','Contract') : t('expert.contract_prefix', 'Contract')) + ' ' + esc(c.contract_id || '-') + '</div>',
       '      <div class="claim-client">' + ICON('user', 14, '') + esc(c.client_name || '-') + '</div>',
       '      <div class="claim-email">' + esc(c.client_email || '-') + '</div>',
       '    </div>',
       '    <div>' + badge(c.status) + '</div>',
       '  </div>',
-      '  <div class="claim-desc">' + esc(c.description || t('expert.no_claim_description', 'No claim description provided.')) + '</div>',
+      '  <div class="claim-desc">' + esc(c.description || (window.i18nSpan ? (window.i18nSpan('expert.no_claim_description','No claim description provided.')) : t('expert.no_claim_description', 'No claim description provided.'))) + '</div>',
       '</article>'
     ].join('')).join('');
   }

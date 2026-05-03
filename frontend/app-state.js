@@ -20,6 +20,17 @@
 var CAAR_API   = 'http://localhost:3000';
 var CAAR_DEBUG = true;
 
+/* ── esc (safe HTML escape) ───────────────────────────────── */
+function esc(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 var DASHBOARD_MAP = {
   client: 'client-dashboard.html',
   admin:  'admin-dashboard.html',
@@ -180,13 +191,13 @@ async function loadContracts(gridId) {
   grid.innerHTML =
     '<div style="padding:40px;text-align:center;color:#999;grid-column:1/-1;">' +
     '<div style="width:22px;height:22px;border:2px solid #f0ece6;border-top-color:#E8761E;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;"></div>' +
-    (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.loading', 'Loading your contracts…') : 'Loading your contracts…') + '</div>';
+    (window.i18nSpan ? window.i18nSpan('contracts.loading', 'Loading your contracts…') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.loading', 'Loading your contracts…') : 'Loading your contracts…')) + '</div>';
 
   var r;
   try { r = await apiRequest('/api/contracts/my'); }
   catch (_) {
     grid.innerHTML = '<div style="padding:32px;text-align:center;color:#e53e3e;grid-column:1/-1;">' +
-      (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.network_error', '⚠ Network error.') : '⚠ Network error.') +
+      (window.i18nSpan ? window.i18nSpan('contracts.network_error', '⚠ Network error.') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.network_error', '⚠ Network error.') : '⚠ Network error.')) +
       '</div>';
     return [];
   }
@@ -200,39 +211,46 @@ async function loadContracts(gridId) {
   if (!list.length) {
     grid.innerHTML =
       '<div style="grid-column:1/-1;text-align:center;padding:52px 24px;border:1.5px dashed #e0e0e0;border-radius:14px;color:#888;font-size:.84rem;">' +
-      '<div style="font-size:2rem;margin-bottom:12px;">📄</div><strong>' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.no_contracts', 'No contracts yet') : 'No contracts yet') + '</strong>' +
-      '<p style="margin-top:6px;">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.subscribe_message', 'Subscribe to a product to see your contracts here.') : 'Subscribe to a product to see your contracts here.') + '</p>' +
-      '<a href="Online_subscription.html" style="display:inline-block;margin-top:16px;padding:10px 22px;background:#E8761E;color:#fff;border-radius:8px;font-weight:700;text-decoration:none;">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('actions.browse_products', 'Browse Products →') : 'Browse Products →') + '</a></div>';
+      '<div style="font-size:2rem;margin-bottom:12px;">📄</div><strong>' + (window.i18nSpan ? window.i18nSpan('contracts.no_contracts', 'No contracts yet') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.no_contracts', 'No contracts yet') : 'No contracts yet')) + '</strong>' +
+      '<p style="margin-top:6px;">' + (window.i18nSpan ? window.i18nSpan('contracts.subscribe_message', 'Subscribe to a product to see your contracts here.') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.subscribe_message', 'Subscribe to a product to see your contracts here.') : 'Subscribe to a product to see your contracts here.')) + '</p>' +
+      '<a href="Online_subscription.html" style="display:inline-block;margin-top:16px;padding:10px 22px;background:#E8761E;color:#fff;border-radius:8px;font-weight:700;text-decoration:none;">' + (window.i18nSpan ? window.i18nSpan('actions.browse_products', 'Browse Products →') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('actions.browse_products', 'Browse Products →') : 'Browse Products →')) + '</a></div>';
     return [];
   }
 
-  grid.innerHTML = list.map(function (co) {
-    var a       = co.status === 'active';
-    var startFmt = co.start_date ? new Date(co.start_date).toLocaleDateString('en-GB') : '—';
-    var endFmt   = co.end_date   ? new Date(co.end_date).toLocaleDateString('en-GB')   : '—';
-    var prem     = co.premium_amount != null
-      ? Number(co.premium_amount).toLocaleString('fr-DZ', { minimumFractionDigits: 2 }) + ' DZD' : '—';
-    return (
-      '<div class="contract-full-card' + (a ? '' : ' contract-full-card--expired') + '">' +
-      '<div class="cfc-header"><div class="cfc-icon ' + (a ? 'cfc-icon--blue' : 'cfc-icon--gray') + '">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-      '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>' +
-      '<polyline points="14 2 14 8 20 8"/></svg></div>' +
-      '<div class="cfc-meta"><div class="cfc-type">' + (co.product_name || 'Contract') + '</div>' +
-      '<div class="cfc-ref">' + (co.policy_reference || '#' + co.contract_id) + '</div></div>' +
-      '<span class="cfc-badge ' + (a ? 'cfc-badge--active' : 'cfc-badge--expired') + '">' + (a ? (window.Language && typeof window.Language.t === 'function' ? window.Language.t('status.active', 'Active') : 'Active') : co.status) + '</span></div>' +
-      '<div class="cfc-body">' +
-      (co.plan_name ? '<div class="cfc-row"><span class="cfc-label">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.plan_label', 'Plan') : 'Plan') + '</span><span class="cfc-value">' + co.plan_name + '</span></div>' : '') +
-      '<div class="cfc-row"><span class="cfc-label">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.start_label', 'Start') : 'Start') + '</span><span class="cfc-value">' + startFmt + '</span></div>' +
-      '<div class="cfc-row"><span class="cfc-label">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.end_label', 'End') : 'End') + '</span><span class="cfc-value">' + endFmt + '</span></div>' +
-      '<div class="cfc-row"><span class="cfc-label">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.premium_label', 'Premium') : 'Premium') + '</span><span class="cfc-value">' + prem + ' / yr</span></div></div>' +
-      '<div class="cfc-footer">' +
-      (a ? '<button class="cfc-btn-doc" onclick="window.__openClaimForContract(' + co.contract_id + ',\'' + (co.policy_reference || '') + '\')">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('actions.file_claim', 'File a Claim') : 'File a Claim') + '</button>' : '') +
-      '<button class="cfc-btn-sec" onclick="window.location.href=\'contact.html\'">' + (window.Language && typeof window.Language.t === 'function' ? window.Language.t('actions.renew', 'Renew') : 'Renew') + '</button>' +
-      '</div></div>'
-    );
-  }).join('');
+  try {
+    grid.innerHTML = list.map(function (co) {
+      var a       = co.status === 'active';
+      var startFmt = co.start_date ? new Date(co.start_date).toLocaleDateString('en-GB') : '—';
+      var endFmt   = co.end_date   ? new Date(co.end_date).toLocaleDateString('en-GB')   : '—';
+      var prem     = co.premium_amount != null
+        ? Number(co.premium_amount).toLocaleString('fr-DZ', { minimumFractionDigits: 2 }) + ' DZD' : '—';
+      return (
+        '<div class="contract-full-card' + (a ? '' : ' contract-full-card--expired') + '">' +
+        '<div class="cfc-header"><div class="cfc-icon ' + (a ? 'cfc-icon--blue' : 'cfc-icon--gray') + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+        '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>' +
+        '<polyline points="14 2 14 8 20 8"/></svg></div>' +
+        '<div class="cfc-meta"><div class="cfc-type">' + (co.product_name || 'Contract') + '</div>' +
+        '<div class="cfc-ref">' + (co.policy_reference || '#' + co.contract_id) + '</div></div>' +
+        '<span class="cfc-badge ' + (a ? 'cfc-badge--active' : 'cfc-badge--expired') + '">' + (a ? (window.i18nSpan ? window.i18nSpan('status.active','Active') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('status.active', 'Active') : 'Active')) : esc(co.status)) + '</span></div>' +
+        '<div class="cfc-body">' +
+        (co.plan_name ? '<div class="cfc-row"><span class="cfc-label">' + (window.i18nSpan ? window.i18nSpan('contracts.plan_label','Plan') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.plan_label', 'Plan') : 'Plan')) + '</span><span class="cfc-value">' + co.plan_name + '</span></div>' : '') +
+        '<div class="cfc-row"><span class="cfc-label">' + (window.i18nSpan ? window.i18nSpan('contracts.start_label','Start') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.start_label', 'Start') : 'Start')) + '</span><span class="cfc-value">' + startFmt + '</span></div>' +
+        '<div class="cfc-row"><span class="cfc-label">' + (window.i18nSpan ? window.i18nSpan('contracts.end_label','End') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.end_label', 'End') : 'End')) + '</span><span class="cfc-value">' + endFmt + '</span></div>' +
+        '<div class="cfc-row"><span class="cfc-label">' + (window.i18nSpan ? window.i18nSpan('contracts.premium_label','Premium') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('contracts.premium_label', 'Premium') : 'Premium')) + '</span><span class="cfc-value">' + prem + ' / yr</span></div></div>' +
+        '<div class="cfc-footer">' +
+        (a ? '<button class="cfc-btn-doc" onclick="window.__openClaimForContract(' + co.contract_id + ',\'' + (co.policy_reference || '') + '\')">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' + (window.i18nSpan ? window.i18nSpan('actions.file_claim','File a Claim') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('actions.file_claim', 'File a Claim') : 'File a Claim')) + '</button>' : '') +
+        '<button class="cfc-btn-sec" onclick="window.location.href=\'contact.html\'">' + (window.i18nSpan ? window.i18nSpan('actions.renew','Renew') : (window.Language && typeof window.Language.t === 'function' ? window.Language.t('actions.renew', 'Renew') : 'Renew')) + '</button>' +
+        '</div></div>'
+      );
+    }).join('');
+  } catch (renderErr) {
+    _log('[Contracts] Rendering error:', renderErr.message);
+    console.error('[Contracts] Failed to render contracts:', renderErr);
+    grid.innerHTML = '<div style="padding:32px;text-align:center;color:#e53e3e;grid-column:1/-1;">⚠ Failed to display contracts. Please refresh the page.</div>';
+    return [];
+  }
 
   return list;
 }
