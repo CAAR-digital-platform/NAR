@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title data-i18n="industrial.title">CAAR — Titre de la page</title>
+  <title data-i18n="industrial.title">CAAR — Industrial Risks</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="main.css"/>
   <link rel="stylesheet" href="header-extras.css"/>
@@ -24,7 +24,7 @@
       facilities, machinery and professional liability.</p>
     </div>
     <div class="caar-hero__image">
-      <img src="img/industryrisk.jpg" alt="Industrial Risks"/>
+      <img src="img/industryrisk.jpg" alt="Industrial Risks" data-i18n-aria-label="industrial.hero_title"/>
     </div>
   </div>
 </section>
@@ -32,9 +32,9 @@
 <div class="product-layout"><div class="product-layout__inner">
 <aside class="product-sidebar">
   <span class="sidebar-label" data-i18n="industrial.sidebar_label">Products</span>
-  <button class="sidebar-btn active" onclick="show('mb',this)"><div class="sidebar-btn__icon">⚙️</div><div><div data-i18n="industrial.mb_title">Machinery Breakdown Insurance</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;" data-i18n="industrial.mb_abbr">Bris de Machines</div></div></button>
-  <button class="sidebar-btn" onclick="show('dec',this)"><div class="sidebar-btn__icon">🏗️</div><div><div data-i18n="industrial.dec_title">Decennial Civil Liability</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;" data-i18n="industrial.dec_abbr">RC Décennale</div></div><span class="sidebar-btn__abbr" data-i18n="industrial.dec_abbr">10Y</span></button>
-  <button class="sidebar-btn" onclick="show('rc',this)"><div class="sidebar-btn__icon">🛡️</div><div><div data-i18n="industrial.rc_title">RC Pro for Contractors</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;" data-i18n="industrial.rc_abbr">RC Pro</div></div></button>
+  <button class="sidebar-btn active" onclick="show('mb',this)"><div class="sidebar-btn__icon">⚙️</div><div><div data-i18n="industrial.mb_title">Machinery Breakdown Insurance</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;" data-i18n="industrial.mb_abbr">Machinery Breakdown</div></div></button>
+  <button class="sidebar-btn" onclick="show('dec',this)"><div class="sidebar-btn__icon">🏗️</div><div><div data-i18n="industrial.dec_title">Decennial Civil Liability</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;" data-i18n="industrial.dec_abbr">Decennial Liability</div></div><span class="sidebar-btn__abbr" data-i18n="industrial.dec_abbr">10Y</span></button>
+  <button class="sidebar-btn" onclick="show('rc',this)"><div class="sidebar-btn__icon">🛡️</div><div><div data-i18n="industrial.rc_title">RC Pro for Contractors</div><div style="font-size:0.68rem;color:#999;font-weight:400;margin-top:2px;" data-i18n="industrial.rc_abbr">Professional Liability</div></div></button>
   <div class="sidebar-cta">
     <a href="network.html" class="btn-sidebar-primary" data-i18n="industrial.get_quote">Get a Quote →</a>
     <a href="network.html" class="btn-sidebar-secondary" data-i18n="industrial.find_agency">Find an Agency</a>
@@ -43,7 +43,7 @@
 </aside>
 <div class="product-panel">
   <div class="detail on" id="d-mb">
-    <span class="detail__abbr" data-i18n="risks.industrial.mb.abbr">Bris de Machines</span><h2 class="detail__title" data-i18n="risks.industrial.mb.title">Machinery Breakdown Insurance</h2><div class="detail__divider"></div>
+    <span class="detail__abbr" data-i18n="risks.industrial.mb.abbr">Machinery Breakdown</span><h2 class="detail__title" data-i18n="risks.industrial.mb.title">Machinery Breakdown Insurance</h2><div class="detail__divider"></div>
     <p class="detail__desc" data-i18n="risks.industrial.mb.desc">Covers the cost of repair or replacement of industrial machines and equipment following sudden and accidental breakdown not resulting from wear and tear.</p>
     <div class="detail__status"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong data-i18n="coverage.optional">Optional</strong> <span data-i18n="risks.industrial.mb.status_note">— essential for manufacturers and industrial plant operators.</span></div>
     <div class="covers-label" data-i18n="coverage.covered_risks">Covered Risks</div>
@@ -58,7 +58,7 @@
     <div class="detail__cta"><a href="network.html" class="btn-detail-primary" data-i18n="risks.industrial.mb.cta.get_quote">Get a Quote →</a><a href="network.html" class="btn-detail-secondary" data-i18n="risks.industrial.mb.cta.find_agency">Find an Agency</a><a href="contact.html" class="btn-detail-secondary" data-i18n="risks.industrial.mb.cta.contact_advisor">Contact an Advisor</a></div>
   </div>
   <div class="detail" id="d-dec">
-    <span class="detail__abbr" data-i18n="risks.industrial.dec.abbr">RC Décennale</span><h2 class="detail__title" data-i18n="risks.industrial.dec.title">Decennial Civil Liability Insurance</h2><div class="detail__divider"></div>
+    <span class="detail__abbr" data-i18n="risks.industrial.dec.abbr">Decennial Liability</span><h2 class="detail__title" data-i18n="risks.industrial.dec.title">Decennial Civil Liability Insurance</h2><div class="detail__divider"></div>
     <p class="detail__desc" data-i18n="risks.industrial.dec.desc">Mandatory 10-year liability for construction professionals covering structural defects that compromise the integrity of a building after completion.</p>
     <div class="detail__status detail__status--required"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong data-i18n="coverage.mandatory">Mandatory</strong> <span data-i18n="risks.industrial.dec.status_note">— required by Algerian construction law for all builders.</span></div>
     <div class="covers-label" data-i18n="coverage.covered_risks">Covered Risks</div>
@@ -73,7 +73,7 @@
     <div class="detail__cta"><a href="network.html" class="btn-detail-primary" data-i18n="actions.get_quote">Get a Quote →</a><a href="network.html" class="btn-detail-secondary" data-i18n="actions.find_agency">Find an Agency</a><a href="contact.html" class="btn-detail-secondary" data-i18n="actions.contact_advisor">Contact an Advisor</a></div>
   </div>
   <div class="detail" id="d-rc">
-    <span class="detail__abbr" data-i18n="risks.industrial.rc.abbr">RC Pro</span><h2 class="detail__title" data-i18n="risks.industrial.rc.title">Professional Civil Liability for Contractors</h2><div class="detail__divider"></div>
+    <span class="detail__abbr" data-i18n="risks.industrial.rc.abbr">Professional Liability</span><h2 class="detail__title" data-i18n="risks.industrial.rc.title">Professional Civil Liability for Contractors</h2><div class="detail__divider"></div>
     <p class="detail__desc" data-i18n="risks.industrial.rc.desc">Covers the financial consequences of damages caused to third parties arising from professional activities during the construction or renovation process.</p>
     <div class="detail__status"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><strong data-i18n="coverage.optional">Optional</strong> <span data-i18n="risks.industrial.rc.status_note">— strongly recommended for all contractors and builders.</span></div>
     <div class="covers-label" data-i18n="coverage.covered_risks">Covered Risks</div>
