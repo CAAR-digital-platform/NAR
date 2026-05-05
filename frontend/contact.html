@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="caar-hero__image">
-        <img src="img/contact.webp" alt="CAAR Support"/>
+        <img src="img/contact.webp" alt="CAAR Support" data-i18n-alt="contact.hero_tag"/>
       </div>
     </div>
   </section>
@@ -59,10 +59,10 @@
     <!-- LEFT: form -->
     <div class="contact-form-left">
       <div class="form-collapse-row">
-        <div class="form-section-title">Send us a message</div>
-        <button class="btn-collapse" type="button" onclick="collapseForm()" data-i18n="contact.close">
+        <div class="form-section-title" data-i18n="contact.form_title">Send us a message</div>
+        <button class="btn-collapse" type="button" onclick="collapseForm()">
           <svg viewBox="0 0 12 12" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2"><path d="M2 8l4-4 4 4"/></svg>
-          Close
+          <span data-i18n="contact.close">Close</span>
         </button>
       </div>
       <p class="form-intro" data-i18n="contact.form_intro">Please select the subject of your request so we can direct it to the appropriate department.</p>
@@ -218,16 +218,16 @@
   <div class="hq-address-card">
     <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
     <div>
-      <strong>CAAR Headquarters</strong>
-      48 Rue Didouche Mourad, Algiers 16000 &mdash;
+      <strong data-i18n="contact.hq_name">CAAR Headquarters</strong>
+      <span data-i18n="contact.hq_address">48 Rue Didouche Mourad, Algiers 16000</span> &mdash;
       <a href="https://maps.google.com/?q=48+Rue+Didouche+Mourad+Alger" target="_blank"
-         style="color:var(--hdr-orange);font-weight:700;text-decoration:none;">Open in Google Maps ↗</a>
+         style="color:var(--hdr-orange);font-weight:700;text-decoration:none;" data-i18n="contact.open_maps">Open in Google Maps ↗</a>
     </div>
   </div>
 
   <div class="map-crossnav-row">
-    <span>Looking for a specific agency?</span>
-    <a href="network.html" class="btn-map-action btn-map-secondary">Browse all agencies →</a>
+    <span data-i18n="contact.looking_for_agency">Looking for a specific agency?</span>
+    <a href="network.html" class="btn-map-action btn-map-secondary" data-i18n="contact.browse_all_agencies">Browse all agencies →</a>
   </div>
 </section>
 
