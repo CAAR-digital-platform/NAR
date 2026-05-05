@@ -495,11 +495,8 @@
                   <button class="btn btn-orange" type="submit" id="newsSubmitBtn" data-i18n="admin.actions.create_article">Create Article</button>
                 </div>
               </form>
-              <div class="cms-table-wrap">
-                <table>
-                  <thead><tr><th data-i18n="admin.table.article">Article</th><th data-i18n="admin.table.status">Status</th><th data-i18n="admin.table.updated">Updated</th><th data-i18n="admin.table.actions">Actions</th></tr></thead>
-                  <tbody id="newsTableBody"></tbody>
-                </table>
+              <div class="cms-items-container" id="newsCardsContainer">
+                <!-- Les cartes d'articles seront injectées ici -->
               </div>
             </section>
 
@@ -510,11 +507,8 @@
                   <p data-i18n="admin.cms.products_desc">Edit homepage-only product cards. Names are read-only and rows cannot be created or deleted.</p>
                 </div>
               </div>
-              <div class="cms-table-wrap">
-                <table>
-                  <thead><tr><th data-i18n="admin.table.name">Name</th><th data-i18n="admin.table.description">Description</th><th data-i18n="admin.table.image_url">Image URL</th><th data-i18n="admin.table.cta_label">CTA Label</th><th data-i18n="admin.table.display_order">Display Order</th><th data-i18n="admin.table.active">Active</th><th data-i18n="admin.table.save">Save</th></tr></thead>
-                  <tbody id="productsTableBody"></tbody>
-                </table>
+              <div class="cms-items-container" id="productsCardsContainer">
+                <!-- Les cartes de produits seront injectées ici -->
               </div>
             </section>
           </div>

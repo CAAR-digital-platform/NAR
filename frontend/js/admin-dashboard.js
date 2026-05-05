@@ -360,88 +360,66 @@
   function renderNews(list) {
     if (Array.isArray(list)) STATE.news = list;
     list = STATE.news || [];
-    const body = document.getElementById('newsTableBody');
-    if (!body) return;
+    const container = document.getElementById('newsCardsContainer');
+    if (!container) return;
 
     if (!list || !list.length) {
-      body.innerHTML = '<tr><td colspan="4"><div class="empty-state">' + (window.i18nSpan ? window.i18nSpan('admin.news.no_articles','No news articles available yet.') : esc('No news articles available yet.')) + '</div></td></tr>';
-        if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
-      updateOptionSuffixes(body);
+      container.innerHTML = '<div class="empty-state">' + (window.i18nSpan ? window.i18nSpan('admin.news.no_articles','No news articles available yet.') : esc('No news articles available yet.')) + '</div>';
+      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(container);
       return;
     }
 
-    // Build rows via DOM to ensure translatable pieces are marked for later updates.
-    body.innerHTML = '';
-    list.forEach(function (article) {
-      var tr = document.createElement('tr');
+    container.innerHTML = list.map(function (article) {
+      const id = String(article.id);
+      const statusBadge = badge(article.status || 'draft');
+      const dateStr = formatDate(article.updated_at || article.created_at) || '';
+      const publishVariant = article.status === 'published' ? 'unpublish' : 'publish';
+      const publishIcon = article.status === 'published' ? 'toggleOff' : 'toggleOn';
+      const publishLabel = window.i18nSpan ? window.i18nSpan(article.status === 'published' ? 'admin.news.unpublish' : 'admin.news.publish', article.status === 'published' ? 'Unpublish' : 'Publish') : esc(article.status === 'published' ? 'Unpublish' : 'Publish');
 
-      var td1 = document.createElement('td');
-      td1.innerHTML = '<strong>' + esc(article.title || '-') + '</strong><br/><small>' + esc(truncateText(article.content || '', 110) || '-') + '</small>';
+      return [
+        '<article class="cms-item-card cms-item-card--news" id="news-card-' + id + '">',
+        '  <div class="cms-item-card-header">',
+        '    <div>',
+        '      <div class="cms-item-card-title">' + esc(article.title || '-') + '</div>',
+        '      <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">' + dateStr + '</div>',
+        '    </div>',
+        '    ' + statusBadge,
+        '  </div>',
+        '  <div class="cms-item-card-body">',
+        '    <div class="cms-item-field" style="grid-column: 1 / -1;">',
+        '      <label data-i18n="admin.form.content">Content</label>',
+        '      <div style="font-size: 0.8rem; color: #444; line-height: 1.4;">' + esc(truncateText(article.content || '', 150) || '-') + '</div>',
+        '    </div>',
+        '  </div>',
+        '  <div class="cms-item-card-footer">',
+        '    <button class="action-btn" data-variant="delete" data-action="delete-news" data-news-id="' + id + '">' + ICON('xCircle', 14, '') + (window.i18nSpan ? window.i18nSpan('admin.news.delete','Delete') : esc('Delete')) + '</button>',
+        '    <div class="cms-item-actions">',
+        '      <button class="action-btn" data-variant="edit" data-action="edit-news" data-news-id="' + id + '">' + (window.i18nSpan ? window.i18nSpan('admin.news.edit','Edit') : esc('Edit')) + '</button>',
+        '      <button class="action-btn" data-variant="' + publishVariant + '" data-action="toggle-news-status" data-news-id="' + id + '">' + ICON(publishIcon, 14, '') + publishLabel + '</button>',
+        '    </div>',
+        '  </div>',
+        '</article>'
+      ].join('');
+    }).join('');
 
-      var td2 = document.createElement('td');
-      td2.innerHTML = badge(article.status || 'draft');
-
-      var td3 = document.createElement('td');
-      td3.textContent = formatDate(article.updated_at || article.created_at) || '';
-
-      var td4 = document.createElement('td');
-      var actionsWrap = document.createElement('div');
-      actionsWrap.className = 'row-actions';
-
-      var btnEdit = document.createElement('button');
-      btnEdit.className = 'action-btn';
-      btnEdit.setAttribute('data-variant','edit');
-      btnEdit.setAttribute('data-action','edit-news');
-      btnEdit.setAttribute('data-news-id', String(article.id));
-      btnEdit.innerHTML = (window.i18nSpan ? window.i18nSpan('admin.news.edit','Edit') : esc('Edit'));
-
-      var btnDelete = document.createElement('button');
-      btnDelete.className = 'action-btn';
-      btnDelete.setAttribute('data-variant','delete');
-      btnDelete.setAttribute('data-action','delete-news');
-      btnDelete.setAttribute('data-news-id', String(article.id));
-      btnDelete.innerHTML = ICON('xCircle', 14, '') + (window.i18nSpan ? window.i18nSpan('admin.news.delete','Delete') : esc('Delete'));
-
-      var publishVariant = article.status === 'published' ? 'unpublish' : 'publish';
-      var publishIcon = article.status === 'published' ? 'toggleOff' : 'toggleOn';
-      var btnPublish = document.createElement('button');
-      btnPublish.className = 'action-btn';
-      btnPublish.setAttribute('data-variant', publishVariant);
-      btnPublish.setAttribute('data-action', 'toggle-news-status');
-      btnPublish.setAttribute('data-news-id', String(article.id));
-      btnPublish.innerHTML = ICON(publishIcon, 14, '') + (window.i18nSpan ? window.i18nSpan(article.status === 'published' ? 'admin.news.unpublish' : 'admin.news.publish', article.status === 'published' ? 'Unpublish' : 'Publish') : esc(article.status === 'published' ? 'Unpublish' : 'Publish'));
-
-      actionsWrap.appendChild(btnEdit);
-      actionsWrap.appendChild(btnDelete);
-      actionsWrap.appendChild(btnPublish);
-
-      td4.appendChild(actionsWrap);
-
-      tr.appendChild(td1);
-      tr.appendChild(td2);
-      tr.appendChild(td3);
-      tr.appendChild(td4);
-
-      body.appendChild(tr);
-    });
-
-    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
-    updateOptionSuffixes(body);
+    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(container);
+    updateOptionSuffixes(container);
   }
 
   function renderProducts(list) {
     if (Array.isArray(list)) STATE.products = list;
     list = STATE.products || [];
-    const body = document.getElementById('productsTableBody');
-    if (!body) return;
+    const container = document.getElementById('productsCardsContainer');
+    if (!container) return;
 
     if (!list || !list.length) {
-      body.innerHTML = emptyRow(7, 'admin.products.no_products', 'No homepage products available.');
-      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
+      container.innerHTML = '<div class="empty-state">' + (window.i18nSpan ? window.i18nSpan('admin.products.no_products', 'No homepage products available.') : esc('No homepage products available.')) + '</div>';
+      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(container);
       return;
     }
 
-    body.innerHTML = list.map((product) => {
+    container.innerHTML = list.map((product) => {
       const id = Number(product.id);
       const nameId = homepageFieldId(id, 'name');
       const descriptionId = homepageFieldId(id, 'description');
@@ -452,23 +430,43 @@
       const msgId = homepageFieldId(id, 'msg');
 
       return [
-        '<tr>',
-        '  <td><input class="cms-table-input cms-table-input--readonly" id="' + nameId + '" type="text" value="' + esc(product.name || '') + '" readonly /></td>',
-        '  <td><textarea class="cms-table-textarea" id="' + descriptionId + '" rows="4" placeholder="' + esc('Description') + '" data-i18n-placeholder="admin.products.description_placeholder">' + esc(product.description || '') + '</textarea></td>',
-        '  <td><input class="cms-table-input" id="' + imageId + '" type="url" value="' + esc(product.image_url || '') + '" placeholder="' + esc('https://example.com/image.jpg') + '" data-i18n-placeholder="admin.products.image_placeholder" /></td>',
-        '  <td><input class="cms-table-input" id="' + ctaId + '" type="text" maxlength="80" value="' + esc(product.cta_label || '') + '" placeholder="' + esc('CTA label') + '" data-i18n-placeholder="admin.products.cta_placeholder" /></td>',
-        '  <td><input class="cms-table-input cms-table-input--number" id="' + orderId + '" type="number" min="0" step="1" value="' + esc(product.display_order == null ? 0 : product.display_order) + '" /></td>',
-        '  <td><label class="cms-checkbox-wrap"><input id="' + activeId + '" type="checkbox" ' + (product.is_active ? 'checked ' : '') + '/><span data-i18n="admin.products.active">' + esc('Active') + '</span></label></td>',
-        '  <td>',
-        '    <div class="row-actions">',
-        '      <button class="action-btn" data-variant="save" data-action="save-homepage-product" data-product-id="' + id + '">' + ICON('save', 14, '') + (window.i18nSpan ? window.i18nSpan('admin.products.save','Save') : esc('Save')) + '</button>',
-        '    </div>',
+        '<article class="cms-item-card cms-item-card--product" id="product-card-' + id + '">',
+        '  <div class="cms-item-card-header">',
+        '    <div class="cms-item-card-title">' + esc(product.name || '') + '</div>',
         '    <div id="' + msgId + '" class="cms-inline-msg"></div>',
-        '  </td>',
-        '</tr>',
+        '  </div>',
+        '  <div class="cms-item-card-body">',
+        '    <input id="' + nameId + '" type="hidden" value="' + esc(product.name || '') + '" />',
+        '    <div class="cms-item-field" style="grid-column: 1 / -1;">',
+        '      <label data-i18n="admin.table.description">Description</label>',
+        '      <textarea class="cms-table-textarea" id="' + descriptionId + '" rows="3" placeholder="' + esc('Description') + '" data-i18n-placeholder="admin.products.description_placeholder">' + esc(product.description || '') + '</textarea>',
+        '    </div>',
+        '    <div class="cms-item-field">',
+        '      <label data-i18n="admin.table.image_url">Image URL</label>',
+        '      <input class="cms-table-input" id="' + imageId + '" type="url" value="' + esc(product.image_url || '') + '" placeholder="' + esc('https://example.com/image.jpg') + '" data-i18n-placeholder="admin.products.image_placeholder" />',
+        '    </div>',
+        '    <div class="cms-item-field">',
+        '      <label data-i18n="admin.table.cta_label">CTA Label</label>',
+        '      <input class="cms-table-input" id="' + ctaId + '" type="text" maxlength="80" value="' + esc(product.cta_label || '') + '" placeholder="' + esc('CTA label') + '" data-i18n-placeholder="admin.products.cta_placeholder" />',
+        '    </div>',
+        '    <div class="cms-item-field">',
+        '      <label data-i18n="admin.table.display_order">Display Order</label>',
+        '      <input class="cms-table-input cms-table-input--number" id="' + orderId + '" type="number" min="0" step="1" value="' + esc(product.display_order == null ? 0 : product.display_order) + '" />',
+        '    </div>',
+        '    <div class="cms-item-field">',
+        '      <label data-i18n="admin.table.active">Active</label>',
+        '      <label class="cms-checkbox-wrap"><input id="' + activeId + '" type="checkbox" ' + (product.is_active ? 'checked ' : '') + '/><span data-i18n="admin.products.active">' + esc('Active') + '</span></label>',
+        '    </div>',
+        '  </div>',
+        '  <div class="cms-item-card-footer">',
+        '    <div style="flex-grow: 1;"></div>',
+        '    <button class="action-btn" data-variant="save" data-action="save-homepage-product" data-product-id="' + id + '">' + ICON('save', 14, '') + (window.i18nSpan ? window.i18nSpan('admin.products.save','Save') : esc('Save')) + '</button>',
+        '  </div>',
+        '</article>'
       ].join('');
     }).join('');
-    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
+
+    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(container);
   }
 
   async function loadAll(opts) {

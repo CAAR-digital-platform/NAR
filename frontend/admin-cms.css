@@ -198,6 +198,92 @@
   border-color: #d8dee6;
 }
 
+/* New Card-based Layout to replace tables */
+.cms-items-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 10px 0;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.cms-item-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow 0.2s ease;
+}
+
+.cms-item-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.cms-item-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+.cms-item-card-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.cms-item-card-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .cms-item-card-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cms-item-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cms-item-field label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.cms-item-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.cms-item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cms-item-card--product {
+  border-left: 4px solid var(--orange);
+}
+
+.cms-item-card--news {
+  border-left: 4px solid var(--blue);
+}
+
 .status.status--published {
   color: var(--ok);
   background: #eaf9f0;
