@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CAAR — Admin Dashboard</title>
+  <title data-i18n="admin.dashboard_title">CAAR — Admin Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="admin-cms.css"/>
   <style>
@@ -361,76 +361,76 @@
   <div class="wrap">
     <div class="top">
       <div class="brand">
-        <h1>Admin Command Center</h1>
-        <p>Claims, experts, communications, applications, roadside and user controls in one place.</p>
+        <h1 data-i18n="admin.command_center">Admin Command Center</h1>
+        <p data-i18n="admin.hero_subtitle">Claims, experts, communications, applications, roadside and user controls in one place.</p>
       </div>
       <div class="top-actions">
-        <button class="btn btn-light" id="adminRefresh"><span data-icon="refresh"></span>Refresh</button>
-        <button class="btn btn-light" id="goHome"><span data-icon="home"></span>Public Site</button>
-        <button class="btn btn-orange" id="adminLogout"><span data-icon="logout"></span>Logout</button>
+        <button class="btn btn-light" id="adminRefresh"><span data-icon="refresh"></span><span data-i18n="admin.refresh">Refresh</span></button>
+        <button class="btn btn-light" id="goHome"><span data-icon="home"></span><span data-i18n="admin.public_site">Public Site</span></button>
+        <button class="btn btn-orange" id="adminLogout"><span data-icon="logout"></span><span data-i18n="admin.logout">Logout</span></button>
       </div>
     </div>
 
     <div class="api-msg" id="adminApiMsg"></div>
 
     <section class="stats">
-      <article class="stat"><div class="stat-meta"><div class="label">Clients</div><div class="val" id="sClients">-</div></div><span class="stat-icon" data-icon="users"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="label">Contracts</div><div class="val" id="sContracts">-</div></div><span class="stat-icon" data-icon="shieldCheck"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="label">Claims</div><div class="val" id="sClaims">-</div></div><span class="stat-icon" data-icon="fileText"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="label">Pending Claims</div><div class="val" id="sPendingClaims">-</div></div><span class="stat-icon" data-icon="clock"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="label">Active Experts</div><div class="val" id="sActiveExperts">-</div></div><span class="stat-icon" data-icon="userCheck"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="label">Revenue</div><div class="val" id="sRevenue">-</div></div><span class="stat-icon" data-icon="wallet"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="label">Payments</div><div class="val" id="sPayments">-</div></div><span class="stat-icon" data-icon="money"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="label">Messages</div><div class="val" id="sMessages">-</div></div><span class="stat-icon" data-icon="mail"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="label">Applications</div><div class="val" id="sApplications">-</div></div><span class="stat-icon" data-icon="briefcase"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label" data-i18n="admin.stats.clients">Clients</div><div class="val" id="sClients">-</div></div><span class="stat-icon" data-icon="users"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label" data-i18n="admin.stats.contracts">Contracts</div><div class="val" id="sContracts">-</div></div><span class="stat-icon" data-icon="shieldCheck"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label" data-i18n="admin.stats.claims">Claims</div><div class="val" id="sClaims">-</div></div><span class="stat-icon" data-icon="fileText"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label" data-i18n="admin.stats.pending_claims">Pending Claims</div><div class="val" id="sPendingClaims">-</div></div><span class="stat-icon" data-icon="clock"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label" data-i18n="admin.stats.active_experts">Active Experts</div><div class="val" id="sActiveExperts">-</div></div><span class="stat-icon" data-icon="userCheck"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label" data-i18n="admin.stats.revenue">Revenue</div><div class="val" id="sRevenue">-</div></div><span class="stat-icon" data-icon="wallet"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label" data-i18n="admin.stats.payments">Payments</div><div class="val" id="sPayments">-</div></div><span class="stat-icon" data-icon="money"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label" data-i18n="admin.stats.messages">Messages</div><div class="val" id="sMessages">-</div></div><span class="stat-icon" data-icon="mail"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="label" data-i18n="admin.stats.applications">Applications</div><div class="val" id="sApplications">-</div></div><span class="stat-icon" data-icon="briefcase"></span></article>
     </section>
 
     <section class="grid">
       <article class="panel">
-        <div class="panel-head"><h2><span data-icon="activity"></span>Claims Lifecycle</h2></div>
+        <div class="panel-head"><h2><span data-icon="activity"></span><span data-i18n="admin.panels.claims_lifecycle">Claims Lifecycle</span></h2></div>
         <div class="panel-body">
           <table>
-            <thead><tr><th>ID</th><th>Client</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><th data-i18n="admin.table.id">ID</th><th data-i18n="admin.table.client">Client</th><th data-i18n="admin.table.status">Status</th><th data-i18n="admin.table.actions">Actions</th></tr></thead>
             <tbody id="claimsTableBody"></tbody>
           </table>
         </div>
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2><span data-icon="fileText"></span>Expert Reports</h2></div>
+        <div class="panel-head"><h2><span data-icon="fileText"></span><span data-i18n="admin.panels.expert_reports">Expert Reports</span></h2></div>
         <div class="panel-body">
           <table>
-            <thead><tr><th>Claim</th><th>Expert</th><th>Damage</th><th>Conclusion</th></tr></thead>
+            <thead><tr><th data-i18n="admin.table.claim">Claim</th><th data-i18n="admin.table.expert">Expert</th><th data-i18n="admin.table.damage">Damage</th><th data-i18n="admin.table.conclusion">Conclusion</th></tr></thead>
             <tbody id="reportsTableBody"></tbody>
           </table>
         </div>
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2><span data-icon="mail"></span>Messages Inbox</h2></div>
+        <div class="panel-head"><h2><span data-icon="mail"></span><span data-i18n="admin.panels.messages_inbox">Messages Inbox</span></h2></div>
         <div class="panel-body">
           <table>
-            <thead><tr><th>From</th><th>Subject</th><th>Status</th><th>Update</th></tr></thead>
+            <thead><tr><th data-i18n="admin.table.from">From</th><th data-i18n="admin.table.subject">Subject</th><th data-i18n="admin.table.status">Status</th><th data-i18n="admin.table.update">Update</th></tr></thead>
             <tbody id="messagesTableBody"></tbody>
           </table>
         </div>
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2><span data-icon="briefcase"></span>Job Applications</h2></div>
+        <div class="panel-head"><h2><span data-icon="briefcase"></span><span data-i18n="admin.panels.job_applications">Job Applications</span></h2></div>
         <div class="panel-body">
           <table>
-            <thead><tr><th>Name</th><th>Position</th><th>Status</th><th>Update</th></tr></thead>
+            <thead><tr><th data-i18n="admin.table.name">Name</th><th data-i18n="admin.table.position">Position</th><th data-i18n="admin.table.status">Status</th><th data-i18n="admin.table.update">Update</th></tr></thead>
             <tbody id="applicationsTableBody"></tbody>
           </table>
         </div>
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2><span data-icon="wrench"></span>Roadside Requests</h2></div>
+        <div class="panel-head"><h2><span data-icon="wrench"></span><span data-i18n="admin.panels.roadside_requests">Roadside Requests</span></h2></div>
         <div class="panel-body">
           <table>
-            <thead><tr><th>Reference</th><th>Type</th><th>Status</th><th>Update</th></tr></thead>
+            <thead><tr><th data-i18n="admin.table.reference">Reference</th><th data-i18n="admin.table.type">Type</th><th data-i18n="admin.table.status">Status</th><th data-i18n="admin.table.update">Update</th></tr></thead>
             <tbody id="roadsideTableBody"></tbody>
           </table>
         </div>
@@ -438,14 +438,14 @@
 
       <article class="panel">
         <div class="panel-head">
-          <h2><span data-icon="users"></span>User Management</h2>
+          <h2><span data-icon="users"></span><span data-i18n="admin.panels.user_management">User Management</span></h2>
           <div class="panel-head-actions">
-            <button class="mini-btn" id="createExpertBtn" type="button" data-i18n="actions.create_expert"><span data-icon="userPlus"></span>Create Expert</button>
+            <button class="mini-btn" id="createExpertBtn" type="button" data-i18n="admin.actions.create_expert"><span data-icon="userPlus"></span>Create Expert</button>
           </div>
         </div>
         <div class="panel-body">
           <table>
-            <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+            <thead><tr><th data-i18n="admin.table.user">User</th><th data-i18n="admin.table.role">Role</th><th data-i18n="admin.table.status">Status</th><th data-i18n="admin.table.action">Action</th></tr></thead>
             <tbody id="usersTableBody"></tbody>
           </table>
         </div>
@@ -453,9 +453,9 @@
 
       <article class="panel panel--full">
         <div class="panel-head">
-          <h2><span data-icon="fileText"></span>Content Management</h2>
+          <h2><span data-icon="fileText"></span><span data-i18n="admin.panels.content_management">Content Management</span></h2>
           <div class="panel-head-actions">
-            <span class="cms-form-note">Draft articles and inactive products stay hidden from public views.</span>
+            <span class="cms-form-note" data-i18n="admin.cms.note">Draft articles and inactive products stay hidden from public views.</span>
           </div>
         </div>
         <div class="panel-body panel-body--cms">
@@ -463,41 +463,41 @@
             <section class="cms-card">
               <div class="cms-card-head">
                 <div>
-                  <h3><span data-icon="fileText"></span>Manage News</h3>
-                  <p>Create articles here, then use the table buttons to edit, delete, publish or unpublish them.</p>
+                  <h3><span data-icon="fileText"></span><span data-i18n="admin.cms.news_title">Manage News</span></h3>
+                  <p data-i18n="admin.cms.news_desc">Create articles here, then use the table buttons to edit, delete, publish or unpublish them.</p>
                 </div>
               </div>
               <form id="newsForm" class="cms-form">
                 <div class="cms-form-grid">
                   <div class="cms-form-row cms-form-row--full">
-                    <label for="newsTitleInput">Title</label>
+                    <label for="newsTitleInput" data-i18n="admin.form.title">Title</label>
                     <input id="newsTitleInput" type="text" required maxlength="255" />
                   </div>
                   <div class="cms-form-row">
-                    <label for="newsStatusInput">Status</label>
+                    <label for="newsStatusInput" data-i18n="admin.form.status">Status</label>
                     <select id="newsStatusInput" required>
-                      <option value="draft">Draft</option>
-                      <option value="published">Published</option>
+                      <option value="draft" data-i18n="admin.form.status_draft">Draft</option>
+                      <option value="published" data-i18n="admin.form.status_published">Published</option>
                     </select>
                   </div>
                   <div class="cms-form-row">
-                    <label for="newsImageInput">Image URL</label>
+                    <label for="newsImageInput" data-i18n="admin.form.image_url">Image URL</label>
                     <input id="newsImageInput" type="url" placeholder="https://example.com/image.jpg" />
                   </div>
                   <div class="cms-form-row cms-form-row--full">
-                    <label for="newsContentInput">Content</label>
-                    <textarea id="newsContentInput" required minlength="10" placeholder="Article content"></textarea>
+                    <label for="newsContentInput" data-i18n="admin.form.content">Content</label>
+                    <textarea id="newsContentInput" required minlength="10" placeholder="Article content" data-i18n-placeholder="admin.form.content_placeholder"></textarea>
                   </div>
                 </div>
                 <div id="newsFormMsg" class="cms-inline-msg err"></div>
                 <div class="cms-form-actions">
-                  <button class="mini-btn" type="button" id="newsCancelEditBtn" hidden>Cancel edit</button>
-                  <button class="btn btn-orange" type="submit" id="newsSubmitBtn">Create Article</button>
+                  <button class="mini-btn" type="button" id="newsCancelEditBtn" data-i18n="admin.actions.cancel_edit" hidden>Cancel edit</button>
+                  <button class="btn btn-orange" type="submit" id="newsSubmitBtn" data-i18n="admin.actions.create_article">Create Article</button>
                 </div>
               </form>
               <div class="cms-table-wrap">
                 <table>
-                  <thead><tr><th>Article</th><th>Status</th><th>Updated</th><th>Actions</th></tr></thead>
+                  <thead><tr><th data-i18n="admin.table.article">Article</th><th data-i18n="admin.table.status">Status</th><th data-i18n="admin.table.updated">Updated</th><th data-i18n="admin.table.actions">Actions</th></tr></thead>
                   <tbody id="newsTableBody"></tbody>
                 </table>
               </div>
@@ -506,13 +506,13 @@
             <section class="cms-card">
               <div class="cms-card-head">
                 <div>
-                  <h3><span data-icon="shieldCheck"></span>Homepage Products Manager</h3>
-                  <p>Edit homepage-only product cards. Names are read-only and rows cannot be created or deleted.</p>
+                  <h3><span data-icon="shieldCheck"></span><span data-i18n="admin.cms.products_title">Homepage Products Manager</span></h3>
+                  <p data-i18n="admin.cms.products_desc">Edit homepage-only product cards. Names are read-only and rows cannot be created or deleted.</p>
                 </div>
               </div>
               <div class="cms-table-wrap">
                 <table>
-                  <thead><tr><th>Name</th><th>Description</th><th>Image URL</th><th>CTA Label</th><th>Display Order</th><th>Active</th><th>Save</th></tr></thead>
+                  <thead><tr><th data-i18n="admin.table.name">Name</th><th data-i18n="admin.table.description">Description</th><th data-i18n="admin.table.image_url">Image URL</th><th data-i18n="admin.table.cta_label">CTA Label</th><th data-i18n="admin.table.display_order">Display Order</th><th data-i18n="admin.table.active">Active</th><th data-i18n="admin.table.save">Save</th></tr></thead>
                   <tbody id="productsTableBody"></tbody>
                 </table>
               </div>
@@ -526,32 +526,32 @@
   <div class="expert-modal" id="expertCreateModal" hidden>
     <div class="expert-modal-card" role="dialog" aria-modal="true" aria-labelledby="expertCreateTitle">
       <div class="expert-modal-head">
-        <h3 id="expertCreateTitle">Create Expert Account</h3>
-        <button class="mini-btn" type="button" id="closeExpertModalBtn"><span data-icon="xCircle"></span>Close</button>
+        <h3 id="expertCreateTitle" data-i18n="admin.modal.create_expert_title">Create Expert Account</h3>
+        <button class="mini-btn" type="button" id="closeExpertModalBtn"><span data-icon="xCircle"></span><span data-i18n="admin.modal.close">Close</span></button>
       </div>
       <form id="expertCreateForm" class="expert-modal-body">
         <div class="expert-form-row">
-          <label for="expertFirstName">First Name</label>
+          <label for="expertFirstName" data-i18n="admin.modal.first_name">First Name</label>
           <input id="expertFirstName" type="text" required />
         </div>
         <div class="expert-form-row">
-          <label for="expertLastName">Last Name</label>
+          <label for="expertLastName" data-i18n="admin.modal.last_name">Last Name</label>
           <input id="expertLastName" type="text" required />
         </div>
         <div class="expert-form-row">
-          <label for="expertEmail">Email</label>
+          <label for="expertEmail" data-i18n="admin.modal.email">Email</label>
           <input id="expertEmail" type="email" required />
         </div>
         <div class="expert-form-row">
-          <label for="expertSpecialization">Specialization</label>
+          <label for="expertSpecialization" data-i18n="admin.modal.specialization">Specialization</label>
           <input id="expertSpecialization" type="text" />
         </div>
 
         <div id="expertCreateInlineMsg" class="expert-inline-msg err"></div>
 
         <div class="expert-modal-actions">
-          <button class="mini-btn" type="button" id="cancelExpertCreateBtn">Cancel</button>
-          <button class="btn btn-orange" type="submit" id="submitExpertCreateBtn" data-i18n="actions.create_expert"><span data-icon="send"></span>Create Expert</button>
+          <button class="mini-btn" type="button" id="cancelExpertCreateBtn" data-i18n="admin.modal.cancel">Cancel</button>
+          <button class="btn btn-orange" type="submit" id="submitExpertCreateBtn" data-i18n="admin.actions.create_expert"><span data-icon="send"></span>Create Expert</button>
         </div>
       </form>
     </div>
