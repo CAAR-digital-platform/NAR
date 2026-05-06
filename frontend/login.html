@@ -122,6 +122,12 @@
     }
     .login-input.has-icon-right { padding-right: 42px; }
 
+    /* Hide browser default password reveal button */
+    .login-input::-ms-reveal,
+    .login-input::-ms-clear {
+      display: none;
+    }
+
     .toggle-pw {
       position: absolute;
       right: 14px; top: 50%;
