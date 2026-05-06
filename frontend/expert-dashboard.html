@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CAAR — Expert Dashboard</title>
+  <title data-i18n="expert.title">CAAR — Expert Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
@@ -327,29 +327,29 @@
   <div class="wrap">
     <div class="top">
       <div>
-        <h1>Expert Workspace</h1>
-        <p>Review assigned claims, submit reports, and manage your availability.</p>
+        <h1 data-i18n="expert.workspace.title">Expert Workspace</h1>
+        <p data-i18n="expert.workspace.subtitle">Review assigned claims, submit reports, and manage your availability.</p>
       </div>
       <div class="inline">
-        <button class="btn btn-light" id="expertRefresh"><span data-icon="refresh"></span>Refresh</button>
-        <button class="btn btn-light" id="expertHome"><span data-icon="home"></span>Public Site</button>
-        <button class="btn btn-orange" id="expertLogout"><span data-icon="logout"></span>Logout</button>
+        <button class="btn btn-light" id="expertRefresh"><span data-icon="refresh"></span><span data-i18n="expert.actions.refresh">Refresh</span></button>
+        <button class="btn btn-light" id="expertHome"><span data-icon="home"></span><span data-i18n="expert.actions.public_site">Public Site</span></button>
+        <button class="btn btn-orange" id="expertLogout"><span data-icon="logout"></span><span data-i18n="expert.actions.logout">Logout</span></button>
       </div>
     </div>
 
     <div class="api-msg" id="expertApiMsg"></div>
 
     <section class="stats">
-      <article class="stat"><div class="stat-meta"><div class="l">Assigned Claims</div><div class="v" id="esAssigned">-</div></div><span class="stat-icon" data-icon="fileText"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="l">In Progress</div><div class="v" id="esProgress">-</div></div><span class="stat-icon" data-icon="activity"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="l">Completed</div><div class="v" id="esCompleted">-</div></div><span class="stat-icon" data-icon="checkCircle"></span></article>
-      <article class="stat"><div class="stat-meta"><div class="l">Reports Submitted</div><div class="v" id="esReports">-</div></div><span class="stat-icon" data-icon="send"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="l" data-i18n="expert.stats.assigned_claims">Assigned Claims</div><div class="v" id="esAssigned">-</div></div><span class="stat-icon" data-icon="fileText"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="l" data-i18n="expert.stats.in_progress">In Progress</div><div class="v" id="esProgress">-</div></div><span class="stat-icon" data-icon="activity"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="l" data-i18n="expert.stats.completed">Completed</div><div class="v" id="esCompleted">-</div></div><span class="stat-icon" data-icon="checkCircle"></span></article>
+      <article class="stat"><div class="stat-meta"><div class="l" data-i18n="expert.stats.reports_submitted">Reports Submitted</div><div class="v" id="esReports">-</div></div><span class="stat-icon" data-icon="send"></span></article>
     </section>
 
     <section class="layout">
       <article class="panel">
         <div class="panel-head">
-          <h2><span data-icon="fileText"></span>Assigned Claims</h2>
+          <h2><span data-icon="fileText"></span><span data-i18n="expert.claims.title">Assigned Claims</span></h2>
         </div>
         <div class="panel-body">
           <div class="claims-grid" id="expertClaimsCards"></div>
@@ -357,55 +357,55 @@
       </article>
 
       <article class="panel">
-        <div class="panel-head"><h2><span data-icon="send"></span>Submit Expert Report</h2></div>
+        <div class="panel-head"><h2><span data-icon="send"></span><span data-i18n="expert.report.title">Submit Expert Report</span></h2></div>
         <div class="panel-body">
-          <div class="no-claims-msg" id="noClaimsMsg"></div>
+          <div class="no-claims-msg" id="noClaimsMsg" data-i18n="expert.report.no_assigned_ready">No assigned claims ready for report submission</div>
 
-          <p class="section-title"><span data-icon="toggleOn"></span>Availability</p>
+          <p class="section-title"><span data-icon="toggleOn"></span><span data-i18n="expert.availability.title">Availability</span></p>
           <div class="field">
-            <label for="expertAvailabilityToggle">Status</label>
+            <label for="expertAvailabilityToggle" data-i18n="expert.availability.status">Status</label>
             <div class="inline">
               <label class="availability-toggle" for="expertAvailabilityToggle">
                 <input id="expertAvailabilityToggle" type="checkbox" />
                 <span class="availability-switch"></span>
-                <span class="availability-state" id="availabilityStateLabel">Busy</span>
+                <span class="availability-state" id="availabilityStateLabel" data-i18n="expert.availability.busy">Busy</span>
               </label>
             </div>
           </div>
 
-          <p class="section-title"><span data-icon="fileText"></span>Claim Context</p>
+          <p class="section-title"><span data-icon="fileText"></span><span data-i18n="expert.report.claim_context">Claim Context</span></p>
           <div class="field">
-            <label for="reportClaimSelect"><span data-icon="fileText"></span>Assigned Claim</label>
+            <label for="reportClaimSelect"><span data-icon="fileText"></span><span data-i18n="expert.report.assigned_claim">Assigned Claim</span></label>
             <select id="reportClaimSelect">
-              <option value="">Select assigned claim...</option>
+              <option value="" data-i18n="expert.report.select_assigned_claim">Select assigned claim...</option>
             </select>
           </div>
 
-          <p class="section-title"><span data-icon="activity"></span>Assessment Details</p>
+          <p class="section-title"><span data-icon="activity"></span><span data-i18n="expert.report.assessment_details">Assessment Details</span></p>
           <div class="field">
-            <label for="reportValue"><span data-icon="fileText"></span>Report (Text or Filename)</label>
-            <input id="reportValue" type="text" placeholder="e.g. report-claim-7.pdf or short summary"/>
+            <label for="reportValue"><span data-icon="fileText"></span><span data-i18n="expert.report.report_label">Report (Text or Filename)</span></label>
+            <input id="reportValue" type="text" placeholder="e.g. report-claim-7.pdf or short summary" data-i18n-placeholder="expert.report.report_placeholder"/>
           </div>
           <div class="field">
-            <label for="reportDate"><span data-icon="calendar"></span>Report Date</label>
+            <label for="reportDate"><span data-icon="calendar"></span><span data-i18n="expert.report.report_date">Report Date</span></label>
             <input id="reportDate" type="date"/>
           </div>
           <div class="field">
-            <label for="reportDamage"><span data-icon="money"></span>Estimated Damage (DZD)</label>
-            <input id="reportDamage" type="number" min="0.01" step="0.01" placeholder="e.g. 120000"/>
+            <label for="reportDamage"><span data-icon="money"></span><span data-i18n="expert.report.estimated_damage">Estimated Damage (DZD)</span></label>
+            <input id="reportDamage" type="number" min="0.01" step="0.01" placeholder="e.g. 120000" data-i18n-placeholder="expert.report.damage_placeholder"/>
           </div>
           <div class="field">
-            <label for="reportConclusion"><span data-icon="checkCircle"></span>Conclusion</label>
+            <label for="reportConclusion"><span data-icon="checkCircle"></span><span data-i18n="expert.report.conclusion">Conclusion</span></label>
             <select id="reportConclusion">
-              <option value="covered">covered</option>
-              <option value="not_covered">not_covered</option>
+              <option value="covered" data-i18n="expert.report.covered">covered</option>
+              <option value="not_covered" data-i18n="expert.report.not_covered">not_covered</option>
             </select>
           </div>
           <div class="field">
-            <label for="reportDetails"><span data-icon="fileText"></span>Report Details</label>
-            <textarea id="reportDetails" placeholder="Provide detailed technical assessment and recommendations..."></textarea>
+            <label for="reportDetails"><span data-icon="fileText"></span><span data-i18n="expert.report.report_details">Report Details</span></label>
+            <textarea id="reportDetails" placeholder="Provide detailed technical assessment and recommendations..." data-i18n-placeholder="expert.report.details_placeholder"></textarea>
           </div>
-          <button class="btn btn-orange" id="submitReportBtn" data-i18n="actions.submit"><span data-icon="send"></span>Submit</button>
+          <button class="btn btn-orange" id="submitReportBtn"><span data-icon="send"></span><span data-i18n="expert.report.submit">Submit</span></button>
         </div>
       </article>
     </section>
