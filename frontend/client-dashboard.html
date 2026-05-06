@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CAAR — Client Dashboard</title>
+  <title data-i18n="client.dashboard_title">CAAR — Client Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="dashboard.css"/>
   <link rel="stylesheet" href="main.css"/>
@@ -176,35 +176,35 @@
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
         </svg>
-        File a New Claim
+        <span data-i18n="client.modal.new_claim">File a New Claim</span>
       </div>
-      <button class="nc-modal-close" id="ncModalCloseBtn" aria-label="Close">X</button>
+      <button class="nc-modal-close" id="ncModalCloseBtn" aria-label="Close" data-i18n-aria-label="client.modal.close">X</button>
     </div>
     <div class="nc-error" id="claimFormError"></div>
     <div class="nc-field">
-      <label for="ncContractSelect">Select Contract <span class="req">*</span></label>
+      <label for="ncContractSelect"><span data-i18n="client.modal.select_contract">Select Contract</span> <span class="req">*</span></label>
       <select class="nc-select" id="ncContractSelect">
-        <option value="">— Loading your contracts… —</option>
+        <option value="" data-i18n="client.modal.contract_loading">— Loading your contracts… —</option>
       </select>
-      <div class="nc-hint">Only active contracts are shown.</div>
+      <div class="nc-hint" data-i18n="client.modal.contract_hint">Only active contracts are shown.</div>
     </div>
     <div class="nc-field">
-      <label for="ncDescription">Description <span class="req">*</span></label>
-      <textarea class="nc-textarea" id="ncDescription" placeholder="Describe the incident in detail (minimum 10 characters)…" maxlength="2000"></textarea>
+      <label for="ncDescription"><span data-i18n="client.modal.description">Description</span> <span class="req">*</span></label>
+      <textarea class="nc-textarea" id="ncDescription" placeholder="Describe the incident in detail (minimum 10 characters)…" maxlength="2000" data-i18n-placeholder="client.modal.description_placeholder"></textarea>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
       <div class="nc-field">
-        <label for="ncClaimDate">Incident Date <span class="req">*</span></label>
+        <label for="ncClaimDate"><span data-i18n="client.modal.incident_date">Incident Date</span> <span class="req">*</span></label>
         <input type="date" class="nc-input" id="ncClaimDate"/>
       </div>
       <div class="nc-field">
-        <label for="ncLocation">Location (optional)</label>
-        <input type="text" class="nc-input" id="ncLocation" placeholder="Street / area / landmark"/>
+        <label for="ncLocation" data-i18n="client.modal.location">Location (optional)</label>
+        <input type="text" class="nc-input" id="ncLocation" placeholder="Street / area / landmark" data-i18n-placeholder="client.modal.location_placeholder"/>
       </div>
     </div>
     <div class="nc-actions">
-      <button class="nc-btn-cancel" id="ncCancelBtn">Cancel</button>
-      <button class="nc-btn-submit" id="ncSubmitBtn" data-i18n="actions.submit">Submit</button>
+      <button class="nc-btn-cancel" id="ncCancelBtn" data-i18n="client.modal.cancel">Cancel</button>
+      <button class="nc-btn-submit" id="ncSubmitBtn" data-i18n="client.modal.submit">Submit</button>
     </div>
   </div>
 </div>
@@ -214,15 +214,15 @@
 <div class="claim-detail-panel" id="claimDetailPanel">
   <div class="cdp-header">
     <div class="cdp-header-left">
-      <div class="cdp-title" id="cdpTitle">Claim Details</div>
+      <div class="cdp-title" id="cdpTitle" data-i18n="client.modal.claim_details">Claim Details</div>
       <div class="cdp-subtitle" id="cdpSubtitle">Reference — —</div>
     </div>
-    <button class="btn-close-panel" id="cdpCloseBtn" aria-label="Close">X</button>
+    <button class="btn-close-panel" id="cdpCloseBtn" aria-label="Close" data-i18n-aria-label="client.modal.close">X</button>
   </div>
   <div class="cdp-body" id="cdpBody"></div>
   <div class="cdp-footer">
-    <button class="btn-cdp-secondary" id="cdpFooterClose">Close</button>
-    <button class="btn-cdp-primary" id="cdpAttachBtn">Contact Support</button>
+    <button class="btn-cdp-secondary" id="cdpFooterClose" data-i18n="client.modal.close">Close</button>
+    <button class="btn-cdp-primary" id="cdpAttachBtn" data-i18n="auto.contact_advisor">Contact Support</button>
   </div>
 </div>
 
@@ -235,48 +235,48 @@
     <div class="dash-sidebar__logo">
       <div class="dash-sidebar__logo-text">
         <span class="dash-sidebar__logo-name">CAAR</span>
-        <span class="dash-sidebar__logo-sub">Client Space</span>
+        <span class="dash-sidebar__logo-sub" data-i18n="client.sidebar.client_space">Client Space</span>
       </div>
     </div>
     <div class="dash-sidebar__user">
       <div class="dash-sidebar__avatar">?</div>
       <div class="dash-sidebar__user-info">
-        <span class="dash-sidebar__user-name">Loading…</span>
-        <span class="dash-sidebar__user-role">client</span>
+        <span class="dash-sidebar__user-name" data-i18n="dashboard.loading">Loading…</span>
+        <span class="dash-sidebar__user-role" data-i18n="auth.register.role_client">client</span>
       </div>
     </div>
-    <div class="dash-sidebar__nav-label">Navigation</div>
+    <div class="dash-sidebar__nav-label" data-i18n="client.sidebar.nav_label">Navigation</div>
     <nav class="dash-sidebar__nav">
-      <a href="#" class="dash-nav-item active" data-section="dashboard">
+      <a href="#" class="dash-nav-item active" data-section="dashboard" data-i18n="client.sidebar.dashboard">
         <span class="dash-nav-item__icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span>
-        Dashboard
+        <span data-i18n="client.sidebar.dashboard">Dashboard</span>
       </a>
-      <a href="#" class="dash-nav-item" data-section="claims">
+      <a href="#" class="dash-nav-item" data-section="claims" data-i18n="client.sidebar.my_claims">
         <span class="dash-nav-item__icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
-        My Claims
+        <span data-i18n="client.sidebar.my_claims">My Claims</span>
         <span class="dash-nav-item__badge"></span>
       </a>
-      <a href="#" class="dash-nav-item" data-section="roadside">
+      <a href="#" class="dash-nav-item" data-section="roadside" data-i18n="client.sidebar.request_roadside">
         <span class="dash-nav-item__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span>
-        Request Roadside
+        <span data-i18n="client.sidebar.request_roadside">Request Roadside</span>
       </a>
-      <a href="#" class="dash-nav-item" data-section="messages">
+      <a href="#" class="dash-nav-item" data-section="messages" data-i18n="client.sidebar.messages">
         <span class="dash-nav-item__icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-        Messages
+        <span data-i18n="client.sidebar.messages">Messages</span>
       </a>
-      <a href="#" class="dash-nav-item" data-section="contracts">
+      <a href="#" class="dash-nav-item" data-section="contracts" data-i18n="client.sidebar.my_contracts">
         <span class="dash-nav-item__icon"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
-        My Contracts
+        <span data-i18n="client.sidebar.my_contracts">My Contracts</span>
       </a>
-      <a href="#" class="dash-nav-item" data-section="profile">
+      <a href="#" class="dash-nav-item" data-section="profile" data-i18n="client.sidebar.profile">
         <span class="dash-nav-item__icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-        Profile
+        <span data-i18n="client.sidebar.profile">Profile</span>
       </a>
     </nav>
     <div class="dash-sidebar__bottom">
-      <a href="contact.html" class="dash-sidebar__help">
+      <a href="contact.html" class="dash-sidebar__help" data-i18n="client.sidebar.need_help">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Need help? Contact us
+        <span data-i18n="client.sidebar.need_help">Need help? Contact us</span>
       </a>
     </div>
   </aside>
@@ -287,19 +287,19 @@
     <!-- ═══ TOP BAR ═══════════════════════════════════════════════ -->
     <header class="dash-topbar">
       <div class="dash-topbar__left">
-        <button class="dash-topbar__hamburger" id="dashHamburger" aria-label="Open sidebar menu">
+        <button class="dash-topbar__hamburger" id="dashHamburger" aria-label="Open sidebar menu" data-i18n-aria-label="client.sidebar.open_menu">
           <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <div class="dash-topbar__page-icon" id="topbarIcon">
           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
         </div>
         <div class="dash-topbar__title-group">
-          <div class="dash-topbar__title" id="topbarTitle">Dashboard</div>
+          <div class="dash-topbar__title" id="topbarTitle" data-i18n="client.sidebar.dashboard">Dashboard</div>
         </div>
       </div>
 
       <div class="dash-topbar__right">
-        <a href="index.html" class="dash-topbar__btn" aria-label="Homepage" title="Homepage">
+        <a href="index.html" class="dash-topbar__btn" aria-label="Homepage" title="Homepage" data-i18n-aria-label="client.topbar.homepage" data-i18n-title="client.topbar.homepage">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
             <polyline points="9 22 9 12 15 12 15 22"/>
@@ -308,18 +308,18 @@
 
         <!-- Notification bell -->
         <div class="dtb-dropdown-wrap" id="notifWrap">
-          <button class="dash-topbar__btn" id="notifBtn" aria-label="Notifications" aria-expanded="false" aria-haspopup="true">
+          <button class="dash-topbar__btn" id="notifBtn" aria-label="Notifications" aria-expanded="false" aria-haspopup="true" data-i18n-aria-label="client.topbar.notifications">
             <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             <span class="dtb-notif-dot" id="notifDot" hidden></span>
           </button>
           <div class="dtb-dropdown dtb-dropdown--notif" id="notifDropdown" role="menu" hidden>
             <div class="dtb-dropdown__header">
-              <span>Notifications</span>
-              <button class="dtb-mark-read" id="markAllRead">Mark all read</button>
+              <span data-i18n="client.topbar.notifications">Notifications</span>
+              <button class="dtb-mark-read" id="markAllRead" data-i18n="client.topbar.mark_all_read">Mark all read</button>
             </div>
             <ul class="dtb-notif-list" id="notifList"></ul>
             <div class="dtb-dropdown__footer">
-              <span class="dtb-notif-empty" id="notifEmpty">No new notifications</span>
+              <span class="dtb-notif-empty" id="notifEmpty" data-i18n="client.topbar.no_notifications">No new notifications</span>
             </div>
           </div>
         </div>
@@ -328,41 +328,41 @@
         <div class="dtb-dropdown-wrap" id="userWrap">
           <button class="dash-topbar__user" id="userMenuBtn" aria-expanded="false" aria-haspopup="true">
             <div class="dash-topbar__user-avatar" id="topbarAvatar">?</div>
-            <span class="dash-topbar__user-name" id="topbarName">Loading…</span>
+            <span class="dash-topbar__user-name" id="topbarName" data-i18n="dashboard.loading">Loading…</span>
             <svg class="dash-topbar__user-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="dtb-dropdown dtb-dropdown--user" id="userDropdown" role="menu" hidden>
             <div class="dtb-dropdown__header">
               <span id="dropFullName">—</span>
-              <span class="dtb-role-badge" id="dropRole">client</span>
+              <span class="dtb-role-badge" id="dropRole" data-i18n="auth.register.role_client">client</span>
             </div>
             <hr class="dtb-divider"/>
             <ul class="dtb-menu-list">
               <li>
-                <a href="client-dashboard.html" class="dtb-menu-item" role="menuitem">
+                <a href="client-dashboard.html" class="dtb-menu-item" role="menuitem" data-i18n="client.sidebar.dashboard">
                   <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                  Dashboard
+                  <span data-i18n="client.sidebar.dashboard">Dashboard</span>
                 </a>
               </li>
               <li>
-                <button class="dtb-menu-item" id="goToProfile" role="menuitem">
+                <button class="dtb-menu-item" id="goToProfile" role="menuitem" data-i18n="client.topbar.my_profile">
                   <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  My Profile
+                  <span data-i18n="client.topbar.my_profile">My Profile</span>
                 </button>
               </li>
               <li>
-                <a href="index.html" class="dtb-menu-item" role="menuitem">
+                <a href="index.html" class="dtb-menu-item" role="menuitem" data-i18n="client.topbar.homepage">
                   <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                  Homepage
+                  <span data-i18n="client.topbar.homepage">Homepage</span>
                 </a>
               </li>
             </ul>
             <hr class="dtb-divider"/>
             <ul class="dtb-menu-list">
               <li>
-                <button class="dtb-menu-item dtb-menu-item--danger" id="logoutDropBtn" role="menuitem">
+                <button class="dtb-menu-item dtb-menu-item--danger" id="logoutDropBtn" role="menuitem" data-i18n="client.topbar.logout">
                   <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                  Logout
+                  <span data-i18n="client.topbar.logout">Logout</span>
                 </button>
               </li>
             </ul>
@@ -379,28 +379,28 @@
 
         <!-- Welcome header -->
         <div class="dash-content__header">
-          <h1 class="dash-content__header-title">Welcome back</h1>
-          <p class="dash-content__header-sub">Here's everything happening on your CAAR account.</p>
+          <h1 class="dash-content__header-title" data-i18n="client.dashboard.welcome">Welcome back</h1>
+          <p class="dash-content__header-sub" data-i18n="client.dashboard.welcome_sub">Here's everything happening on your CAAR account.</p>
         </div>
 
         <!-- ── PRIMARY ACTION BAR ──────────────────────────────── -->
         <div class="action-bar">
-          <span class="action-bar-label">Quick actions</span>
+          <span class="action-bar-label" data-i18n="client.dashboard.quick_actions">Quick actions</span>
           <button class="action-bar-btn action-bar-btn--primary" id="qaNewClaim">
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            File a Claim
+            <span data-i18n="client.dashboard.file_claim">File a Claim</span>
           </button>
           <button class="action-bar-btn action-bar-btn--secondary" id="qaRoadside">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-            Request Roadside
+            <span data-i18n="client.sidebar.request_roadside">Request Roadside</span>
           </button>
           <a href="contact.html" class="action-bar-btn action-bar-btn--secondary">
             <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Contact Support
+            <span data-i18n="auto.contact_advisor">Contact Support</span>
           </a>
           <a href="Online_subscription.html" class="action-bar-btn action-bar-btn--secondary" style="margin-left:auto;">
             <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Get Insured
+            <span data-i18n="client.dashboard.get_insured">Get Insured</span>
           </a>
         </div>
 
@@ -409,37 +409,37 @@
 
         <!-- ── SUMMARY CARDS (clickable) ──────────────────────── -->
         <div class="summary-cards">
-          <div class="summary-card summary-card--orange" style="cursor:pointer;" title="Click to view all claims">
+          <div class="summary-card summary-card--orange" style="cursor:pointer;" title="Click to view all claims" data-i18n-title="dashboard.view_all_claims">
             <div class="sc-icon sc-icon--orange">
               <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             </div>
-            <div class="sc-label">Total Claims</div>
+            <div class="sc-label" data-i18n="client.dashboard.total_claims">Total Claims</div>
             <div class="sc-value">—</div>
             <div class="sc-sub"><span class="sc-sub-dot sc-sub-dot--gray"></span><span>—</span></div>
           </div>
-          <div class="summary-card summary-card--amber" style="cursor:pointer;" title="Click to view active claims">
+          <div class="summary-card summary-card--amber" style="cursor:pointer;" title="Click to view active claims" data-i18n-title="dashboard.view_active_claims">
             <div class="sc-icon sc-icon--amber">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             </div>
-            <div class="sc-label">Active Claims</div>
+            <div class="sc-label" data-i18n="client.dashboard.active_claims">Active Claims</div>
             <div class="sc-value">—</div>
             <div class="sc-sub"><span class="sc-sub-dot sc-sub-dot--amber"></span><span>—</span></div>
           </div>
-          <div class="summary-card summary-card--blue" style="cursor:pointer;" title="Click to view contracts">
+          <div class="summary-card summary-card--blue" style="cursor:pointer;" title="Click to view contracts" data-i18n-title="dashboard.view_all_contracts">
             <div class="sc-icon sc-icon--blue">
               <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             </div>
-            <div class="sc-label">Contracts</div>
+            <div class="sc-label" data-i18n="client.dashboard.contracts">Contracts</div>
             <div class="sc-value">—</div>
-            <div class="sc-sub"><span class="sc-sub-dot sc-sub-dot--green"></span>Loaded from API</div>
+            <div class="sc-sub"><span class="sc-sub-dot sc-sub-dot--green"></span><span data-i18n="client.dashboard.loaded_from_api">Loaded from API</span></div>
           </div>
           <div class="summary-card summary-card--green">
             <div class="sc-icon sc-icon--green">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </div>
-            <div class="sc-label">Payments</div>
+            <div class="sc-label" data-i18n="client.dashboard.payments">Payments</div>
             <div class="sc-value">—</div>
-            <div class="sc-sub"><span class="sc-sub-dot sc-sub-dot--green"></span>Total count</div>
+            <div class="sc-sub"><span class="sc-sub-dot sc-sub-dot--green"></span><span data-i18n="client.dashboard.total_count">Total count</span></div>
           </div>
         </div>
 
@@ -449,8 +449,8 @@
           <!-- Recent Activity -->
           <div class="activity-card">
             <div class="activity-card-header">
-              <div class="activity-card-title">Recent Activity</div>
-              <button class="activity-card-link" id="viewAllClaims" style="background:none;border:none;cursor:pointer;font-size:.78rem;color:var(--orange);font-weight:600;">
+              <div class="activity-card-title" data-i18n="client.dashboard.recent_activity">Recent Activity</div>
+              <button class="activity-card-link" id="viewAllClaims" style="background:none;border:none;cursor:pointer;font-size:.78rem;color:var(--orange);font-weight:600;" data-i18n="client.dashboard.view_all">
                 View all →
               </button>
             </div>
@@ -461,8 +461,8 @@
                   <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 </div>
                 <div class="activity-body">
-                  <div class="activity-body-title">Loading activity…</div>
-                  <div class="activity-body-sub">Fetching your recent claims and requests</div>
+                  <div class="activity-body-title" data-i18n="client.dashboard.loading_activity">Loading activity…</div>
+                  <div class="activity-body-sub" data-i18n="client.dashboard.loading_activity_sub">Fetching your recent claims and requests</div>
                 </div>
               </div>
             </div>
@@ -472,17 +472,17 @@
           <div>
             <!-- Contextual next step -->
             <div class="next-step-widget" style="margin-bottom:16px;">
-              <div class="next-step-widget-header">
+              <div class="next-step-widget-header" data-i18n="client.dashboard.next_step_title">
                 What to do next
               </div>
               <div class="next-step-widget-body" id="nextStepWidget">
-                <div style="font-size:.78rem;color:var(--gray);">Loading your account state…</div>
+                <div style="font-size:.78rem;color:var(--gray);" data-i18n="client.dashboard.loading_state">Loading your account state…</div>
               </div>
             </div>
 
             <!-- Support widget -->
             <div class="dash-widget">
-              <div class="dash-widget-header">Quick Support</div>
+              <div class="dash-widget-header" data-i18n="client.dashboard.support_title">Quick Support</div>
               <div class="dash-widget-body">
                 <div class="support-line">
                   <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 12.7"/></svg>
@@ -494,7 +494,7 @@
                 </div>
                 <div class="support-line">
                   <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/></svg>
-                  <span>Sun–Thu · 08:30–17:00</span>
+                  <span data-i18n="footer.hours">Sun–Thu · 08:30–17:00</span>
                 </div>
               </div>
             </div>
@@ -505,33 +505,33 @@
       <!-- SECTION: MY CLAIMS ───────────────────────────────────── -->
       <div class="dash-section" id="claims-section">
         <div class="dash-content__header">
-          <h1 class="dash-content__header-title">My Claims</h1>
-          <p class="dash-content__header-sub">Track your insurance claims. Click any row to view details and timeline.</p>
+          <h1 class="dash-content__header-title" data-i18n="client.sidebar.my_claims">My Claims</h1>
+          <p class="dash-content__header-sub" data-i18n="client.claims.track_sub">Track your insurance claims. Click any row to view details and timeline.</p>
         </div>
         <div class="claims-controls-bar">
           <div class="claims-controls-left">
-            <span class="claims-filter-label">Filter by:</span>
+            <span class="claims-filter-label" data-i18n="client.claims.filter_label">Filter by:</span>
             <select class="claims-filter-select" id="claimsFilterSelect">
-              <option value="all">All Statuses</option>
+              <option value="all" data-i18n="client.claims.all_statuses">All Statuses</option>
               <option value="pending" data-i18n="status.pending">Pending</option>
-              <option value="under_review">Under Review</option>
-              <option value="expert_assigned">Expert Assigned</option>
-              <option value="reported">Reported</option>
-              <option value="closed">Closed</option>
-              <option value="rejected">Rejected</option>
+              <option value="under_review" data-i18n="status.under_review">Under Review</option>
+              <option value="expert_assigned" data-i18n="status.expert_assigned">Expert Assigned</option>
+              <option value="reported" data-i18n="status.reported">Reported</option>
+              <option value="closed" data-i18n="status.closed">Closed</option>
+              <option value="rejected" data-i18n="status.rejected">Rejected</option>
             </select>
-            <span class="claims-result-count">Showing <strong id="claimsCountNum">—</strong> claims</span>
+            <span class="claims-result-count"><span data-i18n="client.claims.showing">Showing</span> <strong id="claimsCountNum">—</strong> <span data-i18n="client.claims.claims_count">claims</span></span>
           </div>
           <button class="btn-new-claim" id="claimsNewClaimBtn">
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            New Claim
+            <span data-i18n="client.modal.new_claim">New Claim</span>
           </button>
         </div>
         <div class="claims-table-card">
           <div class="claims-table-scroll">
             <table class="claims-tbl" id="claimsTable">
               <thead>
-                <tr><th>Claim ID</th><th>Date Filed</th><th>Contract</th><th>Status</th><th>Action</th></tr>
+                <tr><th data-i18n="client.claims.table.id">Claim ID</th><th data-i18n="client.claims.table.date">Date Filed</th><th data-i18n="client.claims.table.contract">Contract</th><th data-i18n="client.claims.table.status">Status</th><th data-i18n="client.claims.table.action">Action</th></tr>
               </thead>
               <tbody id="claimsTableBody"></tbody>
             </table>
@@ -540,8 +540,8 @@
             <div class="claims-empty-icon">
               <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             </div>
-            <div class="claims-empty-title">No claims yet</div>
-            <div class="claims-empty-sub">File your first claim using the "New Claim" button above.</div>
+            <div class="claims-empty-title" data-i18n="client.claims.no_claims">No claims yet</div>
+            <div class="claims-empty-sub" data-i18n="client.claims.no_claims_sub">File your first claim using the "New Claim" button above.</div>
           </div>
         </div>
       </div><!-- /claims-section -->
@@ -549,17 +549,17 @@
       <!-- SECTION: ROADSIDE ────────────────────────────────────── -->
       <div class="dash-section" id="roadside-section">
         <div class="dash-content__header">
-          <h1 class="dash-content__header-title">Request Roadside Assistance</h1>
-          <p class="dash-content__header-sub">Fill in the form and our team will dispatch assistance to your location.</p>
+          <h1 class="dash-content__header-title" data-i18n="client.roadside.request_title">Request Roadside Assistance</h1>
+          <p class="dash-content__header-sub" data-i18n="client.roadside.request_sub">Fill in the form and our team will dispatch assistance to your location.</p>
         </div>
         <div class="roadside-alert">
           <div class="roadside-alert-icon">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><circle cx="12" cy="16.5" r="1"></circle></svg>
           </div>
           <div class="roadside-alert-text">
-            <div class="roadside-alert-title">Emergency? Call us first!</div>
-            <div class="roadside-alert-sub">For immediate roadside danger, call our 24/7 hotline directly.
-              <span class="roadside-alert-phone">Call: +213 (0)21 63 20 72</span></div>
+            <div class="roadside-alert-title" data-i18n="client.roadside.emergency_title">Emergency? Call us first!</div>
+            <div class="roadside-alert-sub"><span data-i18n="client.roadside.emergency_sub">For immediate roadside danger, call our 24/7 hotline directly.</span>
+              <span class="roadside-alert-phone" data-i18n="client.roadside.hotline">Call: +213 (0)21 63 20 72</span></div>
           </div>
         </div>
         <div class="roadside-request-wrap">
@@ -570,60 +570,60 @@
                   <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
                 </div>
                 <div>
-                  <div class="roadside-form-header-title">Assistance Request Form</div>
-                  <div class="roadside-form-header-sub">Response time: under 45 minutes</div>
+                  <div class="roadside-form-header-title" data-i18n="client.roadside.form_title">Assistance Request Form</div>
+                  <div class="roadside-form-header-sub" data-i18n="client.roadside.response_time">Response time: under 45 minutes</div>
                 </div>
               </div>
               <div class="roadside-form-body" id="roadsideFormBody">
-                <div class="rf-group-title">Type of Problem</div>
+                <div class="rf-group-title" data-i18n="client.roadside.problem_type">Type of Problem</div>
                 <div class="rf-problem-chips" id="rfProblemChips">
-                  <div class="rf-problem-chip" data-problem="Breakdown">Breakdown</div>
-                  <div class="rf-problem-chip" data-problem="Flat Tyre">Flat Tyre</div>
-                  <div class="rf-problem-chip" data-problem="Battery Dead">Battery Dead</div>
-                  <div class="rf-problem-chip" data-problem="Accident">Accident</div>
-                  <div class="rf-problem-chip" data-problem="Locked Out">Locked Out</div>
-                  <div class="rf-problem-chip" data-problem="Out of Fuel">Out of Fuel</div>
-                  <div class="rf-problem-chip" data-problem="Other">Other</div>
+                  <div class="rf-problem-chip" data-problem="Breakdown" data-i18n="client.roadside.problem_breakdown">Breakdown</div>
+                  <div class="rf-problem-chip" data-problem="Flat Tyre" data-i18n="client.roadside.problem_flat_tyre">Flat Tyre</div>
+                  <div class="rf-problem-chip" data-problem="Battery Dead" data-i18n="client.roadside.problem_battery">Battery Dead</div>
+                  <div class="rf-problem-chip" data-problem="Accident" data-i18n="client.roadside.problem_accident">Accident</div>
+                  <div class="rf-problem-chip" data-problem="Locked Out" data-i18n="client.roadside.problem_locked">Locked Out</div>
+                  <div class="rf-problem-chip" data-problem="Out of Fuel" data-i18n="client.roadside.problem_fuel">Out of Fuel</div>
+                  <div class="rf-problem-chip" data-problem="Other" data-i18n="client.roadside.problem_other">Other</div>
                 </div>
                 <input type="hidden" id="rfProblemType" value=""/>
-                <div class="rf-group-title">Roadside Contract</div>
+                <div class="rf-group-title" data-i18n="client.roadside.contract_label">Roadside Contract</div>
                 <div class="rf-grid">
                   <div class="rf-field rf-full">
-                    <label for="rfContractSelect">Active roadside contract <span class="req">*</span></label>
+                    <label for="rfContractSelect"><span data-i18n="client.roadside.contract_label">Active roadside contract</span> <span class="req">*</span></label>
                     <select class="rf-select" id="rfContractSelect">
-                      <option value="">Loading roadside contracts...</option>
+                      <option value="" data-i18n="client.roadside.contract_loading">Loading roadside contracts...</option>
                     </select>
                   </div>
                 </div>
-                <div class="rf-group-title">Vehicle Information</div>
+                <div class="rf-group-title" data-i18n="client.roadside.vehicle_info">Vehicle Information</div>
                 <div class="rf-grid">
-                  <div class="rf-field"><label for="rfLicensePlate">License Plate <span class="req">*</span></label><input type="text" class="rf-input" id="rfLicensePlate" placeholder="e.g. 12345-16-001"/></div>
-                  <div class="rf-field"><label for="rfBrand">Brand / Model</label><input type="text" class="rf-input" id="rfBrand" placeholder="e.g. Renault Clio"/></div>
+                  <div class="rf-field"><label for="rfLicensePlate"><span data-i18n="client.roadside.license_plate">License Plate</span> <span class="req">*</span></label><input type="text" class="rf-input" id="rfLicensePlate" placeholder="e.g. 12345-16-001" data-i18n-placeholder="client.roadside.license_plate_placeholder"/></div>
+                  <div class="rf-field"><label for="rfBrand" data-i18n="client.roadside.brand_model">Brand / Model</label><input type="text" class="rf-input" id="rfBrand" placeholder="e.g. Renault Clio" data-i18n-placeholder="client.roadside.brand_placeholder"/></div>
                 </div>
-                <div class="rf-group-title">Your Location</div>
+                <div class="rf-group-title" data-i18n="client.roadside.your_location">Your Location</div>
                 <div class="rf-grid">
                   <div class="rf-field">
-                    <label for="rfWilaya">Wilaya <span class="req">*</span></label>
+                    <label for="rfWilaya"><span data-i18n="client.roadside.wilaya">Wilaya</span> <span class="req">*</span></label>
                     <select class="rf-select" id="rfWilaya">
-                      <option value="">Select wilaya…</option>
-                      <option value="16">16 — Alger</option>
-                      <option value="09">09 — Blida</option>
-                      <option value="25">25 — Constantine</option>
-                      <option value="31">31 — Oran</option>
+                      <option value="" data-i18n="client.roadside.select_wilaya">Select wilaya…</option>
+                      <option value="16" data-i18n="wilaya.16">16 — Alger</option>
+                      <option value="09" data-i18n="wilaya.09">09 — Blida</option>
+                      <option value="25" data-i18n="wilaya.25">25 — Constantine</option>
+                      <option value="31" data-i18n="wilaya.31">31 — Oran</option>
                     </select>
                   </div>
-                  <div class="rf-field"><label for="rfCity">Nearest City / Area</label><input type="text" class="rf-input" id="rfCity" placeholder="e.g. Bab El Oued"/></div>
+                  <div class="rf-field"><label for="rfCity" data-i18n="client.roadside.city">Nearest City / Area</label><input type="text" class="rf-input" id="rfCity" placeholder="e.g. Bab El Oued" data-i18n-placeholder="client.roadside.city_placeholder"/></div>
                 </div>
                 <div class="rf-grid">
-                  <div class="rf-field rf-full"><label for="rfAddress">Street / Landmark <span class="req">*</span></label><input type="text" class="rf-input" id="rfAddress" placeholder="Nearest landmark or road name…"/></div>
+                  <div class="rf-field rf-full"><label for="rfAddress"><span data-i18n="client.roadside.address">Street / Landmark</span> <span class="req">*</span></label><input type="text" class="rf-input" id="rfAddress" placeholder="Nearest landmark or road name…" data-i18n-placeholder="client.roadside.address_placeholder"/></div>
                 </div>
-                <div class="rf-group-title">Problem Description</div>
-                <div class="rf-field"><label for="rfDescription">Describe the issue <span class="req">*</span></label><textarea class="rf-textarea" id="rfDescription" placeholder="Briefly describe what happened…"></textarea></div>
-                <div class="rf-group-title">Contact</div>
+                <div class="rf-group-title" data-i18n="client.roadside.description">Problem Description</div>
+                <div class="rf-field"><label for="rfDescription"><span data-i18n="client.roadside.description">Describe the issue</span> <span class="req">*</span></label><textarea class="rf-textarea" id="rfDescription" placeholder="Briefly describe what happened…" data-i18n-placeholder="client.roadside.description_placeholder"></textarea></div>
+                <div class="rf-group-title" data-i18n="careers.apply.field_commercial">Contact</div>
                 <div class="rf-grid">
-                  <div class="rf-field"><label for="rfPhone">Your Phone <span class="req">*</span></label><input type="tel" class="rf-input" id="rfPhone" placeholder="05XX XX XX XX"/></div>
+                  <div class="rf-field"><label for="rfPhone"><span data-i18n="client.roadside.phone">Your Phone</span> <span class="req">*</span></label><input type="tel" class="rf-input" id="rfPhone" placeholder="05XX XX XX XX" data-i18n-placeholder="client.roadside.phone_placeholder"/></div>
                 </div>
-                <button class="btn-roadside-submit" id="btnRoadsideSubmit">
+                <button class="btn-roadside-submit" id="btnRoadsideSubmit" data-i18n="client.roadside.submit">
                   Send Assistance Request
                 </button>
               </div>
@@ -631,23 +631,23 @@
                 <div class="roadside-success-icon">
                   <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
-                <div class="roadside-success-title">Request Sent!</div>
-                <div class="roadside-success-sub">Our team will contact you within <strong>15 minutes</strong>.</div>
+                <div class="roadside-success-title" data-i18n="client.roadside.success_title">Request Sent!</div>
+                <div class="roadside-success-sub" data-i18n="client.roadside.success_sub">Our team will contact you within <strong>15 minutes</strong>.</div>
                 <div class="roadside-success-ref" id="rsRequestRef">REF — —</div>
                 <div class="roadside-success-actions">
-                  <button class="btn-rs-success-secondary" id="roadsideResetBtn">Submit Another</button>
+                  <button class="btn-rs-success-secondary" id="roadsideResetBtn" data-i18n="client.roadside.submit_another">Submit Another</button>
                 </div>
               </div>
             </div>
           </div>
           <aside class="roadside-sidebar">
             <div class="roadside-info-card">
-              <div class="roadside-info-card-header">
+              <div class="roadside-info-card-header" data-i18n="client.roadside.my_requests">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 My Roadside Requests
               </div>
               <div class="roadside-info-card-body" id="roadsideRequestsList">
-                <div class="roadside-list-empty">Loading your requests...</div>
+                <div class="roadside-list-empty" data-i18n="client.roadside.loading_requests">Loading your requests...</div>
               </div>
             </div>
           </aside>
@@ -657,30 +657,30 @@
       <!-- SECTION: MESSAGES ────────────────────────────────────── -->
       <div class="dash-section" id="messages-section">
         <div class="dash-content__header">
-          <h1 class="dash-content__header-title">Messages</h1>
-          <p class="dash-content__header-sub">Send a message to CAAR support and track your submitted requests.</p>
+          <h1 class="dash-content__header-title" data-i18n="client.messages.title">Messages</h1>
+          <p class="dash-content__header-sub" data-i18n="client.messages.sub">Send a message to CAAR support and track your submitted requests.</p>
         </div>
         <div id="messagesApiMsg" style="display:none;margin-bottom:12px;"></div>
         <div class="messages-layout">
           <section class="message-compose-card">
-            <div class="message-card-title">New Message</div>
+            <div class="message-card-title" data-i18n="client.messages.new_message">New Message</div>
             <div class="message-field">
-              <label for="msgSubject">Subject</label>
-              <input class="message-input" id="msgSubject" type="text" maxlength="200" placeholder="How can we help?"/>
+              <label for="msgSubject" data-i18n="client.messages.subject">Subject</label>
+              <input class="message-input" id="msgSubject" type="text" maxlength="200" placeholder="How can we help?" data-i18n-placeholder="client.messages.subject_placeholder"/>
             </div>
             <div class="message-field">
-              <label for="msgContent">Message</label>
-              <textarea class="message-textarea" id="msgContent" maxlength="2000" placeholder="Write your message to CAAR support..."></textarea>
+              <label for="msgContent" data-i18n="client.modal.description">Message</label>
+              <textarea class="message-textarea" id="msgContent" maxlength="2000" placeholder="Write your message to CAAR support..." data-i18n-placeholder="client.messages.message_placeholder"></textarea>
             </div>
-            <button class="message-submit-btn" id="msgSubmitBtn">Send Message</button>
+            <button class="message-submit-btn" id="msgSubmitBtn" data-i18n="client.messages.send">Send Message</button>
           </section>
           <section class="messages-list-card">
             <div class="messages-list-header">
-              <div class="message-card-title">My Messages</div>
-              <button class="messages-refresh-btn" id="messagesRefreshBtn">Refresh</button>
+              <div class="message-card-title" data-i18n="client.messages.my_messages">My Messages</div>
+              <button class="messages-refresh-btn" id="messagesRefreshBtn" data-i18n="admin.refresh">Refresh</button>
             </div>
             <div class="messages-list" id="messagesList">
-              <div class="messages-empty">Loading your messages...</div>
+              <div class="messages-empty" data-i18n="dashboard.loading_messages">Loading your messages...</div>
             </div>
           </section>
         </div>
@@ -689,11 +689,11 @@
       <!-- SECTION: MY CONTRACTS ────────────────────────────────── -->
       <div class="dash-section" id="contracts-section">
         <div class="dash-content__header">
-          <h1 class="dash-content__header-title">My Contracts</h1>
-          <p class="dash-content__header-sub">All your active and past insurance policies.</p>
+          <h1 class="dash-content__header-title" data-i18n="client.contracts.title">My Contracts</h1>
+          <p class="dash-content__header-sub" data-i18n="client.contracts.sub">All your active and past insurance policies.</p>
         </div>
         <div id="contracts-cards-grid">
-          <div style="padding:40px;text-align:center;color:#999;font-size:.84rem;grid-column:1/-1;">Open this section to load your contracts.</div>
+          <div style="padding:40px;text-align:center;color:#999;font-size:.84rem;grid-column:1/-1;" data-i18n="client.contracts.open_to_load">Open this section to load your contracts.</div>
         </div>
       </div><!-- /contracts-section -->
 
@@ -701,23 +701,23 @@
       <div class="dash-section" id="profile-section">
         <div id="profileApiMsg" style="display:none;margin-bottom:12px;"></div>
         <div class="dash-content__header">
-          <h1 class="dash-content__header-title">My Profile</h1>
-          <p class="dash-content__header-sub">Manage your personal information and account settings.</p>
+          <h1 class="dash-content__header-title" data-i18n="client.profile.title">My Profile</h1>
+          <p class="dash-content__header-sub" data-i18n="client.profile.sub">Manage your personal information and account settings.</p>
         </div>
         <div class="profile-new-layout">
           <div class="profile-avatar-card">
             <div class="pac-circle">?</div>
             <div class="pac-name">—</div>
-            <div class="pac-role">client</div>
+            <div class="pac-role" data-i18n="auth.register.role_client">client</div>
           </div>
           <div class="profile-forms-col">
             <div class="profile-form-block">
-              <div class="pfb-title">Personal Information</div>
+              <div class="pfb-title" data-i18n="client.profile.personal_info">Personal Information</div>
               <div class="pfb-grid">
-                <div class="pfb-field"><label>First Name</label><input class="pfb-input" type="text" id="pf-first"/></div>
-                <div class="pfb-field"><label>Last Name</label><input class="pfb-input" type="text" id="pf-last"/></div>
-                <div class="pfb-field pfb-field--full"><label>Email Address</label><input class="pfb-input" type="email" id="pf-email"/></div>
-                <div class="pfb-field pfb-field--full"><label>Phone Number</label><input class="pfb-input" type="tel" id="pf-phone"/></div>
+                <div class="pfb-field"><label data-i18n="client.profile.first_name">First Name</label><input class="pfb-input" type="text" id="pf-first"/></div>
+                <div class="pfb-field"><label data-i18n="client.profile.last_name">Last Name</label><input class="pfb-input" type="text" id="pf-last"/></div>
+                <div class="pfb-field pfb-field--full"><label data-i18n="client.profile.email">Email Address</label><input class="pfb-input" type="email" id="pf-email"/></div>
+                <div class="pfb-field pfb-field--full"><label data-i18n="client.profile.phone">Phone Number</label><input class="pfb-input" type="tel" id="pf-phone"/></div>
               </div>
               <div class="pfb-actions">
                 <button class="pfb-btn-primary" id="pfSaveBtn" data-i18n="profile.save_changes">Save Changes</button>
@@ -735,7 +735,7 @@
                 <div class="pfb-field"><label data-i18n="profile.new_password_label">New Password</label><input class="pfb-input" type="password" id="pf-pw-new" placeholder="Min 8 characters" data-i18n-placeholder="profile.new_password_placeholder"/></div>
                 <div class="pfb-field"><label data-i18n="profile.confirm_password_label">Confirm New Password</label><input class="pfb-input" type="password" id="pf-pw-confirm" placeholder="Repeat new password" data-i18n-placeholder="profile.confirm_password_placeholder"/></div>
               </div>
-              <div class="pfb-actions"><button class="pfb-btn-primary" id="pfPwBtn">Update Password</button></div>
+              <div class="pfb-actions"><button class="pfb-btn-primary" id="pfPwBtn" data-i18n="profile.update_password_btn">Update Password</button></div>
               <div class="pfb-success" id="pfb-pw-success" style="display:none;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                 <span data-i18n="profile.password_changed_success">Password changed successfully.</span>
