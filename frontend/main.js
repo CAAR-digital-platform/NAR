@@ -234,7 +234,7 @@
 
     /* User dropdown — driven ONLY by .open class */
     '.user-dropdown {',
-    '  position:absolute; top:calc(100% + 10px); right:0;',
+    '  position:absolute; top:calc(100% + 10px); inset-inline-end:0;',
     '  background:#fff; border-radius:12px; min-width:200px;',
     '  box-shadow:0 12px 32px rgba(0,0,0,0.13); border:1px solid #f0ece6;',
     '  padding:6px 0; z-index:9999;',
@@ -282,7 +282,7 @@
     /* Language dropdown */
     '.lang-dropdown { position:relative; }',
     '.lang-dropdown-menu {',
-    '  position:absolute; top:calc(100% + 8px); right:0;',
+    '  position:absolute; top:calc(100% + 8px); inset-inline-end:0;',
     '  background:#fff; border:1px solid #e8e0d8; border-radius:10px;',
     '  min-width:155px; box-shadow:0 8px 24px rgba(0,0,0,.11);',
     '  list-style:none; padding:5px 0; z-index:1010;',

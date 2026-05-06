@@ -16,7 +16,7 @@
 
 .smart-search__icon {
   position: absolute;
-  left: 18px;
+  inset-inline-start: 18px;
   top: 50%;
   transform: translateY(-50%);
   color: #8f714a;
@@ -38,6 +38,7 @@
   color: #1f2937;
   font-size: 0.96rem;
   font-weight: 500;
+  text-align: start;
 }
 
 .hdr-search-input::placeholder {
@@ -54,7 +55,7 @@
 
 .smart-search__clear {
   position: absolute;
-  right: 12px;
+  inset-inline-end: 12px;
   top: 50%;
   transform: translateY(-50%);
   width: 32px;
@@ -147,7 +148,7 @@
   border: 0;
   border-radius: 18px;
   background: transparent;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   transition: background 0.16s ease, transform 0.16s ease;
 }
@@ -221,6 +222,7 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  justify-self: end;
 }
 
 .search-footer-note {
@@ -229,29 +231,16 @@
   font-size: 0.75rem;
 }
 
-body.rtl .smart-search__icon {
-  left: auto;
-  right: 18px;
-}
-
-body.rtl .smart-search__clear {
-  right: auto;
-  left: 12px;
-}
-
-body.rtl .hdr-search-input {
-  padding-left: 48px;
-  padding-right: 52px;
-  text-align: right;
-}
-
+html[dir="rtl"] .search-result-item,
 body.rtl .search-result-item {
-  text-align: right;
+  direction: rtl;
 }
 
+html[dir="rtl"] .search-result-item__meta,
 body.rtl .search-result-item__meta {
   justify-self: start;
 }
+
 
 @media (max-width: 768px) {
   .smart-search {
@@ -277,13 +266,13 @@ body.rtl .search-result-item__meta {
 
 @media (max-width: 480px) {
   .hdr-search-input {
-    padding-left: 44px;
-    padding-right: 44px;
+    padding-inline-start: 44px;
+    padding-inline-end: 44px;
     font-size: 0.92rem;
   }
 
   .smart-search__icon {
-    left: 16px;
+    inset-inline-start: 16px;
   }
 
   .search-result-item {
