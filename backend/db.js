@@ -98,9 +98,25 @@ async function ensureClientIntegrity() {
 
         await conn.query(`
             ALTER TABLE clients
-            ADD UNIQUE INDEX uq_clients_user_id (user_id)
+            ADD CONSTRAINT uq_clients_user_id UNIQUE (user_id)
         `);
-        console.log("✅ clients.user_id unique index added (uq_clients_user_id)");
+        console.log("✅ clients.user_id unique constraint added");
+    } finally {
+        conn.release();
+    }
+}
+
+async function ensureRoadsideStatusSchema() {
+    const conn = await pool.getConnection();
+    try {
+        await conn.query(`
+            ALTER TABLE roadside_requests 
+            MODIFY COLUMN status ENUM('pending','dispatched','on_site','resolved','closed') 
+            NOT NULL DEFAULT 'pending'
+        `);
+        console.log("✅ roadside_requests.status enum updated");
+    } catch (err) {
+        console.error("❌ Failed to update roadside_requests.status enum:", err.message);
     } finally {
         conn.release();
     }
@@ -231,6 +247,12 @@ pool.getConnection()
             await ensureHomepageProductsSchema();
         } catch (hpErr) {
             console.error("❌ Erreur migration homepage_products:", hpErr.message);
+        }
+
+        try {
+            await ensureRoadsideStatusSchema();
+        } catch (roadsideErr) {
+            console.error("❌ Erreur migration roadside_requests.status:", roadsideErr.message);
         }
     })
     .catch((err) => {

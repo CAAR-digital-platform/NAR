@@ -365,7 +365,6 @@
 
     if (!list || !list.length) {
       container.innerHTML = '<div class="empty-state">' + (window.i18nSpan ? window.i18nSpan('admin.news.no_articles','No news articles available yet.') : esc('No news articles available yet.')) + '</div>';
-      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(container);
       return;
     }
 
@@ -402,8 +401,6 @@
         '</article>'
       ].join('');
     }).join('');
-
-    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(container);
     updateOptionSuffixes(container);
   }
 
@@ -415,7 +412,6 @@
 
     if (!list || !list.length) {
       container.innerHTML = '<div class="empty-state">' + (window.i18nSpan ? window.i18nSpan('admin.products.no_products', 'No homepage products available.') : esc('No homepage products available.')) + '</div>';
-      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(container);
       return;
     }
 
@@ -465,8 +461,6 @@
         '</article>'
       ].join('');
     }).join('');
-
-    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(container);
   }
 
   async function loadAll(opts) {
@@ -517,17 +511,15 @@
     setStat('sApplications', stats.total_applications || 0);
 
     // Safely normalize API responses into STATE; never assume .data exists
-    STATE.experts = expertsRes && expertsRes.ok && expertsRes.data && Array.isArray(expertsRes.data.experts) ? expertsRes.data.experts : [];
-    STATE.claims = claimsRes && claimsRes.ok && claimsRes.data && Array.isArray(claimsRes.data.claims)
-      ? claimsRes.data.claims
-      : (Array.isArray(STATE.claims) ? STATE.claims : []);
-    STATE.reports = reportsRes && reportsRes.ok && reportsRes.data && Array.isArray(reportsRes.data.reports) ? reportsRes.data.reports : [];
-    STATE.messages = messagesRes && messagesRes.ok && messagesRes.data && Array.isArray(messagesRes.data.messages) ? messagesRes.data.messages : [];
-    STATE.applications = appsRes && appsRes.ok && appsRes.data && Array.isArray(appsRes.data.applications) ? appsRes.data.applications : [];
-    STATE.roadside = roadsideRes && roadsideRes.ok && roadsideRes.data && Array.isArray(roadsideRes.data.requests) ? roadsideRes.data.requests : [];
-    STATE.users = usersRes && usersRes.ok && usersRes.data && Array.isArray(usersRes.data.users) ? usersRes.data.users : [];
-    STATE.news = newsRes && newsRes.ok && (Array.isArray(newsRes.data) ? newsRes.data : (newsRes.data && Array.isArray(newsRes.data.articles) ? newsRes.data.articles : [])) ? (Array.isArray(newsRes.data) ? newsRes.data : (newsRes.data && Array.isArray(newsRes.data.articles) ? newsRes.data.articles : [])) : [];
-    STATE.products = productsRes && productsRes.ok && (Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data && Array.isArray(productsRes.data.products) ? productsRes.data.products : [])) ? (Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data && Array.isArray(productsRes.data.products) ? productsRes.data.products : [])) : [];
+    STATE.experts = expertsRes && expertsRes.ok ? (expertsRes.data && expertsRes.data.experts) || [] : [];
+    STATE.claims = claimsRes && claimsRes.ok ? (claimsRes.data && claimsRes.data.claims) || [] : (Array.isArray(STATE.claims) ? STATE.claims : []);
+    STATE.reports = reportsRes && reportsRes.ok ? (reportsRes.data && reportsRes.data.reports) || [] : [];
+    STATE.messages = messagesRes && messagesRes.ok ? (messagesRes.data && messagesRes.data.messages) || [] : [];
+    STATE.applications = appsRes && appsRes.ok ? (appsRes.data && appsRes.data.applications) || [] : [];
+    STATE.roadside = roadsideRes && roadsideRes.ok ? (Array.isArray(roadsideRes.data) ? roadsideRes.data : (roadsideRes.data && roadsideRes.data.requests) || []) : [];
+    STATE.users = usersRes && usersRes.ok ? (usersRes.data && usersRes.data.users) || [] : [];
+    STATE.news = newsRes && newsRes.ok ? (Array.isArray(newsRes.data) ? newsRes.data : (newsRes.data && newsRes.data.articles) || []) : [];
+    STATE.products = productsRes && productsRes.ok ? (Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data && productsRes.data.products) || []) : [];
 
     // Render from STATE only
     renderClaims();
@@ -619,7 +611,6 @@
         '</tr>'
       ].join('');
     }).join('');
-    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
     updateOptionSuffixes(body);
 
     if (hasPendingClaims) {
@@ -638,19 +629,45 @@
 
     if (!list.length) {
       body.innerHTML = emptyRow(4, 'admin.no_reports', 'No expert reports submitted yet.');
-      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
       return;
     }
 
-    body.innerHTML = list.map((r) => [
-      '<tr>',
-      '  <td>#' + esc(r.claim_id) + '</td>',
-      '  <td>' + esc(r.expert_name || '-') + '</td>',
-      '  <td>' + esc(r.estimated_damage || 0) + ' DZD</td>',
-      '  <td>' + badge(r.conclusion || 'pending_review') + '</td>',
-      '</tr>'
-    ].join('')).join('');
-    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
+    body.innerHTML = list.map((r) => {
+      const id = r.claim_id;
+      return [
+        '<tr class="expandable-row" data-action="toggle-report" data-claim-id="' + id + '">',
+        '  <td>#' + esc(id) + '</td>',
+        '  <td>' + esc(r.expert_name || '-') + '</td>',
+        '  <td>' + formatPrice(r.estimated_damage || 0) + '</td>',
+        '  <td style="color:var(--primary-color); font-weight:600;">' + ICON('eye', 14, '') + ' View Report</td>',
+        '</tr>',
+        '<tr class="details-row" id="report-details-' + id + '">',
+        '  <td colspan="4">',
+        '    <div class="details-content">',
+        '      <div class="report-panel">',
+        '        <div class="msg-detail-label" style="margin-bottom:0.5rem; color:var(--primary-color);">Expert Conclusion</div>',
+        '        <div style="font-size:0.95rem; line-height:1.5; color:#334155;">' + esc(r.conclusion || 'No conclusion provided.') + '</div>',
+        '      </div>',
+        '    </div>',
+        '  </td>',
+        '</tr>'
+      ].join('');
+    }).join('');
+  }
+
+  function toggleReportDetails(id) {
+    // Close other reports
+    document.querySelectorAll('#reportsTableBody .details-row.open').forEach(row => {
+      if (row.id !== 'report-details-' + id) row.classList.remove('open');
+    });
+    document.querySelectorAll('#reportsTableBody .expandable-row.active').forEach(row => {
+      if (row.getAttribute('data-claim-id') !== String(id)) row.classList.remove('active');
+    });
+
+    const row = document.getElementById('report-details-' + id);
+    const trigger = document.querySelector('tr[data-claim-id="' + id + '"]');
+    if (row) row.classList.toggle('open');
+    if (trigger) trigger.classList.toggle('active');
   }
 
   function renderMessages(list) {
@@ -661,27 +678,105 @@
 
     if (!list.length) {
       body.innerHTML = emptyRow(4, 'admin.no_messages', 'No messages found.');
-      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
       return;
     }
 
     body.innerHTML = list.map((m) => [
-      '<tr>',
+      '<tr class="expandable-row" data-action="open-message" data-message-id="' + m.id + '">',
       '  <td>' + esc(m.name || '-') + '<br/><small>' + esc(m.email || '-') + '</small></td>',
       '  <td>' + esc(m.subject || '-') + '</td>',
       '  <td>' + badge(m.status || 'new') + '</td>',
-      '  <td>',
-      '    <select id="msg-status-' + m.id + '">',
-      '      <option value="new" data-i18n="admin.message_status.new">' + esc('New') + '</option>',
-      '      <option value="read" data-i18n="admin.message_status.read">' + esc('Read') + '</option>',
-      '      <option value="replied" data-i18n="admin.message_status.replied">' + esc('Replied') + '</option>',
-      '    </select>',
-      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-message" data-message-id="' + m.id + '">' + ICON('send', 14, '') + (window.i18nSpan ? window.i18nSpan('admin.common.save','Save') : esc('Save')) + '</button></div>',
-      '  </td>',
+      '  <td>' + formatDate(m.created_at) + '</td>',
       '</tr>'
     ].join('')).join('');
-    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
   }
+
+  function openMessageDrawer(id) {
+    const m = (STATE.messages || []).find(msg => Number(msg.id) === Number(id));
+    if (!m) return;
+
+    STATE.activeMessageId = id;
+    const drawer = document.getElementById('msgDrawer');
+    const body = document.getElementById('msgDrawerBody');
+    const select = document.getElementById('msgStatusSelect');
+
+    if (!drawer || !body || !select) return;
+
+    body.innerHTML = [
+      '<div class="msg-detail-item">',
+      '  <div class="msg-detail-label">Sender</div>',
+      '  <div class="msg-detail-value" style="font-size:1.1rem;">' + esc(m.name) + '</div>',
+      '  <div style="font-size:0.85rem; color:#64748b;">' + esc(m.email) + (m.phone ? ' • ' + esc(m.phone) : '') + '</div>',
+      '</div>',
+      '<div class="msg-detail-item">',
+      '  <div class="msg-detail-label">Subject</div>',
+      '  <div class="msg-detail-value">' + esc(m.subject) + '</div>',
+      '</div>',
+      '<div class="msg-detail-item">',
+      '  <div class="msg-detail-label">Message</div>',
+      '  <div class="msg-content-box">' + esc(m.message) + '</div>',
+      '  <div style="margin-top:0.5rem; text-align:right;"><small class="muted">' + formatDate(m.created_at) + '</small></div>',
+      '</div>'
+    ].join('');
+
+    select.value = m.status || 'new';
+    drawer.classList.add('open');
+    const overlay = document.getElementById('drawerOverlay');
+    if (overlay) overlay.classList.add('show');
+  }
+
+  function closeDrawer(id) {
+    const drawer = document.getElementById(id);
+    if (drawer) drawer.classList.remove('open');
+    const overlay = document.getElementById('drawerOverlay');
+    if (overlay) overlay.classList.remove('show');
+    STATE.activeMessageId = null;
+  }
+
+  window.closeDrawer = closeDrawer;
+
+  // Global ESC key listener to close drawer
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const drawer = document.getElementById('msgDrawer');
+      if (drawer && drawer.classList.contains('open')) {
+        closeDrawer('msgDrawer');
+      }
+    }
+  });
+
+  async function updateMessageStatus() {
+    const id = STATE.activeMessageId;
+    const select = document.getElementById('msgStatusSelect');
+    const btn = document.querySelector('#msgDrawer .drawer-footer .btn');
+    if (!id || !select || !btn) return;
+
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = ICON('activity', 14, 'spin') + ' Saving...';
+
+    try {
+      const res = await api('/api/messages/' + id + '/status', {
+        method: 'PATCH',
+        body: { status: select.value },
+      });
+
+      if (!res.ok) {
+        throw new Error((res.data && res.data.error) || 'Failed to update message status.');
+      }
+
+      setMsg('Message status updated successfully.', false);
+      closeDrawer('msgDrawer');
+      loadAll();
+    } catch (err) {
+      setMsg(err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  window.updateMessageStatus = updateMessageStatus;
 
   function renderApplications(list) {
     if (Array.isArray(list)) STATE.applications = list;
@@ -691,7 +786,6 @@
 
     if (!list.length) {
       body.innerHTML = emptyRow(4, 'admin.no_applications', 'No job applications found.');
-      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
       return;
     }
 
@@ -711,7 +805,7 @@
       '  </td>',
       '</tr>'
     ].join('')).join('');
-    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
+    updateOptionSuffixes(body);
   }
 
   function renderRoadside(list) {
@@ -722,26 +816,59 @@
 
     if (!list.length) {
       body.innerHTML = emptyRow(4, 'admin.no_roadside_requests', 'No roadside requests found.');
-      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
       return;
     }
 
-    body.innerHTML = list.map((r) => [
-      '<tr>',
-      '  <td>' + esc(r.request_reference || ('#' + r.id)) + '</td>',
-      '  <td>' + esc(r.problem_type || '-') + '</td>',
-      '  <td>' + badge(r.status || 'pending') + '</td>',
-      '  <td>',
-      '    <select id="road-status-' + r.id + '">',
-      '      <option value="pending" data-i18n="admin.roadside_status.pending">' + esc('Pending') + '</option>',
-      '      <option value="dispatched" data-i18n="admin.roadside_status.dispatched">' + esc('Dispatched') + '</option>',
-      '      <option value="completed" data-i18n="admin.roadside_status.completed">' + esc('Completed') + '</option>',
-      '    </select>',
-      '    <div class="row-actions"><button class="action-btn" data-variant="save" data-action="save-roadside" data-request-id="' + r.id + '">' + ICON('send', 14, '') + (window.i18nSpan ? window.i18nSpan('admin.common.save','Save') : esc('Save')) + '</button></div>',
-      '  </td>',
-      '</tr>'
-    ].join('')).join('');
-    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
+    body.innerHTML = list.map((r) => {
+      const id = r.request_id || r.id;
+      const statusOptions = ['pending', 'dispatched', 'on_site', 'resolved', 'closed']
+        .map(s => '<option value="' + s + '" ' + (r.status === s ? 'selected' : '') + '>' + s + '</option>')
+        .join('');
+
+      return [
+        '<tr class="expandable-row" data-action="toggle-roadside" data-request-id="' + id + '">',
+        '  <td><strong>' + esc(r.request_reference || ('#' + id)) + '</strong></td>',
+        '  <td>' + esc(r.problem_type || '-') + '</td>',
+        '  <td>' + esc(r.phone || '-') + '</td>',
+        '  <td>' + badge(r.status || 'pending') + '</td>',
+        '</tr>',
+        '<tr class="details-row" id="road-details-' + id + '">',
+        '  <td colspan="4">',
+        '    <div class="details-content">',
+        '      <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem; align-items: start;">',
+        '        <div class="roadside-info-compact">',
+        '          <p style="margin:0 0 0.5rem 0; font-size:0.9rem;"><strong>Location:</strong> ' + esc(r.address || '-') + ', ' + esc(r.city || '-') + '</p>',
+        '          <p style="margin:0 0 0.5rem 0; font-size:0.9rem;"><strong>Description:</strong> ' + esc(r.description || '-') + '</p>',
+        '          <small class="muted">Reported: ' + formatDate(r.created_at) + '</small>',
+        '        </div>',
+        '        <div class="status-control-card">',
+        '          <label data-i18n="admin.update_status_label">Update Operational Status</label>',
+        '          <div class="status-update-group">',
+        '            <select id="road-status-select-' + id + '" class="admin-select" style="padding:0.4rem; font-size:0.85rem;">' + statusOptions + '</select>',
+        '            <button class="btn btn-primary" style="padding:0.4rem 0.8rem; font-size:0.8rem;" data-action="save-roadside" data-request-id="' + id + '"><span data-i18n="admin.update_status">Update</span></button>',
+        '          </div>',
+        '        </div>',
+        '      </div>',
+        '    </div>',
+        '  </td>',
+        '</tr>'
+      ].join('');
+    }).join('');
+  }
+
+  function toggleRoadsideDetails(id) {
+    // Close other roadside rows
+    document.querySelectorAll('#roadsideTableBody .details-row.open').forEach(row => {
+      if (row.id !== 'road-details-' + id) row.classList.remove('open');
+    });
+    document.querySelectorAll('#roadsideTableBody .expandable-row.active').forEach(row => {
+      if (row.getAttribute('data-request-id') !== String(id)) row.classList.remove('active');
+    });
+
+    const row = document.getElementById('road-details-' + id);
+    const trigger = document.querySelector('tr[data-request-id="' + id + '"]');
+    if (row) row.classList.toggle('open');
+    if (trigger) trigger.classList.toggle('active');
   }
 
   function renderUsers(list) {
@@ -752,7 +879,6 @@
 
     if (!list.length) {
       body.innerHTML = emptyRow(4, 'admin.users.no_users', 'No users found.');
-      if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
       return;
     }
 
@@ -766,7 +892,6 @@
       '</button></td>',
       '</tr>'
     ].join('')).join('');
-    if (window.Language && typeof window.Language.applyTranslations === 'function') window.Language.applyTranslations(body);
   }
 
   async function decideClaim(claimId, decision) {
@@ -819,58 +944,66 @@
     loadAll();
   }
 
-  async function updateMessageStatus(messageId) {
-    const select = document.getElementById('msg-status-' + messageId);
-    if (!select) return;
+  async function updateRoadsideStatus(requestId) {
+    const select = document.getElementById('road-status-select-' + requestId);
+    const btn = document.querySelector('button[data-action="save-roadside"][data-request-id="' + requestId + '"]');
+    if (!select || !btn) return;
 
-    const res = await api('/api/messages/' + messageId + '/status', {
-      method: 'PATCH',
-      body: { status: select.value },
-    });
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = ICON('activity', 14, 'spin') + ' ...';
 
-    if (!res.ok) {
-      setMsg((res.data && res.data.error) || (window.i18nSpan ? window.i18nSpan('admin.message_status_failed', 'Failed to update message status.') : 'Failed to update message status.'), true);
-      return;
+    try {
+      const res = await api('/api/roadside/requests/' + requestId + '/status', {
+        method: 'PATCH',
+        body: { status: select.value },
+      });
+
+      if (!res.ok) {
+        throw new Error((res.data && res.data.error) || 'Failed to update roadside status.');
+      }
+
+      setMsg('Roadside status updated successfully.', false);
+      loadAll();
+    } catch (err) {
+      setMsg(err.message, true);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
-
-    setMsg(window.i18nSpan ? window.i18nSpan('admin.message_status_updated', 'Message status updated.') : 'Message status updated.', false);
-    loadAll();
   }
 
   async function updateApplicationStatus(applicationId) {
     const select = document.getElementById('app-status-' + applicationId);
-    if (!select) return;
+    const btn = document.querySelector('button[data-action="save-application"][data-application-id="' + applicationId + '"]');
+    if (!select || !btn) return;
 
-    const res = await api('/api/applications/' + applicationId + '/status', {
-      method: 'PATCH',
-      body: { status: select.value },
-    });
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = ICON('activity', 14, 'spin') + ' ...';
 
-    if (!res.ok) {
-      setMsg((res.data && res.data.error) || (window.i18nSpan ? window.i18nSpan('admin.application_status_failed', 'Failed to update application status.') : 'Failed to update application status.'), true);
-      return;
+    try {
+      const res = await api('/api/applications/' + applicationId + '/status', {
+        method: 'PATCH',
+        body: { status: select.value },
+      });
+
+      if (!res.ok) {
+        throw new Error((res.data && res.data.error) || 'Failed to update application status.');
+      }
+
+      setMsg('Application status updated successfully.', false);
+      loadAll();
+    } catch (err) {
+      setMsg(err.message, true);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
-
-    setMsg(window.i18nSpan ? window.i18nSpan('admin.application_status_updated', 'Application status updated.') : 'Application status updated.', false);
-    loadAll();
-  }
-
-  async function updateRoadsideStatus(requestId) {
-    const select = document.getElementById('road-status-' + requestId);
-    if (!select) return;
-
-    const res = await api('/api/roadside/requests/' + requestId + '/status', {
-      method: 'PATCH',
-      body: { status: select.value },
-    });
-
-    if (!res.ok) {
-      setMsg((res.data && res.data.error) || (window.i18nSpan ? window.i18nSpan('admin.roadside_status_failed', 'Failed to update roadside request status.') : 'Failed to update roadside request status.'), true);
-      return;
-    }
-
-    setMsg(window.i18nSpan ? window.i18nSpan('admin.roadside_status_updated', 'Roadside status updated.') : 'Roadside status updated.', false);
-    loadAll();
   }
 
   async function toggleUser(userId, nextIsActive) {
@@ -1072,6 +1205,24 @@
       const action = trigger.getAttribute('data-action');
       if (!action) return;
 
+      if (action === 'open-message') {
+        const id = trigger.getAttribute('data-message-id');
+        if (id) openMessageDrawer(id);
+        return;
+      }
+
+      if (action === 'toggle-roadside') {
+        const id = trigger.getAttribute('data-request-id');
+        if (id) toggleRoadsideDetails(id);
+        return;
+      }
+
+      if (action === 'toggle-report') {
+        const id = trigger.getAttribute('data-claim-id');
+        if (id) toggleReportDetails(id);
+        return;
+      }
+
       if (action === 'assign-expert') {
         const claimId = parseInt(trigger.getAttribute('data-claim-id'), 10);
         if (!isNaN(claimId)) assignExpert(claimId);
@@ -1090,12 +1241,6 @@
         return;
       }
 
-      if (action === 'save-message') {
-        const messageId = parseInt(trigger.getAttribute('data-message-id'), 10);
-        if (!isNaN(messageId)) updateMessageStatus(messageId);
-        return;
-      }
-
       if (action === 'save-application') {
         const applicationId = parseInt(trigger.getAttribute('data-application-id'), 10);
         if (!isNaN(applicationId)) updateApplicationStatus(applicationId);
@@ -1103,8 +1248,8 @@
       }
 
       if (action === 'save-roadside') {
-        const requestId = parseInt(trigger.getAttribute('data-request-id'), 10);
-        if (!isNaN(requestId)) updateRoadsideStatus(requestId);
+        const requestId = trigger.getAttribute('data-request-id');
+        if (requestId) updateRoadsideStatus(requestId);
         return;
       }
 
@@ -1267,8 +1412,5 @@
     bindContentManagementActions();
     bindExpertCreateActions();
     loadAll();
-    if (window.Language && typeof window.Language.applyTranslations === 'function') {
-      window.Language.applyTranslations(document);
-    }
   });
 })();

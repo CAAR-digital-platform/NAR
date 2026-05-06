@@ -3,13 +3,17 @@
 const ROADSIDE_REQUEST_STATUSES = Object.freeze([
   'pending',
   'dispatched',
-  'completed',
+  'on_site',
+  'resolved',
+  'closed',
 ]);
 
 const ROADSIDE_REQUEST_TRANSITIONS = Object.freeze({
-  pending: Object.freeze(['dispatched']),
-  dispatched: Object.freeze(['completed']),
-  completed: Object.freeze([]),
+  pending: Object.freeze(['pending', 'dispatched', 'closed']),
+  dispatched: Object.freeze(['dispatched', 'on_site', 'closed']),
+  on_site: Object.freeze(['on_site', 'resolved', 'closed']),
+  resolved: Object.freeze(['resolved', 'closed']),
+  closed: Object.freeze(['closed']),
 });
 
 function isValidRoadsideRequestStatus(status) {
