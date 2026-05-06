@@ -60,6 +60,12 @@ img          { max-width: 100%; display: block; }
 button       { font-family: var(--font-sans); }
 input, select, textarea { font-family: var(--font-sans); }
 
+/* Hide browser default password reveal button */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
 /* ==========================================================================
    2b. HEADER — Structure & Layout
    ========================================================================== */

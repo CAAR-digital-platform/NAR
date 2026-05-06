@@ -112,6 +112,12 @@
     }
     .reg-input.field-ok { border-color: var(--success) !important; }
 
+    /* Hide browser default password reveal button */
+    .reg-input::-ms-reveal,
+    .reg-input::-ms-clear {
+      display: none;
+    }
+
     /* ── Toggle password ── */
     .toggle-pw {
       position: absolute; right: 13px; top: 50%;
