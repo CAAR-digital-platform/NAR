@@ -56,12 +56,18 @@ function _log() {
   console.log.apply(console, ['[CAAR]'].concat(Array.prototype.slice.call(arguments)));
 }
 
-/* ── Auth primitives ─────────────────────────────────────── */
+/* ── Auth primitives ───────────────────────────────────────
+   Now centralized in header-auth.js. 
+   Keeping wrappers for backward compatibility if needed, 
+   but they now delegate to getAuthState().
+   ───────────────────────────────────────────────────────── */
 function getToken() {
+  if (window.getAuthState) return window.getAuthState().token;
   return localStorage.getItem('token') || null;
 }
 
 function getUser() {
+  if (window.getAuthState) return window.getAuthState().user;
   var t = getToken();
   if (!t) return null;
   var p = _decodeJWT(t);
@@ -70,6 +76,7 @@ function getUser() {
 }
 
 function isAuthenticated() {
+  if (window.getAuthState) return window.getAuthState().isLoggedIn;
   return getUser() !== null;
 }
 
@@ -84,7 +91,7 @@ function mustChangePassword() {
   if (raw === '1') return true;
 
   try {
-    var u = JSON.parse(localStorage.getItem('user') || 'null');
+    var u = getUser();
     return !!(u && u.must_change_password);
   } catch (_) {
     return false;
@@ -92,26 +99,24 @@ function mustChangePassword() {
 }
 
 /* ── renderAuthHeader ────────────────────────────────────────
-   Delegates entirely to header-controller.js.
-   NO direct DOM manipulation here.
-   Safe to call at any time — guards against header not ready.
+   Delegates to header-auth.js.
    ──────────────────────────────────────────────────────────── */
 function renderAuthHeader() {
-  if (!window.__caarHeaderReady) {
-    _log('renderAuthHeader: header not ready yet — will be called by Header.init()');
-    return;
-  }
-  var payload = getUser();
-  if (window.Header && typeof window.Header.render === 'function') {
-    window.Header.render(payload);
+  if (window.syncAuthUI) {
+    window.syncAuthUI();
+  } else if (window.Header && typeof window.Header.render === 'function') {
+    window.Header.render(getUser());
   }
 }
 
 /* ── logout ──────────────────────────────────────────────── */
 function logout() {
-  _log('logout()');
-  _clearAuth();
-  window.location.href = 'index.html';
+  if (window.initHeaderAuth && typeof window.logout === 'function') {
+    window.logout();
+  } else {
+    _clearAuth();
+    window.location.href = 'index.html';
+  }
 }
 
 /* ── apiRequest ──────────────────────────────────────────── */

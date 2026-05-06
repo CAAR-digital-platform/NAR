@@ -86,8 +86,11 @@ window.requireAuth = function() {
 };
 
 /* ── logout — kept so existing onclick="logout()" works ── */
-if (typeof window.logout === 'undefined') {
+if (typeof window.logout === 'undefined' || window.logout.name !== 'logout') {
   window.logout = function() {
+    if (window.initHeaderAuth && typeof window.logout === 'function' && window.logout !== this) {
+      return window.logout();
+    }
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('user');

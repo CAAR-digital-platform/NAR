@@ -72,48 +72,8 @@ const Header = (() => {
   }
 
   function render(user) {
-    _log('render →', user ? user.email : 'guest');
-
-    const loginBtn     = document.getElementById('loginBtn');
-    const userMenu     = document.getElementById('userMenu');
-    const dashboardBtn = document.getElementById('dashboardBtn');
-
-    if (!loginBtn || !userMenu) {
-      _log('render: DOM not ready');
-      return;
-    }
-
-    const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-    const token      = localStorage.getItem('token');
-    const activeUser = storedUser && token ? storedUser : null;
-
-    if (!activeUser) {
-      loginBtn.style.display    = 'inline-flex';
-      userMenu.style.display    = 'none';
-      if (dashboardBtn) dashboardBtn.style.display = 'none';
-      return;
-    }
-
-    loginBtn.style.display    = 'none';
-    userMenu.style.display    = 'block';
-    if (dashboardBtn) dashboardBtn.style.display = 'inline-flex';
-
-    const email    = activeUser.email || '';
-    const name     = activeUser.first_name || (email ? email.split('@')[0] : 'User');
-    const initials = _buildInitials(name);
-    const role     = activeUser.role || 'client';
-    const dashHref = (window.DASHBOARD_MAP && window.DASHBOARD_MAP[role])
-      ? window.DASHBOARD_MAP[role] : 'client-dashboard.html';
-
-    _setText('userName',     name.split(' ')[0]);
-    _setText('userAvatar',   initials);
-    _setText('dropUserName', name);
-    _setText('dropUserRole', role);
-
-    const dashLink = document.getElementById('dashboardLink');
-    if (dashLink) dashLink.href = dashHref;
-
-    _log('render: authenticated', { name, initials, role, dashHref });
+    // Auth rendering is now handled by header-auth.js
+    if (window.syncAuthUI) window.syncAuthUI();
   }
 
   /* ── Active nav — matches current page to the correct nav link ── */
@@ -130,7 +90,7 @@ const Header = (() => {
     if (!targetHref) return;
 
     // Find the nav link whose href matches the section's main page
-    document.querySelectorAll('.nav-links .nav-link').forEach(link => {
+    document.querySelectorAll('.nav-links .nav-link, .mobile-nav a').forEach(link => {
       const href = link.getAttribute('href') || '';
       // Match by the target href for this section
       const isActive = href === targetHref ||
@@ -139,14 +99,16 @@ const Header = (() => {
 
       if (isActive) {
         link.classList.add('active');
-        link.style.color = 'var(--hdr-orange)';
+        if (link.classList.contains('nav-link')) {
+          link.style.color = 'var(--hdr-orange)';
+        }
       } else {
         link.classList.remove('active');
-        link.style.color = '';
+        if (link.classList.contains('nav-link')) {
+          link.style.color = '';
+        }
       }
     });
-
-    _log('_setActiveNav: section=', section, 'targetHref=', targetHref);
   }
 
   function bindEvents() {
@@ -173,41 +135,9 @@ const Header = (() => {
       }
     });
 
-    /* 2. Logout */
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        _log('logout triggered');
-        if (typeof window.logout === 'function') window.logout();
-      });
-    }
+    /* 2. Logout — Handled by header-auth.js */
 
-    /* 2b. Dashboard role redirect */
-    const dashboardBtn = document.getElementById('dashboardBtn');
-    if (dashboardBtn) {
-      dashboardBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-          window.location.href = 'login.html';
-          return;
-        }
-
-        const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-        const mustChange = (storedUser && storedUser.must_change_password) || localStorage.getItem('must_change_password') === '1';
-        if (mustChange) {
-          window.location.href = 'change-password.html';
-          return;
-        }
-
-        const role = (storedUser && storedUser.role) || localStorage.getItem('role') || '';
-        const target = (window.DASHBOARD_MAP && window.DASHBOARD_MAP[role]) || null;
-
-        window.location.href = target || 'login.html';
-      });
-    }
+    /* 2b. Dashboard role redirect — Handled by header-auth.js */
 
     /* 3. Search bar */
     const searchBtn   = document.getElementById('searchBtn');
@@ -323,12 +253,7 @@ window.addEventListener('resize', function () {
 
     /* 7. Escape */
     document.addEventListener('keydown', e => { if (e.key === 'Escape') resetState(); });
-    /* 7b. Mobile login link — hide when authenticated */
-var mobileLoginLink = document.getElementById('mobileLoginLink');
-if (mobileLoginLink) {
-  var _token = localStorage.getItem('token');
-  if (_token) mobileLoginLink.style.display = 'none';
-}
+    /* 7b. Mobile login link — Handled by header-auth.js */
 
     /* 8. Active nav */
     _setActiveNav();

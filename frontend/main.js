@@ -90,6 +90,7 @@
   function loadLanguageAssets(base) {
     return loadScript(base + 'translations.js')
       .then(function () { return loadScript(base + 'lang.js'); })
+      .then(function () { return loadScript(base + 'js/header-auth.js'); })
       .then(function () {
         if (window.Language && typeof window.Language.init === 'function') {
           return window.Language.init();
@@ -177,6 +178,10 @@
     if (document.getElementById('site-header')) {
       loadComponent('site-header', base + 'components/header.html', function () {
         initHeaderSafely(1, 20);
+        
+        if (window.initHeaderAuth) {
+          window.initHeaderAuth();
+        }
 
         if (window.Language && typeof window.Language.applyTranslations === 'function') {
           window.Language.applyTranslations(document);
