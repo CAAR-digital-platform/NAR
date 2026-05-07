@@ -37,7 +37,8 @@
     for (var i = 0; i < scripts.length; i++) {
       var s = scripts[i].getAttribute('src');
       if (s && s.indexOf('main.js') !== -1) {
-        return s.replace(/main\.js.*$/, '');
+        // Now main.js is in js/ folder, so base should be parent of js/
+        return s.replace(/js\/main\.js.*$/, '').replace(/main\.js.*$/, '');
       }
     }
     var p = window.location.pathname;
@@ -88,8 +89,8 @@
   }
 
   function loadLanguageAssets(base) {
-    return loadScript(base + 'translations.js')
-      .then(function () { return loadScript(base + 'lang.js'); })
+    return loadScript(base + 'js/translations.js')
+      .then(function () { return loadScript(base + 'js/lang.js'); })
       .then(function () { return loadScript(base + 'js/header-auth.js'); })
       .then(function () {
         if (window.Language && typeof window.Language.init === 'function') {
@@ -99,8 +100,8 @@
   }
 
   function loadSearchAssets(base) {
-    return loadStyle(base + 'Search.css')
-      .then(function () { return loadScript(base + 'Search.js'); });
+    return loadStyle(base + 'css/Search.css')
+      .then(function () { return loadScript(base + 'js/Search.js'); });
   }
 
   /* ── Load an HTML component into a DOM element ── */
